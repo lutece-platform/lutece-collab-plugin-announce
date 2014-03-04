@@ -1,0 +1,24 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+ "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="fr" xml:lang="fr">
+<head>
+</head>
+<body>
+    #i18n{announce.notification.mail.titleLable}: ${announce.title}
+    <br />
+    #i18n{announce.notification.mail.descriptionLable}: ${announce.description}
+    <ul>
+        <li>
+            <a href="${prod_url}/jsp/admin/plugins/announce/PreviewAnnounce.jsp?announce_id=${announce.id}">#i18n{announce.notification.mail.previewAnnounce}</a>
+        </li>
+        <li>
+            <a href="${prod_url}/jsp/admin/plugins/announce/ManageAnnounces.jsp">#i18n{announce.notification.mail.manageAnnounces}</a>
+        </li>
+        <li>
+            <a href="${prod_url}/jsp/admin/plugins/announce/RemoveAnnounce.jsp?announce_id=${announce.id}">#i18n{announce.notification.mail.deleteWithoutPreview}</a>
+        </li>
+    </ul>
+</body>
+</html>

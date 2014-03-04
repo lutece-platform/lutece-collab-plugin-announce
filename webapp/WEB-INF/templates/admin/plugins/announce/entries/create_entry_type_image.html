@@ -1,0 +1,88 @@
+ <#include "/admin/plugins/announce/commons.html" />
+<div class="row-fluid">
+	<div class="span12">
+		<form class="form-horizontal" action="jsp/admin/plugins/announce/ManageCategoryEntries.jsp" method="post" name="" id=""  >
+			<fieldset>
+				<legend>#i18n{announce.createEntry.titleQuestion} : '${category.label}'</legend>
+				<input name="id_category" value="${category.id}" type="hidden" />
+				<input name="action" value="doCreateEntry" type="hidden" />
+				<input name="id_type" value="${entry.entryType.idType}" type="hidden" />
+				<#if entry.fieldDepend?exists>
+					<input name="id_field" value="${entry.fieldDepend.idField}" type="hidden" />
+				</#if>
+				<div class="control-group">
+				<label class="control-label" for="title">#i18n{announce.createEntry.labelTitle} * : </label>
+					<div class="controls">
+						<input type="text" name="title" id="title" class="input-large" value=""  maxlength="255" />
+						<span class="help-block">#i18n{announce.createEntry.labelTitleComment}</span>
+					</div>
+				</div>
+		    	<div class="control-group">
+				<label class="control-label" >  #i18n{announce.createEntry.labelHelpMessage} : </label>
+					<div class="controls">
+						<textarea  name="help_message" id="help_message" rows="5" class="span4"></textarea>
+						<p class="help-block">#i18n{announce.createEntry.labelHelpMessageComment}</p>
+					</div>
+		     	</div>
+				<div class="control-group">
+				<label class="control-label" for="comment"> #i18n{announce.createEntry.labelComment} : </label>
+					<div class="controls">						<textarea  name="comment" class="span4" rows="2"></textarea>					</div>
+				</div>
+		        <div class="control-group">
+					<label class="control-label" for="">#i18n{announce.createEntry.labelType} : </label>
+					<div class="controls">
+						${entry.entryType.title}
+					</div>
+				</div>
+		        <div class="control-group">
+					<label class="control-label" for="mandatory">#i18n{announce.createEntry.labelMandatory} : </label>
+					<div class="controls">
+						<input name="mandatory" value="1" type="checkbox" />
+					</div>
+				</div>
+				<div class="control-group">
+					<label class="control-label" for="width">#i18n{announce.createEntry.labelWidth} * : </label>
+					<div class="controls">
+						<input  type="text" name="width" id="width" value="255" />
+					</div>
+				</div>
+				<div class="control-group">
+					<label class="control-label" for="file_max_size">#i18n{announce.createEntry.labelFileMaxSize} * : </label>
+					<div class="controls">
+						<input type="text" name="file_max_size" id="file_max_size" value="" />
+					</div>
+				</div>
+				<div class="control-group">
+					<label class="control-label" for="max_files">#i18n{announce.createEntry.labelMaxFiles} * :</label>
+					<div class="controls">
+						<input name="max_files" type="text" size="2" value="" maxlength="2" />
+					</div>
+				</div>
+				<div class="control-group">
+					<label class="control-label" for="export_binary">#i18n{announce.createEntry.labelExportBinary} :</label>
+					<div class="controls">	
+						<input name="export_binary" value="1" type="checkbox" />
+						#i18n{announce.createEntry.labelExportBinaryComment}
+						<p class="label label-warning">#i18n{announce.createEntry.labelExportBinaryWarning}</p>
+					</div>
+				</div>
+				<div class="control-group">
+				<label class="control-label" for="css_class">#i18n{announce.createEntry.labelCSSClass} : </label>
+					<div class="controls">
+						<input type="text" name="css_class" value="" maxlength="255" class="input-large"/>
+						<span class="help-block">#i18n{announce.createEntry.labelCSSClassComment}</span>
+					</div>
+				</div>
+				<div class="form-actions">
+					<button class="btn btn-primary btn-small" type="submit" ><i class="icon-ok icon-white"></i>&nbsp;#i18n{announce.createEntry.buttonSave}</button>
+					<button class="btn btn-primary btn-small" type="submit" ><i class="icon-ok-circle icon-white"></i>&nbsp;#i18n{announce.createEntry.buttonApplyAndManageVerification}</button>
+					<button class="btn btn-primary btn-small" type="button" onclick="javascript:window.history.back();" ><i class="icon-remove-circle icon-white"></i>&nbsp;#i18n{announce.createEntry.buttonCancel}</button>
+				</div>
+			</fieldset>
+		</form>
+	</div>
+</div>
+ <#include "/admin/util/editor/editor.html" />
+ <@initEditor />
+
+ 

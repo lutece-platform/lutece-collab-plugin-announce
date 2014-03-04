@@ -1,0 +1,50 @@
+<#include "/admin/plugins/announce/announce_tabs.html" />
+<div class="row-fluid">
+	<div class="span12">
+		<fieldset>
+			<legend>#i18n{announce.list_users.pageTitle}</legend>
+			<@tabs tab="users" />
+			<#if no_users=true>
+				#i18n{announce.list_users.no_users_available} <br />
+			<#else>
+				<form method="post" action="jsp/admin/plugins/announce/ShowAnnounceUsers.jsp">
+					<input type="hidden" name="session" value="session">
+					<@paginationAdmin paginator=paginator form=0 combo=1 />
+				</form>
+				<table class="table table-striped">
+					<tr>
+						<#if name_found=true>
+						<th>#i18n{announce.list_users.name}</th> </#if>
+						<th>#i18n{announce.list_users.mail}</th>
+						<th>#i18n{announce.list_users.login}</th>
+						<th>#i18n{announce.list_users.actions}</th>
+					</tr>
+					<#list users_list as user>
+						<tr>
+							<#if name_found=true>
+								<td>${user.userInfos["user.name.given"]!""}
+									${user.userInfos["user.name.family"]!""}
+								</td>
+							</#if>
+							<td>
+								${user.userInfos["user.home-info.online.email"]!}
+							</td>
+							<td>
+								${user.name}
+							</td>
+							<td>
+								<a class="btn btn-primary btn-small" href="jsp/site/Portal.jsp?page=announce&action=view_announces&username=${user.name}" title="#i18n{announce.list_users.announces}">
+									<i class="icon-search icon-white" >&nbsp;</i>
+								</a>
+							</td>
+						</tr>
+					</#list>
+				</table>
+				<form method="post" action="jsp/admin/plugins/announce/ShowAnnounceUsers.jsp">
+					<input type="hidden" name="session" value="session">
+					<@paginationAdmin paginator=paginator form=0 combo=0 />
+				</form>
+			</#if>
+		</fieldset>
+	</div>
+</div>

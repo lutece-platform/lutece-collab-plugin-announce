@@ -1,0 +1,45 @@
+<div id="sidebar" class="prepend-1 prepend-top">
+    <div class="portlet-background append-bottom">
+        <div class="portlet-background-header -lutece-border-radius-top">
+            #i18n{announce.navigation_menu.title}
+        </div>
+        <div class="portlet-background-content -lutece-border-radius-bottom">
+            <ul class="main-menu">
+            	<li>
+                    <a href="jsp/site/Portal.jsp?page=announce">#i18n{announce.navigation_menu.home}</a>
+                </li>
+                <li>
+                    <a href="jsp/site/Portal.jsp?page=announce&action=addnew">#i18n{announce.navigation_menu.postAnnounce}</a>
+                </li>
+                <li>
+                    <a href="jsp/site/Portal.jsp?page=announce&action=my_announces">#i18n{announce.navigation_menu.userAnnounces}</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div class="portlet-background append-bottom">
+        <div class="portlet-background-header -lutece-border-radius-top">
+            #i18n{announce.navigation_menu.categories.title}
+        </div>
+        <div class="portlet-background-content -lutece-border-radius-bottom">
+            <ul class="sectors">
+                <#list list_sectors as sector>
+                <li class="sector">
+                    <strong>${sector.label} (${sector.numberAnnounces})</strong>
+                    <ul>
+                        <#list sector.listCategories as category>
+                        <li class="announce-nav-link">
+                        <#if category.numberAnnounces!=0>
+                            <a href="jsp/site/Portal.jsp?page=announce&action=category_announces&category_id=${category.id}">${category.label}&nbsp;(${category.numberAnnounces})</a>
+						<#else>
+							${category.label}
+						</#if>
+                        </li>
+                        </#list>
+                    </ul>
+                </li>
+                </#list>
+            </ul>
+        </div>
+    </div>
+</div>

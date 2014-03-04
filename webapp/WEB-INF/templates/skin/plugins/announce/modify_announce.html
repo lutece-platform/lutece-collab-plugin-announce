@@ -1,0 +1,62 @@
+<#include "navigation_menu.html">
+<div id="content" class="span-16 append-1 prepend-top last">
+    <#include "search_form.html">   
+    <div id="content" class="portlet -lutece-border-radius append-bottom">
+		<#if list_errors??>
+			<@messages errors=list_errors />
+		</#if>
+		<form class="edit_announce form-horizontal" method="post" enctype="multipart/form-data" action="jsp/site/Portal.jsp">
+            <div class="control-group">
+            	<label class="control-label">#i18n{announce.create_announce_step_form.labelTitle} *</label>
+            	<div class="controls">
+            		<input type="text" name="title_announce" value="${announce.title!}"/>
+            	</div>
+           	</div>
+            <div class="control-group">
+            	<label class="control-label" for="description_announce">#i18n{announce.create_announce_step_form.labelDescription} *</label>
+            	<div class="controls">
+            		<textarea name="description_announce">${announce.description!}</textarea>
+            	</div>
+            </div>
+            
+            <#if !announce?? && moderated?? && moderated>
+	            <div class="notice">
+	                #i18n{announce.messages.announceWillBeModerated}<br/>
+	                <a href="jsp/site/Portal.jsp?page=announce&action=my_announces">#i18n{announce.messages.announceWillBeModerated.cancel}</a>
+	            </div>
+	        </#if>
+          
+  				${form_html}
+  				
+  			<div class="control-group">
+            	<label class="control-label" for="contact_information">#i18n{announce.create_announce_step_form.contactInformation} *</label>
+            	<div class="controls">
+            		<input value="${announce.contactInformation!''}" type="text" name="contact_information"/>
+            	</div>
+            </div>
+            <#if category.displayPrice>
+                <div class="control-group">
+            		<label class="control-label" for="price_announce">#i18n{announce.create_announce_step_form.labelPrice}</label>
+                	<div class="controls">
+            			<input type="text" name="price_announce" value="${(announce.price)!''}"/>
+            		</div>
+                </div>
+            </#if>
+            <div class="control-group">
+            	<label class="control-label" for="tags">#i18n{announce.create_announce_step_form.tags}</label>
+            	<div class="controls">
+            		<input value="${announce.tags!''}" type="text" name="tags"/>
+            		<span class="help-block">#i18n{announce.create_announce_step_form.tags.helper}</span>
+            	</div>
+            </div>
+			<div class="form-actions">
+	            <input type="hidden" name="category_id" value="${category.id}" />
+	            <input type="hidden" name="form_send" value="1" />
+	            <input type="hidden" name="page" value="announce" />
+	            <input type="hidden" name="action" value="modify_announce" />
+	            <input type="hidden" name="announce_id" value="${announce.id}" />
+	            <input type="submit" value="#i18n{announce.create_announce_step_form.labelButtonValidate}"/>
+           	</div>
+        </form>
+    </div>
+</div>

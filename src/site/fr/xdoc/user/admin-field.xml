@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document>
+    <properties>
+        <title>
+            Gestion des domaines
+        </title>
+    </properties>
+    <body>
+		<section name="Gestion des domaines">
+			<p>
+				L'interface de gestion des domaines récapitule l'ensemble des actions possibles pour les domaines.
+			</p>
+				<p>
+					<center>
+						<img src="images/manage_field.png" />
+					</center>
+				</p>
+				<ul>
+					<li>Création d'un domaine</li>
+					<li>Modification d'un domaine</li>
+					<li>Suppression d'un domaine</li>
+				</ul>
+				<subsection name="Création d'un domaine">
+				<p>
+					L'interface de saisie suivante récapitule les
+					informations nécessaires à la création d'un
+					domaine.
+				</p>
+				<p>
+					<center>
+						<img src="images/create_field.png" />
+					</center>
+				</p>
+				
+			</subsection>
+          	<subsection name="Modification d'un domaine">
+	           <p>
+	             Pour modifier un domaine il suffit de cliquer sur le libellé du domaine concerné.
+	           </p>
+	       </subsection> 
+	       <subsection name="Suppression d'un domaine">
+	        <p>
+            Pour supprimer un domaine il faut cliquer sur l’icône
+				représentant l’action de suppression associée au
+				domaine à supprimer.
+           </p>
+           </subsection>
+		</section>
+		
+		
+   </body>
+</document>       
+             

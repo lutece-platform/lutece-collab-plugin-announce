@@ -1,0 +1,332 @@
+/*
+ * Copyright (c) 2002-2014, Mairie de Paris
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions
+ * are met:
+ *
+ *  1. Redistributions of source code must retain the above copyright notice
+ *     and the following disclaimer.
+ *
+ *  2. Redistributions in binary form must reproduce the above copyright notice
+ *     and the following disclaimer in the documentation and/or other materials
+ *     provided with the distribution.
+ *
+ *  3. Neither the name of 'Mairie de Paris' nor 'Lutece' nor the names of its
+ *     contributors may be used to endorse or promote products derived from
+ *     this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDERS OR CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ * POSSIBILITY OF SUCH DAMAGE.
+ *
+ * License 1.0
+ */
+package fr.paris.lutece.plugins.announce.business;
+
+import fr.paris.lutece.plugins.announce.service.AnnouncePlugin;
+import fr.paris.lutece.plugins.announce.service.announcesearch.AnnounceSearchService;
+import fr.paris.lutece.plugins.genericattributes.business.Response;
+import fr.paris.lutece.plugins.genericattributes.business.ResponseHome;
+import fr.paris.lutece.portal.business.file.FileHome;
+import fr.paris.lutece.portal.service.plugin.Plugin;
+import fr.paris.lutece.portal.service.plugin.PluginService;
+import fr.paris.lutece.portal.service.security.LuteceUser;
+import fr.paris.lutece.portal.service.spring.SpringContextService;
+
+import java.util.ArrayList;
+import java.util.List;
+
+
+/**
+ * This class provides instances management methods (create, find, ...) for
+ * Announce objects
+ */
+public final class AnnounceHome
+{
+    // Static variable pointed at the DAO instance
+    private static IAnnounceDAO _dao = SpringContextService.getBean( "announce.announceDAO" );
+
+    private static Plugin _plugin = PluginService.getPlugin( AnnouncePlugin.PLUGIN_NAME );
+
+    /**
+     * Private constructor - this class need not be instantiated
+     */
+    private AnnounceHome( )
+    {
+    }
+
+    /**
+     * Create an instance of the announce class
+     * @return The instance of announce which has been created with its primary
+     *         key.
+     * @param announce The instance of the Announce which contains the
+     *            informations to store
+     */
+    public static Announce create( Announce announce )
+    {
+        _dao.insert( announce, _plugin );
+
+        if ( announce.getPublished( ) && !announce.getSuspended( ) && !announce.getSuspendedByUser( ) )
+        {
+            AnnounceSearchService.getInstance( ).addIndexerAction( announce.getId( ), IndexerAction.TASK_CREATE, _plugin );
+        }
+
+        return announce;
+    }
+
+    /**
+     * Update of the announce which is specified in parameter
+     * @return The instance of the announce which has been updated
+     * @param announce The instance of the Announce which contains the data to
+     *            store
+     */
+    public static Announce update( Announce announce )
+    {
+        _dao.store( announce, _plugin );
+
+        if ( announce.getPublished( ) && !announce.getSuspended( ) && !announce.getSuspendedByUser( ) )
+        {
+            AnnounceSearchService.getInstance( ).addIndexerAction( announce.getId( ), IndexerAction.TASK_MODIFY, _plugin );
+        }
+        else
+        {
+            AnnounceSearchService.getInstance( ).addIndexerAction( announce.getId( ), IndexerAction.TASK_DELETE, _plugin );
+        }
+
+        return announce;
+    }
+
+    /**
+     * Remove the announce whose identifier is specified in parameter and every
+     * response associated with it
+     * @param nAnnounceId The announce Id
+     */
+    public static void remove( int nAnnounceId )
+    {
+        AnnounceSearchService.getInstance( ).addIndexerAction( nAnnounceId, IndexerAction.TASK_DELETE, _plugin );
+        List<Integer> listIdResponse = findListIdResponse( nAnnounceId );
+        for ( int nIdResponse : listIdResponse )
+        {
+            ResponseHome.remove( nIdResponse );
+        }
+        removeAnnounceResponse( nAnnounceId );
+        _dao.delete( nAnnounceId, _plugin );
+    }
+
+    ///////////////////////////////////////////////////////////////////////////
+    // Finders
+
+    /**
+     * Returns an instance of a announce whose identifier is specified in
+     * parameter
+     * @param nKey The announce primary key
+     * @return an instance of Announce
+     */
+    public static Announce findByPrimaryKey( int nKey )
+    {
+        return _dao.load( nKey, _plugin );
+    }
+
+    /**
+     * Load the data of all the announce objects and returns them in form of a
+     * list
+     * @return the list which contains the data of all the announce objects
+     */
+    public static List<Integer> findAll( )
+    {
+        return _dao.selectAll( _plugin );
+    }
+
+    /**
+     * Load the id of every published announce and returns them in form of a
+     * list
+     * @return the list of id of every published announce
+     */
+    public static List<Integer> findAllPublishedId( )
+    {
+        return _dao.selectAllPublishedId( _plugin );
+    }
+
+    /**
+     * Load the data of all the announce objects and returns them in form of a
+     * list
+     * @return the list which contains the data of all the announce objects
+     */
+    public static List<Announce> findAllPublished( )
+    {
+        return _dao.selectAllPublished( _plugin );
+    }
+
+    /**
+     * Get the list of announces from a list of ids
+     * @param listIdAnnounces The list of ids of announces to get
+     * @return The list of announces
+     */
+    public static List<Announce> findByListId( List<Integer> listIdAnnounces )
+    {
+        return _dao.findByListId( listIdAnnounces, _plugin );
+    }
+
+    /**
+     * selects all the announces for a user
+     * @param user the user
+     * @return the list of announces
+     */
+    public static List<Announce> getAnnouncesForUser( LuteceUser user )
+    {
+        return _dao.selectAllForUser( user, _plugin );
+    }
+
+    /**
+     * selects all the announces for a user
+     * @param user the user name
+     * @return the list of announces
+     */
+    public static List<Announce> getAnnouncesForUser( String user )
+    {
+        return _dao.selectAllForUser( user, _plugin );
+    }
+
+    /**
+     * selects all the announces for a category
+     * @param category the category
+     * @return the list of announces
+     */
+    public static List<Integer> getPublishedAnnouncesForCategory( Category category )
+    {
+        return _dao.selectAllPublishedForCategory( category, _plugin );
+    }
+
+    /**
+     * publish or unpublish an announce
+     * @param announce the announce
+     */
+    public static void setPublished( Announce announce )
+    {
+        _dao.setPublished( announce, _plugin );
+
+        if ( announce.getPublished( ) && !announce.getSuspended( ) && !announce.getSuspendedByUser( ) )
+        {
+            AnnounceSearchService.getInstance( ).addIndexerAction( announce.getId( ), IndexerAction.TASK_CREATE, _plugin );
+        }
+        else
+        {
+            AnnounceSearchService.getInstance( ).addIndexerAction( announce.getId( ), IndexerAction.TASK_DELETE, _plugin );
+        }
+    }
+
+    /**
+     * suspend or UnSuspend an announce
+     * @param announce the announce
+     */
+    public static void setSuspended( Announce announce )
+    {
+        _dao.setSuspended( announce, _plugin );
+
+        if ( announce.getPublished( ) && !announce.getSuspended( ) && !announce.getSuspendedByUser( ) )
+        {
+            AnnounceSearchService.getInstance( ).addIndexerAction( announce.getId( ), IndexerAction.TASK_CREATE, _plugin );
+        }
+        else
+        {
+            AnnounceSearchService.getInstance( ).addIndexerAction( announce.getId( ), IndexerAction.TASK_DELETE, _plugin );
+        }
+    }
+
+    /**
+     * suspend or UnSuspend an announce
+     * @param announce the announce
+     */
+    public static void setSuspendedByUser( Announce announce )
+    {
+        _dao.setSuspendedByUser( announce, _plugin );
+
+        if ( announce.getPublished( ) && !announce.getSuspended( ) && !announce.getSuspendedByUser( ) )
+        {
+            AnnounceSearchService.getInstance( ).addIndexerAction( announce.getId( ), IndexerAction.TASK_CREATE, _plugin );
+        }
+        else
+        {
+            AnnounceSearchService.getInstance( ).addIndexerAction( announce.getId( ), IndexerAction.TASK_DELETE, _plugin );
+        }
+    }
+
+    // -----------------------------------------------
+    // Announce response management
+    // -----------------------------------------------
+
+    /**
+     * Associates a response to an Announce
+     * @param nIdAnnounce The id of the announce
+     * @param nIdResponse The id of the response
+     * @param bIsImage True if the response is an image, false otherwise
+     */
+    public static void insertAppointmentResponse( int nIdAnnounce, int nIdResponse, boolean bIsImage )
+    {
+        _dao.insertAnnounceResponse( nIdAnnounce, nIdResponse, bIsImage, _plugin );
+    }
+
+    /**
+     * Get the list of id of responses associated with an announce
+     * @param nIdAnnounce the id of the announce
+     * @return the list of responses, or an empty list if no response was found
+     */
+    public static List<Integer> findListIdResponse( int nIdAnnounce )
+    {
+        return _dao.findListIdResponse( nIdAnnounce, _plugin );
+    }
+
+    /**
+     * Get the list of id of image responses associated with an announce
+     * @param nIdAnnounce the id of the announce
+     * @return the list of responses, or an empty list if no response was found
+     */
+    public static List<Integer> findListIdImageResponse( int nIdAnnounce )
+    {
+        return _dao.findListIdImageResponse( nIdAnnounce, _plugin );
+    }
+
+    /**
+     * Get the list of responses associated with an announce
+     * @param nIdAnnounce the id of the announce
+     * @param bLoadFiles True to load files, false to ignore them. Note that
+     *            physical files are never loaded by this method.
+     * @return the list of responses, or an empty list if no response was found
+     */
+    public static List<Response> findListResponse( int nIdAnnounce, boolean bLoadFiles )
+    {
+        List<Integer> listIdResponse = findListIdResponse( nIdAnnounce );
+        List<Response> listResponse = new ArrayList<Response>( listIdResponse.size( ) );
+
+        for ( Integer nIdResponse : listIdResponse )
+        {
+            Response response = ResponseHome.findByPrimaryKey( nIdResponse );
+            if ( bLoadFiles && response.getFile( ) != null )
+            {
+                response.setFile( FileHome.findByPrimaryKey( response.getFile( ).getIdFile( ) ) );
+            }
+            listResponse.add( response );
+        }
+
+        return listResponse;
+    }
+
+    /**
+     * Remove the association between an announce and responses
+     * @param nIdAnnounce The id of the announce
+     */
+    public static void removeAnnounceResponse( int nIdAnnounce )
+    {
+        _dao.deleteAnnounceResponse( nIdAnnounce, _plugin );
+    }
+}

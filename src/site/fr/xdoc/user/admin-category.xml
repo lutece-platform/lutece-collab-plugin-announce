@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document>
+    <properties>
+        <title>
+            Gestion des catégories
+        </title>
+    </properties>
+    <body>
+        <section name="Gestion des catégories">
+			<p>
+				Avant de pouvoir créer une catégorie, vous devez vous assurer qu'au moins un domaine existe.
+				La page suivante permet de gérer les catégories.
+			</p>
+				<p>
+					<center>
+						<img src="images/manage_category.png" />
+					</center>
+				</p>
+				<ul>
+					<li>Création d'une catégorie</li>
+					<li>Modification d'une catégorie</li>
+					<li>Suppression d'une catégorie</li>
+					<li>Prévisualiser le formulaire de saisie d'annonce</li>
+				</ul>
+				<subsection name="Création d'une catégorie">
+				<p>
+					L'interface de saisie suivante récapitule les
+					informations nécessaires à la création d'une
+					catégorie.
+				</p>
+				<p>
+					<center>
+						<img src="images/create_category.png" />
+					</center>
+				</p>
+				<p>
+					Le champs modération permet de spécifier si les annonces soumises dans une catéogorie sont modérées à priori ou à posteriori.<br/>
+					Si vous laissez le champs à "Paramètres globaux", la gestion de la modération se fera au niveau du domaine parent de la catégorie.
+					Vous pouvez ainsi changer la manière de modérer les annonces de plusieurs catégories, en changeant simplement le paramètre de leur domaine.
+				</p>
+				
+			</subsection>
+          	<subsection name="Modification d'une catégorie">
+				<p>
+					Pour modifier un domaine il suffit de cliquer sur le libellé de la catégorie concernée.<br/>
+					L'interface de modification d'une catégorie permet de modifier les informations de la catégorie concernée.
+				</p>
+				<p>
+					<center>
+						<img src="images/modify_category.png" />
+					</center>
+				</p>
+				C'est dans cette section qu'est géré le formulaire de saisie d'une annonce.<br/>
+				Reportez-vous à la section "Gestion du formulaire de saisie d'une annonce" pour plus d'informations sur cette fonctionnalité.
+	       </subsection>
+	       <subsection name="Suppression d'une catégorie">
+	        <p>
+				Pour supprimer une catégorie il faut cliquer sur l’icône
+				représentant l’action de suppression associée à la catégorie à supprimer.
+           </p>
+           </subsection>
+		   <subsection name="Prévisualiser le formulaire de saisie d'annonce">
+	        <p>
+				Pour prévisualiser le formulaire de saisie d'une annonce pour une certaine catégorie, cliquer sur l'icone en forme de loupe.
+           </p>
+		   <p>
+				<center>
+					<img src="images/preview_form.png" />
+				</center>
+			</p>
+           </subsection>
+		</section>
+   </body>
+</document>

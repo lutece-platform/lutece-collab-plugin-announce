@@ -1,0 +1,96 @@
+<#include "/admin/plugins/announce/announce_tabs.html" />
+<div class="row-fluid">
+	<div class="span12">
+		<fieldset>
+			<legend>#i18n{announce.manage_announces.pageTitle}</legend>
+			<@tabs tab="announces" />
+			<form method="post" action="jsp/admin/plugins/announce/ManageAnnounces.jsp">
+				<@paginationAdmin paginator=paginator form=0 combo=1 />
+			</form>
+			<table class="table table-striped">
+				<tr>
+					<th>
+						#i18n{announce.manage_announces.columnTitleTitle}
+					</th>
+					<th>
+						#i18n{announce.manage_announces.columnTitleDescription}
+					</th>
+					<th>
+						#i18n{announce.manage_announces.columnTitleCategory}
+					</th>
+					<th>
+						#i18n{announce.manage_announces.columnTitlePublished}
+					</th>
+					<th>
+						#i18n{announce.manage_announces.columnTitleSuspend}
+					</th>
+					<th>
+						#i18n{announce.manage_announces.columnTitleActions}
+					</th>
+					<th></th>
+				</tr>
+				<#list list_announces as announce>
+					<tr>
+						<td>
+							${announce.title}
+						</td>
+							
+						<td>
+							${announce.description}
+						</td>
+						
+						<td>
+							${announce.category.label}
+						</td>
+						<td>
+							<#if announce.published>
+								<span class="label label-success"><i class="icon-ok-sign icon-white">&nbsp;</i>&nbsp;#i18n{announce.sector.published}</span>
+							<#else>
+								<span class="label label-important"><i class="icon-remove-circle icon-white">&nbsp;</i>&nbsp;#i18n{announce.my_announces.statusUnPublished}</span>
+							</#if>
+						</td>
+						<td>
+							<#if announce.suspended>
+								<span class="label label-important"><i class="icon-remove-circle icon-white">&nbsp;</i>&nbsp;#i18n{portal.util.labelDisabled}</span>
+							<#else>
+								<span class="label label-success"><i class="icon-ok-sign icon-white">&nbsp;</i>&nbsp;#i18n{portal.util.labelEnabled}</span>
+							</#if>
+						</td>
+						<td>
+							<a class="btn btn-primary btn-small" href="jsp/admin/plugins/announce/PreviewAnnounce.jsp?announce_id=${announce.id}">
+								<i class="icon-eye-open icon-white">&nbsp;</i>
+							</a>
+							<#if announce.published>
+								<a class="btn btn-primary btn-small" type="submit" href="jsp/admin/plugins/announce/DoUnPublishAnnounce.jsp?announce_id=${announce.id}">
+									<i class="icon-eye-close icon-white">&nbsp;</i>
+								</a>
+							<#else>
+								<a href="jsp/admin/plugins/announce/DoPublishAnnounce.jsp?announce_id=${announce.id}" class="btn btn-primary btn-small" title="#i18n{announce.announce.actions.publish}">
+									<i class="icon-globe icon-white">&nbsp;</i>
+								</a>
+							</#if>
+							<#if announce.suspended>
+								<a href="jsp/admin/plugins/announce/DoEnableAnnounce.jsp?announce_id=${announce.id}" class="btn btn-success btn-small" title="#i18n{announce.announce.actions.enable}" >
+									<i class="icon-ok icon-white">&nbsp;</i>
+								</a>
+							<#else>
+								<a href="jsp/admin/plugins/announce/DoSuspendAnnounce.jsp?announce_id=${announce.id}" class="btn btn-danger btn-small" title="#i18n{announce.announce.actions.suspend}">
+									<i class="icon-remove-circle icon-white">&nbsp;</i>
+								</a>
+							</#if>
+							<a class="btn btn-danger btn-small" href="jsp/admin/plugins/announce/RemoveAnnounce.jsp?announce_id=${announce.id}">
+								<i class="icon-trash icon-white">&nbsp;</i>
+							</a>
+							<#if announce.suspendedByUser>
+								<img title="#i18n{announce.manage_announces.suspendedByUser}" alt="#i18n{announce.manage_announces.suspendedByUser}" src="images/local/skin/plugins/announce/actions/enable_by_user.png"/>
+							</#if>
+						</td>
+					</tr>
+				</#list>
+			</table>
+			<form method="post" action="jsp/admin/plugins/announce/ManageAnnounces.jsp">
+				<@paginationAdmin paginator=paginator form=0 combo=0 />
+			</form>
+		</fieldset>
+	</div>
+</div>

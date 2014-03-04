@@ -1,0 +1,106 @@
+<div class="row-fluid">
+	<div class="span12">
+		<form class="form-horizontal" action="jsp/admin/plugins/announce/ManageCategoryFields.jsp" method="post" name="" id=""  >
+    		<fieldset>
+				<legend>#i18n{announce.modifyField.title} : '${field.parentEntry.title}'</legend>
+				<input type="hidden" name="action" value="doModifyFieldCC" />
+				<input name="id_field" value="${field.idField}" type="hidden" />
+				<div class="control-group">
+					<label class="control-label" for="title">#i18n{announce.createField.labelTitle} * : </label>
+						<div class="controls">
+							<input type="text" name="title" id="title" class="input-xlarge" value="${field.title}"  maxlength="255" />
+					</div>
+				</div>
+			    <div class="control-group">
+					<label class="control-label" for="value">#i18n{announce.createField.labelValue} * : </label>
+			    	<div class="controls">
+						<input type="text" name="value" id="value" size="80" class="input-xlarge" value="${field.value}"/>
+					</div>
+				</div>
+				<div class="control-group">
+					<label class="control-label" for="value">#i18n{announce.createField.labelComment} : </label>
+			    	<div class="controls">
+						<textarea name="comment" id="comment" >${field.comment!}</textarea>
+					</div>
+				</div>
+			    <div class="control-group">
+					<label class="control-label" for="default_value">#i18n{announce.createField.labelDefaultValue}</label>
+			    	<div class="controls">
+						<label class="checkbox" for="default_value">
+							<input name="default_value" value="1" type="checkbox" <#if field.defaultValue>checked="checked"</#if>>
+						</label>
+					</div>
+				</div>
+				<div class="control-group">
+					<label class="control-label" for="no_display_title">#i18n{announce.createField.labelNoDisplayTitle}</label>
+			    		<div class="controls">
+						<label class="checkbox" for="no_display_title">
+							<input name="no_display_title" value="1" type="checkbox" <#if field.noDisplayTitle>checked="checked"</#if>>
+						</label>
+					</div>
+				</div>
+			  	<div class="form-actions">
+					<button class="btn btn-primary btn-small" type="submit" name="save"><i class="icon-ok icon-white"></i>&nbsp;#i18n{announce.createEntry.buttonSave}</button>
+					<button class="btn btn-primary btn-small" type="submit" name="apply"><i class="icon-ok-circle icon-white"></i>&nbsp;#i18n{announce.modifyEntry.buttonApply}</button>
+					<button class="btn btn-primary btn-small" type="submit" name="cancel" onclick="javascript:window.history.back();"><i class="icon-remove-circle icon-white"></i>&nbsp;#i18n{announce.createEntry.buttonCancel}</button>
+				</div>
+			</fieldset>
+		</form>
+	
+		<div class="well">
+			<form class="form-search" method="post" action="jsp/admin/plugins/announce/ManageCategoryEntries.jsp">
+				<fieldset>
+					<legend>#i18n{announce.modifyField.manageConditionalQuestion.title}</legend>
+					<input name="view" value="getCreateEntry" type="hidden" />
+					<input name="id_field" value="${field.idField}" type="hidden" />
+					<input name="id_form" value="${field.parentEntry.idResource}" type="hidden" />
+					<label for="id_type">#i18n{announce.modify_category.create_entry.buttonLabelCreate} :</label>
+					<@combo name="id_type"  items=entry_type_list default_value=-1 />
+					<button class="btn btn-primary btn-small" title="#i18n{announce.modify_category.create_entry.buttonLabelCreate}" type="submit" >
+						<i class="icon-plus icon-white"></i>&nbsp;#i18n{announce.modify_category.create_entry.buttonLabelCreate}
+					</button>
+				</fieldset>
+			</form>
+		</div>
+		<a name="list" id="list"></a>
+        <table class="table table-striped">
+			<thead>
+				<tr> 
+					<th> #i18n{announce.modifyField.manageConditionalQuestion.rowTitle}</th>
+	            	<th> #i18n{announce.modifyField.manageConditionalQuestion.rowType}</th>
+	            	<th> #i18n{announce.modifyField.manageConditionalQuestion.rowConditionalQuestion}</th>
+					<th> #i18n{announce.modifyField.manageConditionalQuestion.rowActions}</th>
+	        	</tr>
+			</thead>
+	        <tbody>
+	        <#assign cpt=0>
+			<#list entry_list as entry>
+		        <#assign cpt=cpt+1>
+		        <tr>
+			        <td>${entry.title!}</td>
+			        <td>${entry.entryType.title}</td>
+					<td><#if entry.numberConditionalQuestion!=0>${entry.numberConditionalQuestion}</#if></td>
+			        <td>
+					<a class="btn btn-primary btn-small" href="jsp/admin/plugins/announce/ManageCategoryEntries.jsp?view=getModifyEntry&id_entry=${entry.idEntry}"  title="null" >
+							<i class="icon-edit icon-white"></i>
+						</a>
+			        <#if cpt!=1>
+						<a class="btn btn-small" href="jsp/admin/plugins/announce/ManageCategoryEntries.jsp?action=doMoveUpEntryConditional&id_entry=${entry.idEntry}&id_field=${field.idField}"  title="#i18n{announce.modifyForm.manageEnter.titleMoveUp}" >
+							<i class="icon-chevron-up"></i>
+						</a>
+					</#if>	
+			        <#if entry_has_next>
+						<a class="btn btn-small" href="jsp/admin/plugins/announce/ManageCategoryEntries.jsp?action=doMoveDownEntryConditional&id_entry=${entry.idEntry}&id_field=${field.idField}"  title="#i18n{announce.modifyForm.manageEnter.titleMoveDown}" >
+							<i class="icon-chevron-down"></i>
+						</a>
+					</#if>	
+						<a class="btn btn-danger btn-small" href="jsp/admin/plugins/announce/ManageCategoryEntries.jsp?view=confirmRemoveEntry&id_entry=${entry.idEntry}&id_field=${field.idField}"  title="#i18n{announce.modifyForm.manageEnter.titleDelete}" >
+							<i class="icon-trash icon-white"></i>
+						</a>
+					</td>
+			    </tr>
+			</#list>
+			</tbody>			
+        </table>
+	</div>
+</div>

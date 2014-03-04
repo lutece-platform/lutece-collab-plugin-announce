@@ -1,0 +1,42 @@
+<div class="row-fluid">
+	<div class="span12">
+		<form class="form-horizontal" method="post" action="jsp/admin/plugins/announce/DoCreateSector.jsp">
+			<fieldset>
+				<legend>#i18n{announce.create_sector.pageTitle}</legend>
+				<div class="control-group">
+					<label class="control-label">#i18n{announce.sector.label} * :</label>
+					<div class="controls">
+						<input type="text" name="sector_label"/>
+					</div>
+				</div>
+				<div class="control-group">
+					<label class="control-label">#i18n{announce.sector.description} * :</label>
+					<div class="controls">
+						<input type="text" name="sector_description"/>
+					</div>
+				</div>
+				<div class="control-group">
+					<label class="control-label" for="tags">#i18n{announce.sector.tags} * :</label>
+					<div class="controls">
+						<input name="tags" id="tags" type="text"/>
+						<span class="help-block">#i18n{announce.sector.tags.helper}</span>
+					</div>
+				</div>
+				<div class="control-group">
+					<label class="control-label" for="sector_announces_validation">#i18n{announce.sector.announcesValidation}</label>
+					<div class="controls">
+						<input name="sector_announces_validation" id="sector_announces_validation" type="checkbox"/>
+					</div>
+				</div>
+				<div class="form-actions">
+					<button class="btn btn-primary btn-small" name="validate" value="#i18n{announce.create_sector.buttonValidate}">
+						<i class="icon-ok icon-white">&nbsp;</i>&nbsp;#i18n{announce.create_sector.buttonValidate}
+					</button>
+					<button class="btn btn-small" type="button" onclick="javascript:history.go(-1);" name="cancel" value="cancel">
+						<i class="icon-remove-circle">&nbsp;</i>&nbsp;#i18n{portal.util.labelBack}
+					</button>
+				</div>
+			</fieldset>
+		</form>
+	</div>
+</div>

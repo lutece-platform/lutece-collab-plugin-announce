@@ -1,0 +1,102 @@
+<div class="row-fluid">
+	<div class="span12">
+		<legend>
+			#i18n{announce.preview_announce.pageTitle}
+			<div class="pull-right">
+				<#if announce.published>
+					<form method="post" action="jsp/admin/plugins/announce/DoUnPublishAnnounce.jsp">
+						<input type="hidden" name="announce_id" value="${announce.id}"/>
+						<button class="btn btn-primary btn-small" name="unpublish" value="unpublish" title="#i18n{announce.announce.actions.unpublish}">
+							<i class="icon-globe icon-white">&nbsp;</i>&nbsp;#i18n{announce.announce.actions.unpublish}
+						</button>
+					</form>
+				<#else>
+					<form method="post" action="jsp/admin/plugins/announce/DoPublishAnnounce.jsp">
+						<input type="hidden" name="announce_id" value="${announce.id}"/>
+						<button class="btn btn-primary btn-small" name="publish" value="publish" title="#i18n{announce.announce.actions.publish}">
+							<i class="icon-eye-close icon-white">&nbsp;</i>&nbsp;#i18n{announce.announce.actions.publish}
+						</button>
+					</form>
+				</#if>
+			</div>
+		</legend>
+		<div class="form-horizontal">
+			<div class="control-group">
+				<label class="control-label">#i18n{announce.preview_announce.title}</label>
+				<div class="controls">
+					${announce.title}
+				</div>
+			</div>
+			<#if announce.category.displayPrice>
+				<div class="control-group">
+					<label class="control-label">#i18n{announce.preview_announce.price}</label>
+					<div class="controls">
+						${announce.price}
+					</div>
+				</div>
+			</#if>
+			<div class="control-group">
+				<label class="control-label">#i18n{announce.preview_announce.contactInformation}</label>
+				<div class="controls">
+					${announce.contactInformation}
+				</div>
+			</div>
+			<div class="control-group">
+				<label class="control-label">#i18n{announce.preview_announce.description.title}</label>
+				<div class="controls">
+					${announce.description}
+				</div>
+			</div>
+			<#list list_responses as response>
+                  	<#if response.toStringValueResponse?has_content || response.file??>
+                  		<#if entrySave?exists && entrySave.idEntry!=response.entry.idEntry>
+                  				</div>
+                  			</div>
+                  			<#if isImage?? && isImage>
+                  				</ul>
+                  				<#assign isImage = false>
+                  			</#if>
+                  		</#if>
+                  		<#if !entrySave?exists || entrySave.idEntry!=response.entry.idEntry>
+                  			<#assign entrySave=response.entry>
+                  			<div class="control-group">
+                            <label class="control-label">${response.entry.title}</label>
+                            <div class="controls">
+                            <#if response.file?? && response.file.idFile &gt; 0>
+                            	<#assign isImage = true>
+                            	<ul id="slideshow">
+									<li>
+										<a class="pirobox_gall" title="#i18n{announce.view_announce.imagesCaption}" href="image?resource_type=GENERICATTRIBUTES_RESPONSE&id=${response.idResponse}">
+											<img height="80px" src="image?resource_type=GENERICATTRIBUTES_RESPONSE&id=${response.idResponse}" />
+										</a>
+									</li>
+                            <#else>
+                            	${response.toStringValueResponse}
+                            </#if>
+                  		<#else>
+                    	<#if isImage?? && isImage>
+                    		<li>
+								<a class="pirobox_gall" title="#i18n{announce.view_announce.imagesCaption}" href="image?resource_type=GENERICATTRIBUTES_RESPONSE&id=${response.idResponse}">
+									<img height="80px" src="image?resource_type=GENERICATTRIBUTES_RESPONSE&id=${response.idResponse}" />
+								</a>
+							</li>
+                    	<#else>
+                    		<br />${response.toStringValueResponse}
+                    	</#if>
+                 	</#if>
+				</#if>
+			</#list>
+				</div>
+			</div>
+			<div class="form-actions">
+				<button class="btn btn-small btn-primary" type="button" onclick="javascript:history.go(-1);" title="#i18n{portal.util.labelBack}" >
+					<i class="icon-remove-circle icon-white">&nbsp;</i>&nbsp;#i18n{portal.util.labelBack}
+				</button>
+			</div>
+		</div>
+	</div>
+</div>
+<link rel="stylesheet" type="text/css" href="css/plugins/announce/pirobox/white/style.css">
+<link rel="stylesheet" type="text/css" href="css/plugins/announce/announce.css">
+<script src="js/plugins/announce/pirobox/piroBox.1_2_min.js" type="text/javascript" ></script>
+<script src="js/plugins/announce/announce.js" type="text/javascript" ></script>

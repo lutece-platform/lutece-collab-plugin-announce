@@ -1,0 +1,30 @@
+<div class="portlet-background append-bottom">
+    <div class="portlet-background-header -lutece-border-radius-top">#i18n{announce.search_form.title}</div>
+    <div class="portlet-background-content -lutece-border-radius-bottom">
+        <form class="form_search" method="post" action="jsp/site/Portal.jsp">
+            #i18n{announce.search_form.keyWordsLabel} <input type="text" size="35" value="${filter_searched_keywords!}" name="keywords"/>
+            <select name="category_id">
+                <option value="0">#i18n{announce.search_form.defaultCategoryLabel}</option>
+                <#list list_sectors as sector>
+                <optgroup label="${sector.label}">
+                    <#list sector.listCategories as category>
+                        <#if filter_searched_category?? && filter_searched_category == category.id>
+                            <option selected="selected" value="${category.id}">${category.label}</option>
+                        <#else>
+                            <option value="${category.id}">${category.label}</option>
+                        </#if>
+                    </#list>
+                </optgroup>
+                </#list>
+            </select>
+            <br/>
+            #i18n{announce.search_form.dateMinLabel}  <input size="12" type="text" id="date_min" name="date_min" value="${filter_date_min!}"> 
+            #i18n{announce.search_form.dateMaxLabel}  <input size="12" type="text" id="date_max" name="date_max" value="${filter_date_max!}">
+            <input type="submit" value="#i18n{announce.search_form.search}"/>
+            <input type="hidden" name="action" value="search" />
+            <input type="hidden" name="page" value="announce" />
+        </form>
+    </div>
+</div>
+<@getDatePicker idField="date_min" language=locale />
+<@getDatePicker idField="date_max" language=locale />

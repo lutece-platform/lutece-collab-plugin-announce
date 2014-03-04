@@ -1,0 +1,71 @@
+<#include "/admin/plugins/announce/announce_tabs.html" />
+<div class="row-fluid">
+	<div class="span12">
+		<fieldset>
+    		<legend>
+    			#i18n{announce.manage_sectors.pageTitle}
+    			<a class="pull-right btn btn-primary btn-small" href="jsp/admin/plugins/announce/CreateSector.jsp">
+    				<i class="icon-plus icon-white">&nbsp;</i>&nbsp;#i18n{announce.manage_sectors.buttonCreateSector}
+    			</a>
+    		</legend>
+    		<@tabs tab="sectors" />
+		    <form method="post"  action="jsp/admin/plugins/announce/ManageSectors.jsp">
+		        <@paginationAdmin paginator=paginator form=0 combo=1 />
+		    </form>
+		    
+		    <table class="table table-striped">
+		        <tr>
+		            <th>
+		                #i18n{announce.sector.label}
+		            </th>
+		            <th>
+		                #i18n{announce.sector.description}
+		            </th>
+		            <th>
+		                #i18n{announce.sector.numberCategories}
+		            </th>
+		            <th>
+		                #i18n{announce.order}
+		            </th>
+		            <th>
+		                #i18n{announce.actions}
+		            </th>
+		        </tr>
+		        <#list list_sectors as sector>
+		            <tr>
+		                <td>
+		                    ${sector.label}
+		                </td>
+		                <td>
+		                    ${sector.description}
+		                </td>
+		                 <td>
+		                    ${sector.numberCategories}
+		                </td>
+		                <td>
+		                    <form method="post" class="form-inline" action="jsp/admin/plugins/announce/DoModifySectorOrder.jsp">	
+		                        <input type="hidden" name="sector_id" value="${sector.id}" />
+		                        <@comboWithParams name="sector_order" default_value="${sector.order}" items=sector_order_list additionalParameters="class='input-mini'" />
+		                        <button type="submit" class="btn btn-primary btn-small" title="#i18n{announce.manage_sectors.buttonChangeOrder}" >
+		                        	<i class="icon-ok icon-white">&nbsp;</i>
+		                        </button>
+		                    </form>
+		                </td>
+		                <td>
+		                	<a class="btn btn-primary btn-small" href="jsp/admin/plugins/announce/ModifySector.jsp?sector_id=${sector.id}">
+			    				<i class="icon-edit icon-white">&nbsp;</i>
+			    			</a>
+		                    <a class="btn btn-small btn-danger" href="jsp/admin/plugins/announce/RemoveSector.jsp?sector_id=${sector.id}">
+								<i class="icon-trash icon-white">&nbsp;</i>
+							</a>
+		                </td>
+		            </tr>
+		        </#list>
+		    </table>
+		    
+		    <form method="post"  action="jsp/admin/plugins/announce/ManageSectors.jsp">
+		        <@paginationAdmin paginator=paginator form=0 combo=0 />
+		    </form>
+		</fieldset>
+	</div>
+</div>

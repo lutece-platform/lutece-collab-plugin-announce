@@ -1,0 +1,46 @@
+<div class="row-fluid">
+	<div class="span12">
+		<form class="form-horizontal" method="post" action="jsp/admin/plugins/announce/DoModifySector.jsp">
+			<fieldset>
+				<legend>#i18n{announce.modify_sector.pageTitle}</legend>
+				<div class="control-group">
+					<label class="control-label">#i18n{announce.sector.label} * :</label>
+					<div class="controls">
+						<input value="${sector.label}" type="text" name="sector_label"/>
+					</div>
+				</div>
+				
+				<div class="control-group">
+					<label class="control-label">#i18n{announce.sector.description} * :</label>
+					<div class="controls">
+						<input value="${sector.description}" type="text" name="sector_description"/>
+					</div>
+				</div>
+				
+				<div class="control-group">
+					<label class="control-label" for="tags">#i18n{announce.sector.tags} * :</label>
+					<div class="controls">
+						<input name="tags" id="tags" value="${sector.tags}" type="text"/>
+						<span class="help-block">#i18n{announce.sector.tags.helper}</span>
+					</div>
+				</div>
+				
+				<div class="control-group">
+					<label class="control-label" for="sector_announces_validation">#i18n{announce.sector.announcesValidation} :</label>
+					<div class="controls">
+						<input name="sector_announces_validation" id="sector_announces_validation" type="checkbox" <#if sector.announcesValidation >checked="checked"</#if>/>
+					</div>
+				</div>
+				<div class="form-actions">
+					<input  value="${sector.id}" type="hidden" name="sector_id" />
+					<button class="btn btn-small btn-primary" name="validate" value="#i18n{announce.modify_sector.buttonModify}">
+						<i class="icon-ok icon-white">&nbsp;</i>&nbsp;#i18n{announce.modify_sector.buttonModify}
+					</button>
+					<button class="btn btn-small" type="button" onclick="javascript:history.go(-1);" name="cancel" value="cancel">
+						<i class="icon-remove-circle">&nbsp;</i>&nbsp;#i18n{portal.util.labelBack}
+					</button>
+				</div>
+			</fieldset>
+		</form>
+	</div>
+</div>

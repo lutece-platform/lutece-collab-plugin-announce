@@ -1,0 +1,52 @@
+<div class="row-fluid">
+	<div class="span12">
+		<form class="form-horizontal" id="form-validate" action="jsp/admin/plugins/announce/ManageAppointments.jsp" method="post" enctype="multipart/form-data">
+			<input name="id_category" value="${category.id}" type="hidden" />
+			<input name="session" value="session" type="hidden" />
+			<fieldset>
+				<legend>
+					#i18n{announce.view_form_example.pageTitle} - ${category.label}
+				</legend>
+				<div class="control-group">
+					<label class="control-label">#i18n{announce.create_announce_step_form.labelTitle} *</label>
+					<div class="controls">
+						<input type="text" name="title_announce"/>
+					</div>
+				</div>
+	            <div class="control-group">
+	            	<label class="control-label">#i18n{announce.create_announce_step_form.labelDescription}</label>
+	            	<div class="controls">
+	            		<textarea name="description_announce"></textarea>
+	            	</div>
+	            </div>	            
+	            ${str_entry}
+	  			<div class="control-group">
+	  				<label class="control-label">#i18n{announce.create_announce_step_form.contactInformation}</label>
+	  				<div class="controls">
+	            		<input value="${contact_information!}" type="text" name="contact_information"/>
+	            	</div>
+			  	</div>
+	            <#if category.displayPrice>
+	                <div class="control-group">
+	                	<label class="control-label">#i18n{announce.create_announce_step_form.labelPrice}</label>
+	                	<div class="controls">
+	                		<input type="text" name="price_announce"/>
+	                	</div>
+	                </div>
+	            </#if>
+	            <div class="control-group">
+	            	<label class="control-label">#i18n{announce.create_announce_step_form.tags}</label>
+	            	<div class="controls">
+	            		<input value="${sector.tags!}" type="text" name="tags"/>
+	            		<span class="help-block">#i18n{announce.create_announce_step_form.tags.helper}</span>
+	            	</div>
+	            </div>
+				<div class="form-actions">
+					<a class="btn btn-small" href="jsp/admin/plugins/announce/ManageCategories.jsp" title="#i18n{portal.util.labelBack}">
+						<i class="icon-remove-circle">&nbsp;</i>&nbsp;#i18n{portal.util.labelBack}
+					</a>
+				</div>
+			</fieldset>
+		</form>
+	</div>
+</div>

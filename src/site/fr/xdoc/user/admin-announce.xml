@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document>
+    <properties>
+        <title>
+            Gestion des petites annonces
+        </title>
+    </properties>
+    <body>
+		<section name="Gestion des petites annonces">
+			<p>
+				L'interface de gestion des petites annonces récapitule l'ensemble des actions possibles pour les petites annonces.
+			</p>
+				<p>
+					<center>
+						<img src="images/manage_announce.png" />
+					</center>
+				</p>
+				<subsection name="Actions possibles">
+				<p>
+					<ul>
+						<li>Publier / Débublier</li>
+						<li>Suspendre / Rétablir</li>
+						<li>Prévisualiser une annonce</li>
+					</ul>
+				Remarque: Vous ne pouvez pas modifier une annonce. La modification est reservée à l'utilisateur l'ayant créée.
+				</p>
+				<p>
+					<center>
+						<img src="images/create_field.png" />
+					</center>
+				</p>
+			</subsection>
+          	<subsection name="Publier / Débublier">
+	           <p>
+					Pour publier / dépublier une annonce, cliquez sur le bouton prévu à cet effet associé à l'annonce concernée.
+	           </p>
+	       </subsection> 
+	       <subsection name="Suspendre / Rétablir">
+	           <p>
+					
+					Afin d'éviter les abus, vous pouvez suspendre une annonce. Elle ne sera alors plus visible au public jusqu'au moment où vous la rétablirez.<br/>
+					Cette fonctionnalité a été mise en place pour ne pas qu'une annonce suspendue ne se mélange avec les annonces en attente de publication.
+					Pour suspendre / rétablir une annonce, cliquez sur le bouton prévu à cet effet associé à l'annonce concernée.
+	           </p>
+	       </subsection>
+		   <subsection name="Prévisualiser une annonce">
+	           <p>
+					Pour prévisualiser une annonce, cliquez sur l'icone en forme de loupe associée à l'annonce concernée.
+	           </p>
+	       </subsection>
+			
+		</section>
+		
+		
+   </body>
+</document>       
+             

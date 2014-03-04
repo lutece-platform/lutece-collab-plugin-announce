@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document>
+    <properties>
+        <title>
+            Menu principal du plugin announce
+        </title>
+    </properties>
+    <body>
+        <section name="Plugin Announce">
+             <p>
+            	 Le menu principal récapitule les fonctionnalités nécessaires à la gestion des petites annonces.
+            </p>
+
+             <ul>
+                 <li>Gestion des domaines</li>
+                 <li>Gestion des catégories</li>
+                 <li>Gestion des petites annonces</li>
+             </ul>
+           </section>
+   </body>
+</document>

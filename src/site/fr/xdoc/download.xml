@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document>
+	<properties>
+		<title>Téléchargement</title>
+	</properties>
+	<body>
+		<section name="Téléchargement">
+			<p>
+				Vous pouvez télécharger les sources du plugin Announce à partir du référentiel Subversion (Cf. page "Info Projet/Dépôt des sources").	
+			</p>
+		</section>
+	</body>
+</document>

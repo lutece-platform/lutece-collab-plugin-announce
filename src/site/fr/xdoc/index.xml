@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document>
+	<properties>
+		<title>Plugin announce</title>
+	</properties>
+	<body>
+		<section name="Plugin announce">
+			<subsection name="Introduction">
+				<p>	
+					Le plugin Announce permet au webmestre de mettre en place et de maintenir un système 
+					de gestion de petites annonces. Le module gère à la fois la partie front-office, et 
+					la partie back-office.<br/>
+					En front office, l'utilisateur authentifié (via myLutece) peut soumettre des annonces 
+					et les gérer (modifier, supprimer).<br/>
+					En back-office, le webmestre peut valider les annonces soumises, les supprimer, et les organiser 
+					en domaines et catégories. 
+					Le webmestre peut gérer le format de saisie des annonces de chaque catégories. Ceci permet une 
+					ergonomie optimale pour l'utilisateur.
+				</p> 
+			</subsection>
+		</section>
+	</body>
+</document>

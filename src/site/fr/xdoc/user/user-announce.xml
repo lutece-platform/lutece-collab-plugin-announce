@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document>
+    <properties>
+        <title>
+            Gestion des petites annonces
+        </title>
+    </properties>
+    <body>
+		<section name="Interface de gestion des annonces">
+			<p>
+				L'interface de gestion des annonces se compose d'un menu latéral comportant:
+				
+				<ul>
+					<li>Accueil: Accéder à la page d'accueil du plug-in</li>
+					<li>Passer une annonce: Permet d'accéder à l'interface de création d'une annonce</li>
+					<li>Mes annonces: Permet d'accéder à l'interface de gestion des annonces de l'utilisateur</li>
+				</ul>
+				<p>
+					Remarque: Vous devrez créer une compte et vous authentifier pour accéder aux sections "Passer une annonce" et "Mes annonces".<br/>
+					Si vous ne parvenez pas à créer votre compte, adressez-vous à l'administrateur du site.
+				</p>
+				La partie centrale regroupe les annonces à afficher. Par défaut, les 10 dernières annonces, toutes catégories confondues sont listées.
+				<center>
+					<img src="images/user_interface.png" />
+				</center>
+			</p>
+		</section>
+		
+		<section name="Création d'une annonce">
+			<p>
+				Pour passer une annonce, cliquez sur "Passer une annonce" dans le menu de gauche.<br/>
+				Vous accédez au formulaire de création de l'annonce. Remplissez les champs qui vous sont demandés.
+			</p>
+
+			<center>
+				<img src="images/user_create_announce.png" />
+			</center>
+		</section>
+	   
+		<section name="Gestion des annonces créées">
+			<p>
+				Cliquez sur "Mes annonces" pour accéder à vos annonces.<br/>
+				Les annonces que vous avez créées sont listées. L'état de l'annonce (En attente de publication, Publiée, et Suspendue) est représenté 
+				par l'icone sur la même ligne que l'annonce.<br/>
+				Vous avez également accès aux actions possibles sur chauqe annonce en cliquant sur les icones prévues à cet effet:
+				<ul>
+					<li>Modifier l'annonce</li>
+					<li>Supprimer l'annonce</li>
+				</ul>
+			</p>
+
+			<center>
+				<img src="images/user_manage_announce.png" />
+			</center>
+			
+			<subsection name="Modification d'une annonce">
+				<p>
+					L'interface de modification de l'annonce vous présente le formulaire comportant les différentes informations de l'annonce.
+					Modifiez les informations à modifier, et cliquer sur le bouton "Valider" pour terminer.
+				</p>
+				<center>
+					<img src="images/user_modify_announce.png" />
+				</center>
+				<p>
+					Remarque: Pour modifier un attribut de type fichier ou image, n'oubliez pas de cocher la case "Mettre à jour" située à côté du champs.
+				</p>
+			</subsection>
+		</section>
+		
+		<section name="Rechercher une annonce">
+			<p>
+				Pour rechercher une annonce, remplissez le formulaire de recherche dans la partie supérieure de la page.
+				Les critères de recherche possibles sont:
+				<ul>
+					<li>Mots clés: Les mots clés que vous recherchez</li>
+					<li>Catégorie: La catégorie dans laquelle vous désirez rechercher l'annonce</li>
+					<li>Date minimuim: La date après laquelle l'annonce doit avoir été publiée</li>
+					<li>Date maximum: La date avant laquelle l'annonce doit avoir été publiée</li>
+				</ul>
+				
+				Remarques:
+				<ul>
+					<li>Vous pouvez combiner tous ces critères pour affiner votre recherche au maximum.</li>
+					<li>Seules les annonces indéxées sont affichées. L'indexation a lieu toutes les minutes. Si votre annonce est publiée, vous devrez parfois attendre une minute avant qu'elle ne soit visible dans les résultats.</li>
+				</ul>
+			</p>
+		</section>
+   </body>
+</document>

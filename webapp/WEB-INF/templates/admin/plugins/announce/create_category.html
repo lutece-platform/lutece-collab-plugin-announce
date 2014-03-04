@@ -1,0 +1,22 @@
+<div class="row-fluid">
+	<div class="span12">
+		<form class="form-horizontal" method="post" action="jsp/admin/plugins/announce/DoCreateCategory.jsp">
+			<fieldset>
+		   		<legend>#i18n{announce.create_category.pageTitle}</legend>
+		   	    <@fieldInputText i18nLabelKey='announce.category.label' inputName='category_label' mandatory=true value='' maxlength=255 i18nHelpBlockKey='announce.category.label' />	
+		        <@fieldInputCombo items=list_sectors i18nLabelKey='announce.category.sector' inputName='category_sector_id' mandatory=true value="0" />	
+		        <@fieldInputCombo items=list_announces_validation i18nLabelKey='announce.category.announcesValidation' inputName='category_announces_validation' mandatory=true value="0" i18nHelpBlockKey='announce.globalParameterHelp' />	
+		        <@fieldInputCombo items=mailing_list_list i18nLabelKey='announce.category.mailingList' inputName='mailing_list_id' value="-1" i18nHelpBlockKey='announce.category.mailingList.helper' />	
+		        <@fieldInputCheckBox i18nLabelKey='announce.category.displayPrice' inputName='display_price' value="true" checked=false i18nHelpBlockKey='announce.category.displayPrice.helper' />	
+		        <div class="form-actions">
+		        	<button class="btn btn-small btn-primary" type="submit" name="validate" value="validate" title="#i18n{announce.create_category.buttonValidate}">
+		        		<i class="icon-plus icon-white">&nbsp;</i>&nbsp;#i18n{announce.create_category.buttonValidate}
+		        	</button>
+		        	<button class="btn btn-small" type="button" name="cancel" onclick="javascript:history.go(-1);" title="#i18n{portal.util.labelCancel}">
+		        		<i class="icon-remove-circle">&nbsp;</i>&nbsp;#i18n{portal.util.labelCancel}
+		        	</button>
+		        </div>
+	        </fieldset>
+	    </form>
+    </div>
+</div>

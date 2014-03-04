@@ -1,0 +1,56 @@
+<#include "/admin/plugins/announce/announce_tabs.html" />
+<div class="row-fluid">
+	<div class="span12">
+		<fieldset>
+    		<legend>
+    			#i18n{announce.manage_categories.pageTitle}
+    			<a class="pull-right btn btn-primary btn-small" href="jsp/admin/plugins/announce/CreateCategory.jsp">
+    				<i class="icon-plus icon-white">&nbsp;</i>&nbsp;#i18n{announce.manage_categories.buttonCreateCategory}
+    			</a>
+    		</legend>
+    		<@tabs tab="categories" />
+		    <form method="post"  action="jsp/admin/plugins/announce/ManageCategories.jsp">
+		        <@paginationAdmin paginator=paginator form=0 combo=1 />
+		    </form>
+		    
+		    <table class="table table-striped">
+		        <tr>
+		            <th>
+		                #i18n{announce.category.label}
+		            </th>
+		            <th>
+		                #i18n{announce.category.numberAnnounces}
+		            </th>
+		            <th>
+		                #i18n{announce.actions}
+		            </th>
+		        </tr>
+		        <#list list_categories as category>
+		            <tr>
+		                <td>
+		                    ${category.labelSector} > ${category.label}
+		                </td>
+		                <td>
+		                    ${category.numberAnnounces}
+		                </td>
+		                <td>
+		                	<a class="btn btn-primary btn-small" href="jsp/admin/plugins/announce/ModifyCategory.jsp?category_id=${category.id}" title="#i18n{portal.util.labelModify}">
+		                		<i class="icon-edit icon-white">&nbsp;</i>
+		                	</a>
+		                	<a class="btn btn-primary btn-small" title="#i18n{announce.manage_categories.formPreview}" href="jsp/admin/plugins/announce/ViewFormExample.jsp?category_id=${category.id}">
+		                    	<i class="icon-eye-open icon-white">&nbsp;</i>
+		                    </a>
+		                    <a class="btn btn-danger btn-small" title="#i18n{announce.manage_categories.removeCategoryTitle}" href="jsp/admin/plugins/announce/RemoveCategory.jsp?category_id=${category.id}">
+		                    	<i class="icon-trash icon-white">&nbsp;</i>
+		                    </a>
+		                </td>
+		            </tr>
+		        </#list>
+		    </table>
+		    
+		    <form method="post"  action="jsp/admin/plugins/announce/ManageCategories.jsp">
+		        <@paginationAdmin paginator=paginator form=0 combo=0 />
+		    </form>
+    	</fieldset>
+	</div>
+</div>

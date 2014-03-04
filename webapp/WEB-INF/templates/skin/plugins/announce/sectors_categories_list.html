@@ -1,0 +1,17 @@
+<div class="boxed2">
+        <h2>Catégories</h2>
+	<ul class="sectors">
+	<#list list_sectors as sector>
+            <li class="sector">
+                <a href="#">${sector.label}</a>
+                <ul>
+                    <#list sector.listCategories as category>
+                    <li>
+                        <a href="#">${category.label}</a>
+                    </li>
+                    </#list>
+                </ul>
+            </li>
+	</#list>
+	</ul>
+</div>

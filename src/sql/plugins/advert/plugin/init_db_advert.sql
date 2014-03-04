@@ -1,0 +1,18 @@
+-- Init  announce_field
+--
+--INSERT INTO announce_field(id_field,label_field,description_field,announces_validation,tags,field_order) VALUES
+--(1,'Auto-Moto','Vos annonces automobiles',0,'voiture moto',1);
+--INSERT INTO announce_field(id_field,label_field,description_field,announces_validation,tags,field_order) VALUES
+--(2,'Immobilier','Vos annonces immobilières',1,'appartement maison',2);
+
+--
+-- Init  announce_category
+--
+--INSERT INTO announce_category(id_category,id_field,label_category,announces_validation) VALUES
+--(1,1,'Voitures',0);
+--INSERT INTO announce_category(id_category,id_field,label_category,announces_validation) VALUES
+--(2,1,'Motos',0);
+--INSERT INTO announce_category(id_category,id_field,label_category,announces_validation) VALUES
+--(3,2,'Locations',0);
+--INSERT INTO announce_category(id_category,id_field,label_category,announces_validation) VALUES
+--(4,2,'Ventes',0);

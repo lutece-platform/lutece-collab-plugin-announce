@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document>
+    <properties>
+        <title>
+            Gestion du formulaire de saisie d'une annonce
+        </title>
+    </properties>
+    <body>
+		<section name="Gestion du formulaire de saisie d'une annonce">
+			<p>
+				Les informations des annonces variant en fonction de leur type, vous pouvez 
+				modifier le formulaire de saisie de chaque catégorie d'annonces.<br/>
+				Pour accéder à l'interface de moficiation du formulaire d'une catégorie, cliquez sur le libellé de la catégorie concernée comme pour la modifier.
+				L'interface se situe au bas de la page de modification.
+			</p>
+				<p>
+					<center>
+						<img src="images/manage_form.png" />
+					</center>
+				</p>
+				<p>
+				Un formulaire se compose d'attributs. Chaque type d'attribut est prévu pour des types de données différents. 
+				Vous pouvez gérer les types de données suivants
+					<ul>
+						<li>Texte: C'est l'attribut de base. L'utilisateur verra une zone de texte où il pourra saisir un texte court.</li>
+						<li>Texte long: Zone de texte long. Prévue pour les textes de plusieurs lignes.</li>
+						<li>Liste de séléction: Liste déroulante. A utiliser lorsque vous désirez restreindre le choix de l'utilisateur à un certain nombre de possibilités.</li>
+						<li>Boutons radio: Identique à l'attribut "Liste de séléction" mais se présente sous forme de boutons à séléctionner.</li>
+						<li>Case à cocher: L'utilisateur verra une case à cocher. A utiliser pour les questions auxquelles il peut répondre par "oui" ou par "non".</li>
+						<li>Fichier: Permet à l'utilisateur d'attacher une fichier à son annonce. Le fichier sera ensuite téléchargeable.</li>
+						<li>Image (pour diaporama): Permet à l'utilisateur de mettre des images dans son annonce.</li>
+					</ul>
+					Remarque: Pour créer un diaporama, ajoutez autant de fois l'attribut "image" que vous souhaitez d'image dans le diaporama final.
+				</p>
+				<subsection name="Création d'un attribut">
+				<p>
+					Lors de la création d'un attribut, Le titre que vous choisirez apparaitra en tant que libellé en face de l'attribut dans le formulaire de saisie de l'annonce.
+					Chaque attribut que vous créez peut être obligatoire ou non. Pour cela, il suffit de cocher la case "Obligatoire" lors de la création ou modification.
+				</p>
+				<p>
+					<center>
+						<img src="images/create_field.png" />
+					</center>
+				</p>
+				
+			</subsection>
+          	<subsection name="Modification d'un attribut">
+	           <p>
+	             Pour modifier un attribut il suffit de cliquer sur le libellé de l'attribut concerné.
+	           </p>
+	       </subsection> 
+	       <subsection name="Suppression d'un attribut">
+	        <p>
+				Pour supprimer un domaine il faut cliquer sur l’icône
+				représentant l’action de suppression associée à
+				l'attribut à supprimer.<br/>
+           </p>
+		   Remarque importante: Si vous supprimez un attribut pour lequel des utilisateurs ont déjà saisi des valeurs, ces valeurs seront définitivement supprimées.
+           </subsection>
+		</section>
+   </body>
+</document>       
+             

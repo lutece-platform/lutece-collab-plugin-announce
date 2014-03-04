@@ -1,0 +1,100 @@
+<div class="row-fluid">
+	<div class="span4">
+		<#include "navigation_menu.html">
+	</div>
+	<div id="content" class="span8">
+	    <#include "search_form.html">
+	    <#if allow_access>
+	        <div class="portlet-background append-bottom">
+	            <div class="portlet-background-header -lutece-border-radius-top">${announce.title}</div>
+	            <div class="portlet-background-content -lutece-border-radius-bottom">
+	                <#if user_is_author>
+	                    <!-- user controls on his announce -->
+	                    <div class="possible-actions">
+	                        #i18n{announce.view_announce.actions.title}: 
+	                        <a href="jsp/site/Portal.jsp?page=announce&action=modify_announce&announce_id=${announce.id}">
+	                            <img src="images/local/skin/plugins/announce/actions/modify.png" alt="#i18n{announce.my_announces.actionTitleModify}" title="#i18n{announce.my_announces.actionTitleModify}"/>
+	                        </a>
+	                        <a href="jsp/site/Portal.jsp?page=announce&action=delete_announce&announce_id=${announce.id}">
+	                            <img src="images/local/skin/plugins/announce/actions/delete.png" alt="#i18n{announce.my_announces.actionTitleDelete}" title="#i18n{announce.my_announces.actionTitleDelete}"/>
+	                        </a>
+	                        
+	                        <#if !announce.suspendedByUser>
+	                            <a href="jsp/site/Portal.jsp?page=announce&action=suspend_by_user&announce_id=${announce.id}">
+	                                <img src="images/local/skin/plugins/announce/actions/suspend_by_user.png" alt="#i18n{announce.my_announces.actionTitleSuspend}" title="#i18n{announce.my_announces.actionTitleSuspend}"/>
+	                            </a>
+	                        <#else>
+	                            <a href="jsp/site/Portal.jsp?page=announce&action=enable_by_user&announce_id=${announce.id}">
+	                                <img src="images/local/skin/plugins/announce/actions/enable_by_user.png" alt="#i18n{announce.my_announces.actionTitleEnable}" title="#i18n{announce.my_announces.actionTitleEnable}"/>
+	                            </a>
+	                        </#if>
+	                    </div>
+	                </#if>
+	                
+	                <#if user?exists && user.name == announce.userName>
+	                    <!-- Eventual messages -->
+	                    <#if !announce.published && !announce.suspended>
+	                        <div class="portlet-background-content -lutece-border-radius-bottom">
+	                            <div class="notice">#i18n{announce.view_announce.message.notPublishedYet}</div>
+	                        </div>
+	                    <#else>
+	                        <#if announce.suspendedByUser>
+	                            <div class="portlet-background-content -lutece-border-radius-bottom">
+	                                <div class="notice">#i18n{announce.view_announce.message.suspendedByUser}</div>
+	                            </div>
+	                        <#elseif announce.suspended>
+	                            <div class="portlet-background-content -lutece-border-radius-bottom">
+	                                <div class="error">#i18n{announce.view_announce.message.suspended}</div>
+	                            </div>
+	                        </#if>
+	                    </#if>
+	                </#if>
+<!-- 	                <#if list_entry_values_slideshow?? && list_entry_values_slideshow?has_content> -->
+<!-- 	                    <#if list_entry_values_slideshow?size &gt; 1 > -->
+<!-- 	                        <#assign class = "pirobox_gall"> -->
+<!-- 	                    <#else> -->
+<!-- 	                        <#assign class = "pirobox"> -->
+<!-- 	                    </#if> -->
+<!-- 	                    <ul id="slideshow"> -->
+<!-- 	                        <#list list_entry_values_slideshow as entry_value> -->
+<!-- 	                            <li><a class="${class}" title="#i18n{announce.view_announce.imagesCaption}" href="image?resource_type=announce_entry_img_lowdef&id=${entry_value.id}">${entry_value.displayValue}</a></li> -->
+<!-- 	                        </#list> -->
+<!-- 	                    </ul> -->
+<!-- 	                </#if> -->
+	                <table class="entry-value-table">
+	                    <#if announce.category.displayPrice>
+	                        <tr><th>#i18n{announce.view_announce.price}</th><td>${announce.price}</td></tr>
+	                    </#if>
+	                    <tr><th>#i18n{announce.view_announce.contactInformation}</th><td>${announce.contactInformation}</td></tr>
+	                    <tr><th>#i18n{announce.view_announce.description.title}</th><td>${announce.description}</td></tr>
+	                    <#list list_responses as response>
+	                    	<#if response.toStringValueResponse?has_content>
+	                    		<#if entrySave?exists && entrySave.idEntry!=response.entry.idEntry>
+	                    				</td>
+	                    			</tr>
+	                    		</#if>
+	                    		<#if !entrySave?exists || entrySave.idEntry!=response.entry.idEntry>
+	                    			<#assign entrySave=response.entry>
+	                    			<tr>
+			                            <th>${response.entry.title}</th>
+			                            <td>${response.toStringValueResponse}
+	                    		<#else>
+			                    	<br />${response.toStringValueResponse}
+	                    		</#if>
+							</#if>
+	                    </#list>
+	                    	</td>
+	                    </tr>
+	                </table>
+	            </div>
+	        </div>
+	    <#else>
+	        <div class="portlet-background append-bottom">
+	            <div class="portlet-background-header -lutece-border-radius-top">#i18n{announce.view_announce.unvailableTitle}</div>
+	            <div class="portlet-background-content -lutece-border-radius-bottom">
+	                <div class="notice">#i18n{announce.view_announce.message.unvailable}</div>
+	            </div>
+	        </div>
+	    </#if>
+	</div>
+</div>
