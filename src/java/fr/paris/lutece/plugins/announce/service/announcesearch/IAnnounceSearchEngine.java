@@ -54,7 +54,7 @@ public interface IAnnounceSearchEngine
      * @param nIdCategory id category for search query
      * @param dateMin minimum date
      * @param dateMax maximum date
-     * @param request the httprequest
+     * @param request the http request
      * @param plugin the plugin
      */
     List<SearchResult> getSearchResults( String strKeywords, int nIdCategory, Date dateMin, Date dateMax,

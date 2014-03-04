@@ -535,11 +535,6 @@ public class AnnounceApp implements XPageApplication
 
         switch ( category.getAnnouncesValidation( ) )
         {
-        case PARAMETER_ANNOUNCES_VALIDATION_GLOBAL_PARAMETERS:
-            announce.setPublished( !sector.getAnnouncesValidation( ) );
-
-            break;
-
         case PARAMETER_ANNOUNCES_VALIDATION_YES:
             announce.setPublished( false );
 
@@ -549,7 +544,7 @@ public class AnnounceApp implements XPageApplication
             announce.setPublished( true );
 
             break;
-
+        case PARAMETER_ANNOUNCES_VALIDATION_GLOBAL_PARAMETERS:
         default:
             announce.setPublished( !sector.getAnnouncesValidation( ) );
         }
@@ -646,21 +641,13 @@ public class AnnounceApp implements XPageApplication
         // unpublish announce if category moderation is on
         switch ( category.getAnnouncesValidation( ) )
         {
-        case PARAMETER_ANNOUNCES_VALIDATION_GLOBAL_PARAMETERS:
-            bModerated = sector.getAnnouncesValidation( );
-
-            break;
-
         case PARAMETER_ANNOUNCES_VALIDATION_YES:
             bModerated = true;
-
             break;
-
         case PARAMETER_ANNOUNCES_VALIDATION_NO:
             bModerated = false;
-
             break;
-
+        case PARAMETER_ANNOUNCES_VALIDATION_GLOBAL_PARAMETERS:
         default:
             bModerated = sector.getAnnouncesValidation( );
         }
@@ -688,11 +675,6 @@ public class AnnounceApp implements XPageApplication
         // unpublish announce if category moderation is on
         switch ( category.getAnnouncesValidation( ) )
         {
-        case PARAMETER_ANNOUNCES_VALIDATION_GLOBAL_PARAMETERS:
-            announce.setPublished( !sector.getAnnouncesValidation( ) );
-
-            break;
-
         case PARAMETER_ANNOUNCES_VALIDATION_YES:
             announce.setPublished( false );
 
@@ -702,7 +684,7 @@ public class AnnounceApp implements XPageApplication
             announce.setPublished( true );
 
             break;
-
+        case PARAMETER_ANNOUNCES_VALIDATION_GLOBAL_PARAMETERS:
         default:
             announce.setPublished( !sector.getAnnouncesValidation( ) );
         }

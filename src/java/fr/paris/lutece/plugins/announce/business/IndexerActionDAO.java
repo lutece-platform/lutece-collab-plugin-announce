@@ -169,7 +169,6 @@ public final class IndexerActionDAO implements IIndexerActionDAO
         if ( filter.containsIdAnnounce( ) )
         {
             daoUtil.setInt( nIndex, filter.getIdAnnounce( ) );
-            nIndex++;
         }
 
         daoUtil.executeQuery(  );

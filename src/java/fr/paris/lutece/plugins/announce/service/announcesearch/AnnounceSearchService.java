@@ -2,7 +2,7 @@
  * Copyright (c) 2002-2014, Mairie de Paris
  * All rights reserved.
  *
-* Redistribution and use in source and binary forms, with or without
+ * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
  * are met:
  *
@@ -45,6 +45,7 @@ import fr.paris.lutece.portal.service.util.AppLogService;
 import fr.paris.lutece.portal.service.util.AppPathService;
 import fr.paris.lutece.portal.service.util.AppPropertiesService;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
@@ -78,24 +79,24 @@ public class AnnounceSearchService
     private static final int DEFAULT_WRITER_MERGE_FACTOR = 20;
     private static final int DEFAULT_WRITER_MAX_FIELD_LENGTH = 1000000;
 
-    private static String _strIndex;
+    private static volatile String _strIndex;
     private static int _nWriterMergeFactor;
     private static int _nWriterMaxSectorLength;
     private static Analyzer _analyzer;
     private static IAnnounceSearchIndexer _indexer;
 
     // Constants corresponding to the variables defined in the lutece.properties file
-    private static AnnounceSearchService _singleton;
+    private static volatile AnnounceSearchService _singleton;
 
     private static int _nSkipedIndexations;
 
     /** Creates a new instance of DirectorySearchService */
-    private AnnounceSearchService(  )
+    private AnnounceSearchService( )
     {
         // Read configuration properties
-        _strIndex = AppPathService.getPath( PATH_INDEX );
+        String strIndex = getIndex( );
 
-        if ( ( _strIndex == null ) || ( _strIndex.equals( "" ) ) )
+        if ( StringUtils.isEmpty( strIndex ) )
         {
             throw new AppException( "Lucene index path not found in announce.properties", null );
         }
@@ -116,7 +117,7 @@ public class AnnounceSearchService
 
         try
         {
-            _analyzer = (Analyzer) Class.forName( strAnalyserClassName ).newInstance(  );
+            _analyzer = (Analyzer) Class.forName( strAnalyserClassName ).newInstance( );
         }
         catch ( Exception e )
         {
@@ -126,14 +127,14 @@ public class AnnounceSearchService
 
     /**
      * Get the HelpdeskSearchService instance
-     *
+     * 
      * @return The {@link AnnounceSearchService}
      */
-    public static AnnounceSearchService getInstance(  )
+    public static AnnounceSearchService getInstance( )
     {
         if ( _singleton == null )
         {
-            _singleton = new AnnounceSearchService(  );
+            _singleton = new AnnounceSearchService( );
         }
 
         return _singleton;
@@ -150,7 +151,7 @@ public class AnnounceSearchService
      * @return Results as a collection of id of {@link Announce}
      */
     public List<Integer> getSearchResults( String strKeywords, int nIdCategory, Date dateMin, Date dateMax,
-        HttpServletRequest request, Plugin plugin )
+            HttpServletRequest request, Plugin plugin )
     {
         List<Integer> listAnnounces = new ArrayList<Integer>( );
 
@@ -170,7 +171,7 @@ public class AnnounceSearchService
         }
         catch ( Exception e )
         {
-            AppLogService.error( e.getMessage(  ), e );
+            AppLogService.error( e.getMessage( ), e );
             // If an error occurred clean result list
             listAnnounces = new ArrayList<Integer>( );
         }
@@ -182,13 +183,13 @@ public class AnnounceSearchService
      * return searcher
      * @return searcher
      */
-    public Searcher getSearcher(  )
+    public Searcher getSearcher( )
     {
         Directory dir = null;
         Searcher searcher = null;
         try
         {
-            dir = NIOFSDirectory.open( new File( _strIndex ) );
+            dir = NIOFSDirectory.open( new File( getIndex( ) ) );
             searcher = new IndexSearcher( dir, true );
         }
         catch ( IOException e )
@@ -213,12 +214,12 @@ public class AnnounceSearchService
     /**
      * Process indexing
      * @param bCreate true for start full indexing
-     * false for begin incremental indexing
+     *            false for begin incremental indexing
      * @return the log
      */
     public String processIndexing( boolean bCreate )
     {
-        StringBuffer sbLogs = new StringBuffer(  );
+        StringBuffer sbLogs = new StringBuffer( );
         IndexWriter writer = null;
         boolean bCreateIndex = bCreate;
 
@@ -226,7 +227,7 @@ public class AnnounceSearchService
         {
             sbLogs.append( "\r\nIndexing all contents ...\r\n" );
 
-            Directory dir = NIOFSDirectory.open( new File( _strIndex ) );
+            Directory dir = NIOFSDirectory.open( new File( getIndex( ) ) );
 
             if ( !IndexReader.indexExists( dir ) )
             { //init index
@@ -281,11 +282,11 @@ public class AnnounceSearchService
         catch ( Exception e )
         {
             sbLogs.append( " caught a " );
-            sbLogs.append( e.getClass(  ) );
+            sbLogs.append( e.getClass( ) );
             sbLogs.append( "\n with message: " );
-            sbLogs.append( e.getMessage(  ) );
+            sbLogs.append( e.getMessage( ) );
             sbLogs.append( "\r\n" );
-            AppLogService.error( "Indexing error : " + e.getMessage(  ), e );
+            AppLogService.error( "Indexing error : " + e.getMessage( ), e );
         }
         finally
         {
@@ -293,27 +294,27 @@ public class AnnounceSearchService
             {
                 if ( writer != null )
                 {
-                    writer.close(  );
+                    writer.close( );
                 }
             }
             catch ( IOException e )
             {
-                AppLogService.error( e.getMessage(  ), e );
+                AppLogService.error( e.getMessage( ), e );
             }
         }
 
-        return sbLogs.toString(  );
+        return sbLogs.toString( );
     }
 
     /**
-     * Add Indexer Action  to perform on a record
+     * Add Indexer Action to perform on a record
      * @param nIdAnnounce announce id
      * @param nIdTask the key of the action to do
      * @param plugin the plugin
      */
     public void addIndexerAction( int nIdAnnounce, int nIdTask, Plugin plugin )
     {
-        IndexerAction indexerAction = new IndexerAction(  );
+        IndexerAction indexerAction = new IndexerAction( );
         indexerAction.setIdAnnounce( nIdAnnounce );
         indexerAction.setIdTask( nIdTask );
         IndexerActionHome.create( indexerAction, plugin );
@@ -337,9 +338,22 @@ public class AnnounceSearchService
      */
     public List<IndexerAction> getAllIndexerActionByTask( int nIdTask, Plugin plugin )
     {
-        IndexerActionFilter filter = new IndexerActionFilter(  );
+        IndexerActionFilter filter = new IndexerActionFilter( );
         filter.setIdTask( nIdTask );
 
         return IndexerActionHome.getList( filter, plugin );
+    }
+
+    /**
+     * Get the path to the index of the search service
+     * @return The path to the index of the search service
+     */
+    private String getIndex( )
+    {
+        if ( _strIndex == null )
+        {
+            _strIndex = AppPathService.getPath( PATH_INDEX );
+        }
+        return _strIndex;
     }
 }

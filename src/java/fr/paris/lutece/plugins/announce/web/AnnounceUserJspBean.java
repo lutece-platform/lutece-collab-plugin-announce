@@ -47,7 +47,6 @@ import fr.paris.lutece.util.url.UrlItem;
 
 import org.apache.commons.lang.StringUtils;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -127,9 +126,7 @@ public class AnnounceUserJspBean extends PluginAdminPageJspBean
         _nItemsPerPage = Paginator.getItemsPerPage( request, Paginator.PARAMETER_ITEMS_PER_PAGE, _nItemsPerPage,
                 _nDefaultItemsPerPage );
 
-        Collection<LuteceUser> listUsers = new ArrayList<LuteceUser>(  );
-
-        listUsers = SecurityService.getInstance(  ).getUsers(  );
+        Collection<LuteceUser> listUsers = SecurityService.getInstance( ).getUsers( );
 
         if ( listUsers != null )
         {

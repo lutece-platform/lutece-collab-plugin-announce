@@ -247,7 +247,7 @@ public class AnnounceAsynchronousUploadHandler implements IGAAsyncUploadHandler
 
         String strFieldName = buildFieldName( strIdEntry );
 
-        if ( strUploadAction.startsWith( UPLOAD_SUBMIT_PREFIX ) )
+        if ( strUploadAction.startsWith( UPLOAD_SUBMIT_PREFIX ) && request instanceof MultipartHttpServletRequest )
         {
             // A file was submitted
             MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest) request;

@@ -221,8 +221,7 @@ public class CategoryJspBean extends PluginAdminPageJspBean
         refMailingList.addItem( -1, strNothing );
         refMailingList.addAll( AdminMailingListService.getMailingLists( adminUser ) );
 
-        ReferenceList listSectors = new ReferenceList( );
-        listSectors = SectorHome.findLocaleReferenceList( request.getLocale( ) );
+        ReferenceList listSectors = SectorHome.findLocaleReferenceList( request.getLocale( ) );
 
         ReferenceList listAnnouncesValidation = new ReferenceList( );
         listAnnouncesValidation.addItem( 0,

@@ -396,7 +396,7 @@ public final class AnnounceDAO implements IAnnounceDAO
         int nParam = 1;
         DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SET_PUBLISHED, plugin );
         daoUtil.setBoolean( nParam++, announce.getPublished( ) );
-        daoUtil.setInt( nParam++, announce.getId( ) );
+        daoUtil.setInt( nParam, announce.getId( ) );
         daoUtil.executeUpdate( );
         daoUtil.free( );
     }
@@ -410,7 +410,7 @@ public final class AnnounceDAO implements IAnnounceDAO
         int nParam = 1;
         DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SET_SUSPENDED, plugin );
         daoUtil.setBoolean( nParam++, announce.getSuspended( ) );
-        daoUtil.setInt( nParam++, announce.getId( ) );
+        daoUtil.setInt( nParam, announce.getId( ) );
         daoUtil.executeUpdate( );
         daoUtil.free( );
     }
@@ -424,7 +424,7 @@ public final class AnnounceDAO implements IAnnounceDAO
         int nParam = 1;
         DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SET_SUSPENDED_BY_USER, plugin );
         daoUtil.setBoolean( nParam++, announce.getSuspendedByUser( ) );
-        daoUtil.setInt( nParam++, announce.getId( ) );
+        daoUtil.setInt( nParam, announce.getId( ) );
         daoUtil.executeUpdate( );
         daoUtil.free( );
     }
