@@ -78,16 +78,15 @@ public class AnnounceSearchService
     private static final int DEFAULT_WRITER_MERGE_FACTOR = 20;
     private static final int DEFAULT_WRITER_MAX_FIELD_LENGTH = 1000000;
 
+    // Constants corresponding to the variables defined in the lutece.properties file
+    private static volatile AnnounceSearchService _singleton;
+    private static int _nSkipedIndexations;
+
     private volatile String _strIndex;
     private Analyzer _analyzer;
     private IAnnounceSearchIndexer _indexer;
     private int _nWriterMergeFactor;
     private int _nWriterMaxSectorLength;
-
-    // Constants corresponding to the variables defined in the lutece.properties file
-    private static volatile AnnounceSearchService _singleton;
-
-    private static int _nSkipedIndexations;
 
     /** Creates a new instance of DirectorySearchService */
     private AnnounceSearchService( )

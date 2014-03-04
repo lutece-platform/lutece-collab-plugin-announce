@@ -1,36 +1,28 @@
-<div class="row-fluid">
-	<div class="span4">
-		<#include "navigation_menu.html">
+<div class="portlet-background append-bottom">
+	<div class="portlet-background-header -lutece-border-radius-top">
+		#i18n{announce.view_announces.page.title} ${owner}
 	</div>
-	<div id="content" class="span8">
-		<#include "search_form.html"> 
-		<div class="portlet-background append-bottom">
-			<div class="portlet-background-header -lutece-border-radius-top">
-				#i18n{announce.view_announces.page.title} ${owner}
-			</div>
-			<div class="portlet-background-content -lutece-border-radius-bottom">
-				<div class="announce-result clearfix">
-					<#if announces_list?has_content>
-						<#if announce_qty &gt; 1 >
-							<#assign class = "pirobox_gall">
-						<#else>
-							<#assign class = "pirobox">
+	<div class="portlet-background-content -lutece-border-radius-bottom">
+		<div class="announce-result clearfix">
+			<#if announces_list?has_content>
+				<#if announce_qty &gt; 1 >
+					<#assign class = "pirobox_gall">
+				<#else>
+					<#assign class = "pirobox">
+				</#if>
+				<ul id="slideshow">
+					<#list announces_list as announce> 
+						<#if announce.published> 
+						<#assign test =announce.thumbnailValue!"null">
+							<#if test!="null">
+								<li><a class="${class}" title="${announce.title}" href="image?resource_type=announce_entry_img_lowdef&id=${announce.thumbnailValue.id}"><img class="thumbnail" width="80" height="80" src="image?resource_type=announce_entry_img_thumb&id=${announce.thumbnailValue.id}" /><span>#i18n{announce.view_announces.photographer}${announce.userName}<br />#i18n{announce.view_announces.description}${announce.description}</span></a></li>
+							<#else>
+								<li><a  title="${announce.title}" href="./jsp/site/Portal.jsp?page=announce&action=view_announce&announce_id=${announce.id}"><img class="thumbnail" width="80" height="80" src="./images/local/skin/plugins/announce/no_picture.png" /><span>#i18n{announce.view_announces.photographer}${announce.userName}<br />#i18n{announce.view_announces.description}${announce.description}</span></a></li>
+							</#if>
 						</#if>
-						<ul id="slideshow">
-							<#list announces_list as announce> 
-								<#if announce.published> 
-								<#assign test =announce.thumbnailValue!"null">
-									<#if test!="null">
-										<li><a class="${class}" title="${announce.title}" href="image?resource_type=announce_entry_img_lowdef&id=${announce.thumbnailValue.id}"><img class="thumbnail" width="80" height="80" src="image?resource_type=announce_entry_img_thumb&id=${announce.thumbnailValue.id}" /><span>#i18n{announce.view_announces.photographer}${announce.userName}<br />#i18n{announce.view_announces.description}${announce.description}</span></a></li>
-									<#else>
-										<li><a  title="${announce.title}" href="./jsp/site/Portal.jsp?page=announce&action=view_announce&announce_id=${announce.id}"><img class="thumbnail" width="80" height="80" src="./images/local/skin/plugins/announce/no_picture.png" /><span>#i18n{announce.view_announces.photographer}${announce.userName}<br />#i18n{announce.view_announces.description}${announce.description}</span></a></li>
-									</#if>
-								</#if>
-							</#list>
-						</ul>
-					</#if>	 
-				</div> 
-			</div> 
-		</div>
-	</div>
+					</#list>
+				</ul>
+			</#if>	 
+		</div> 
+	</div> 
 </div>

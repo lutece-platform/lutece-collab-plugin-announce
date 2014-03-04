@@ -1,11 +1,3 @@
-<div class="row-fluid">
-	<div class="span4">
-		<#include "navigation_menu.html">
-	</div>
-	<div id="content" class="span8">
-	    
-	    <#include "search_form.html">   
-	    
 	    <#if (paginator.pagesCount > 1) >
 	        <div class="paginator">
 	            Pages: <@pagination paginator=paginator />
@@ -37,5 +29,3 @@
 	            </#if>
 	           
 		</div>
-	</div>
-</div>

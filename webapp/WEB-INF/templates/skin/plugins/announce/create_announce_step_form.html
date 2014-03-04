@@ -1,70 +1,63 @@
-<#include "navigation_menu.html">
-
-<div id="content" class="span-16 append-1 prepend-top last">
-	
-	<#include "search_form.html">
-	
-	<div id="content" class="portlet -lutece-border-radius append-bottom">
-		<div class="row-fluid">
-			<div class="span12">
-				<#if list_errors??>
-					<@messages errors=list_errors />
-				</#if>
-				<form class="form-horizontal" method="post" enctype="multipart/form-data" action="jsp/site/Portal.jsp">
-					<fieldset>
-						<legend>#i18n{announce.create_announce.chosenCategory}: ${sector.label} > ${category.label}</legend>
+<div id="content" class="portlet -lutece-border-radius append-bottom">
+	<div class="row-fluid">
+		<div class="span12">
+			<#if list_errors??>
+				<@messages errors=list_errors />
+			</#if>
+			<form class="form-horizontal" method="post" enctype="multipart/form-data" action="jsp/site/Portal.jsp">
+				<fieldset>
+					<legend>#i18n{announce.create_announce.chosenCategory}: ${sector.label} > ${category.label}</legend>
+					<div class="control-group">
+						<label class="control-label">#i18n{announce.create_announce_step_form.labelTitle} *</label>
+						<div class="controls">
+							<input type="text" name="title_announce" value="${(announce.title)!}" />
+						</div>
+				   	</div>
+					<div class="control-group">
+						<label class="control-label" for="description_announce">#i18n{announce.create_announce_step_form.labelDescription} *</label>
+						<div class="controls">
+							<textarea name="description_announce">${(announce.description)!}</textarea>
+						</div>
+					</div>
+					<#if !announce?? && moderated?? && moderated>
+						<div class="notice">
+							#i18n{announce.messages.announceWillBeModerated}<br/>
+							<a href="jsp/site/Portal.jsp?page=announce&action=my_announces">#i18n{announce.messages.announceWillBeModerated.cancel}</a>
+						</div>
+					</#if>
+					${form_html!}
+					<div class="control-group">
+						<label class="control-label" for="contact_information">#i18n{announce.create_announce_step_form.contactInformation} *</label>
+						<div class="controls">
+							<input value="<#if announce?? && announce.contactInformation != ''>${(announce.contactInformation)!}<#else>${contact_information!}</#if>" type="text" name="contact_information"/>
+						</div>
+					</div>
+					<#if category.displayPrice>
 						<div class="control-group">
-							<label class="control-label">#i18n{announce.create_announce_step_form.labelTitle} *</label>
+							<label class="control-label" for="price_announce">#i18n{announce.create_announce_step_form.labelPrice}</label>
 							<div class="controls">
-								<input type="text" name="title_announce" value="${(announce.title)!}" />
-							</div>
-					   	</div>
-						<div class="control-group">
-							<label class="control-label" for="description_announce">#i18n{announce.create_announce_step_form.labelDescription} *</label>
-							<div class="controls">
-								<textarea name="description_announce">${(announce.description)!}</textarea>
+								<input type="text" name="price_announce" value="${(announce.price)!''}"/>
 							</div>
 						</div>
-						<#if !announce?? && moderated?? && moderated>
-							<div class="notice">
-								#i18n{announce.messages.announceWillBeModerated}<br/>
-								<a href="jsp/site/Portal.jsp?page=announce&action=my_announces">#i18n{announce.messages.announceWillBeModerated.cancel}</a>
-							</div>
-						</#if>
-						${form_html!}
-						<div class="control-group">
-							<label class="control-label" for="contact_information">#i18n{announce.create_announce_step_form.contactInformation} *</label>
-							<div class="controls">
-								<input value="<#if announce?? && announce.contactInformation != ''>${(announce.contactInformation)!}<#else>${contact_information!}</#if>" type="text" name="contact_information"/>
-							</div>
+					</#if>
+					<div class="control-group">
+						<label class="control-label" for="tags">#i18n{announce.create_announce_step_form.tags}</label>
+						<div class="controls">
+							<input value="<#if announce?? && announce.tags>${(announce.tags)!}<#else>${sector.tags!}</#if>" type="text" name="tags"/>
+							<span class="help-block">#i18n{announce.create_announce_step_form.tags.helper}</span>
 						</div>
-						<#if category.displayPrice>
-							<div class="control-group">
-								<label class="control-label" for="price_announce">#i18n{announce.create_announce_step_form.labelPrice}</label>
-								<div class="controls">
-									<input type="text" name="price_announce" value="${(announce.price)!''}"/>
-								</div>
-							</div>
-						</#if>
-						<div class="control-group">
-							<label class="control-label" for="tags">#i18n{announce.create_announce_step_form.tags}</label>
-							<div class="controls">
-								<input value="<#if announce?? && announce.tags>${(announce.tags)!}<#else>${sector.tags!}</#if>" type="text" name="tags"/>
-								<span class="help-block">#i18n{announce.create_announce_step_form.tags.helper}</span>
-							</div>
-						</div>
-						<div class="form-actions">
-							<input type="hidden" name="category_id" value="${category.id}" />
-							<input type="hidden" name="form_send" value="1" />
-							<input type="hidden" name="page" value="announce" />
-							<input type="hidden" name="action" value="addnew" />
-							<button class="btn btn-small btn-primary" type="submit" value="validate" name="validate" >
-								<i class="icon-ok icon-white">&nbsp;</i>&nbsp;#i18n{announce.create_announce_step_form.labelButtonValidate}
-							</button>
-						</div>
-					</fieldset>
-				</form>
-			</div>
+					</div>
+					<div class="form-actions">
+						<input type="hidden" name="category_id" value="${category.id}" />
+						<input type="hidden" name="form_send" value="1" />
+						<input type="hidden" name="page" value="announce" />
+						<input type="hidden" name="action" value="addnew" />
+						<button class="btn btn-small btn-primary" type="submit" value="validate" name="validate" >
+							<i class="icon-ok icon-white">&nbsp;</i>&nbsp;#i18n{announce.create_announce_step_form.labelButtonValidate}
+						</button>
+					</div>
+				</fieldset>
+			</form>
 		</div>
 	</div>
 </div>

@@ -33,7 +33,9 @@
  */
 package fr.paris.lutece.plugins.announce.service;
 
+import fr.paris.lutece.portal.service.plugin.Plugin;
 import fr.paris.lutece.portal.service.plugin.PluginDefaultImplementation;
+import fr.paris.lutece.portal.service.plugin.PluginService;
 
 
 /**
@@ -53,5 +55,14 @@ public class AnnouncePlugin extends PluginDefaultImplementation
     public void init(  )
     {
         // Do nothing
+    }
+
+    /**
+     * Get the announce plugin
+     * @return The announce plugin
+     */
+    public static Plugin getPlugin( )
+    {
+        return PluginService.getPlugin( PLUGIN_NAME );
     }
 }

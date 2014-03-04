@@ -40,6 +40,7 @@ import fr.paris.lutece.plugins.announce.business.Category;
 import fr.paris.lutece.plugins.announce.business.CategoryHome;
 import fr.paris.lutece.plugins.announce.business.Sector;
 import fr.paris.lutece.plugins.announce.business.SectorHome;
+import fr.paris.lutece.plugins.announce.service.AnnouncePlugin;
 import fr.paris.lutece.plugins.announce.service.AnnounceService;
 import fr.paris.lutece.plugins.announce.service.announcesearch.AnnounceSearchService;
 import fr.paris.lutece.plugins.announce.service.upload.AnnounceAsynchronousUploadHandler;
@@ -72,8 +73,10 @@ import fr.paris.lutece.portal.service.template.AppTemplateService;
 import fr.paris.lutece.portal.service.util.AppLogService;
 import fr.paris.lutece.portal.service.util.AppPathService;
 import fr.paris.lutece.portal.service.util.AppPropertiesService;
+import fr.paris.lutece.portal.util.mvc.utils.MVCUtils;
 import fr.paris.lutece.portal.web.LocalVariables;
 import fr.paris.lutece.portal.web.constants.Messages;
+import fr.paris.lutece.portal.web.constants.Parameters;
 import fr.paris.lutece.portal.web.util.LocalizedDelegatePaginator;
 import fr.paris.lutece.portal.web.util.LocalizedPaginator;
 import fr.paris.lutece.portal.web.xpages.XPage;
@@ -123,7 +126,6 @@ public class AnnounceApp implements XPageApplication
     // Parameters
     private static final String PARAMETER_FORM_SEND = "form_send";
     private static final String PARAMETER_PAGE = "page";
-    private static final String PARAMETER_ACTION = "action";
     private static final String PARAMETER_CATEGORY_ID = "category_id";
     private static final String PARAMETER_TITLE_ANNOUNCE = "title_announce";
     private static final String PARAMETER_DESCRIPTION_ANNOUNCE = "description_announce";
@@ -187,6 +189,7 @@ public class AnnounceApp implements XPageApplication
     private static final String TEMPLATE_MODIFY_ANNOUNCE = "skin/plugins/announce/modify_announce.html";
     private static final String TEMPLATE_LIST_ANNOUNCES = "skin/plugins/announce/list_announces.html";
     private static final String TEMPLATE_ANNOUNCE_NOTIFY_MESSAGE = "skin/plugins/announce/announce_notify_message.html";
+    private static final String TEMPLATE_ANNOUNCE_FRAMESET = "skin/plugins/announce/announce_frameset.html";
 
     //Markers
     private static final String MARK_LIST_FIELDS = "list_sectors";
@@ -198,6 +201,7 @@ public class AnnounceApp implements XPageApplication
     private static final String MARK_CONTACT_INFORMATION = "contact_information";
     private static final String MARK_LIST_RESPONSES = "list_responses";
     private static final String MARK_USER = "user";
+    private static final String MARK_CONTENT = "content";
     private static final String FULL_URL = "fullurl";
     private static final String MARK_FILTER_SEARCHED_KEYWORDS = "filter_searched_keywords";
     private static final String MARK_FILTER_SEARCHED_CATEGORY = "filter_searched_category";
@@ -213,6 +217,9 @@ public class AnnounceApp implements XPageApplication
     private static final String MARK_PROD_URL = "prod_url";
     private static final String MARK_FORM_HTML = "form_html";
     private static final String MARK_LIST_ERRORS = "list_errors";
+
+    // Session keys
+    private static final String SESSION_ATTRIBUTE_MY_ANNOUNCES_ITEMS_PER_PAGE = "announce.myAnnouncesItemsPerPage";
 
     //defaults
     private static final String DEFAULT_PAGE_INDEX = "1";
@@ -232,95 +239,67 @@ public class AnnounceApp implements XPageApplication
     {
         /* Global variables for this App */
         String strPluginName = request.getParameter( PARAMETER_PAGE );
-        String strAction = request.getParameter( PARAMETER_ACTION );
+        String strAction = request.getParameter( MVCUtils.PARAMETER_ACTION );
         _plugin = PluginService.getPlugin( strPluginName );
 
         XPage page = new XPage( );
         page.setPathLabel( I18nService.getLocalizedString( PROPERTY_PAGE_PATH, request.getLocale( ) ) );
-
-        /* model and template declarations */
-        HashMap<String, Object> model = new HashMap<String, Object>( );
-
-        /*
-         * definition of listSectors (for navigation menu) and
-         * referenceListSectors (for search form)
-         */
-        Collection<Sector> listSectors = SectorHome.findAll( );
-
-        for ( Sector sector : listSectors )
-        {
-            int nNumberAnnounces = 0;
-            Collection<Category> categoryList = CategoryHome.findCategoriesForSector( sector, _plugin );
-            sector.setListCategories( categoryList );
-
-            for ( Category category : categoryList )
-            {
-                nNumberAnnounces += CategoryHome.countPublishedAnnouncesForCategory( category, _plugin );
-            }
-
-            sector.setNumberAnnounces( nNumberAnnounces );
-        }
-
-        model.put( MARK_LIST_FIELDS, listSectors );
-        model.put( MARK_LOCALE, request.getLocale( ) );
-        LuteceUser user = SecurityService.getInstance( ).getRegisteredUser( request );
-        model.put( MARK_USER, user );
 
         if ( strAction != null )
         {
             if ( strAction.equals( PARAMETER_ACTION_ADDNEW ) )
             {
                 page.setTitle( I18nService.getLocalizedString( PROPERTY_PAGE_TITLE_CREATE_ANNOUNCE, request.getLocale( ) ) );
-                page.setContent( getCreateAnnounce( request, model ) );
+                page.setContent( getCreateAnnounce( request ) );
             }
             else if ( strAction.equals( ACTION_VIEW_ANNOUNCE ) )
             {
                 int nIdAnnounce = Integer.parseInt( request.getParameter( PARAMETER_ANNOUNCE_ID ) );
                 Announce announce = AnnounceHome.findByPrimaryKey( nIdAnnounce );
                 page.setTitle( announce.getTitle( ) );
-                page.setContent( getViewAnnounce( request, announce, model ) );
+                page.setContent( getViewAnnounce( request, announce ) );
             }
             else if ( strAction.equals( ACTION_VIEW_ANNOUNCES ) )
             {
                 String strUserName = request.getParameter( PARAMETER_USERNAME );
-                page.setContent( getViewUserAnnounces( request, strUserName, model ) );
+                page.setContent( getViewUserAnnounces( request, strUserName ) );
             }
             else if ( strAction.equals( ACTION_CATEGORY_ANNOUNCES ) )
             {
                 int nIdCategory = Integer.parseInt( request.getParameter( PARAMETER_CATEGORY_ID ) );
                 Category category = CategoryHome.findByPrimaryKey( nIdCategory, _plugin );
                 page.setTitle( category.getLabel( ) );
-                page.setContent( getPublishedAnnouncesForCategory( request, category, model ) );
+                page.setContent( getPublishedAnnouncesForCategory( request, category ) );
             }
             else if ( strAction.equals( ACTION_MY_ANNOUNCES ) )
             {
                 page.setTitle( I18nService.getLocalizedString( PROPERTY_PAGE_TITLE_MY_ANNOUNCES, request.getLocale( ) ) );
-                page.setContent( getManageUserAnnounces( request, model ) );
+                page.setContent( getManageUserAnnounces( request ) );
             }
             else if ( strAction.equals( ACTION_MODIFY_ANNOUNCE ) )
             {
                 page.setTitle( I18nService.getLocalizedString( PROPERTY_PAGE_TITLE_MODIFY_ANNOUNCE, request.getLocale( ) ) );
-                page.setContent( getModifyAnnounce( request, model ) );
+                page.setContent( getModifyAnnounce( request ) );
             }
             else if ( strAction.equals( ACTION_DELETE_ANNOUNCE ) )
             {
                 page.setTitle( I18nService.getLocalizedString( PROPERTY_PAGE_TITLE, request.getLocale( ) ) );
-                page.setContent( getDeleteAnnounce( request, model ) );
+                page.setContent( getDeleteAnnounce( request ) );
             }
             else if ( strAction.equals( ACTION_SUSPEND_ANNOUNCE_BY_USER ) )
             {
                 page.setTitle( I18nService.getLocalizedString( PROPERTY_PAGE_TITLE, request.getLocale( ) ) );
-                page.setContent( getSuspendAnnounceByUser( request, model ) );
+                page.setContent( getSuspendAnnounceByUser( request ) );
             }
             else if ( strAction.equals( ACTION_ENABLE_ANNOUNCE_BY_USER ) )
             {
                 page.setTitle( I18nService.getLocalizedString( PROPERTY_PAGE_TITLE, request.getLocale( ) ) );
-                page.setContent( enableAnnounceByUser( request, model ) );
+                page.setContent( enableAnnounceByUser( request ) );
             }
             else if ( strAction.equals( ACTION_SEARCH ) )
             {
                 page.setTitle( I18nService.getLocalizedString( PROPERTY_PAGE_TITLE_SEARCH_RESULTS, request.getLocale( ) ) );
-                page.setContent( getSearchAnnounces( request, model ) );
+                page.setContent( getSearchAnnounces( request ) );
             }
             else if ( strAction.equals( ACTION_DOWNLOAD ) )
             {
@@ -329,20 +308,30 @@ public class AnnounceApp implements XPageApplication
             else
             {
                 page.setTitle( I18nService.getLocalizedString( PROPERTY_PAGE_TITLE, request.getLocale( ) ) );
-                page.setContent( getDefaultPage( request, model ) );
+                page.setContent( getDefaultPage( request ) );
             }
         }
         else
         {
             page.setTitle( I18nService.getLocalizedString( PROPERTY_PAGE_TITLE, request.getLocale( ) ) );
-            page.setContent( getDefaultPage( request, model ) );
+            page.setContent( getDefaultPage( request ) );
         }
 
+        /* model and template declarations */
+        Map<String, Object> model = new HashMap<String, Object>( );
+        model.put( MARK_LIST_FIELDS, getSectorList( ) );
+        model.put( MARK_LOCALE, request.getLocale( ) );
+        LuteceUser user = SecurityService.getInstance( ).getRegisteredUser( request );
+        model.put( MARK_USER, user );
+        model.put( MARK_CONTENT, page.getContent( ) );
+        HtmlTemplate template = AppTemplateService
+                .getTemplate( TEMPLATE_ANNOUNCE_FRAMESET, request.getLocale( ), model );
+        page.setContent( template.getHtml( ) );
         return page;
     }
 
     /**
-     * gets the file for donwload
+     * gets the file for download
      * @param request httpRequest
      */
     public void getFileDownload( HttpServletRequest request )
@@ -385,7 +374,7 @@ public class AnnounceApp implements XPageApplication
      * @param model The model
      * @return The HTML content to display
      */
-    private String getDefaultPage( HttpServletRequest request, HashMap<String, Object> model )
+    private String getDefaultPage( HttpServletRequest request )
     {
         _strCurrentPageIndex = Paginator.getPageIndex( request, Paginator.PARAMETER_PAGE_INDEX, DEFAULT_PAGE_INDEX );
         _nDefaultItemsPerPage = AppPropertiesService.getPropertyInt( PROPERTY_DEFAULT_FRONT_LIST_ANNOUNCE_PER_PAGE, 10 );
@@ -403,6 +392,7 @@ public class AnnounceApp implements XPageApplication
                 _nItemsPerPage, JSP_PORTAL + "?" + PARAMETER_PAGE + "=" + AnnounceUtils.PARAMETER_PAGE_ANNOUNCE,
                 PARAMETER_PAGE_INDEX, _strCurrentPageIndex, listIdAnnounces.size( ), request.getLocale( ) );
 
+        Map<String, Object> model = new HashMap<String, Object>( );
         model.put( MARK_NB_ITEMS_PER_PAGE, Integer.toString( _nItemsPerPage ) );
         model.put( MARK_PAGINATOR, paginator );
 
@@ -412,6 +402,8 @@ public class AnnounceApp implements XPageApplication
         }
 
         model.put( MARK_ANNOUNCES_LIST, paginator.getPageItems( ) );
+        model.put( MARK_LIST_FIELDS, getSectorList( ) );
+        model.put( MARK_LOCALE, request.getLocale( ) );
 
         HtmlTemplate template = AppTemplateService.getTemplate( TEMPLATE_LIST_ANNOUNCES, request.getLocale( ), model );
 
@@ -419,14 +411,13 @@ public class AnnounceApp implements XPageApplication
     }
 
     /**
-     * Get the list of published annunces of a category
+     * Get the list of published announces of a category
      * @param request The request
      * @param category The category
      * @param model The model
      * @return The HTML content to display
      */
-    private String getPublishedAnnouncesForCategory( HttpServletRequest request, Category category,
-            HashMap<String, Object> model )
+    private String getPublishedAnnouncesForCategory( HttpServletRequest request, Category category )
     {
         _strCurrentPageIndex = Paginator.getPageIndex( request, Paginator.PARAMETER_PAGE_INDEX, DEFAULT_PAGE_INDEX );
         _nDefaultItemsPerPage = AppPropertiesService.getPropertyInt( PROPERTY_DEFAULT_FRONT_LIST_ANNOUNCE_PER_PAGE, 10 );
@@ -441,8 +432,8 @@ public class AnnounceApp implements XPageApplication
 
         LocalizedDelegatePaginator<Announce> paginator = new LocalizedDelegatePaginator<Announce>( listAnnounces,
                 _nItemsPerPage, JSP_PORTAL + "?" + PARAMETER_PAGE + "=" + AnnounceUtils.PARAMETER_PAGE_ANNOUNCE + "&"
-                        + PARAMETER_ACTION + "=" + ACTION_CATEGORY_ANNOUNCES + "&" + PARAMETER_CATEGORY_ID + "="
-                        + category.getId( ), PARAMETER_PAGE_INDEX, _strCurrentPageIndex, listIdAnnounces.size( ),
+                        + MVCUtils.PARAMETER_ACTION + "=" + ACTION_CATEGORY_ANNOUNCES + "&" + PARAMETER_CATEGORY_ID
+                        + "=" + category.getId( ), PARAMETER_PAGE_INDEX, _strCurrentPageIndex, listIdAnnounces.size( ),
                 request.getLocale( ) );
 
         for ( Announce announce : paginator.getPageItems( ) )
@@ -450,8 +441,11 @@ public class AnnounceApp implements XPageApplication
             announce.setListIdImageResponse( AnnounceHome.findListIdImageResponse( announce.getId( ) ) );
         }
 
+        Map<String, Object> model = new HashMap<String, Object>( );
         model.put( MARK_NB_ITEMS_PER_PAGE, Integer.toString( _nItemsPerPage ) );
         model.put( MARK_PAGINATOR, paginator );
+        model.put( MARK_LIST_FIELDS, getSectorList( ) );
+        model.put( MARK_LOCALE, request.getLocale( ) );
 
         model.put( MARK_ANNOUNCES_LIST, paginator.getPageItems( ) );
         LuteceUser user = SecurityService.getInstance( ).getRegisteredUser( request );
@@ -464,18 +458,17 @@ public class AnnounceApp implements XPageApplication
     /**
      * Get the page to create an announce
      * @param request The request
-     * @param model The model
      * @return The HTML content to display
      * @throws SiteMessageException
      */
-    private String getCreateAnnounce( HttpServletRequest request, HashMap<String, Object> model )
-            throws SiteMessageException
+    private String getCreateAnnounce( HttpServletRequest request ) throws SiteMessageException
     {
         LuteceUser user = getLuteceUserAuthentication( request );
 
         String strCategoryId = request.getParameter( PARAMETER_CATEGORY_ID );
         String strFormSend = request.getParameter( PARAMETER_FORM_SEND );
         HtmlTemplate template;
+        Map<String, Object> model = new HashMap<String, Object>( );
 
         /* CATEOGRY */
         if ( ( strCategoryId != null ) && ( Integer.parseInt( strCategoryId ) != 0 ) )
@@ -492,7 +485,7 @@ public class AnnounceApp implements XPageApplication
                 if ( listErrors == null || listErrors.size( ) == 0 )
                 {
                     UrlItem urlItem = new UrlItem( AppPathService.getBaseUrl( request ) + AppPathService.getPortalUrl( ) );
-                    urlItem.addParameter( PARAMETER_ACTION, ACTION_VIEW_ANNOUNCE );
+                    urlItem.addParameter( MVCUtils.PARAMETER_ACTION, ACTION_VIEW_ANNOUNCE );
                     urlItem.addParameter( PARAMETER_PAGE, AnnounceUtils.PARAMETER_PAGE_ANNOUNCE );
                     urlItem.addParameter( PARAMETER_ANNOUNCE_ID, announce.getId( ) );
                     try
@@ -650,8 +643,7 @@ public class AnnounceApp implements XPageApplication
      * @return The HTML content to display
      * @throws SiteMessageException If a site message needs to be displayed
      */
-    private String getModifyAnnounce( HttpServletRequest request, HashMap<String, Object> model )
-            throws SiteMessageException
+    private String getModifyAnnounce( HttpServletRequest request ) throws SiteMessageException
     {
         LuteceUser user = getLuteceUserAuthentication( request );
         int nIdAnnounce = Integer.parseInt( request.getParameter( PARAMETER_ANNOUNCE_ID ) );
@@ -659,12 +651,16 @@ public class AnnounceApp implements XPageApplication
 
         String strFormSend = request.getParameter( PARAMETER_FORM_SEND );
 
+        Map<String, Object> model = new HashMap<String, Object>( );
+        model.put( MARK_LIST_FIELDS, getSectorList( ) );
+        model.put( MARK_LOCALE, request.getLocale( ) );
+
         if ( strFormSend != null )
         {
             List<GenericAttributeError> listErrors = doModifyAnnounce( request, announce );
             if ( listErrors == null )
             {
-                return getViewAnnounce( request, announce, model );
+                return getViewAnnounce( request, announce );
             }
             model.put( MARK_LIST_ERRORS, listErrors );
         }
@@ -808,8 +804,7 @@ public class AnnounceApp implements XPageApplication
      * @return The HTML content if the site message could not be displayed
      * @throws SiteMessageException If a site message needs to be displayed
      */
-    private String getDeleteAnnounce( HttpServletRequest request, HashMap<String, Object> model )
-            throws SiteMessageException
+    private String getDeleteAnnounce( HttpServletRequest request ) throws SiteMessageException
     {
         String strConfirmRemoveAnnounce = request.getParameter( PARAMETER_CONFIRM_REMOVE_ANNOUNCE );
         int nIdAnnounce = Integer.parseInt( request.getParameter( PARAMETER_ANNOUNCE_ID ) );
@@ -817,11 +812,11 @@ public class AnnounceApp implements XPageApplication
         if ( strConfirmRemoveAnnounce != null )
         {
             AnnounceHome.remove( nIdAnnounce );
-            return getManageUserAnnounces( request, model );
+            return getManageUserAnnounces( request );
         }
         Map<String, Object> requestParameters = new HashMap<String, Object>( );
         requestParameters.put( PARAMETER_PAGE, AnnounceUtils.PARAMETER_PAGE_ANNOUNCE );
-        requestParameters.put( PARAMETER_ACTION, ACTION_DELETE_ANNOUNCE );
+        requestParameters.put( MVCUtils.PARAMETER_ACTION, ACTION_DELETE_ANNOUNCE );
         requestParameters.put( PARAMETER_ANNOUNCE_ID, nIdAnnounce );
         requestParameters.put( PARAMETER_CONFIRM_REMOVE_ANNOUNCE, "1" );
         SiteMessageService.setMessage( request, PROPERTY_CONFIRM_REMOVE_ANNOUNCE, SiteMessage.TYPE_CONFIRMATION,
@@ -837,8 +832,7 @@ public class AnnounceApp implements XPageApplication
      * @return The HTML content if the site message could not be displayed
      * @throws SiteMessageException If a site message needs to be displayed
      */
-    private String getSuspendAnnounceByUser( HttpServletRequest request, HashMap<String, Object> model )
-            throws SiteMessageException
+    private String getSuspendAnnounceByUser( HttpServletRequest request ) throws SiteMessageException
     {
         String strConfirmSuspendAnnounce = request.getParameter( PARAMETER_CONFIRM_SUSPEND_ANNOUNCE );
         int nIdAnnounce = Integer.parseInt( request.getParameter( PARAMETER_ANNOUNCE_ID ) );
@@ -854,12 +848,12 @@ public class AnnounceApp implements XPageApplication
             announce.setSuspendedByUser( true );
             AnnounceHome.setSuspendedByUser( announce );
 
-            return getManageUserAnnounces( request, model );
+            return getManageUserAnnounces( request );
         }
 
         Map<String, Object> requestParameters = new HashMap<String, Object>( );
         requestParameters.put( PARAMETER_PAGE, AnnounceUtils.PARAMETER_PAGE_ANNOUNCE );
-        requestParameters.put( PARAMETER_ACTION, ACTION_SUSPEND_ANNOUNCE_BY_USER );
+        requestParameters.put( MVCUtils.PARAMETER_ACTION, ACTION_SUSPEND_ANNOUNCE_BY_USER );
         requestParameters.put( PARAMETER_ANNOUNCE_ID, nIdAnnounce );
         requestParameters.put( PARAMETER_CONFIRM_SUSPEND_ANNOUNCE, "1" );
         SiteMessageService.setMessage( request, PROPERTY_CONFIRM_SUSPEND_ANNOUNCE, SiteMessage.TYPE_CONFIRMATION,
@@ -875,8 +869,7 @@ public class AnnounceApp implements XPageApplication
      * @return
      * @throws SiteMessageException If a site message needs to be displayed
      */
-    private String enableAnnounceByUser( HttpServletRequest request, HashMap<String, Object> model )
-            throws SiteMessageException
+    private String enableAnnounceByUser( HttpServletRequest request ) throws SiteMessageException
     {
         int nIdAnnounce = Integer.parseInt( request.getParameter( PARAMETER_ANNOUNCE_ID ) );
 
@@ -889,7 +882,7 @@ public class AnnounceApp implements XPageApplication
         announce.setSuspendedByUser( false );
         AnnounceHome.setSuspendedByUser( announce );
 
-        return getManageUserAnnounces( request, model );
+        return getManageUserAnnounces( request );
     }
 
     /**
@@ -899,13 +892,14 @@ public class AnnounceApp implements XPageApplication
      * @param model The model
      * @returnThe HTML content to display
      */
-    private String getViewAnnounce( HttpServletRequest request, Announce announce, HashMap<String, Object> model )
+    private String getViewAnnounce( HttpServletRequest request, Announce announce )
     {
         boolean bAllowAccess = false;
         boolean bUserIsAuthor = false;
 
         LuteceUser user = null;
 
+        Map<String, Object> model = new HashMap<String, Object>( );
         if ( SecurityService.isAuthenticationEnable( ) )
         { // myLutece not installed or disabled
             user = SecurityService.getInstance( ).getRegisteredUser( request );
@@ -943,48 +937,13 @@ public class AnnounceApp implements XPageApplication
             model.put( MARK_USER_IS_AUTHOR, bUserIsAuthor );
             model.put( MARK_ANNOUNCE, announce );
             model.put( MARK_LIST_RESPONSES, listResponses );
+            model.put( MARK_LIST_FIELDS, getSectorList( ) );
+            model.put( MARK_LOCALE, request.getLocale( ) );
 
             Category category = CategoryHome.findByPrimaryKey( announce.getCategory( ).getId( ), _plugin );
             announce.setCategory( category );
         }
         HtmlTemplate template = AppTemplateService.getTemplate( TEMPLATE_VIEW_ANNOUNCE, request.getLocale( ), model );
-
-        return template.getHtml( );
-    }
-
-    /**
-     * Get the list of announces of the user
-     * @param request The request
-     * @param model The model
-     * @return The HTML content to display
-     * @throws SiteMessageException If a site message needs to be displayed
-     */
-    private String getManageUserAnnounces( HttpServletRequest request, HashMap<String, Object> model )
-            throws SiteMessageException
-    {
-        _strCurrentPageIndex = Paginator.getPageIndex( request, Paginator.PARAMETER_PAGE_INDEX, DEFAULT_PAGE_INDEX );
-        _nDefaultItemsPerPage = AppPropertiesService.getPropertyInt( PROPERTY_DEFAULT_FRONT_LIST_ANNOUNCE_PER_PAGE, 10 );
-        _nItemsPerPage = Paginator.getItemsPerPage( request, Paginator.PARAMETER_ITEMS_PER_PAGE, _nItemsPerPage,
-                _nDefaultItemsPerPage );
-
-        LuteceUser user = getLuteceUserAuthentication( request );
-        List<Announce> listAnnounces = AnnounceHome.getAnnouncesForUser( user );
-
-        Paginator<Announce> paginator = new Paginator<Announce>( listAnnounces, _nItemsPerPage, JSP_PORTAL + "?"
-                + PARAMETER_PAGE + "=" + AnnounceUtils.PARAMETER_PAGE_ANNOUNCE + "&" + PARAMETER_ACTION + "="
-                + ACTION_MY_ANNOUNCES, PARAMETER_PAGE_INDEX, _strCurrentPageIndex );
-
-        for ( Announce announce : paginator.getPageItems( ) )
-        {
-            announce.setListIdImageResponse( AnnounceHome.findListIdImageResponse( announce.getId( ) ) );
-        }
-
-        model.put( MARK_NB_ITEMS_PER_PAGE, Integer.toString( _nItemsPerPage ) );
-        model.put( MARK_PAGINATOR, paginator );
-
-        model.put( MARK_ANNOUNCES_LIST, paginator.getPageItems( ) );
-        model.put( MARK_USER, user );
-        HtmlTemplate template = AppTemplateService.getTemplate( TEMPLATE_MY_ANNOUNCES, request.getLocale( ), model );
 
         return template.getHtml( );
     }
@@ -996,8 +955,7 @@ public class AnnounceApp implements XPageApplication
      * @param model HashMap model
      * @throws SiteMessageException If a site message needs to be displayed
      */
-    private String getViewUserAnnounces( HttpServletRequest request, String userName, HashMap<String, Object> model )
-            throws SiteMessageException
+    private String getViewUserAnnounces( HttpServletRequest request, String userName ) throws SiteMessageException
     {
         _strCurrentPageIndex = Paginator.getPageIndex( request, Paginator.PARAMETER_PAGE_INDEX, DEFAULT_PAGE_INDEX );
         _nDefaultItemsPerPage = AppPropertiesService.getPropertyInt( PROPERTY_DEFAULT_FRONT_LIST_ANNOUNCE_PER_PAGE, 10 );
@@ -1009,9 +967,10 @@ public class AnnounceApp implements XPageApplication
         List<Announce> listAnnounces = AnnounceHome.getAnnouncesForUser( userName );
 
         Paginator<Announce> paginator = new Paginator<Announce>( listAnnounces, _nItemsPerPage, JSP_PORTAL + "?"
-                + PARAMETER_PAGE + "=" + AnnounceUtils.PARAMETER_PAGE_ANNOUNCE + "&" + PARAMETER_ACTION + "="
+                + PARAMETER_PAGE + "=" + AnnounceUtils.PARAMETER_PAGE_ANNOUNCE + "&" + MVCUtils.PARAMETER_ACTION + "="
                 + ACTION_MY_ANNOUNCES, PARAMETER_PAGE_INDEX, _strCurrentPageIndex );
 
+        Map<String, Object> model = new HashMap<String, Object>( );
         model.put( MARK_NB_ITEMS_PER_PAGE, "" + _nItemsPerPage );
         model.put( MARK_PAGINATOR, paginator );
 
@@ -1046,6 +1005,8 @@ public class AnnounceApp implements XPageApplication
 
         model.put( MARK_ANNOUNCE_OWNER, userName );
         model.put( MARK_ANNOUNCES_PUBLISHED_AMOUNT, nNbPlublishedAnnounces );
+        model.put( MARK_LIST_FIELDS, getSectorList( ) );
+        model.put( MARK_LOCALE, request.getLocale( ) );
 
         HtmlTemplate template = AppTemplateService.getTemplate( TEMPLATE_VIEW_ANNOUNCES, request.getLocale( ), model );
 
@@ -1058,7 +1019,7 @@ public class AnnounceApp implements XPageApplication
      * @param model The model
      * @return The HTML content to displayed
      */
-    private String getSearchAnnounces( HttpServletRequest request, HashMap<String, Object> model )
+    private String getSearchAnnounces( HttpServletRequest request )
     {
         _strCurrentPageIndex = Paginator.getPageIndex( request, Paginator.PARAMETER_PAGE_INDEX, DEFAULT_PAGE_INDEX );
         _nDefaultItemsPerPage = AppPropertiesService.getPropertyInt( PROPERTY_DEFAULT_FRONT_LIST_ANNOUNCE_PER_PAGE, 10 );
@@ -1119,11 +1080,14 @@ public class AnnounceApp implements XPageApplication
 
         LocalizedDelegatePaginator<Announce> paginator = new LocalizedDelegatePaginator<Announce>( listAnnounces,
                 _nItemsPerPage, JSP_PORTAL + "?" + PARAMETER_PAGE + "=" + AnnounceUtils.PARAMETER_PAGE_ANNOUNCE + "&"
-                        + PARAMETER_ACTION + "=" + ACTION_SEARCH + "&" + strSearchParameters, PARAMETER_PAGE_INDEX,
-                _strCurrentPageIndex, listIdAnnounces.size( ), request.getLocale( ) );
+                        + MVCUtils.PARAMETER_ACTION + "=" + ACTION_SEARCH + "&" + strSearchParameters,
+                PARAMETER_PAGE_INDEX, _strCurrentPageIndex, listIdAnnounces.size( ), request.getLocale( ) );
 
+        Map<String, Object> model = new HashMap<String, Object>( );
         model.put( MARK_NB_ITEMS_PER_PAGE, Integer.toString( _nItemsPerPage ) );
         model.put( MARK_PAGINATOR, paginator );
+        model.put( MARK_LIST_FIELDS, getSectorList( ) );
+        model.put( MARK_LOCALE, request.getLocale( ) );
 
         for ( Announce announce : paginator.getPageItems( ) )
         {
@@ -1154,7 +1118,7 @@ public class AnnounceApp implements XPageApplication
      * @return The current Lutece User
      * @throws SiteMessageException If a site message needs to be displayed
      */
-    private LuteceUser getLuteceUserAuthentication( HttpServletRequest request ) throws SiteMessageException
+    private static LuteceUser getLuteceUserAuthentication( HttpServletRequest request ) throws SiteMessageException
     {
         LuteceUser user = null;
 
@@ -1220,6 +1184,8 @@ public class AnnounceApp implements XPageApplication
             // Generate the body of the message
             model.put( MARK_PROD_URL, AppPropertiesService.getProperty( PROPERTY_PROD_URL ) );
             model.put( MARK_ANNOUNCE, announce );
+            model.put( MARK_LIST_FIELDS, getSectorList( ) );
+            model.put( MARK_LOCALE, request.getLocale( ) );
 
             HtmlTemplate template = AppTemplateService.getTemplate( TEMPLATE_ANNOUNCE_NOTIFY_MESSAGE,
                     request.getLocale( ), model );
@@ -1253,6 +1219,8 @@ public class AnnounceApp implements XPageApplication
         model.put( MARK_FORM_HTML, _announceService.getHtmlAnnounceForm( announce, category, locale, true, request ) );
         model.put( MARK_CATEGORY, category );
         model.put( MARK_SECTOR, sector );
+        model.put( MARK_LIST_FIELDS, getSectorList( ) );
+        model.put( MARK_LOCALE, request.getLocale( ) );
 
         HtmlTemplate template = AppTemplateService.getTemplate(
                 announce == null ? TEMPLATE_PAGE_CREATE_ANNOUNCE_STEP_FORM : TEMPLATE_MODIFY_ANNOUNCE, locale, model );
@@ -1317,5 +1285,100 @@ public class AnnounceApp implements XPageApplication
         json.element( JSONUtils.JSON_KEY_FIELD_NAME, handler.buildFieldName( strIdEntry ) );
 
         return json.toString( );
+    }
+
+    /**
+     * Get the list of announces of the user
+     * @param request The request
+     * @param model The model
+     * @return The HTML content to display
+     * @throws SiteMessageException If a site message needs to be displayed
+     */
+    public static String getManageUserAnnounces( HttpServletRequest request ) throws SiteMessageException
+    {
+        LuteceUser user = getLuteceUserAuthentication( request );
+
+        String strCurrentPageIndex = Paginator.getPageIndex( request, Paginator.PARAMETER_PAGE_INDEX,
+                DEFAULT_PAGE_INDEX );
+        int nDefaultItemsPerPage = AppPropertiesService.getPropertyInt( PROPERTY_DEFAULT_FRONT_LIST_ANNOUNCE_PER_PAGE,
+                10 );
+
+        Integer nOldItemsPerPageFromSession = (Integer) request.getSession( ).getAttribute(
+                SESSION_ATTRIBUTE_MY_ANNOUNCES_ITEMS_PER_PAGE );
+        int nOldItemsPerPage = nOldItemsPerPageFromSession != null ? nOldItemsPerPageFromSession : nDefaultItemsPerPage;
+
+        int nItemsPerPage = Paginator.getItemsPerPage( request, Paginator.PARAMETER_ITEMS_PER_PAGE, nOldItemsPerPage,
+                nDefaultItemsPerPage );
+
+        request.getSession( ).setAttribute( SESSION_ATTRIBUTE_MY_ANNOUNCES_ITEMS_PER_PAGE, nItemsPerPage );
+
+        List<Announce> listAnnounces = AnnounceHome.getAnnouncesForUser( user );
+
+        UrlItem urlItem = new UrlItem( JSP_PORTAL );
+        if ( StringUtils.isNotEmpty( request.getParameter( PARAMETER_PAGE ) ) )
+        {
+            urlItem.addParameter( PARAMETER_PAGE, request.getParameter( PARAMETER_PAGE ) );
+        }
+        if ( StringUtils.isNotEmpty( request.getParameter( MVCUtils.PARAMETER_ACTION ) ) )
+        {
+            urlItem.addParameter( PARAMETER_PAGE, request.getParameter( MVCUtils.PARAMETER_ACTION ) );
+        }
+        if ( StringUtils.isNotEmpty( request.getParameter( MVCUtils.PARAMETER_VIEW ) ) )
+        {
+            urlItem.addParameter( PARAMETER_PAGE, request.getParameter( MVCUtils.PARAMETER_VIEW ) );
+        }
+        if ( StringUtils.isNotEmpty( request.getParameter( Parameters.PAGE_ID ) ) )
+        {
+            urlItem.addParameter( PARAMETER_PAGE, request.getParameter( Parameters.PAGE_ID ) );
+        }
+        if ( StringUtils.isNotEmpty( request.getParameter( Parameters.PAGE_ID ) ) )
+        {
+            urlItem.addParameter( PARAMETER_PAGE, request.getParameter( Parameters.PAGE_ID ) );
+        }
+
+        Paginator<Announce> paginator = new Paginator<Announce>( listAnnounces, nItemsPerPage, urlItem.getUrl( ),
+                PARAMETER_PAGE_INDEX, strCurrentPageIndex );
+
+        for ( Announce announce : paginator.getPageItems( ) )
+        {
+            announce.setListIdImageResponse( AnnounceHome.findListIdImageResponse( announce.getId( ) ) );
+        }
+
+        Map<String, Object> model = new HashMap<String, Object>( );
+        model.put( MARK_LIST_FIELDS, getSectorList( ) );
+        model.put( MARK_LOCALE, request.getLocale( ) );
+        model.put( MARK_NB_ITEMS_PER_PAGE, Integer.toString( nItemsPerPage ) );
+        model.put( MARK_PAGINATOR, paginator );
+        model.put( MARK_ANNOUNCES_LIST, paginator.getPageItems( ) );
+        model.put( MARK_USER, user );
+        HtmlTemplate template = AppTemplateService.getTemplate( TEMPLATE_MY_ANNOUNCES, request.getLocale( ), model );
+
+        return template.getHtml( );
+    }
+
+    /**
+     * Get the list of sectors to be displayed in the navigation menu
+     * @return The list of sectors
+     */
+    private static Collection<Sector> getSectorList( )
+    {
+        Collection<Sector> listSectors = SectorHome.findAll( );
+
+        for ( Sector sector : listSectors )
+        {
+            int nNumberAnnounces = 0;
+            Collection<Category> categoryList = CategoryHome.findCategoriesForSector( sector,
+                    AnnouncePlugin.getPlugin( ) );
+            sector.setListCategories( categoryList );
+
+            for ( Category category : categoryList )
+            {
+                nNumberAnnounces += CategoryHome.countPublishedAnnouncesForCategory( category,
+                        AnnouncePlugin.getPlugin( ) );
+            }
+
+            sector.setNumberAnnounces( nNumberAnnounces );
+        }
+        return listSectors;
     }
 }

@@ -53,7 +53,7 @@
 
 	<properties>
 		<componentName>announce</componentName>
-		<jiraProjectName>ANNOUNCE</jiraProjectName>
+		<jiraProjectName>ADVERT</jiraProjectName>
 		<jiraComponentId>10200</jiraComponentId>
 	</properties>
     <scm>
