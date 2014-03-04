@@ -44,7 +44,7 @@ public class Category implements RBACResource
     /**
      * The resource type of categories
      */
-    public static String RESOURCE_TYPE = "CATEGORY";
+    public static final String RESOURCE_TYPE = "CATEGORY";
 
     /////////////////////////////////////////////////////////////////////////////////
     // Constants

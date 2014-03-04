@@ -168,38 +168,55 @@ public class Sector implements RBACResource
     }
 
     /**
-     * Returns the Resource Type Code that identify the resource type
-     * @return The Resource Type Code
+     * {@inheritDoc}
      */
+    @Override
     public String getResourceId(  )
     {
         return "" + getId(  );
     }
 
     /**
-     * Returns the resource Id of the current object
-     * @return The resource Id of the current object
+     * {@inheritDoc}
      */
+    @Override
     public String getResourceTypeCode(  )
     {
         return RESOURCE_TYPE;
     }
 
+
+    /**
+     * Get the order of the announce
+     * @return The order of the announce
+     */
     public int getOrder(  )
     {
         return _nOrder;
     }
 
+    /**
+     * Set the order of the announce
+     * @param nOrder The order of the announce
+     */
     public void setOrder( int nOrder )
     {
         this._nOrder = nOrder;
     }
 
+    /**
+     * Get the number of announces
+     * @return The number of announces
+     */
     public int getNumberAnnounces(  )
     {
         return _nNumberAnnounces;
     }
 
+    /**
+     * Set the number of announces
+     * @param nNumberAnnounces The number of announces
+     */
     public void setNumberAnnounces( int nNumberAnnounces )
     {
         this._nNumberAnnounces = nNumberAnnounces;

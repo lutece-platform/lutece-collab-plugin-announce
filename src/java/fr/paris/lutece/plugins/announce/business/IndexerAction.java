@@ -59,11 +59,11 @@ public class IndexerAction
 
     /**
      * set the action id
-     * @param idAction idAction
+     * @param nIdAction idAction
      */
-    public void setIdAction( int idAction )
+    public void setIdAction( int nIdAction )
     {
-        _nIdAction = idAction;
+        _nIdAction = nIdAction;
     }
 
     /**
@@ -77,11 +77,11 @@ public class IndexerAction
 
     /**
      * set the recordId
-     * @param IdAnnounce  record if
+     * @param nIdAnnounce  record if
      */
-    public void setIdAnnounce( int IdAnnounce )
+    public void setIdAnnounce( int nIdAnnounce )
     {
-        _nIdAnnounce = IdAnnounce;
+        _nIdAnnounce = nIdAnnounce;
     }
 
     /**
@@ -95,10 +95,10 @@ public class IndexerAction
 
     /**
      * set the task id
-     * @param idTask the task id
+     * @param nIdTask the task id
      */
-    public void setIdTask( int idTask )
+    public void setIdTask( int nIdTask )
     {
-        _nIdTask = idTask;
+        _nIdTask = nIdTask;
     }
 }

@@ -62,7 +62,7 @@ public class Announce implements Serializable
     private Timestamp _dateCreation;
     private String _strPrice;
     private String _strTags;
-    private List<Response> listResponse;
+    private List<Response> _listResponse;
 
     /**
      * Get the list of responses of this announce
@@ -70,7 +70,7 @@ public class Announce implements Serializable
      */
     public List<Response> getListResponse( )
     {
-        return listResponse;
+        return _listResponse;
     }
 
     /**
@@ -79,7 +79,7 @@ public class Announce implements Serializable
      */
     public void setListResponse( List<Response> listResponse )
     {
-        this.listResponse = listResponse;
+        this._listResponse = listResponse;
     }
 
     /**

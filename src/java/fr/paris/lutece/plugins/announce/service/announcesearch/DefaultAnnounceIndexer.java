@@ -89,9 +89,9 @@ public class DefaultAnnounceIndexer implements IAnnounceSearchIndexer
      * @param indexWriter the indexWriter
      * @param listIdAnounce The list of id announce
      * @param plugin the plugin
-     * @throws CorruptIndexException
-     * @throws IOException
-     * @throws InterruptedException
+     * @throws CorruptIndexException If the index is corrupted
+     * @throws IOException If an IO Exception occurred
+     * @throws InterruptedException If the indexer is interrupted
      */
     private void indexListAnnounce( IndexWriter indexWriter, List<Integer> listIdAnounce, Plugin plugin )
         throws CorruptIndexException, IOException, InterruptedException
@@ -131,7 +131,7 @@ public class DefaultAnnounceIndexer implements IAnnounceSearchIndexer
                                                             .getAllIndexerActionByTask( IndexerAction.TASK_DELETE,
                     plugin ) )
             {
-                sbLogRecord( sbLogs, action.getIdAnnounce(  ), IndexerAction.TASK_DELETE );
+                sbLogAnnounce( sbLogs, action.getIdAnnounce(  ), IndexerAction.TASK_DELETE );
                 indexWriter.deleteDocuments( new Term( AnnounceSearchItem.FIELD_ID_ANNOUNCE,
                         Integer.toString( action.getIdAnnounce(  ) ) ) );
                 AnnounceSearchService.getInstance(  ).removeIndexerAction( action.getIdAction(  ), plugin );
@@ -142,7 +142,7 @@ public class DefaultAnnounceIndexer implements IAnnounceSearchIndexer
                                                             .getAllIndexerActionByTask( IndexerAction.TASK_MODIFY,
                     plugin ) )
             {
-                sbLogRecord( sbLogs, action.getIdAnnounce(  ), IndexerAction.TASK_MODIFY );
+                sbLogAnnounce( sbLogs, action.getIdAnnounce(  ), IndexerAction.TASK_MODIFY );
 
                 indexWriter.deleteDocuments( new Term( AnnounceSearchItem.FIELD_ID_ANNOUNCE,
                         Integer.toString( action.getIdAnnounce(  ) ) ) );
@@ -161,7 +161,7 @@ public class DefaultAnnounceIndexer implements IAnnounceSearchIndexer
                                                             .getAllIndexerActionByTask( IndexerAction.TASK_CREATE,
                     plugin ) )
             {
-                sbLogRecord( sbLogs, action.getIdAnnounce( ), IndexerAction.TASK_CREATE );
+                sbLogAnnounce( sbLogs, action.getIdAnnounce( ), IndexerAction.TASK_CREATE );
                 listIdAnnounce.add( action.getIdAnnounce( ) );
 
                 AnnounceSearchService.getInstance(  ).removeIndexerAction( action.getIdAction(  ), plugin );
@@ -178,7 +178,7 @@ public class DefaultAnnounceIndexer implements IAnnounceSearchIndexer
                     sbLogs.append( "Indexing Announce" );
                     sbLogs.append( "\r\n" );
 
-                    sbLogRecord( sbLogs, announce.getId(  ), IndexerAction.TASK_CREATE );
+                    sbLogAnnounce( sbLogs, announce.getId(  ), IndexerAction.TASK_CREATE );
 
                     listIdAnnounce.add( announce.getId( ) );
                 }
@@ -192,8 +192,8 @@ public class DefaultAnnounceIndexer implements IAnnounceSearchIndexer
      * Get the subject document
      * @param strDocument id of the subject to index
      * @return The list of lucene documents
-     * @throws IOException the exception
-     * @throws InterruptedException the exception
+     * @throws IOException If an IO Exception occurred
+     * @throws InterruptedException If the indexer is interrupted
      * @throws SiteMessageException the exception
      */
     public static List<Document> getDocuments( String strDocument )
@@ -226,8 +226,8 @@ public class DefaultAnnounceIndexer implements IAnnounceSearchIndexer
      * @param announce the announce
      * @param strUrl the url
      * @param plugin the plugin
-     * @throws java.io.IOException I/O exceiption
-     * @throws java.lang.InterruptedException interrupted exception
+     * @throws IOException If an IO Exception occurred
+     * @throws InterruptedException If the indexer is interrupted
      * @return the document
      */
     public static org.apache.lucene.document.Document getDocument( Announce announce, String strUrl, Plugin plugin )
@@ -293,8 +293,8 @@ public class DefaultAnnounceIndexer implements IAnnounceSearchIndexer
     }
 
     /**
-     * Set the Content to index (Question and Answer)
-     * @param questionAnswer The {@link QuestionAnswer} to index
+     * Set the Content to index
+     * @param announce The {@link Announce} to index
      * @param plugin The {@link Plugin}
      * @return The content to index
      */
@@ -349,13 +349,12 @@ public class DefaultAnnounceIndexer implements IAnnounceSearchIndexer
     }
 
     /**
-     * indexing action performed on the recording
+     * Indexing action performed on the recording
      * @param sbLogs the buffer log
-     * @param nIdRecord the id of the record
      * @param nIdAnnounce the id of the announce
      * @param nAction the indexer action key performed
      */
-    private void sbLogRecord( StringBuffer sbLogs, int nIdAnnounce, int nAction )
+    private void sbLogAnnounce( StringBuffer sbLogs, int nIdAnnounce, int nAction )
     {
         sbLogs.append( "Indexing Announce:" );
 

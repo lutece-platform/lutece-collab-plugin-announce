@@ -504,6 +504,14 @@ public final class AnnounceDAO implements IAnnounceDAO
         daoUtil.free( );
     }
 
+    /**
+     * Get an announce with its category. Only the id, the label and the price
+     * boolean of the category is loaded.
+     * @param daoUtil The daoUtil to load data from. Note that the cursor of the
+     *            daoUtil will NOT be moved by this method, and that the call to
+     *            the daoUtil.free( ) will NOT be performed.
+     * @return
+     */
     private Announce getAnnounceWithCategory( DAOUtil daoUtil )
     {
         Announce announce = new Announce( );

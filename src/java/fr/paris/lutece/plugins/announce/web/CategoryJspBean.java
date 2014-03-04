@@ -302,8 +302,7 @@ public class CategoryJspBean extends PluginAdminPageJspBean
 
         Category category = getAuthorizedCategory( request, CategoryResourceIdService.PERMISSION_MODIFY );
 
-        ReferenceList listSectors = new ReferenceList( );
-        listSectors = SectorHome.findLocaleReferenceList( request.getLocale( ) );
+        ReferenceList listSectors = SectorHome.findLocaleReferenceList( request.getLocale( ) );
 
         ReferenceList refMailingList = new ReferenceList( );
         AdminUser adminUser = getUser( );

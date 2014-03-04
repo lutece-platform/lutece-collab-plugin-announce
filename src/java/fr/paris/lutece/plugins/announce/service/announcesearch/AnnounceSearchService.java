@@ -33,7 +33,6 @@
  */
 package fr.paris.lutece.plugins.announce.service.announcesearch;
 
-import fr.paris.lutece.plugins.announce.business.Announce;
 import fr.paris.lutece.plugins.announce.business.IndexerAction;
 import fr.paris.lutece.plugins.announce.business.IndexerActionFilter;
 import fr.paris.lutece.plugins.announce.business.IndexerActionHome;
@@ -79,11 +78,11 @@ public class AnnounceSearchService
     private static final int DEFAULT_WRITER_MERGE_FACTOR = 20;
     private static final int DEFAULT_WRITER_MAX_FIELD_LENGTH = 1000000;
 
-    private static volatile String _strIndex;
-    private static int _nWriterMergeFactor;
-    private static int _nWriterMaxSectorLength;
-    private static Analyzer _analyzer;
-    private static IAnnounceSearchIndexer _indexer;
+    private volatile String _strIndex;
+    private Analyzer _analyzer;
+    private IAnnounceSearchIndexer _indexer;
+    private int _nWriterMergeFactor;
+    private int _nWriterMaxSectorLength;
 
     // Constants corresponding to the variables defined in the lutece.properties file
     private static volatile AnnounceSearchService _singleton;
@@ -148,7 +147,7 @@ public class AnnounceSearchService
      * @param dateMax maximum date
      * @param request The {@link HttpServletRequest}
      * @param plugin The plugin
-     * @return Results as a collection of id of {@link Announce}
+     * @return Results as a collection of id of announces
      */
     public List<Integer> getSearchResults( String strKeywords, int nIdCategory, Date dateMin, Date dateMax,
             HttpServletRequest request, Plugin plugin )

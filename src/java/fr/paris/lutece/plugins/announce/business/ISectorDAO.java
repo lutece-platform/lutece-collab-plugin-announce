@@ -102,6 +102,13 @@ public interface ISectorDAO
     ReferenceList selectLocaleReferenceList( Plugin plugin, Locale locale );
 
     //////////////////////////////// Order management
+
+    /**
+     * Update the order of a sector
+     * @param nNewOrder The order of a sector
+     * @param nId The id of the sector to update
+     * @param plugin The plugin
+     */
     void storeOrder( int nNewOrder, int nId, Plugin plugin );
 
     /**
@@ -120,5 +127,10 @@ public interface ISectorDAO
      */
     int selectOrderById( int nId, Plugin plugin );
 
+    /**
+     * Get the maximum order of sectors
+     * @param plugin The plugin
+     * @return The maximum order of sectors
+     */
     int selectMaxOrder( Plugin plugin );
 }

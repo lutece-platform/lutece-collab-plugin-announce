@@ -391,11 +391,9 @@ public class SectorJspBean extends PluginAdminPageJspBean
 
     /**
      * Modify the place in the list for sector
-     *
-     * @param nId the sector identifier
      * @param nOrder the actual place in the list
      * @param nNewOrder the new place in the list
-     * @param nIdContactList the id of the sector
+     * @param nIdSector the id of the sector
      */
     private void modifySectorOrder( int nOrder, int nNewOrder, int nIdSector )
     {
@@ -434,11 +432,13 @@ public class SectorJspBean extends PluginAdminPageJspBean
 
     /**
      * Get the authorized Sector
-     *
+     * 
      * @param request The {@link HttpServletRequest}
      * @param strPermissionType The type of permission (see
      *            {@link SectorResourceIdService} class)
      * @return The sector or null if user have no access
+     * @throws AccessDeniedException If the user is not authorized to access
+     *             this feature
      */
     private Sector getAuthorizedSector( HttpServletRequest request, String strPermissionType )
         throws AccessDeniedException

@@ -42,7 +42,7 @@ public class IndexerActionFilter
 {
     public static final int ALL_INT = -1;
     private int _nIdTask = ALL_INT;
-    private int nIdAnnounce = ALL_INT;
+    private int _nIdAnnounce = ALL_INT;
 
     /**
      * gets the id of task
@@ -77,7 +77,7 @@ public class IndexerActionFilter
      */
     public int getIdAnnounce( )
     {
-        return nIdAnnounce;
+        return _nIdAnnounce;
     }
 
     /**
@@ -86,7 +86,7 @@ public class IndexerActionFilter
      */
     public void setIdAnnounce( int nIdAnnounce )
     {
-        this.nIdAnnounce = nIdAnnounce;
+        this._nIdAnnounce = nIdAnnounce;
     }
 
     /**
@@ -95,6 +95,6 @@ public class IndexerActionFilter
      */
     public boolean containsIdAnnounce( )
     {
-        return ( nIdAnnounce != ALL_INT );
+        return ( _nIdAnnounce != ALL_INT );
     }
 }

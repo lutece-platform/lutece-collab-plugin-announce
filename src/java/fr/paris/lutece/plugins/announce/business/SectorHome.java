@@ -53,7 +53,7 @@ public class SectorHome
     private static Plugin _plugin = PluginService.getPlugin( AnnouncePlugin.PLUGIN_NAME );
 
     /** Creates a new instance of SectorHome */
-    public SectorHome(  )
+    public SectorHome( )
     {
     }
 
@@ -153,20 +153,27 @@ public class SectorHome
         return _dao.selectOrderById( nOrder, _plugin );
     }
 
+    /**
+     * Update the order of a sector
+     * @param nOrder The order of a sector
+     * @param nIdSector The id of the sector to update
+     */
     public static void updateOrder( int nOrder, int nIdSector )
     {
         _dao.storeOrder( nOrder, nIdSector, _plugin );
     }
 
+    /**
+     * Get the maximum order of sectors
+     * @return The maximum order of sectors
+     */
     public static int getMaxOrderSector( )
     {
         return _dao.selectMaxOrder( _plugin );
     }
 
     /**
-     * selects the reference list with the i18n string at the top (for front)
-     * 
-     * @param plugin The plugin
+     * Selects the reference list with the i18n string at the top (for front)
      * @param locale The locale
      * @return A referenceList of sectors
      */

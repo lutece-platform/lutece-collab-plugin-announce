@@ -57,10 +57,10 @@ public interface ICategoryDAO
      * Insert a new record in the table.
      *
      *
-     * @param Category The Category object
+     * @param category The Category object
      * @param plugin The plugin
      */
-    void insert( Category Category, Plugin plugin );
+    void insert( Category category, Plugin plugin );
 
     /**
      * Load the data of Category from the table
