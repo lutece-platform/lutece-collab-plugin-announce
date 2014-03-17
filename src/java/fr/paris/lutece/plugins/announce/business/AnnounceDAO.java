@@ -62,16 +62,16 @@ public final class AnnounceDAO implements IAnnounceDAO
     private static final String SQL_QUERY_NEW_PK = "SELECT max( id_announce ) FROM announce_announce";
 
     // Select
-    private static final String SQL_QUERY_SELECT_FIELD_LIST_WITH_CATEGORY = "SELECT a.id_announce, a.title_announce, a.description_announce, a.price_announce, a.date_creation, a.user_name, a.contact_information, a.published, a.suspended, a.suspended_by_user, a.tags, a.has_pictures, a.id_category,b.label_category, b.display_price FROM announce_announce a, announce_category b";
+    private static final String SQL_QUERY_SELECT_FIELD_LIST_WITH_CATEGORY = "SELECT a.id_announce, a.title_announce, a.description_announce, a.price_announce, a.date_creation, a.user_name, a.contact_information, a.published, a.suspended, a.suspended_by_user, a.tags, a.has_pictures, a.id_category,b.label_category, b.display_price FROM announce_announce a, announce_category b WHERE a.id_category = b.id_category ";
     private static final String SQL_QUERY_SELECT = SQL_QUERY_SELECT_FIELD_LIST_WITH_CATEGORY
-            + " WHERE a.id_announce = ? AND a.id_category = b.id_category " + DEFAULT_ORDER_BY;
+            + " AND a.id_announce = ? " + DEFAULT_ORDER_BY;
     private static final String SQL_QUERY_SELECTALL_PUBLISHED = SQL_QUERY_SELECT_FIELD_LIST_WITH_CATEGORY
-            + " WHERE a.id_category = b.id_category AND a.published = 1 AND a.suspended = 0 AND a.suspended_by_user = 0 "
+            + "AND a.published = 1 AND a.suspended = 0 AND a.suspended_by_user = 0 "
             + DEFAULT_ORDER_BY;
     private static final String SQL_QEURY_SELECT_BY_LIST_ID = SQL_QUERY_SELECT_FIELD_LIST_WITH_CATEGORY
-            + " WHERE a.id_announce IN (";
+            + " AND a.id_announce IN (";
     private static final String SQL_QUERY_SELECTALL_ANNOUNCES_FOR_USER = SQL_QUERY_SELECT_FIELD_LIST_WITH_CATEGORY
-            + " WHERE a.id_category = b.id_category AND a.user_name = ? " + DEFAULT_ORDER_BY;
+            + " AND a.user_name = ? " + DEFAULT_ORDER_BY;
 
     // insert, delete
     private static final String SQL_QUERY_INSERT = "INSERT INTO announce_announce ( id_announce, user_name, contact_information, id_category, title_announce, description_announce, price_announce, date_creation, published, tags, has_pictures ) VALUES (?,?,?,?,?,?,?,?,?,?,?) ";

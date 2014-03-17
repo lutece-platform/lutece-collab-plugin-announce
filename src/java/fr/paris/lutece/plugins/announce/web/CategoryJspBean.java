@@ -168,8 +168,7 @@ public class CategoryJspBean extends PluginAdminPageJspBean
 
     /**
      * Returns the list of category
-     * 
-     * @param request The Http request
+     * @param request The HTTP request
      * @return the categories list
      */
     public String getManageCategories( HttpServletRequest request )
@@ -200,8 +199,8 @@ public class CategoryJspBean extends PluginAdminPageJspBean
 
     /**
      * Returns the form to create a category
-     * @return the html code of the category form
-     * @param request The Http request
+     * @return the HTML code of the category form
+     * @param request The HTTP request
      * @throws fr.paris.lutece.portal.service.admin.AccessDeniedException access
      *             denied exception
      */
@@ -243,8 +242,8 @@ public class CategoryJspBean extends PluginAdminPageJspBean
 
     /**
      * Process the data capture form of a new category
-     * @return The Jsp URL of the process result
-     * @param request The Http Request
+     * @return The JSP URL of the process result
+     * @param request The HTTP Request
      * @throws fr.paris.lutece.portal.service.admin.AccessDeniedException access
      *             denied exception
      */
@@ -292,7 +291,7 @@ public class CategoryJspBean extends PluginAdminPageJspBean
     /**
      * Returns the form to update info about a category
      * @return The HTML form to update info
-     * @param request The Http request
+     * @param request The HTTP request
      * @throws fr.paris.lutece.portal.service.admin.AccessDeniedException access
      *             denied exception
      */
@@ -372,8 +371,8 @@ public class CategoryJspBean extends PluginAdminPageJspBean
 
     /**
      * Process the change form of a category
-     * @return The Jsp URL of the process result
-     * @param request The Http request
+     * @return The JSP URL of the process result
+     * @param request The HTTP request
      * @throws fr.paris.lutece.portal.service.admin.AccessDeniedException access
      *             denied exception
      */
@@ -415,8 +414,8 @@ public class CategoryJspBean extends PluginAdminPageJspBean
     /**
      * Manages the removal form of a category whose identifier is in the http
      * request
-     * @return the html code to confirm
-     * @param request The Http request
+     * @return the HTML code to confirm
+     * @param request The HTTP request
      * @throws fr.paris.lutece.portal.service.admin.AccessDeniedException access
      *             denied exception
      */
@@ -450,8 +449,8 @@ public class CategoryJspBean extends PluginAdminPageJspBean
 
     /**
      * Treats the removal form of a category
-     * @return the jsp URL to display the form to manage categories
-     * @param request The Http request
+     * @return the JSP URL to display the form to manage categories
+     * @param request The HTTP request
      * @throws fr.paris.lutece.portal.service.admin.AccessDeniedException access
      *             denied exception
      */
@@ -482,8 +481,8 @@ public class CategoryJspBean extends PluginAdminPageJspBean
     }
 
     /**
-     * Return UrlPage Url
-     * @return url
+     * Return UrlPage URL
+     * @return URL
      */
     private String getUrlPage( )
     {
