@@ -49,17 +49,19 @@ public class CategoryHome
     private static ICategoryDAO _dao = SpringContextService.getBean( "announce.categoryDAO" );
 
     /** Creates a new instance of CategoryHome */
-    public CategoryHome(  )
+    public CategoryHome( )
     {
     }
 
     /**
-    * Creation of an instance of category
-    *
-    * @param category The instance of the category which contains the informations to store
-    * @param plugin The Plugin object
-    * @return The  instance of category which has been created with its primary key.
-    */
+     * Creation of an instance of category
+     * 
+     * @param category The instance of the category which contains the
+     *            informations to store
+     * @param plugin The Plugin object
+     * @return The instance of category which has been created with its primary
+     *         key.
+     */
     public static Category create( Category category, Plugin plugin )
     {
         _dao.insert( category, plugin );
@@ -68,12 +70,13 @@ public class CategoryHome
     }
 
     /**
-       * Update of the category which is specified in parameter
-       *
-       * @param category The instance of the category which contains the informations to store
-       * @param plugin The Plugin object
-       * @return The instance of the  category which has been updated
-       */
+     * Update of the category which is specified in parameter
+     * 
+     * @param category The instance of the category which contains the
+     *            informations to store
+     * @param plugin The Plugin object
+     * @return The instance of the category which has been updated
+     */
     public static Category update( Category category, Plugin plugin )
     {
         _dao.store( category, plugin );
@@ -82,13 +85,14 @@ public class CategoryHome
     }
 
     /**
-       * Remove the Category  whose identifier is specified in parameter
-       *
-       * @param category The Category object to remove
-       * @param plugin The Plugin object
-       */
+     * Remove the Category whose identifier is specified in parameter
+     * 
+     * @param category The Category object to remove
+     * @param plugin The Plugin object
+     */
     public static void remove( Category category, Plugin plugin )
     {
+        AnnounceSearchFilterHome.deleteByIdCategory( category.getId( ) );
         _dao.delete( category, plugin );
     }
 
@@ -97,22 +101,23 @@ public class CategoryHome
     ///////////////////////////////////////////////////////////////////////////
 
     /**
-       * Returns an instance of a category whose identifier is specified in parameter
-       *
-       * @param nKey The Primary key of the category
-       * @param plugin The Plugin object
-       * @return An instance of category
-       */
+     * Returns an instance of a category whose identifier is specified in
+     * parameter
+     * 
+     * @param nKey The Primary key of the category
+     * @param plugin The Plugin object
+     * @return An instance of category
+     */
     public static Category findByPrimaryKey( int nKey, Plugin plugin )
     {
         return _dao.load( nKey, plugin );
     }
 
     /**
-       * Returns a collection of categorys objects
-       * @param plugin The Plugin object
-       * @return A collection of categorys
-       */
+     * Returns a collection of categorys objects
+     * @param plugin The Plugin object
+     * @return A collection of categorys
+     */
     public static List<Category> findAll( Plugin plugin )
     {
         return _dao.selectAll( plugin );

@@ -33,6 +33,7 @@
  */
 package fr.paris.lutece.plugins.announce.service.announcesearch;
 
+import fr.paris.lutece.plugins.announce.business.AnnounceSearchFilter;
 import fr.paris.lutece.plugins.announce.business.IndexerAction;
 import fr.paris.lutece.plugins.announce.business.IndexerActionFilter;
 import fr.paris.lutece.plugins.announce.business.IndexerActionHome;
@@ -140,30 +141,29 @@ public class AnnounceSearchService
 
     /**
      * Return search results
-     * @param strKeywords keywords of query
-     * @param nIdCategory id category
-     * @param dateMin minimum date
-     * @param dateMax maximum date
+     * @param filter The search filter
      * @param request The {@link HttpServletRequest}
+     * @param nPageNumber The current page
+     * @param nItemsPerPage The number of items per page to get
      * @param plugin The plugin
-     * @return Results as a collection of id of announces
+     * @param listIdAnnounces Results as a collection of id of announces
+     * @return The total number of items found
      */
-    public List<Integer> getSearchResults( String strKeywords, int nIdCategory, Date dateMin, Date dateMax,
-            HttpServletRequest request, Plugin plugin )
+    public int getSearchResults( AnnounceSearchFilter filter, HttpServletRequest request, int nPageNumber,
+            int nItemsPerPage, List<Integer> listIdAnnounces, Plugin plugin )
     {
-        List<Integer> listAnnounces = new ArrayList<Integer>( );
-
+        int nNbItems = 0;
         try
         {
-            IAnnounceSearchEngine engine = (IAnnounceSearchEngine) SpringContextService.getBean( BEAN_SEARCH_ENGINE );
-            List<SearchResult> listResults = engine.getSearchResults( strKeywords, nIdCategory, dateMin, dateMax,
-                    request, plugin );
+            IAnnounceSearchEngine engine = SpringContextService.getBean( BEAN_SEARCH_ENGINE );
+            List<SearchResult> listResults = new ArrayList<SearchResult>( );
+            nNbItems = engine.getSearchResults( filter, request, plugin, listResults, nPageNumber, nItemsPerPage );
 
             for ( SearchResult searchResult : listResults )
             {
                 if ( searchResult.getId( ) != null )
                 {
-                    listAnnounces.add( Integer.parseInt( searchResult.getId( ) ) );
+                    listIdAnnounces.add( Integer.parseInt( searchResult.getId( ) ) );
                 }
             }
         }
@@ -171,10 +171,10 @@ public class AnnounceSearchService
         {
             AppLogService.error( e.getMessage( ), e );
             // If an error occurred clean result list
-            listAnnounces = new ArrayList<Integer>( );
+            listIdAnnounces.clear( );
         }
 
-        return listAnnounces;
+        return nNbItems;
     }
 
     /**
@@ -353,5 +353,14 @@ public class AnnounceSearchService
             _strIndex = AppPathService.getPath( PATH_INDEX );
         }
         return _strIndex;
+    }
+
+    /**
+     * Get the analyzed of this search service
+     * @return The analyzer of this search service
+     */
+    public Analyzer getAnalyzer( )
+    {
+        return _analyzer;
     }
 }

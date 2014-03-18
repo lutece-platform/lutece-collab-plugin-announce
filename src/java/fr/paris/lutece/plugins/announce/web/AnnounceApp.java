@@ -36,6 +36,7 @@ package fr.paris.lutece.plugins.announce.web;
 import fr.paris.lutece.plugins.announce.business.Announce;
 import fr.paris.lutece.plugins.announce.business.AnnounceDTO;
 import fr.paris.lutece.plugins.announce.business.AnnounceHome;
+import fr.paris.lutece.plugins.announce.business.AnnounceSearchFilter;
 import fr.paris.lutece.plugins.announce.business.Category;
 import fr.paris.lutece.plugins.announce.business.CategoryHome;
 import fr.paris.lutece.plugins.announce.business.Sector;
@@ -118,7 +119,7 @@ public class AnnounceApp implements XPageApplication
 {
     private static final long serialVersionUID = 3586318619582357870L;
     private static final String PARAMETER_USERNAME = "username";
-    private static final String PATTERN_DATE = "dd/MM/yy";
+    private static final String PATTERN_DATE = "dd/MM/yyyy";
 
     //Jsp redirections
     private static final String JSP_PORTAL = "jsp/site/Portal.jsp";
@@ -143,6 +144,7 @@ public class AnnounceApp implements XPageApplication
     private static final String PARAMETER_ID_ENTRY = "id_entry";
     private static final String PARAMETER_FIELD_INDEX = "field_index";
     private static final String PARAMETER_ACTION_ADDNEW = "addnew";
+    private static final String PARAMETER_HAS_FILTER = "hasFilter";
 
     // Actions
     private static final String ACTION_VIEW_ANNOUNCE = "view_announce";
@@ -191,6 +193,9 @@ public class AnnounceApp implements XPageApplication
     private static final String TEMPLATE_ANNOUNCE_NOTIFY_MESSAGE = "skin/plugins/announce/announce_notify_message.html";
     private static final String TEMPLATE_ANNOUNCE_FRAMESET = "skin/plugins/announce/announce_frameset.html";
 
+    // Session keys
+    private static final String SESSION_KEY_ANNOUNCE_FILTER = "announce.session.announceSearchFilter";
+
     //Markers
     private static final String MARK_LIST_FIELDS = "list_sectors";
     private static final String MARK_LOCALE = "locale";
@@ -207,6 +212,7 @@ public class AnnounceApp implements XPageApplication
     private static final String MARK_FILTER_SEARCHED_CATEGORY = "filter_searched_category";
     private static final String MARK_FILTER_DATE_MIN = "filter_date_min";
     private static final String MARK_FILTER_DATE_MAX = "filter_date_max";
+    private static final String MARK_FILTER_ID = "filter_id";
     private static final String MARK_ANNOUNCE = "announce";
     private static final String MARK_ANNOUNCE_OWNER = "owner";
     private static final String MARK_ALLOW_ACCESS = "allow_access";
@@ -224,12 +230,19 @@ public class AnnounceApp implements XPageApplication
     //defaults
     private static final String DEFAULT_PAGE_INDEX = "1";
 
+    private static final DateFormat DATE_FORMAT = new SimpleDateFormat( PATTERN_DATE, Locale.FRENCH );
+
     // private fields
     private AnnounceService _announceService = SpringContextService.getBean( AnnounceService.BEAN_NAME );
     private Plugin _plugin;
     private int _nDefaultItemsPerPage;
     private String _strCurrentPageIndex;
     private int _nItemsPerPage;
+
+    static
+    {
+        DATE_FORMAT.setLenient( false );
+    }
 
     /**
      * {@inheritDoc}
@@ -245,6 +258,7 @@ public class AnnounceApp implements XPageApplication
         XPage page = new XPage( );
         page.setPathLabel( I18nService.getLocalizedString( PROPERTY_PAGE_PATH, request.getLocale( ) ) );
 
+        Map<String, Object> model = new HashMap<String, Object>( );
         if ( strAction != null )
         {
             if ( strAction.equals( PARAMETER_ACTION_ADDNEW ) )
@@ -298,8 +312,18 @@ public class AnnounceApp implements XPageApplication
             }
             else if ( strAction.equals( ACTION_SEARCH ) )
             {
+                AnnounceSearchFilter filter = getAnnounceFilterFromRequest( request );
+
                 page.setTitle( I18nService.getLocalizedString( PROPERTY_PAGE_TITLE_SEARCH_RESULTS, request.getLocale( ) ) );
-                page.setContent( getSearchAnnounces( request ) );
+                page.setContent( getSearchAnnounces( request, filter ) );
+
+                model.put( MARK_FILTER_SEARCHED_KEYWORDS, filter.getKeywords( ) );
+                model.put( MARK_FILTER_SEARCHED_CATEGORY, filter.getIdCategory( ) );
+                model.put( MARK_FILTER_DATE_MIN,
+                        filter.getDateMin( ) != null ? DATE_FORMAT.format( filter.getDateMin( ) ) : null );
+                model.put( MARK_FILTER_DATE_MAX,
+                        filter.getDateMax( ) != null ? DATE_FORMAT.format( filter.getDateMax( ) ) : null );
+                model.put( MARK_FILTER_ID, filter.getIdFilter( ) );
             }
             else if ( strAction.equals( ACTION_DOWNLOAD ) )
             {
@@ -318,7 +342,6 @@ public class AnnounceApp implements XPageApplication
         }
 
         /* model and template declarations */
-        Map<String, Object> model = new HashMap<String, Object>( );
         model.put( MARK_LIST_FIELDS, getSectorList( ) );
         model.put( MARK_LOCALE, request.getLocale( ) );
         LuteceUser user = SecurityService.getInstance( ).getRegisteredUser( request );
@@ -404,6 +427,8 @@ public class AnnounceApp implements XPageApplication
         model.put( MARK_ANNOUNCES_LIST, paginator.getPageItems( ) );
         model.put( MARK_LIST_FIELDS, getSectorList( ) );
         model.put( MARK_LOCALE, request.getLocale( ) );
+
+        request.getSession( ).removeAttribute( SESSION_KEY_ANNOUNCE_FILTER );
 
         HtmlTemplate template = AppTemplateService.getTemplate( TEMPLATE_LIST_ANNOUNCES, request.getLocale( ), model );
 
@@ -516,6 +541,7 @@ public class AnnounceApp implements XPageApplication
 
         if ( listAnnounces.size( ) < AppPropertiesService.getPropertyInt( PROPERTY_MAX_AMOUNT_ANNOUNCE, 20 ) )
         {
+            model.put( MARK_LIST_FIELDS, getSectorList( ) );
             template = AppTemplateService.getTemplate( TEMPLATE_PAGE_CREATE_ANNOUNCE_STEP_CATEGORY,
                     request.getLocale( ), model );
         }
@@ -1019,69 +1045,24 @@ public class AnnounceApp implements XPageApplication
      * @param model The model
      * @return The HTML content to displayed
      */
-    private String getSearchAnnounces( HttpServletRequest request )
+    private String getSearchAnnounces( HttpServletRequest request, AnnounceSearchFilter filter )
     {
         _strCurrentPageIndex = Paginator.getPageIndex( request, Paginator.PARAMETER_PAGE_INDEX, DEFAULT_PAGE_INDEX );
         _nDefaultItemsPerPage = AppPropertiesService.getPropertyInt( PROPERTY_DEFAULT_FRONT_LIST_ANNOUNCE_PER_PAGE, 10 );
         _nItemsPerPage = Paginator.getItemsPerPage( request, Paginator.PARAMETER_ITEMS_PER_PAGE, _nItemsPerPage,
                 _nDefaultItemsPerPage );
 
-        String strKeywords = request.getParameter( PARAMETER_KEYWORDS );
-        String strIdCategory = request.getParameter( PARAMETER_CATEGORY_ID );
-        String strDateMin = request.getParameter( PARAMETER_DATE_MIN );
-        String strDateMax = request.getParameter( PARAMETER_DATE_MAX );
-        int nIdCategory = Integer.parseInt( strIdCategory );
+        int nCurrentPageIndex = StringUtils.isNotEmpty( _strCurrentPageIndex )
+                && StringUtils.isNumeric( _strCurrentPageIndex ) ? Integer.parseInt( _strCurrentPageIndex ) : 1;
+        List<Integer> listIdAnnounces = new ArrayList<Integer>( );
+        int nNbItems = AnnounceSearchService.getInstance( ).getSearchResults( filter, request, nCurrentPageIndex,
+                _nItemsPerPage, listIdAnnounces, _plugin );
 
-        DateFormat dateFormat = new SimpleDateFormat( PATTERN_DATE, Locale.FRENCH );
-
-        dateFormat.setLenient( false );
-
-        // Check if filters sectors are null
-        strKeywords = ( strKeywords == null ) ? StringUtils.EMPTY : strKeywords;
-
-        Date formatedDateMin = null;
-        Date formatedDateMax = null;
-
-        if ( StringUtils.isNotEmpty( strDateMin ) )
-        {
-            try
-            {
-                formatedDateMin = dateFormat.parse( strDateMin.trim( ) );
-            }
-            catch ( ParseException e )
-            {
-                AppLogService.error( e );
-            }
-        }
-
-        if ( StringUtils.isNotEmpty( strDateMax ) )
-        {
-            try
-            {
-                formatedDateMax = dateFormat.parse( strDateMax.trim( ) );
-            }
-            catch ( ParseException e )
-            {
-                AppLogService.error( e );
-            }
-        }
-
-        List<Integer> listIdAnnounces = AnnounceSearchService.getInstance( ).getSearchResults( strKeywords,
-                nIdCategory, formatedDateMin, formatedDateMax, request, _plugin );
-
-        Paginator<Integer> paginatorId = new Paginator<Integer>( listIdAnnounces, _nItemsPerPage, StringUtils.EMPTY,
-                PARAMETER_PAGE_INDEX, _strCurrentPageIndex );
-
-        List<Announce> listAnnounces = AnnounceHome.findByListId( paginatorId.getPageItems( ) );
-
-        String strSearchParameters = PARAMETER_KEYWORDS + "=" + strKeywords + "&" + PARAMETER_CATEGORY_ID + "="
-                + strIdCategory + "&" + PARAMETER_DATE_MIN + "=" + strDateMin + "&" + PARAMETER_DATE_MAX + "="
-                + strDateMax;
+        List<Announce> listAnnounces = AnnounceHome.findByListId( listIdAnnounces );
 
         LocalizedDelegatePaginator<Announce> paginator = new LocalizedDelegatePaginator<Announce>( listAnnounces,
-                _nItemsPerPage, JSP_PORTAL + "?" + PARAMETER_PAGE + "=" + AnnounceUtils.PARAMETER_PAGE_ANNOUNCE + "&"
-                        + MVCUtils.PARAMETER_ACTION + "=" + ACTION_SEARCH + "&" + strSearchParameters,
-                PARAMETER_PAGE_INDEX, _strCurrentPageIndex, listIdAnnounces.size( ), request.getLocale( ) );
+                _nItemsPerPage, getUrlSearchAnnounce( request ), PARAMETER_PAGE_INDEX, _strCurrentPageIndex, nNbItems,
+                request.getLocale( ) );
 
         Map<String, Object> model = new HashMap<String, Object>( );
         model.put( MARK_NB_ITEMS_PER_PAGE, Integer.toString( _nItemsPerPage ) );
@@ -1095,10 +1076,13 @@ public class AnnounceApp implements XPageApplication
         }
 
         model.put( MARK_ANNOUNCES_LIST, paginator.getPageItems( ) );
-        model.put( MARK_FILTER_SEARCHED_KEYWORDS, strKeywords );
-        model.put( MARK_FILTER_SEARCHED_CATEGORY, nIdCategory );
-        model.put( MARK_FILTER_DATE_MIN, strDateMin );
-        model.put( MARK_FILTER_DATE_MAX, strDateMax );
+        model.put( MARK_FILTER_SEARCHED_KEYWORDS, filter.getKeywords( ) );
+        model.put( MARK_FILTER_SEARCHED_CATEGORY, filter.getIdCategory( ) );
+        model.put( MARK_FILTER_DATE_MIN, filter.getDateMin( ) != null ? DATE_FORMAT.format( filter.getDateMin( ) )
+                : null );
+        model.put( MARK_FILTER_DATE_MAX, filter.getDateMax( ) != null ? DATE_FORMAT.format( filter.getDateMax( ) )
+                : null );
+        model.put( MARK_FILTER_ID, filter.getIdFilter( ) );
         model.put( MARK_LOCALE, request.getLocale( ) );
         LuteceUser user = SecurityService.getInstance( ).getRegisteredUser( request );
         model.put( MARK_USER, user );
@@ -1290,7 +1274,6 @@ public class AnnounceApp implements XPageApplication
     /**
      * Get the list of announces of the user
      * @param request The request
-     * @param model The model
      * @return The HTML content to display
      * @throws SiteMessageException If a site message needs to be displayed
      */
@@ -1314,26 +1297,22 @@ public class AnnounceApp implements XPageApplication
 
         List<Announce> listAnnounces = AnnounceHome.getAnnouncesForUser( user );
 
-        UrlItem urlItem = new UrlItem( JSP_PORTAL );
+        UrlItem urlItem = new UrlItem( AppPathService.getPortalUrl( ) );
         if ( StringUtils.isNotEmpty( request.getParameter( PARAMETER_PAGE ) ) )
         {
             urlItem.addParameter( PARAMETER_PAGE, request.getParameter( PARAMETER_PAGE ) );
         }
         if ( StringUtils.isNotEmpty( request.getParameter( MVCUtils.PARAMETER_ACTION ) ) )
         {
-            urlItem.addParameter( PARAMETER_PAGE, request.getParameter( MVCUtils.PARAMETER_ACTION ) );
+            urlItem.addParameter( MVCUtils.PARAMETER_ACTION, request.getParameter( MVCUtils.PARAMETER_ACTION ) );
         }
         if ( StringUtils.isNotEmpty( request.getParameter( MVCUtils.PARAMETER_VIEW ) ) )
         {
-            urlItem.addParameter( PARAMETER_PAGE, request.getParameter( MVCUtils.PARAMETER_VIEW ) );
+            urlItem.addParameter( MVCUtils.PARAMETER_VIEW, request.getParameter( MVCUtils.PARAMETER_VIEW ) );
         }
         if ( StringUtils.isNotEmpty( request.getParameter( Parameters.PAGE_ID ) ) )
         {
-            urlItem.addParameter( PARAMETER_PAGE, request.getParameter( Parameters.PAGE_ID ) );
-        }
-        if ( StringUtils.isNotEmpty( request.getParameter( Parameters.PAGE_ID ) ) )
-        {
-            urlItem.addParameter( PARAMETER_PAGE, request.getParameter( Parameters.PAGE_ID ) );
+            urlItem.addParameter( Parameters.PAGE_ID, request.getParameter( Parameters.PAGE_ID ) );
         }
 
         Paginator<Announce> paginator = new Paginator<Announce>( listAnnounces, nItemsPerPage, urlItem.getUrl( ),
@@ -1380,5 +1359,83 @@ public class AnnounceApp implements XPageApplication
             sector.setNumberAnnounces( nNumberAnnounces );
         }
         return listSectors;
+    }
+
+    /**
+     * Get the announce search filter with data contained in an HTTP request
+     * @param request The request
+     * @return The search filter. If the request contains no filter data, then
+     *         the returned search filter is empty but never null.
+     */
+    public static AnnounceSearchFilter getAnnounceFilterFromRequest( HttpServletRequest request )
+    {
+        if ( Boolean.parseBoolean( request.getParameter( PARAMETER_HAS_FILTER ) ) )
+        {
+            String strKeywords = request.getParameter( PARAMETER_KEYWORDS );
+            String strIdCategory = request.getParameter( PARAMETER_CATEGORY_ID );
+            String strDateMin = request.getParameter( PARAMETER_DATE_MIN );
+            String strDateMax = request.getParameter( PARAMETER_DATE_MAX );
+            int nIdCategory = Integer.parseInt( strIdCategory );
+
+            strKeywords = ( strKeywords == null ) ? StringUtils.EMPTY : strKeywords;
+
+            Date formatedDateMin = null;
+            Date formatedDateMax = null;
+
+            if ( StringUtils.isNotEmpty( strDateMin ) )
+            {
+                try
+                {
+                    formatedDateMin = DATE_FORMAT.parse( strDateMin.trim( ) );
+                }
+                catch ( ParseException e )
+                {
+                    AppLogService.error( e );
+                }
+            }
+
+            if ( StringUtils.isNotEmpty( strDateMax ) )
+            {
+                try
+                {
+                    formatedDateMax = DATE_FORMAT.parse( strDateMax.trim( ) );
+                }
+                catch ( ParseException e )
+                {
+                    AppLogService.error( e );
+                }
+            }
+
+            AnnounceSearchFilter filter = new AnnounceSearchFilter( );
+            filter.setKeywords( strKeywords );
+            filter.setIdCategory( nIdCategory );
+            filter.setDateMin( formatedDateMin );
+            filter.setDateMax( formatedDateMax );
+
+            request.getSession( ).setAttribute( SESSION_KEY_ANNOUNCE_FILTER, filter );
+
+            return filter;
+        }
+        AnnounceSearchFilter filter = (AnnounceSearchFilter) request.getSession( ).getAttribute(
+                SESSION_KEY_ANNOUNCE_FILTER );
+        if ( filter == null )
+        {
+            filter = new AnnounceSearchFilter( );
+        }
+        return filter;
+    }
+
+    /**
+     * Get the URL to search for announces
+     * @param request The request
+     * @return The URL to search announces
+     */
+    public static String getUrlSearchAnnounce( HttpServletRequest request )
+    {
+        UrlItem urlItem = new UrlItem( AppPathService.getBaseUrl( request ) + AppPathService.getPortalUrl( ) );
+        urlItem.addParameter( PARAMETER_PAGE, AnnounceUtils.PARAMETER_PAGE_ANNOUNCE );
+        urlItem.addParameter( MVCUtils.PARAMETER_ACTION, ACTION_SEARCH );
+
+        return urlItem.getUrl( );
     }
 }

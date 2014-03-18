@@ -31,34 +31,62 @@
  *
  * License 1.0
  */
-package fr.paris.lutece.plugins.announce.service.announcesearch;
+package fr.paris.lutece.plugins.announce.service;
 
-import fr.paris.lutece.plugins.announce.business.AnnounceSearchFilter;
-import fr.paris.lutece.portal.service.plugin.Plugin;
-import fr.paris.lutece.portal.service.search.SearchResult;
-
-import java.util.List;
-
-import javax.servlet.http.HttpServletRequest;
+import fr.paris.lutece.portal.service.cache.AbstractCacheableService;
 
 
 /**
- * SearchEngine
+ * Cache service for announces
  */
-public interface IAnnounceSearchEngine
+public class AnnounceCacheService extends AbstractCacheableService
 {
+    private static final String CACHE_SERVICE_NAME = "announce.announceCacheService";
+    private static final String ANNOUNCE_KEY_PREFIXE = "announce.announce.";
+    private static final String PUBLISHED_ANNOUNCES_ID_LIST_KEY_PREFIXE = "announce.announce.allPublishedId";
+
+    private static AnnounceCacheService _instance = new AnnounceCacheService( );
+
+    private AnnounceCacheService( )
+    {
+        initCache( );
+    }
+
     /**
-     * Get list of record key return by the search. Only results of the current
-     * page are returned by this function
-     * @param filter The search filter
-     * @param request the HTTP request
-     * @param plugin the plugin
-     * @param listSearchResult The list of search results
-     * @param nPage The number of the current page
-     * @param nItemsPerPage The number of items per page. 0 to ignore the
-     *            pagination
-     * @return The total number of results found
+     * Get the instance of this service
+     * @return the instance of this service
      */
-    public int getSearchResults( AnnounceSearchFilter filter, HttpServletRequest request, Plugin plugin,
-            List<SearchResult> listSearchResult, int nPage, int nItemsPerPage );
+    public static AnnounceCacheService getService( )
+    {
+        return _instance;
+    }
+
+    /**
+     * Get the cache key of an announce
+     * @param nIdAnnounce The id of the announce to get the key of
+     * @return The cache key of the announce
+     */
+    public static String getAnnounceCacheKey( int nIdAnnounce )
+    {
+        return ANNOUNCE_KEY_PREFIXE + nIdAnnounce;
+    }
+
+    /**
+     * Get the cache key of the list of published announces
+     * @return The cache key of the list of published announces
+     */
+    public static String getListIdPublishedAnnouncesCacheKey( )
+    {
+        return PUBLISHED_ANNOUNCES_ID_LIST_KEY_PREFIXE;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getName( )
+    {
+        return CACHE_SERVICE_NAME;
+    }
+
 }

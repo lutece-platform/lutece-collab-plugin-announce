@@ -68,14 +68,17 @@ public class MyAnnouncesPortlet extends PortletHtmlContent
     @Override
     public String getHtmlContent( HttpServletRequest request )
     {
-        try
+        if ( request != null )
         {
-            return AnnounceApp.getManageUserAnnounces( request );
-        }
-        catch ( SiteMessageException e )
-        {
-            // We catch site messages since they tell the user to log in if he has not logged in
-            AppLogService.error( e.getMessage( ), e );
+            try
+            {
+                return AnnounceApp.getManageUserAnnounces( request );
+            }
+            catch ( SiteMessageException e )
+            {
+                // We catch site messages since they tell the user to log in if he has not logged in
+                AppLogService.error( e.getMessage( ), e );
+            }
         }
         return StringUtils.EMPTY;
     }

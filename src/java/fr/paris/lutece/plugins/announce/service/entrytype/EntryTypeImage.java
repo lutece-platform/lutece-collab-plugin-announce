@@ -42,10 +42,8 @@ import fr.paris.lutece.plugins.genericattributes.service.entrytype.AbstractEntry
 import fr.paris.lutece.plugins.genericattributes.service.upload.IGAAsyncUploadHandler;
 import fr.paris.lutece.portal.business.file.File;
 import fr.paris.lutece.portal.business.physicalfile.PhysicalFile;
-import fr.paris.lutece.portal.business.regularexpression.RegularExpression;
 import fr.paris.lutece.portal.service.fileupload.FileUploadService;
 import fr.paris.lutece.portal.service.i18n.I18nService;
-import fr.paris.lutece.portal.service.regularexpression.RegularExpressionService;
 import fr.paris.lutece.portal.service.util.AppLogService;
 import fr.paris.lutece.portal.web.upload.MultipartHttpServletRequest;
 import fr.paris.lutece.util.filesystem.FileSystemUtil;
@@ -163,29 +161,6 @@ public class EntryTypeImage extends AbstractEntryTypeUpload
                     }
 
                     listResponse.add( response );
-
-                    String strMimeType = ( fileItem != null ) ? fileItem.getContentType( ) : StringUtils.EMPTY;
-                    List<RegularExpression> listRegularExpression = entry.getFields( ).get( 0 )
-                            .getRegularExpressionList( );
-
-                    if ( StringUtils.isNotBlank( strMimeType ) && ( listRegularExpression != null )
-                            && ( listRegularExpression.size( ) != 0 )
-                            && RegularExpressionService.getInstance( ).isAvailable( ) )
-                    {
-                        for ( RegularExpression regularExpression : listRegularExpression )
-                        {
-                            if ( !RegularExpressionService.getInstance( ).isMatches( strMimeType, regularExpression ) )
-                            {
-                                formError = new GenericAttributeError( );
-                                formError.setMandatoryError( false );
-                                formError.setTitleQuestion( entry.getTitle( ) );
-                                formError.setErrorMessage( regularExpression.getErrorMessage( ) );
-
-                                return formError;
-                            }
-                        }
-                    }
-
                     BufferedImage image = null;
 
                     try

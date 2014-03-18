@@ -33,6 +33,7 @@
  */
 package fr.paris.lutece.plugins.announce.business;
 
+import fr.paris.lutece.plugins.announce.service.AnnounceCacheService;
 import fr.paris.lutece.plugins.announce.service.AnnouncePlugin;
 import fr.paris.lutece.plugins.announce.service.announcesearch.AnnounceSearchService;
 import fr.paris.lutece.plugins.genericattributes.business.Response;
@@ -78,8 +79,13 @@ public final class AnnounceHome
 
         if ( announce.getPublished( ) && !announce.getSuspended( ) && !announce.getSuspendedByUser( ) )
         {
-            AnnounceSearchService.getInstance( ).addIndexerAction( announce.getId( ), IndexerAction.TASK_CREATE, _plugin );
+            AnnounceSearchService.getInstance( ).addIndexerAction( announce.getId( ), IndexerAction.TASK_CREATE,
+                    _plugin );
+            AnnounceCacheService.getService( ).removeKey( AnnounceCacheService.getListIdPublishedAnnouncesCacheKey( ) );
         }
+
+        AnnounceCacheService.getService( ).putInCache( AnnounceCacheService.getAnnounceCacheKey( announce.getId( ) ),
+                announce );
 
         return announce;
     }
@@ -96,12 +102,17 @@ public final class AnnounceHome
 
         if ( announce.getPublished( ) && !announce.getSuspended( ) && !announce.getSuspendedByUser( ) )
         {
-            AnnounceSearchService.getInstance( ).addIndexerAction( announce.getId( ), IndexerAction.TASK_MODIFY, _plugin );
+            AnnounceSearchService.getInstance( ).addIndexerAction( announce.getId( ), IndexerAction.TASK_MODIFY,
+                    _plugin );
         }
         else
         {
-            AnnounceSearchService.getInstance( ).addIndexerAction( announce.getId( ), IndexerAction.TASK_DELETE, _plugin );
+            AnnounceSearchService.getInstance( ).addIndexerAction( announce.getId( ), IndexerAction.TASK_DELETE,
+                    _plugin );
         }
+        AnnounceCacheService.getService( ).removeKey( AnnounceCacheService.getListIdPublishedAnnouncesCacheKey( ) );
+        AnnounceCacheService.getService( ).putInCache( AnnounceCacheService.getAnnounceCacheKey( announce.getId( ) ),
+                announce );
 
         return announce;
     }
@@ -121,6 +132,8 @@ public final class AnnounceHome
         }
         removeAnnounceResponse( nAnnounceId );
         _dao.delete( nAnnounceId, _plugin );
+        AnnounceCacheService.getService( ).removeKey( AnnounceCacheService.getListIdPublishedAnnouncesCacheKey( ) );
+        AnnounceCacheService.getService( ).removeKey( AnnounceCacheService.getAnnounceCacheKey( nAnnounceId ) );
     }
 
     ///////////////////////////////////////////////////////////////////////////
@@ -134,7 +147,16 @@ public final class AnnounceHome
      */
     public static Announce findByPrimaryKey( int nKey )
     {
-        return _dao.load( nKey, _plugin );
+        Announce announce = (Announce) AnnounceCacheService.getService( ).getFromCache(
+                AnnounceCacheService.getAnnounceCacheKey( nKey ) );
+        if ( announce == null )
+        {
+            announce = _dao.load( nKey, _plugin );
+            AnnounceCacheService.getService( ).putInCache(
+                    AnnounceCacheService.getAnnounceCacheKey( announce.getId( ) ), announce );
+        }
+
+        return announce;
     }
 
     /**
@@ -154,7 +176,16 @@ public final class AnnounceHome
      */
     public static List<Integer> findAllPublishedId( )
     {
+        List<Integer> listIds = (List<Integer>) AnnounceCacheService.getService( ).getFromCache(
+                AnnounceCacheService.getListIdPublishedAnnouncesCacheKey( ) );
+        if ( listIds == null )
+        {
+            listIds = _dao.selectAllPublishedId( _plugin );
+            AnnounceCacheService.getService( ).putInCache( AnnounceCacheService.getListIdPublishedAnnouncesCacheKey( ),
+                    listIds );
+        }
         return _dao.selectAllPublishedId( _plugin );
+
     }
 
     /**
@@ -217,12 +248,15 @@ public final class AnnounceHome
 
         if ( announce.getPublished( ) && !announce.getSuspended( ) && !announce.getSuspendedByUser( ) )
         {
-            AnnounceSearchService.getInstance( ).addIndexerAction( announce.getId( ), IndexerAction.TASK_CREATE, _plugin );
+            AnnounceSearchService.getInstance( ).addIndexerAction( announce.getId( ), IndexerAction.TASK_CREATE,
+                    _plugin );
         }
         else
         {
-            AnnounceSearchService.getInstance( ).addIndexerAction( announce.getId( ), IndexerAction.TASK_DELETE, _plugin );
+            AnnounceSearchService.getInstance( ).addIndexerAction( announce.getId( ), IndexerAction.TASK_DELETE,
+                    _plugin );
         }
+        AnnounceCacheService.getService( ).removeKey( AnnounceCacheService.getListIdPublishedAnnouncesCacheKey( ) );
     }
 
     /**
@@ -235,12 +269,15 @@ public final class AnnounceHome
 
         if ( announce.getPublished( ) && !announce.getSuspended( ) && !announce.getSuspendedByUser( ) )
         {
-            AnnounceSearchService.getInstance( ).addIndexerAction( announce.getId( ), IndexerAction.TASK_CREATE, _plugin );
+            AnnounceSearchService.getInstance( ).addIndexerAction( announce.getId( ), IndexerAction.TASK_CREATE,
+                    _plugin );
         }
         else
         {
-            AnnounceSearchService.getInstance( ).addIndexerAction( announce.getId( ), IndexerAction.TASK_DELETE, _plugin );
+            AnnounceSearchService.getInstance( ).addIndexerAction( announce.getId( ), IndexerAction.TASK_DELETE,
+                    _plugin );
         }
+        AnnounceCacheService.getService( ).removeKey( AnnounceCacheService.getListIdPublishedAnnouncesCacheKey( ) );
     }
 
     /**
@@ -253,12 +290,15 @@ public final class AnnounceHome
 
         if ( announce.getPublished( ) && !announce.getSuspended( ) && !announce.getSuspendedByUser( ) )
         {
-            AnnounceSearchService.getInstance( ).addIndexerAction( announce.getId( ), IndexerAction.TASK_CREATE, _plugin );
+            AnnounceSearchService.getInstance( ).addIndexerAction( announce.getId( ), IndexerAction.TASK_CREATE,
+                    _plugin );
         }
         else
         {
-            AnnounceSearchService.getInstance( ).addIndexerAction( announce.getId( ), IndexerAction.TASK_DELETE, _plugin );
+            AnnounceSearchService.getInstance( ).addIndexerAction( announce.getId( ), IndexerAction.TASK_DELETE,
+                    _plugin );
         }
+        AnnounceCacheService.getService( ).removeKey( AnnounceCacheService.getListIdPublishedAnnouncesCacheKey( ) );
     }
 
     // -----------------------------------------------

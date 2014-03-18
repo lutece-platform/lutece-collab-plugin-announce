@@ -31,34 +31,66 @@
  *
  * License 1.0
  */
-package fr.paris.lutece.plugins.announce.service.announcesearch;
+package fr.paris.lutece.plugins.announce.business;
 
-import fr.paris.lutece.plugins.announce.business.AnnounceSearchFilter;
 import fr.paris.lutece.portal.service.plugin.Plugin;
-import fr.paris.lutece.portal.service.search.SearchResult;
 
 import java.util.List;
 
-import javax.servlet.http.HttpServletRequest;
-
 
 /**
- * SearchEngine
+ * Interface for announce search filter DAO
  */
-public interface IAnnounceSearchEngine
+public interface IAnnounceSearchFilterDAO
 {
     /**
-     * Get list of record key return by the search. Only results of the current
-     * page are returned by this function
-     * @param filter The search filter
-     * @param request the HTTP request
-     * @param plugin the plugin
-     * @param listSearchResult The list of search results
-     * @param nPage The number of the current page
-     * @param nItemsPerPage The number of items per page. 0 to ignore the
-     *            pagination
-     * @return The total number of results found
+     * Find a filter by primary key
+     * @param nIdFilter The id of the filter
+     * @param plugin The plugin
+     * @return The filter
      */
-    public int getSearchResults( AnnounceSearchFilter filter, HttpServletRequest request, Plugin plugin,
-            List<SearchResult> listSearchResult, int nPage, int nItemsPerPage );
+    AnnounceSearchFilter findByPrimaryKey( int nIdFilter, Plugin plugin );
+
+    /**
+     * Insert a new filter into the database
+     * @param filter the filter
+     * @param plugin The plugin
+     */
+    void create( AnnounceSearchFilter filter, Plugin plugin );
+
+    /**
+     * Update a filter
+     * @param filter The filter to update
+     * @param plugin The plugin
+     */
+    void update( AnnounceSearchFilter filter, Plugin plugin );
+
+    /**
+     * Remove a filter from the database
+     * @param nIdFilter The id of the filter
+     * @param plugin The plugin
+     */
+    void delete( int nIdFilter, Plugin plugin );
+
+    /**
+     * Remove filters from the database from the id of categories
+     * @param nIdCategory The id of the category
+     * @param plugin The plugin
+     */
+    void deleteByIdCategory( int nIdCategory, Plugin plugin );
+
+    /**
+     * Get the list of every filters
+     * @param plugin The plugin
+     * @return the list of every filters
+     */
+    List<AnnounceSearchFilter> findAll( Plugin plugin );
+
+    /**
+     * Get the list of filters from a list of id
+     * @param listIdFilters The list of id of filters
+     * @param plugin The plugin
+     * @return the list of filters
+     */
+    List<AnnounceSearchFilter> findByListId( List<Integer> listIdFilters, Plugin plugin );
 }

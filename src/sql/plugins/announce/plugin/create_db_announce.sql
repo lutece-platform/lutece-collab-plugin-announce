@@ -69,3 +69,13 @@ CREATE TABLE announce_announce_response (
 	is_image SMALLINT DEFAULT '0',
 	PRIMARY KEY (id_announce,id_response)
 );
+
+DROP TABLE IF EXISTS announce_search_filters;
+CREATE TABLE announce_search_filters(
+	id_filter int NOT NULL,
+	id_category int NOT NULL,
+	keywords long varchar NOT NULL ,
+	date_min DATE null,
+	date_max DATE null,
+	PRIMARY KEY (id_filter)
+);
