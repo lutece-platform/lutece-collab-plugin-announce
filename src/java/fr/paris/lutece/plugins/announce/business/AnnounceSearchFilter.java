@@ -46,6 +46,8 @@ public class AnnounceSearchFilter
     private int _nIdCategory;
     private Date _dateMin;
     private Date _dateMax;
+    private int _nPriceMin;
+    private int _nPriceMax;
 
     /**
      * Get the id of the filter
@@ -135,5 +137,41 @@ public class AnnounceSearchFilter
     public void setDateMax( Date dateMax )
     {
         this._dateMax = dateMax;
+    }
+
+    /**
+     * Get the minimum price of the filter
+     * @return The minimum price of the filter
+     */
+    public int getPriceMin( )
+    {
+        return _nPriceMin;
+    }
+
+    /**
+     * Set the minimum price of the filter
+     * @param nPriceMin The minimum price of the filter
+     */
+    public void setPriceMin( int nPriceMin )
+    {
+        this._nPriceMin = nPriceMin;
+    }
+
+    /**
+     * Get the maximum price of the filter
+     * @return The maximum price of the filter
+     */
+    public int getPriceMax( )
+    {
+        return _nPriceMax;
+    }
+
+    /**
+     * Set the maximum price of the filter
+     * @param nPriceMax The maximum price of the filter
+     */
+    public void setPriceMax( int nPriceMax )
+    {
+        this._nPriceMax = nPriceMax;
     }
 }

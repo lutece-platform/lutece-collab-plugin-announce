@@ -180,7 +180,7 @@ public class CategoryJspBean extends PluginAdminPageJspBean
         _nItemsPerPage = Paginator.getItemsPerPage( request, Paginator.PARAMETER_ITEMS_PER_PAGE, _nItemsPerPage,
                 _nDefaultItemsPerPage );
 
-        List<Category> listCategories = CategoryHome.findAll( getPlugin( ) );
+        List<Category> listCategories = CategoryHome.findAll( );
 
         //listCategories = AdminWorkgroupService.getAuthorizedCollection( listCategories, getUser(  ) );
         Paginator<Category> paginator = new Paginator<Category>( listCategories, _nItemsPerPage, getUrlPage( ),
@@ -282,7 +282,7 @@ public class CategoryJspBean extends PluginAdminPageJspBean
             category.setDisplayPrice( false );
         }
 
-        CategoryHome.create( category, getPlugin( ) );
+        CategoryHome.create( category );
 
         // if the operation occurred well, redirects towards the list
         return JSP_REDIRECT_TO_MANAGE_CATEGORIES;
@@ -405,7 +405,7 @@ public class CategoryJspBean extends PluginAdminPageJspBean
             category.setDisplayPrice( false );
         }
 
-        CategoryHome.update( category, getPlugin( ) );
+        CategoryHome.update( category );
 
         // if the operation occurred well, redirects towards the list
         return JSP_REDIRECT_TO_MANAGE_CATEGORIES;
@@ -425,7 +425,7 @@ public class CategoryJspBean extends PluginAdminPageJspBean
         Category category = getAuthorizedCategory( request, CategoryResourceIdService.PERMISSION_DELETE );
 
         if ( ( category.getNumberAnnounces( ) == 0 )
-                && ( CategoryHome.countEntriesForCategory( category, getPlugin( ) ) == 0 ) )
+ && ( CategoryHome.countEntriesForCategory( category ) == 0 ) )
         {
             UrlItem url = new UrlItem( JSP_DO_REMOVE_CATEGORY );
             url.addParameter( PARAMETER_CATEGORY_ID, nIdCategory );
@@ -439,7 +439,7 @@ public class CategoryJspBean extends PluginAdminPageJspBean
             return AdminMessageService.getMessageUrl( request, MESSAGE_PLEASE_REMOVE_ANNOUCES, AdminMessage.TYPE_STOP );
         }
 
-        if ( CategoryHome.countEntriesForCategory( category, getPlugin( ) ) != 0 )
+        if ( CategoryHome.countEntriesForCategory( category ) != 0 )
         {
             return AdminMessageService.getMessageUrl( request, MESSAGE_PLEASE_REMOVE_ENTRIES, AdminMessage.TYPE_STOP );
         }
@@ -457,7 +457,7 @@ public class CategoryJspBean extends PluginAdminPageJspBean
     public String doRemoveCategory( HttpServletRequest request ) throws AccessDeniedException
     {
         Category category = getAuthorizedCategory( request, CategoryResourceIdService.PERMISSION_DELETE );
-        CategoryHome.remove( category, getPlugin( ) );
+        CategoryHome.remove( category );
 
         // TODO : remove entries, responses, fields, etc...
 
@@ -475,7 +475,7 @@ public class CategoryJspBean extends PluginAdminPageJspBean
         setPageTitleProperty( PROPERTY_PAGE_TITLE_VIEW_FORM_EXAMPLE );
 
         int nIdCategory = Integer.parseInt( request.getParameter( PARAMETER_CATEGORY_ID ) );
-        Category category = CategoryHome.findByPrimaryKey( nIdCategory, getPlugin( ) );
+        Category category = CategoryHome.findByPrimaryKey( nIdCategory );
 
         return getAdminPage( _announceService.getHtmlAnnounceForm( null, category, getLocale( ), false, request ) );
     }
@@ -510,7 +510,7 @@ public class CategoryJspBean extends PluginAdminPageJspBean
         }
 
         int nIdCategory = Integer.parseInt( strIdCategory );
-        Category category = CategoryHome.findByPrimaryKey( nIdCategory, getPlugin( ) );
+        Category category = CategoryHome.findByPrimaryKey( nIdCategory );
 
         if ( ( category == null )
                 || !RBACService.isAuthorized( Category.RESOURCE_TYPE, String.valueOf( category.getId( ) ),

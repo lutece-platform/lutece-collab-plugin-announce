@@ -31,67 +31,25 @@
  *
  * License 1.0
  */
-package fr.paris.lutece.plugins.announce.service.announcesearch;
+package fr.paris.lutece.plugins.announce.service.daemon;
 
-import fr.paris.lutece.portal.service.search.SearchItem;
-
-import org.apache.lucene.document.Document;
+import fr.paris.lutece.portal.service.daemon.Daemon;
 
 
 /**
- * AnnounceSearchItem
+ * Daemon to send notification to users when subscribed announces are created
  */
-public class AnnounceSearchItem extends SearchItem
+public class AnnounceSubscriptionDaemon extends Daemon
 {
-    /**
-     * Category id
-     */
-    public static final String FIELD_CATEGORY_ID = "category_id";
 
     /**
-     * Id announce
+     * {@inheritDoc}
      */
-    public static final String FIELD_ID_ANNOUNCE = "id_announce";
-
-    /**
-     * Announce tags
-     */
-    public static final String FIELD_TAGS = "tags";
-
-    /**
-     * Announce price
-     */
-    public static final String FIELD_PRICE = "price";
-
-    // Variables declarations
-    private String _strCategoryId;
-
-    /**
-     * Constructor
-     *
-     * @param document The Lucene {@link Document}
-     */
-    public AnnounceSearchItem( Document document )
+    @Override
+    public void run( )
     {
-        super( document );
-        setCategoryId( document.get( FIELD_CATEGORY_ID ) );
+        // TODO Auto-generated method stub
+
     }
 
-    /**
-     * gets id catgory
-     * @return the _strSubjectId
-     */
-    public String getCategoryId(  )
-    {
-        return _strCategoryId;
-    }
-
-    /**
-     * sets id category
-     * @param strCategoryId the _strSubjectId to set
-     */
-    public void setCategoryId( String strCategoryId )
-    {
-        _strCategoryId = strCategoryId;
-    }
 }

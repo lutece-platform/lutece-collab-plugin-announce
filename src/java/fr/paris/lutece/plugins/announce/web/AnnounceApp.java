@@ -37,11 +37,11 @@ import fr.paris.lutece.plugins.announce.business.Announce;
 import fr.paris.lutece.plugins.announce.business.AnnounceDTO;
 import fr.paris.lutece.plugins.announce.business.AnnounceHome;
 import fr.paris.lutece.plugins.announce.business.AnnounceSearchFilter;
+import fr.paris.lutece.plugins.announce.business.AnnounceSearchFilterHome;
 import fr.paris.lutece.plugins.announce.business.Category;
 import fr.paris.lutece.plugins.announce.business.CategoryHome;
 import fr.paris.lutece.plugins.announce.business.Sector;
 import fr.paris.lutece.plugins.announce.business.SectorHome;
-import fr.paris.lutece.plugins.announce.service.AnnouncePlugin;
 import fr.paris.lutece.plugins.announce.service.AnnounceService;
 import fr.paris.lutece.plugins.announce.service.announcesearch.AnnounceSearchService;
 import fr.paris.lutece.plugins.announce.service.upload.AnnounceAsynchronousUploadHandler;
@@ -66,7 +66,6 @@ import fr.paris.lutece.portal.service.message.SiteMessage;
 import fr.paris.lutece.portal.service.message.SiteMessageException;
 import fr.paris.lutece.portal.service.message.SiteMessageService;
 import fr.paris.lutece.portal.service.plugin.Plugin;
-import fr.paris.lutece.portal.service.plugin.PluginService;
 import fr.paris.lutece.portal.service.security.LuteceUser;
 import fr.paris.lutece.portal.service.security.SecurityService;
 import fr.paris.lutece.portal.service.spring.SpringContextService;
@@ -79,7 +78,6 @@ import fr.paris.lutece.portal.web.LocalVariables;
 import fr.paris.lutece.portal.web.constants.Messages;
 import fr.paris.lutece.portal.web.constants.Parameters;
 import fr.paris.lutece.portal.web.util.LocalizedDelegatePaginator;
-import fr.paris.lutece.portal.web.util.LocalizedPaginator;
 import fr.paris.lutece.portal.web.xpages.XPage;
 import fr.paris.lutece.portal.web.xpages.XPageApplication;
 import fr.paris.lutece.util.file.FileUtil;
@@ -138,6 +136,8 @@ public class AnnounceApp implements XPageApplication
     private static final String PARAMETER_KEYWORDS = "keywords";
     private static final String PARAMETER_DATE_MIN = "date_min";
     private static final String PARAMETER_DATE_MAX = "date_max";
+    private static final String PARAMETER_PRICE_MIN = "price_min";
+    private static final String PARAMETER_PRICE_MAX = "price_max";
     private static final String PARAMETER_ENTRY_VALUE_ID = "entry_value_id";
     private static final String PARAMETER_PAGE_INDEX = "page_index";
     private static final String PARAMETER_TAGS = "tags";
@@ -145,11 +145,12 @@ public class AnnounceApp implements XPageApplication
     private static final String PARAMETER_FIELD_INDEX = "field_index";
     private static final String PARAMETER_ACTION_ADDNEW = "addnew";
     private static final String PARAMETER_HAS_FILTER = "hasFilter";
+    private static final String PARAMETER_ID_FILTER = "id_filter";
 
     // Actions
     private static final String ACTION_VIEW_ANNOUNCE = "view_announce";
     private static final String ACTION_VIEW_ANNOUNCES = "view_announces";
-    private static final String ACTION_CATEGORY_ANNOUNCES = "category_announces";
+    //    private static final String ACTION_CATEGORY_ANNOUNCES = "category_announces";
     private static final String ACTION_MY_ANNOUNCES = "my_announces";
     private static final String ACTION_MODIFY_ANNOUNCE = "modify_announce";
     private static final String ACTION_DELETE_ANNOUNCE = "delete_announce";
@@ -208,11 +209,9 @@ public class AnnounceApp implements XPageApplication
     private static final String MARK_USER = "user";
     private static final String MARK_CONTENT = "content";
     private static final String FULL_URL = "fullurl";
-    private static final String MARK_FILTER_SEARCHED_KEYWORDS = "filter_searched_keywords";
-    private static final String MARK_FILTER_SEARCHED_CATEGORY = "filter_searched_category";
     private static final String MARK_FILTER_DATE_MIN = "filter_date_min";
     private static final String MARK_FILTER_DATE_MAX = "filter_date_max";
-    private static final String MARK_FILTER_ID = "filter_id";
+    private static final String MARK_FILTER = "filter";
     private static final String MARK_ANNOUNCE = "announce";
     private static final String MARK_ANNOUNCE_OWNER = "owner";
     private static final String MARK_ALLOW_ACCESS = "allow_access";
@@ -224,6 +223,10 @@ public class AnnounceApp implements XPageApplication
     private static final String MARK_FORM_HTML = "form_html";
     private static final String MARK_LIST_ERRORS = "list_errors";
 
+    // Constants
+    private static final String CONSTANT_COMA = ",";
+    private static final String CONSTANT_POINT = ".";
+
     // Session keys
     private static final String SESSION_ATTRIBUTE_MY_ANNOUNCES_ITEMS_PER_PAGE = "announce.myAnnouncesItemsPerPage";
 
@@ -234,7 +237,6 @@ public class AnnounceApp implements XPageApplication
 
     // private fields
     private AnnounceService _announceService = SpringContextService.getBean( AnnounceService.BEAN_NAME );
-    private Plugin _plugin;
     private int _nDefaultItemsPerPage;
     private String _strCurrentPageIndex;
     private int _nItemsPerPage;
@@ -251,9 +253,7 @@ public class AnnounceApp implements XPageApplication
     public XPage getPage( HttpServletRequest request, int nMode, Plugin plugin ) throws SiteMessageException
     {
         /* Global variables for this App */
-        String strPluginName = request.getParameter( PARAMETER_PAGE );
         String strAction = request.getParameter( MVCUtils.PARAMETER_ACTION );
-        _plugin = PluginService.getPlugin( strPluginName );
 
         XPage page = new XPage( );
         page.setPathLabel( I18nService.getLocalizedString( PROPERTY_PAGE_PATH, request.getLocale( ) ) );
@@ -277,13 +277,6 @@ public class AnnounceApp implements XPageApplication
             {
                 String strUserName = request.getParameter( PARAMETER_USERNAME );
                 page.setContent( getViewUserAnnounces( request, strUserName ) );
-            }
-            else if ( strAction.equals( ACTION_CATEGORY_ANNOUNCES ) )
-            {
-                int nIdCategory = Integer.parseInt( request.getParameter( PARAMETER_CATEGORY_ID ) );
-                Category category = CategoryHome.findByPrimaryKey( nIdCategory, _plugin );
-                page.setTitle( category.getLabel( ) );
-                page.setContent( getPublishedAnnouncesForCategory( request, category ) );
             }
             else if ( strAction.equals( ACTION_MY_ANNOUNCES ) )
             {
@@ -317,13 +310,11 @@ public class AnnounceApp implements XPageApplication
                 page.setTitle( I18nService.getLocalizedString( PROPERTY_PAGE_TITLE_SEARCH_RESULTS, request.getLocale( ) ) );
                 page.setContent( getSearchAnnounces( request, filter ) );
 
-                model.put( MARK_FILTER_SEARCHED_KEYWORDS, filter.getKeywords( ) );
-                model.put( MARK_FILTER_SEARCHED_CATEGORY, filter.getIdCategory( ) );
                 model.put( MARK_FILTER_DATE_MIN,
                         filter.getDateMin( ) != null ? DATE_FORMAT.format( filter.getDateMin( ) ) : null );
                 model.put( MARK_FILTER_DATE_MAX,
                         filter.getDateMax( ) != null ? DATE_FORMAT.format( filter.getDateMax( ) ) : null );
-                model.put( MARK_FILTER_ID, filter.getIdFilter( ) );
+                model.put( MARK_FILTER, filter );
             }
             else if ( strAction.equals( ACTION_DOWNLOAD ) )
             {
@@ -399,72 +390,33 @@ public class AnnounceApp implements XPageApplication
      */
     private String getDefaultPage( HttpServletRequest request )
     {
-        _strCurrentPageIndex = Paginator.getPageIndex( request, Paginator.PARAMETER_PAGE_INDEX, DEFAULT_PAGE_INDEX );
-        _nDefaultItemsPerPage = AppPropertiesService.getPropertyInt( PROPERTY_DEFAULT_FRONT_LIST_ANNOUNCE_PER_PAGE, 10 );
-        _nItemsPerPage = Paginator.getItemsPerPage( request, Paginator.PARAMETER_ITEMS_PER_PAGE, _nItemsPerPage,
-                _nDefaultItemsPerPage );
-
-        List<Integer> listIdAnnounces = AnnounceHome.findAllPublishedId( );
-
-        LocalizedPaginator<Integer> paginatorId = new LocalizedPaginator<Integer>( listIdAnnounces, _nItemsPerPage,
-                StringUtils.EMPTY, PARAMETER_PAGE_INDEX, _strCurrentPageIndex, request.getLocale( ) );
-
-        List<Announce> listAnnounces = AnnounceHome.findByListId( paginatorId.getPageItems( ) );
-
-        LocalizedDelegatePaginator<Announce> paginator = new LocalizedDelegatePaginator<Announce>( listAnnounces,
-                _nItemsPerPage, JSP_PORTAL + "?" + PARAMETER_PAGE + "=" + AnnounceUtils.PARAMETER_PAGE_ANNOUNCE,
-                PARAMETER_PAGE_INDEX, _strCurrentPageIndex, listIdAnnounces.size( ), request.getLocale( ) );
-
-        Map<String, Object> model = new HashMap<String, Object>( );
-        model.put( MARK_NB_ITEMS_PER_PAGE, Integer.toString( _nItemsPerPage ) );
-        model.put( MARK_PAGINATOR, paginator );
-
-        for ( Announce announce : paginator.getPageItems( ) )
-        {
-            announce.setListIdImageResponse( AnnounceHome.findListIdImageResponse( announce.getId( ) ) );
-        }
-
-        model.put( MARK_ANNOUNCES_LIST, paginator.getPageItems( ) );
-        model.put( MARK_LIST_FIELDS, getSectorList( ) );
-        model.put( MARK_LOCALE, request.getLocale( ) );
-
-        request.getSession( ).removeAttribute( SESSION_KEY_ANNOUNCE_FILTER );
-
-        HtmlTemplate template = AppTemplateService.getTemplate( TEMPLATE_LIST_ANNOUNCES, request.getLocale( ), model );
-
-        return template.getHtml( );
+        return getSearchAnnounces( request, new AnnounceSearchFilter( ) );
     }
 
     /**
-     * Get the list of published announces of a category
+     * Get the page to search for announces
      * @param request The request
-     * @param category The category
      * @param model The model
-     * @return The HTML content to display
+     * @return The HTML content to displayed
      */
-    private String getPublishedAnnouncesForCategory( HttpServletRequest request, Category category )
+    private String getSearchAnnounces( HttpServletRequest request, AnnounceSearchFilter filter )
     {
         _strCurrentPageIndex = Paginator.getPageIndex( request, Paginator.PARAMETER_PAGE_INDEX, DEFAULT_PAGE_INDEX );
         _nDefaultItemsPerPage = AppPropertiesService.getPropertyInt( PROPERTY_DEFAULT_FRONT_LIST_ANNOUNCE_PER_PAGE, 10 );
         _nItemsPerPage = Paginator.getItemsPerPage( request, Paginator.PARAMETER_ITEMS_PER_PAGE, _nItemsPerPage,
                 _nDefaultItemsPerPage );
 
-        List<Integer> listIdAnnounces = AnnounceHome.getPublishedAnnouncesForCategory( category );
-        Paginator<Integer> paginatorId = new Paginator<Integer>( listIdAnnounces, _nItemsPerPage, StringUtils.EMPTY,
-                PARAMETER_PAGE_INDEX, _strCurrentPageIndex );
+        int nCurrentPageIndex = StringUtils.isNotEmpty( _strCurrentPageIndex )
+                && StringUtils.isNumeric( _strCurrentPageIndex ) ? Integer.parseInt( _strCurrentPageIndex ) : 1;
+        List<Integer> listIdAnnounces = new ArrayList<Integer>( );
+        int nNbItems = AnnounceSearchService.getInstance( ).getSearchResults( filter, request, nCurrentPageIndex,
+                _nItemsPerPage, listIdAnnounces );
 
-        List<Announce> listAnnounces = AnnounceHome.findByListId( paginatorId.getPageItems( ) );
+        List<Announce> listAnnounces = AnnounceHome.findByListId( listIdAnnounces );
 
         LocalizedDelegatePaginator<Announce> paginator = new LocalizedDelegatePaginator<Announce>( listAnnounces,
-                _nItemsPerPage, JSP_PORTAL + "?" + PARAMETER_PAGE + "=" + AnnounceUtils.PARAMETER_PAGE_ANNOUNCE + "&"
-                        + MVCUtils.PARAMETER_ACTION + "=" + ACTION_CATEGORY_ANNOUNCES + "&" + PARAMETER_CATEGORY_ID
-                        + "=" + category.getId( ), PARAMETER_PAGE_INDEX, _strCurrentPageIndex, listIdAnnounces.size( ),
+                _nItemsPerPage, getUrlSearchAnnounce( request ), PARAMETER_PAGE_INDEX, _strCurrentPageIndex, nNbItems,
                 request.getLocale( ) );
-
-        for ( Announce announce : paginator.getPageItems( ) )
-        {
-            announce.setListIdImageResponse( AnnounceHome.findListIdImageResponse( announce.getId( ) ) );
-        }
 
         Map<String, Object> model = new HashMap<String, Object>( );
         model.put( MARK_NB_ITEMS_PER_PAGE, Integer.toString( _nItemsPerPage ) );
@@ -472,9 +424,24 @@ public class AnnounceApp implements XPageApplication
         model.put( MARK_LIST_FIELDS, getSectorList( ) );
         model.put( MARK_LOCALE, request.getLocale( ) );
 
+        for ( Announce announce : paginator.getPageItems( ) )
+        {
+            announce.setListIdImageResponse( AnnounceHome.findListIdImageResponse( announce.getId( ) ) );
+        }
+
         model.put( MARK_ANNOUNCES_LIST, paginator.getPageItems( ) );
+        model.put( MARK_FILTER_DATE_MIN, filter.getDateMin( ) != null ? DATE_FORMAT.format( filter.getDateMin( ) )
+                : null );
+        model.put( MARK_FILTER_DATE_MAX, filter.getDateMax( ) != null ? DATE_FORMAT.format( filter.getDateMax( ) )
+                : null );
+        model.put( MARK_FILTER, filter );
+        model.put( MARK_LOCALE, request.getLocale( ) );
         LuteceUser user = SecurityService.getInstance( ).getRegisteredUser( request );
         model.put( MARK_USER, user );
+
+        //useful if you want to work with Portal.jsp and RunStandaloneApp.jsp
+        model.put( FULL_URL, request.getRequestURL( ) );
+
         HtmlTemplate template = AppTemplateService.getTemplate( TEMPLATE_LIST_ANNOUNCES, request.getLocale( ), model );
 
         return template.getHtml( );
@@ -498,7 +465,7 @@ public class AnnounceApp implements XPageApplication
         /* CATEOGRY */
         if ( ( strCategoryId != null ) && ( Integer.parseInt( strCategoryId ) != 0 ) )
         {
-            Category category = CategoryHome.findByPrimaryKey( Integer.parseInt( strCategoryId ), _plugin );
+            Category category = CategoryHome.findByPrimaryKey( Integer.parseInt( strCategoryId ) );
             Sector sector = SectorHome.findByPrimaryKey( category.getIdSector( ) );
             Announce announce = null;
             /* FORM */
@@ -695,7 +662,7 @@ public class AnnounceApp implements XPageApplication
             AnnounceAsynchronousUploadHandler.getHandler( ).removeSessionFiles( request.getSession( ).getId( ) );
         }
 
-        Category category = CategoryHome.findByPrimaryKey( announce.getCategory( ).getId( ), _plugin );
+        Category category = CategoryHome.findByPrimaryKey( announce.getCategory( ).getId( ) );
         Sector sector = SectorHome.findByPrimaryKey( category.getIdSector( ) );
         boolean bModerated = true;
 
@@ -737,7 +704,7 @@ public class AnnounceApp implements XPageApplication
                 .getParameter( PARAMETER_PRICE_ANNOUNCE );
         announce.setPrice( strPriceAnnounce );
 
-        Category category = CategoryHome.findByPrimaryKey( announce.getCategory( ).getId( ), _plugin );
+        Category category = CategoryHome.findByPrimaryKey( announce.getCategory( ).getId( ) );
         Sector sector = SectorHome.findByPrimaryKey( category.getIdSector( ) );
 
         // unpublish announce if category moderation is on
@@ -966,7 +933,7 @@ public class AnnounceApp implements XPageApplication
             model.put( MARK_LIST_FIELDS, getSectorList( ) );
             model.put( MARK_LOCALE, request.getLocale( ) );
 
-            Category category = CategoryHome.findByPrimaryKey( announce.getCategory( ).getId( ), _plugin );
+            Category category = CategoryHome.findByPrimaryKey( announce.getCategory( ).getId( ) );
             announce.setCategory( category );
         }
         HtmlTemplate template = AppTemplateService.getTemplate( TEMPLATE_VIEW_ANNOUNCE, request.getLocale( ), model );
@@ -1035,62 +1002,6 @@ public class AnnounceApp implements XPageApplication
         model.put( MARK_LOCALE, request.getLocale( ) );
 
         HtmlTemplate template = AppTemplateService.getTemplate( TEMPLATE_VIEW_ANNOUNCES, request.getLocale( ), model );
-
-        return template.getHtml( );
-    }
-
-    /**
-     * Get the page to search for announces
-     * @param request The request
-     * @param model The model
-     * @return The HTML content to displayed
-     */
-    private String getSearchAnnounces( HttpServletRequest request, AnnounceSearchFilter filter )
-    {
-        _strCurrentPageIndex = Paginator.getPageIndex( request, Paginator.PARAMETER_PAGE_INDEX, DEFAULT_PAGE_INDEX );
-        _nDefaultItemsPerPage = AppPropertiesService.getPropertyInt( PROPERTY_DEFAULT_FRONT_LIST_ANNOUNCE_PER_PAGE, 10 );
-        _nItemsPerPage = Paginator.getItemsPerPage( request, Paginator.PARAMETER_ITEMS_PER_PAGE, _nItemsPerPage,
-                _nDefaultItemsPerPage );
-
-        int nCurrentPageIndex = StringUtils.isNotEmpty( _strCurrentPageIndex )
-                && StringUtils.isNumeric( _strCurrentPageIndex ) ? Integer.parseInt( _strCurrentPageIndex ) : 1;
-        List<Integer> listIdAnnounces = new ArrayList<Integer>( );
-        int nNbItems = AnnounceSearchService.getInstance( ).getSearchResults( filter, request, nCurrentPageIndex,
-                _nItemsPerPage, listIdAnnounces, _plugin );
-
-        List<Announce> listAnnounces = AnnounceHome.findByListId( listIdAnnounces );
-
-        LocalizedDelegatePaginator<Announce> paginator = new LocalizedDelegatePaginator<Announce>( listAnnounces,
-                _nItemsPerPage, getUrlSearchAnnounce( request ), PARAMETER_PAGE_INDEX, _strCurrentPageIndex, nNbItems,
-                request.getLocale( ) );
-
-        Map<String, Object> model = new HashMap<String, Object>( );
-        model.put( MARK_NB_ITEMS_PER_PAGE, Integer.toString( _nItemsPerPage ) );
-        model.put( MARK_PAGINATOR, paginator );
-        model.put( MARK_LIST_FIELDS, getSectorList( ) );
-        model.put( MARK_LOCALE, request.getLocale( ) );
-
-        for ( Announce announce : paginator.getPageItems( ) )
-        {
-            announce.setListIdImageResponse( AnnounceHome.findListIdImageResponse( announce.getId( ) ) );
-        }
-
-        model.put( MARK_ANNOUNCES_LIST, paginator.getPageItems( ) );
-        model.put( MARK_FILTER_SEARCHED_KEYWORDS, filter.getKeywords( ) );
-        model.put( MARK_FILTER_SEARCHED_CATEGORY, filter.getIdCategory( ) );
-        model.put( MARK_FILTER_DATE_MIN, filter.getDateMin( ) != null ? DATE_FORMAT.format( filter.getDateMin( ) )
-                : null );
-        model.put( MARK_FILTER_DATE_MAX, filter.getDateMax( ) != null ? DATE_FORMAT.format( filter.getDateMax( ) )
-                : null );
-        model.put( MARK_FILTER_ID, filter.getIdFilter( ) );
-        model.put( MARK_LOCALE, request.getLocale( ) );
-        LuteceUser user = SecurityService.getInstance( ).getRegisteredUser( request );
-        model.put( MARK_USER, user );
-
-        //useful if you want to work with Portal.jsp and RunStandaloneApp.jsp
-        model.put( FULL_URL, request.getRequestURL( ) );
-
-        HtmlTemplate template = AppTemplateService.getTemplate( TEMPLATE_LIST_ANNOUNCES, request.getLocale( ), model );
 
         return template.getHtml( );
     }
@@ -1346,14 +1257,12 @@ public class AnnounceApp implements XPageApplication
         for ( Sector sector : listSectors )
         {
             int nNumberAnnounces = 0;
-            Collection<Category> categoryList = CategoryHome.findCategoriesForSector( sector,
-                    AnnouncePlugin.getPlugin( ) );
+            Collection<Category> categoryList = CategoryHome.findCategoriesForSector( sector );
             sector.setListCategories( categoryList );
 
             for ( Category category : categoryList )
             {
-                nNumberAnnounces += CategoryHome.countPublishedAnnouncesForCategory( category,
-                        AnnouncePlugin.getPlugin( ) );
+                nNumberAnnounces += CategoryHome.countPublishedAnnouncesForCategory( category );
             }
 
             sector.setNumberAnnounces( nNumberAnnounces );
@@ -1369,12 +1278,22 @@ public class AnnounceApp implements XPageApplication
      */
     public static AnnounceSearchFilter getAnnounceFilterFromRequest( HttpServletRequest request )
     {
+        String strIdFilter = request.getParameter( PARAMETER_ID_FILTER );
+        if ( StringUtils.isNotEmpty( strIdFilter ) && StringUtils.isNumeric( strIdFilter ) )
+        {
+            int nIdFilter = Integer.parseInt( strIdFilter );
+            AnnounceSearchFilter filter = AnnounceSearchFilterHome.findByPrimaryKey( nIdFilter );
+            request.getSession( ).setAttribute( SESSION_KEY_ANNOUNCE_FILTER, filter );
+            return filter;
+        }
         if ( Boolean.parseBoolean( request.getParameter( PARAMETER_HAS_FILTER ) ) )
         {
             String strKeywords = request.getParameter( PARAMETER_KEYWORDS );
             String strIdCategory = request.getParameter( PARAMETER_CATEGORY_ID );
             String strDateMin = request.getParameter( PARAMETER_DATE_MIN );
             String strDateMax = request.getParameter( PARAMETER_DATE_MAX );
+            String strPriceMin = request.getParameter( PARAMETER_PRICE_MIN );
+            String strPriceMax = request.getParameter( PARAMETER_PRICE_MAX );
             int nIdCategory = Integer.parseInt( strIdCategory );
 
             strKeywords = ( strKeywords == null ) ? StringUtils.EMPTY : strKeywords;
@@ -1412,6 +1331,37 @@ public class AnnounceApp implements XPageApplication
             filter.setDateMin( formatedDateMin );
             filter.setDateMax( formatedDateMax );
 
+            if ( StringUtils.isNotEmpty( strPriceMin ) )
+            {
+                if ( StringUtils.contains( strPriceMin, CONSTANT_COMA ) )
+                {
+                    strPriceMin = strPriceMin.substring( 0, strPriceMin.indexOf( CONSTANT_COMA ) );
+                }
+                if ( StringUtils.contains( strPriceMin, CONSTANT_POINT ) )
+                {
+                    strPriceMin = strPriceMin.substring( 0, strPriceMin.indexOf( CONSTANT_POINT ) );
+                }
+                if ( StringUtils.isNumeric( strPriceMin ) )
+                {
+                    filter.setPriceMin( Integer.parseInt( strPriceMin ) );
+                }
+            }
+            if ( StringUtils.isNotEmpty( strPriceMax ) )
+            {
+                if ( StringUtils.contains( strPriceMax, CONSTANT_COMA ) )
+                {
+                    strPriceMax = strPriceMax.substring( 0, strPriceMax.indexOf( CONSTANT_COMA ) );
+                }
+                if ( StringUtils.contains( strPriceMax, CONSTANT_POINT ) )
+                {
+                    strPriceMax = strPriceMax.substring( 0, strPriceMax.indexOf( CONSTANT_POINT ) );
+                }
+                if ( StringUtils.isNumeric( strPriceMax ) )
+                {
+                    filter.setPriceMax( Integer.parseInt( strPriceMax ) );
+                }
+            }
+
             request.getSession( ).setAttribute( SESSION_KEY_ANNOUNCE_FILTER, filter );
 
             return filter;
@@ -1432,9 +1382,25 @@ public class AnnounceApp implements XPageApplication
      */
     public static String getUrlSearchAnnounce( HttpServletRequest request )
     {
+        return getUrlSearchAnnounce( request, 0 );
+    }
+
+    /**
+     * Get the URL to search for announces
+     * @param request The request
+     * @param nIdFilter The id of the filter to load, or 0 to use the filter
+     *            stored in session if any
+     * @return The URL to search announces
+     */
+    public static String getUrlSearchAnnounce( HttpServletRequest request, int nIdFilter )
+    {
         UrlItem urlItem = new UrlItem( AppPathService.getBaseUrl( request ) + AppPathService.getPortalUrl( ) );
         urlItem.addParameter( PARAMETER_PAGE, AnnounceUtils.PARAMETER_PAGE_ANNOUNCE );
         urlItem.addParameter( MVCUtils.PARAMETER_ACTION, ACTION_SEARCH );
+        if ( nIdFilter > 0 )
+        {
+            urlItem.addParameter( PARAMETER_ID_FILTER, nIdFilter );
+        }
 
         return urlItem.getUrl( );
     }

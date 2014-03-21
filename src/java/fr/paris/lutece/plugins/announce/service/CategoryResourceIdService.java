@@ -35,8 +35,6 @@ package fr.paris.lutece.plugins.announce.service;
 
 import fr.paris.lutece.plugins.announce.business.Category;
 import fr.paris.lutece.plugins.announce.business.CategoryHome;
-import fr.paris.lutece.plugins.announce.utils.AnnounceUtils;
-import fr.paris.lutece.portal.service.plugin.PluginService;
 import fr.paris.lutece.portal.service.rbac.Permission;
 import fr.paris.lutece.portal.service.rbac.ResourceIdService;
 import fr.paris.lutece.portal.service.rbac.ResourceType;
@@ -113,7 +111,7 @@ public class CategoryResourceIdService extends ResourceIdService
     @Override
     public ReferenceList getResourceIdList( Locale locale )
     {
-        return CategoryHome.findCategoriesReferenceList( AnnounceUtils.getPlugin(  ) );
+        return CategoryHome.findCategoriesReferenceList( );
     }
 
     /**
@@ -133,8 +131,7 @@ public class CategoryResourceIdService extends ResourceIdService
             AppLogService.error( ne );
         }
 
-        Category category = CategoryHome.findByPrimaryKey( nIdCategory,
-                PluginService.getPlugin( AnnouncePlugin.PLUGIN_NAME ) );
+        Category category = CategoryHome.findByPrimaryKey( nIdCategory );
 
         return category.getLabel(  );
     }

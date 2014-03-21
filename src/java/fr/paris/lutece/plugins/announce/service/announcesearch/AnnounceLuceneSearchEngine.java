@@ -155,6 +155,18 @@ public class AnnounceLuceneSearchEngine implements IAnnounceSearchEngine
                 flags.add( BooleanClause.Occur.MUST );
             }
 
+            // contains range price
+            if ( filter.getPriceMin( ) > 0 || filter.getPriceMax( ) > 0 )
+            {
+                int nPriceMin = filter.getPriceMin( ) > 0 ? filter.getPriceMin( ) : 0;
+                int nPriceMax = filter.getPriceMax( ) > 0 ? filter.getPriceMax( ) : Integer.MAX_VALUE;
+                Query queryRangePrice = new TermRangeQuery( AnnounceSearchItem.FIELD_PRICE,
+                        Integer.toString( nPriceMin ), Integer.toString( nPriceMax ), true, true );
+                queries.add( queryRangePrice.toString( ) );
+                sectors.add( AnnounceSearchItem.FIELD_PRICE );
+                flags.add( BooleanClause.Occur.MUST );
+            }
+
             Query queryMulti = MultiFieldQueryParser.parse( Version.LUCENE_29, queries.toArray( new String[queries
                     .size( )] ), sectors.toArray( new String[sectors.size( )] ), flags
                     .toArray( new BooleanClause.Occur[flags.size( )] ), AnnounceSearchService.getInstance( )

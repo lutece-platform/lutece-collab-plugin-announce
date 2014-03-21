@@ -33,7 +33,9 @@
  */
 package fr.paris.lutece.plugins.announce.business;
 
+import fr.paris.lutece.plugins.announce.service.AnnouncePlugin;
 import fr.paris.lutece.portal.service.plugin.Plugin;
+import fr.paris.lutece.portal.service.plugin.PluginService;
 import fr.paris.lutece.portal.service.spring.SpringContextService;
 import fr.paris.lutece.util.ReferenceList;
 
@@ -47,6 +49,7 @@ public class CategoryHome
 {
     // Static variable pointed at the DAO instance
     private static ICategoryDAO _dao = SpringContextService.getBean( "announce.categoryDAO" );
+    private static Plugin _plugin = PluginService.getPlugin( AnnouncePlugin.PLUGIN_NAME );
 
     /** Creates a new instance of CategoryHome */
     public CategoryHome( )
@@ -58,13 +61,12 @@ public class CategoryHome
      * 
      * @param category The instance of the category which contains the
      *            informations to store
-     * @param plugin The Plugin object
      * @return The instance of category which has been created with its primary
      *         key.
      */
-    public static Category create( Category category, Plugin plugin )
+    public static Category create( Category category )
     {
-        _dao.insert( category, plugin );
+        _dao.insert( category, _plugin );
 
         return category;
     }
@@ -74,12 +76,11 @@ public class CategoryHome
      * 
      * @param category The instance of the category which contains the
      *            informations to store
-     * @param plugin The Plugin object
      * @return The instance of the category which has been updated
      */
-    public static Category update( Category category, Plugin plugin )
+    public static Category update( Category category )
     {
-        _dao.store( category, plugin );
+        _dao.store( category, _plugin );
 
         return category;
     }
@@ -88,12 +89,11 @@ public class CategoryHome
      * Remove the Category whose identifier is specified in parameter
      * 
      * @param category The Category object to remove
-     * @param plugin The Plugin object
      */
-    public static void remove( Category category, Plugin plugin )
+    public static void remove( Category category )
     {
         AnnounceSearchFilterHome.deleteByIdCategory( category.getId( ) );
-        _dao.delete( category, plugin );
+        _dao.delete( category, _plugin );
     }
 
     ///////////////////////////////////////////////////////////////////////////
@@ -105,64 +105,58 @@ public class CategoryHome
      * parameter
      * 
      * @param nKey The Primary key of the category
-     * @param plugin The Plugin object
      * @return An instance of category
      */
-    public static Category findByPrimaryKey( int nKey, Plugin plugin )
+    public static Category findByPrimaryKey( int nKey )
     {
-        return _dao.load( nKey, plugin );
+        return _dao.load( nKey, _plugin );
     }
 
     /**
-     * Returns a collection of categorys objects
-     * @param plugin The Plugin object
-     * @return A collection of categorys
+     * Returns a collection of categories objects
+     * @return A collection of categories
      */
-    public static List<Category> findAll( Plugin plugin )
+    public static List<Category> findAll( )
     {
-        return _dao.selectAll( plugin );
+        return _dao.selectAll( _plugin );
     }
 
     /**
      * selects the categories list for a given sector
      * @param sector the sector
-     * @param plugin the plugin
      * @return the categories list
      */
-    public static List<Category> findCategoriesForSector( Sector sector, Plugin plugin )
+    public static List<Category> findCategoriesForSector( Sector sector )
     {
-        return _dao.selectCategoriesForSector( sector, plugin );
+        return _dao.selectCategoriesForSector( sector, _plugin );
     }
 
     /**
      * gets the categories reference list
-     * @param plugin the plugin
      * @return the categories reference list
      */
-    public static ReferenceList findCategoriesReferenceList( Plugin plugin )
+    public static ReferenceList findCategoriesReferenceList( )
     {
-        return _dao.selectCategoriesReferenceList( plugin );
+        return _dao.selectCategoriesReferenceList( _plugin );
     }
 
     /**
      * counts the entries for a given category
      * @param category the category
-     * @param plugin the plugin
      * @return the number of entries
      */
-    public static int countEntriesForCategory( Category category, Plugin plugin )
+    public static int countEntriesForCategory( Category category )
     {
-        return _dao.countEntriesForCategory( category, plugin );
+        return _dao.countEntriesForCategory( category, _plugin );
     }
 
     /**
      * Count the number of published announce of a given category
      * @param category The category to get the number of published announce of
-     * @param plugin The plugin
      * @return The number of published announce of the category
      */
-    public static int countPublishedAnnouncesForCategory( Category category, Plugin plugin )
+    public static int countPublishedAnnouncesForCategory( Category category )
     {
-        return _dao.countPublishedAnnouncesForCategory( category, plugin );
+        return _dao.countPublishedAnnouncesForCategory( category, _plugin );
     }
 }

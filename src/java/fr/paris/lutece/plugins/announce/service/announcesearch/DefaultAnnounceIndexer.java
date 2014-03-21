@@ -260,6 +260,10 @@ public class DefaultAnnounceIndexer implements IAnnounceSearchIndexer
         String strDate = DateTools.dateToString( announce.getDateCreation(  ), DateTools.Resolution.DAY );
         doc.add( new Field( AnnounceSearchItem.FIELD_DATE, strDate, Field.Store.YES, Field.Index.NOT_ANALYZED ) );
 
+        // Add the price of the announce
+        doc.add( new Field( AnnounceSearchItem.FIELD_PRICE, announce.getPrice( ), Field.Store.YES,
+                Field.Index.NOT_ANALYZED ) );
+
         String strContentToIndex = getContentToIndex( announce, plugin );
         StringReader readerPage = new StringReader( strContentToIndex );
         HTMLParser parser = new HTMLParser( readerPage );

@@ -37,7 +37,9 @@ import fr.paris.lutece.plugins.announce.business.AnnounceSearchFilter;
 import fr.paris.lutece.plugins.announce.business.IndexerAction;
 import fr.paris.lutece.plugins.announce.business.IndexerActionFilter;
 import fr.paris.lutece.plugins.announce.business.IndexerActionHome;
+import fr.paris.lutece.plugins.announce.service.AnnouncePlugin;
 import fr.paris.lutece.portal.service.plugin.Plugin;
+import fr.paris.lutece.portal.service.plugin.PluginService;
 import fr.paris.lutece.portal.service.search.SearchResult;
 import fr.paris.lutece.portal.service.spring.SpringContextService;
 import fr.paris.lutece.portal.service.util.AppException;
@@ -145,19 +147,19 @@ public class AnnounceSearchService
      * @param request The {@link HttpServletRequest}
      * @param nPageNumber The current page
      * @param nItemsPerPage The number of items per page to get
-     * @param plugin The plugin
      * @param listIdAnnounces Results as a collection of id of announces
      * @return The total number of items found
      */
     public int getSearchResults( AnnounceSearchFilter filter, HttpServletRequest request, int nPageNumber,
-            int nItemsPerPage, List<Integer> listIdAnnounces, Plugin plugin )
+            int nItemsPerPage, List<Integer> listIdAnnounces )
     {
         int nNbItems = 0;
         try
         {
             IAnnounceSearchEngine engine = SpringContextService.getBean( BEAN_SEARCH_ENGINE );
             List<SearchResult> listResults = new ArrayList<SearchResult>( );
-            nNbItems = engine.getSearchResults( filter, request, plugin, listResults, nPageNumber, nItemsPerPage );
+            nNbItems = engine.getSearchResults( filter, request, PluginService.getPlugin( AnnouncePlugin.PLUGIN_NAME ),
+                    listResults, nPageNumber, nItemsPerPage );
 
             for ( SearchResult searchResult : listResults )
             {
@@ -315,7 +317,7 @@ public class AnnounceSearchService
         IndexerAction indexerAction = new IndexerAction( );
         indexerAction.setIdAnnounce( nIdAnnounce );
         indexerAction.setIdTask( nIdTask );
-        IndexerActionHome.create( indexerAction, plugin );
+        IndexerActionHome.create( indexerAction );
     }
 
     /**
@@ -325,12 +327,12 @@ public class AnnounceSearchService
      */
     public void removeIndexerAction( int nIdAction, Plugin plugin )
     {
-        IndexerActionHome.remove( nIdAction, plugin );
+        IndexerActionHome.remove( nIdAction );
     }
 
     /**
      * return a list of IndexerAction by task key
-     * @param nIdTask the task kety
+     * @param nIdTask the task key
      * @param plugin the plugin
      * @return a list of IndexerAction
      */
@@ -339,7 +341,7 @@ public class AnnounceSearchService
         IndexerActionFilter filter = new IndexerActionFilter( );
         filter.setIdTask( nIdTask );
 
-        return IndexerActionHome.getList( filter, plugin );
+        return IndexerActionHome.getList( filter );
     }
 
     /**

@@ -33,35 +33,37 @@
  */
 package fr.paris.lutece.plugins.announce.business;
 
+import fr.paris.lutece.plugins.announce.service.AnnouncePlugin;
 import fr.paris.lutece.portal.service.plugin.Plugin;
+import fr.paris.lutece.portal.service.plugin.PluginService;
 import fr.paris.lutece.portal.service.spring.SpringContextService;
 
 import java.util.List;
 
 
 /**
- * This class provides instances management methods (create, find, ...) for IndexerAction objects
+ * This class provides instances management methods (create, find, ...) for
+ * IndexerAction objects
  */
 public final class IndexerActionHome
 {
     // Static variable pointed at the DAO instance
     private static IIndexerActionDAO _dao = SpringContextService.getBean( "announce.announceIndexerActionDAO" );
+    private static Plugin _plugin = PluginService.getPlugin( AnnouncePlugin.PLUGIN_NAME );
 
     /**
      * Private constructor - this class need not be instantiated
      */
-    private IndexerActionHome(  )
+    private IndexerActionHome( )
     {
     }
 
     /**
      * Creation of an instance of Indexer Action
-     *
-     * @param indexerAction The instance of the indexer action which contains the informations to store
-     * @param plugin the Plugin
-     *
+     * @param indexerAction The instance of the indexer action which contains
+     *            the informations to store
      */
-    public static synchronized void create( IndexerAction indexerAction, Plugin plugin )
+    public static synchronized void create( IndexerAction indexerAction )
     {
         int nOppositeTask = 0;
         if ( indexerAction.getIdTask( ) == IndexerAction.TASK_CREATE )
@@ -79,18 +81,18 @@ public final class IndexerActionHome
         {
             IndexerActionFilter filter = new IndexerActionFilter( );
             filter.setIdTask( nOppositeTask );
-            List<IndexerAction> listIndexerActions = getList( filter, plugin );
+            List<IndexerAction> listIndexerActions = getList( filter );
             for ( IndexerAction action : listIndexerActions )
             {
                 if ( action.getIdTask( ) == nOppositeTask )
                 {
-                    remove( action.getIdAction( ), plugin );
+                    remove( action.getIdAction( ) );
                 }
                 else if ( action.getIdTask( ) == indexerAction.getIdTask( ) )
                 {
                     if ( bAlreadyFound )
                     {
-                        remove( action.getIdAction( ), plugin );
+                        remove( action.getIdAction( ) );
                     }
                     else
                     {
@@ -102,45 +104,41 @@ public final class IndexerActionHome
 
         if ( !bAlreadyFound )
         {
-            _dao.insert( indexerAction, plugin );
+            _dao.insert( indexerAction, _plugin );
         }
     }
 
     /**
      * Remove the indexerAction whose identifier is specified in parameter
-     *
      * @param nId The IndexerActionId
-     * @param plugin the Plugin
      */
-    public static synchronized void remove( int nId, Plugin plugin )
+    public static synchronized void remove( int nId )
     {
-        _dao.delete( nId, plugin );
+        _dao.delete( nId, _plugin );
     }
 
     ///////////////////////////////////////////////////////////////////////////
     // Finders
 
     /**
-     * Returns an instance of a IndexerAction whose identifier is specified in parameter
-     *
+     * Returns an instance of a IndexerAction whose identifier is specified in
+     * parameter
      * @param nKey The indexerAction primary key
-     * @param plugin the Plugin
      * @return an instance of IndexerAction
      */
-    public static IndexerAction findByPrimaryKey( int nKey, Plugin plugin )
+    public static IndexerAction findByPrimaryKey( int nKey )
     {
-        return _dao.load( nKey, plugin );
+        return _dao.load( nKey, _plugin );
     }
 
     /**
-     * Loads the data of all the IndexerAction who verify the filter and returns them in a list
-     *
-     *@param  filter the filter
-     * @param plugin the Plugin
-     * @return the list which contains the data of all the  indexerAction
+     * Loads the data of all the IndexerAction who verify the filter and returns
+     * them in a list
+     * @param filter the filter
+     * @return the list which contains the data of all the indexerAction
      */
-    public static List<IndexerAction> getList( IndexerActionFilter filter, Plugin plugin )
+    public static List<IndexerAction> getList( IndexerActionFilter filter )
     {
-        return _dao.selectList( filter, plugin );
+        return _dao.selectList( filter, _plugin );
     }
 }

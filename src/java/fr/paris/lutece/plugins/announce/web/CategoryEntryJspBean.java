@@ -173,7 +173,7 @@ public class CategoryEntryJspBean extends MVCAdminJspBean
         entry.setIdResource( nIdCategory );
         entry.setResourceType( Category.RESOURCE_TYPE );
 
-        Category category = CategoryHome.findByPrimaryKey( nIdCategory, getPlugin( ) );
+        Category category = CategoryHome.findByPrimaryKey( nIdCategory );
 
         // Default Values
         Map<String, Object> model = new HashMap<String, Object>( );
@@ -306,7 +306,7 @@ public class CategoryEntryJspBean extends MVCAdminJspBean
 
             Map<String, Object> model = new HashMap<String, Object>( );
             model.put( MARK_ENTRY, entry );
-            model.put( MARK_CATEGORY, CategoryHome.findByPrimaryKey( entry.getIdResource( ), getPlugin( ) ) );
+            model.put( MARK_CATEGORY, CategoryHome.findByPrimaryKey( entry.getIdResource( ) ) );
 
             UrlItem urlItem = new UrlItem( AppPathService.getBaseUrl( request ) + getViewUrl( VIEW_GET_MODIFY_ENTRY ) );
             urlItem.addParameter( PARAMETER_ID_ENTRY, strIdEntry );

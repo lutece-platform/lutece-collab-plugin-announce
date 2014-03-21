@@ -48,11 +48,11 @@ public class AnnounceSearchFilterDAO implements IAnnounceSearchFilterDAO
 {
     private static final String SQL_QUERY_NEW_PRIMARY_KEY = " SELECT max(id_filter) FROM announce_search_filters ";
 
-    private static final String SQL_QUERY_SELECT = " SELECT id_filter, id_category, keywords, date_min, date_max FROM announce_search_filters ";
+    private static final String SQL_QUERY_SELECT = " SELECT id_filter, id_category, keywords, date_min, date_max, price_min, price_max FROM announce_search_filters ";
     private static final String SQL_QUERY_SELECT_LIST_ID = SQL_QUERY_SELECT + " WHERE id_filter IN ( ";
     private static final String SQL_QUERY_SELECT_BY_PRIMARY_KEY = SQL_QUERY_SELECT + " WHERE id_filter = ? ";
-    private static final String SQL_QUERY_INSERT = " INSERT INTO announce_search_filters ( id_filter, id_category, keywords, date_min, date_max ) VALUES (?,?,?,?,?) ";
-    private static final String SQL_QUERY_UPDATE = " UPDATE announce_search_filters SET id_category = ?, keywords = ?, date_min = ?, date_max = ? WHERE id_filter = ? ";
+    private static final String SQL_QUERY_INSERT = " INSERT INTO announce_search_filters ( id_filter, id_category, keywords, date_min, date_max, price_min, price_max ) VALUES (?,?,?,?,?,?,?) ";
+    private static final String SQL_QUERY_UPDATE = " UPDATE announce_search_filters SET id_category = ?, keywords = ?, date_min = ?, date_max = ?, price_min = ?, price_max = ? WHERE id_filter = ? ";
     private static final String SQL_QUERY_DELETE = " DELETE FROM announce_search_filters WHERE id_filter = ? ";
     private static final String SQL_QUERY_DELETE_BY_ID_CATEGORY = " DELETE FROM announce_search_filters WHERE id_category = ? ";
 
@@ -112,9 +112,10 @@ public class AnnounceSearchFilterDAO implements IAnnounceSearchFilterDAO
         daoUtil.setInt( nIndex++, filter.getIdFilter( ) );
         daoUtil.setInt( nIndex++, filter.getIdCategory( ) );
         daoUtil.setString( nIndex++, filter.getKeywords( ) );
-        daoUtil.setDate( nIndex++, new Date( filter.getDateMin( ).getTime( ) ) );
-        daoUtil.setDate( nIndex++, new Date( filter.getDateMax( ).getTime( ) ) );
-
+        daoUtil.setDate( nIndex++, filter.getDateMin( ) == null ? null : new Date( filter.getDateMin( ).getTime( ) ) );
+        daoUtil.setDate( nIndex++, filter.getDateMax( ) == null ? null : new Date( filter.getDateMax( ).getTime( ) ) );
+        daoUtil.setInt( nIndex++, filter.getPriceMin( ) );
+        daoUtil.setInt( nIndex, filter.getPriceMax( ) );
         daoUtil.executeUpdate( );
         daoUtil.free( );
     }
@@ -131,7 +132,9 @@ public class AnnounceSearchFilterDAO implements IAnnounceSearchFilterDAO
         daoUtil.setString( nIndex++, filter.getKeywords( ) );
         daoUtil.setDate( nIndex++, new Date( filter.getDateMin( ).getTime( ) ) );
         daoUtil.setDate( nIndex++, new Date( filter.getDateMax( ).getTime( ) ) );
-        daoUtil.setInt( nIndex++, filter.getIdFilter( ) );
+        daoUtil.setInt( nIndex++, filter.getPriceMin( ) );
+        daoUtil.setInt( nIndex++, filter.getPriceMax( ) );
+        daoUtil.setInt( nIndex, filter.getIdFilter( ) );
 
         daoUtil.executeUpdate( );
         daoUtil.free( );
@@ -233,7 +236,9 @@ public class AnnounceSearchFilterDAO implements IAnnounceSearchFilterDAO
         filter.setIdCategory( daoUtil.getInt( nIndex++ ) );
         filter.setKeywords( daoUtil.getString( nIndex++ ) );
         filter.setDateMin( daoUtil.getDate( nIndex++ ) );
-        filter.setDateMax( daoUtil.getDate( nIndex ) );
+        filter.setDateMax( daoUtil.getDate( nIndex++ ) );
+        filter.setPriceMin( daoUtil.getInt( nIndex++ ) );
+        filter.setPriceMax( daoUtil.getInt( nIndex ) );
         return filter;
     }
 }

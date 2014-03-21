@@ -75,6 +75,10 @@
             <application-id>announce</application-id>
             <application-class>fr.paris.lutece.plugins.announce.web.AnnounceApp</application-class>
         </application>
+		<application>
+			<application-id>announce-subscribe</application-id>
+			<application-class>fr.paris.lutece.plugins.announce.web.AnnounceSubscribeApp</application-class>
+		</application>
     </applications>
     
     <portlets>

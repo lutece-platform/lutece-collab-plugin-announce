@@ -30,7 +30,7 @@
                         <#list sector.listCategories as category>
                         <li class="announce-nav-link">
                         <#if category.numberAnnounces!=0>
-                            <a href="jsp/site/Portal.jsp?page=announce&action=category_announces&category_id=${category.id}">${category.label}&nbsp;(${category.numberAnnounces})</a>
+                            <a href="jsp/site/Portal.jsp?page=announce&action=search&hasFilter=true&category_id=${category.id}">${category.label}&nbsp;(${category.numberAnnounces})</a>
 						<#else>
 							${category.label}
 						</#if>

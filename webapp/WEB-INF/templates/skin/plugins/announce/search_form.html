@@ -2,14 +2,23 @@
     <div class="portlet-background-header -lutece-border-radius-top">#i18n{announce.search_form.title}</div>
     <div class="portlet-background-content -lutece-border-radius-bottom">
         <form class="form_search" method="post" action="jsp/site/Portal.jsp">
+        	<div class="pull-right">
+        		<#if user?? && (filter.keywords)?? && filter.keywords != '' >
+	        		<#if !(filter.idFilter)?? || filter.idFilter == 0>
+		    			<a class="btn btn-primary" href="jsp/site/Portal.jsp?page=announce-subscribe&action=doCreateSubscriptionFilter" title="#i18n{announce.labelCreateFilterSubscriptionTitle}">
+		    				#i18n{announce.labelCreateFilterSubscription}
+		    			</a>
+		    		</#if>
+		    	</#if>
+	    	</div>
             #i18n{announce.search_form.keyWordsLabel}
-            <input type="text" size="35" value="${filter_searched_keywords!}" name="keywords"/>
+            <input type="text" size="35" value="${(filter.keywords)!}" name="keywords"/>
             <select name="category_id">
                 <option value="0">#i18n{announce.search_form.defaultCategoryLabel}</option>
                 <#list list_sectors as sector>
                 <optgroup label="${sector.label}">
                     <#list sector.listCategories as category>
-                        <#if filter_searched_category?? && filter_searched_category == category.id>
+                        <#if (filter.idCategory)?? && filter.idCategory == category.id>
                             <option selected="selected" value="${category.id}">${category.label}</option>
                         <#else>
                             <option value="${category.id}">${category.label}</option>
@@ -21,6 +30,16 @@
             <br/>
             #i18n{announce.search_form.dateMinLabel}  <input size="12" type="text" id="date_min" name="date_min" value="${filter_date_min!}"> 
             #i18n{announce.search_form.dateMaxLabel}  <input size="12" type="text" id="date_max" name="date_max" value="${filter_date_max!}">
+            #i18n{announce.search_form.priceMinLabel}
+            <div class="input-append">
+            	<input class="input-small" size="12" type="text" id="price_min" name="price_min" value="${(filter.price_min)!}">
+            	<span class="add-on">&euro;</span>
+            </div>
+            #i18n{announce.search_form.priceMaxLabel}
+            <div class="input-append">
+            	<input class="input-small" size="12" type="text" id="price_max" name="price_max" value="${(filter.price_max)!}">
+            	<span class="add-on">&euro;</span>
+            </div>
             <input type="submit" value="#i18n{announce.search_form.search}"/>
             <input type="hidden" name="action" value="search" />
             <input type="hidden" name="page" value="announce" />
