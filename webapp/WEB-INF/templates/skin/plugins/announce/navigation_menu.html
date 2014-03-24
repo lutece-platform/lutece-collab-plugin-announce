@@ -14,6 +14,9 @@
                 <li>
                     <a href="jsp/site/Portal.jsp?page=announce&action=my_announces">#i18n{announce.navigation_menu.userAnnounces}</a>
                 </li>
+                <li>
+                    <a href="jsp/site/Portal.jsp?page=announce&action=view_subscriptions">#i18n{announce.navigation_menu.usersubscriptions}</a>
+                </li>
             </ul>
         </div>
     </div>
@@ -29,11 +32,14 @@
                     <ul>
                         <#list sector.listCategories as category>
                         <li class="announce-nav-link">
-                        <#if category.numberAnnounces!=0>
-                            <a href="jsp/site/Portal.jsp?page=announce&action=search&hasFilter=true&category_id=${category.id}">${category.label}&nbsp;(${category.numberAnnounces})</a>
-						<#else>
-							${category.label}
-						</#if>
+	                        <#if category.numberAnnounces!=0>
+	                            <a href="jsp/site/Portal.jsp?page=announce&action=search&hasFilter=true&category_id=${category.id}">${category.label}&nbsp;(${category.numberAnnounces})</a>
+							<#else>
+								${category.label}
+							</#if>
+							<a class="btn btn-primary" href="jsp/site/Portal.jsp?page=announce-subscribe&action=doCreateCategorySubscription&id_category=${category.id}" title="#i18n{announce.navigation_menu.category_subscription_title}">
+								<i class="fa fa-rss-square">&nbsp;</i>
+							</a>
                         </li>
                         </#list>
                     </ul>

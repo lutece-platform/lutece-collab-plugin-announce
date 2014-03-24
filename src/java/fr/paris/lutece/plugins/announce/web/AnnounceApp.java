@@ -43,6 +43,7 @@ import fr.paris.lutece.plugins.announce.business.CategoryHome;
 import fr.paris.lutece.plugins.announce.business.Sector;
 import fr.paris.lutece.plugins.announce.business.SectorHome;
 import fr.paris.lutece.plugins.announce.service.AnnounceService;
+import fr.paris.lutece.plugins.announce.service.AnnounceSubscriptionProvider;
 import fr.paris.lutece.plugins.announce.service.announcesearch.AnnounceSearchService;
 import fr.paris.lutece.plugins.announce.service.upload.AnnounceAsynchronousUploadHandler;
 import fr.paris.lutece.plugins.announce.utils.AnnounceUtils;
@@ -55,6 +56,7 @@ import fr.paris.lutece.plugins.genericattributes.business.Response;
 import fr.paris.lutece.plugins.genericattributes.business.ResponseHome;
 import fr.paris.lutece.plugins.genericattributes.service.entrytype.EntryTypeServiceManager;
 import fr.paris.lutece.plugins.genericattributes.service.entrytype.IEntryTypeService;
+import fr.paris.lutece.plugins.subscribe.web.SubscribeApp;
 import fr.paris.lutece.portal.business.file.FileHome;
 import fr.paris.lutece.portal.business.mailinglist.Recipient;
 import fr.paris.lutece.portal.business.physicalfile.PhysicalFile;
@@ -67,6 +69,7 @@ import fr.paris.lutece.portal.service.message.SiteMessageException;
 import fr.paris.lutece.portal.service.message.SiteMessageService;
 import fr.paris.lutece.portal.service.plugin.Plugin;
 import fr.paris.lutece.portal.service.security.LuteceUser;
+import fr.paris.lutece.portal.service.security.LuteceUserService;
 import fr.paris.lutece.portal.service.security.SecurityService;
 import fr.paris.lutece.portal.service.spring.SpringContextService;
 import fr.paris.lutece.portal.service.template.AppTemplateService;
@@ -156,6 +159,7 @@ public class AnnounceApp implements XPageApplication
     private static final String ACTION_DELETE_ANNOUNCE = "delete_announce";
     private static final String ACTION_SUSPEND_ANNOUNCE_BY_USER = "suspend_by_user";
     private static final String ACTION_ENABLE_ANNOUNCE_BY_USER = "enable_by_user";
+    private static final String ACTION_VIEW_SUBSCRIPTIONS = "view_subscriptions";
     private static final String ACTION_SEARCH = "search";
     private static final String ACTION_DOWNLOAD = "download";
 
@@ -214,6 +218,8 @@ public class AnnounceApp implements XPageApplication
     private static final String MARK_FILTER = "filter";
     private static final String MARK_ANNOUNCE = "announce";
     private static final String MARK_ANNOUNCE_OWNER = "owner";
+    private static final String MARK_ANNOUNCE_OWNER_NAME = "owner_name";
+    private static final String MARK_HAS_SUBSCRIBED_TO_USER = "hasSubscribedToUser";
     private static final String MARK_ALLOW_ACCESS = "allow_access";
     private static final String MARK_USER_IS_AUTHOR = "user_is_author";
     private static final String MARK_PAGINATOR = "paginator";
@@ -303,6 +309,11 @@ public class AnnounceApp implements XPageApplication
             {
                 page.setTitle( I18nService.getLocalizedString( PROPERTY_PAGE_TITLE, request.getLocale( ) ) );
                 page.setContent( enableAnnounceByUser( request ) );
+            }
+            else if ( strAction.equals( ACTION_VIEW_SUBSCRIPTIONS ) )
+            {
+                page.setTitle( I18nService.getLocalizedString( PROPERTY_PAGE_TITLE, request.getLocale( ) ) );
+                page.setContent( SubscribeApp.getSubscriptionList( request ) );
             }
             else if ( strAction.equals( ACTION_SEARCH ) )
             {
@@ -945,11 +956,11 @@ public class AnnounceApp implements XPageApplication
     /**
      * gets template in order to view all the user's announces
      * @param request httpRequest
-     * @param userName the name of the user
+     * @param strUserName the name of the user
      * @param model HashMap model
      * @throws SiteMessageException If a site message needs to be displayed
      */
-    private String getViewUserAnnounces( HttpServletRequest request, String userName ) throws SiteMessageException
+    private String getViewUserAnnounces( HttpServletRequest request, String strUserName ) throws SiteMessageException
     {
         _strCurrentPageIndex = Paginator.getPageIndex( request, Paginator.PARAMETER_PAGE_INDEX, DEFAULT_PAGE_INDEX );
         _nDefaultItemsPerPage = AppPropertiesService.getPropertyInt( PROPERTY_DEFAULT_FRONT_LIST_ANNOUNCE_PER_PAGE, 10 );
@@ -958,7 +969,7 @@ public class AnnounceApp implements XPageApplication
 
         int nNbPlublishedAnnounces;
 
-        List<Announce> listAnnounces = AnnounceHome.getAnnouncesForUser( userName );
+        List<Announce> listAnnounces = AnnounceHome.getAnnouncesForUser( strUserName );
 
         Paginator<Announce> paginator = new Paginator<Announce>( listAnnounces, _nItemsPerPage, JSP_PORTAL + "?"
                 + PARAMETER_PAGE + "=" + AnnounceUtils.PARAMETER_PAGE_ANNOUNCE + "&" + MVCUtils.PARAMETER_ACTION + "="
@@ -997,7 +1008,14 @@ public class AnnounceApp implements XPageApplication
             }
         }
 
-        model.put( MARK_ANNOUNCE_OWNER, userName );
+        LuteceUser owner = LuteceUserService.getLuteceUserFromName( strUserName );
+
+        model.put( MARK_HAS_SUBSCRIBED_TO_USER,
+                AnnounceSubscriptionProvider.getService( ).hasSubscribedToUser( user, strUserName ) );
+        String strUserRealName = owner == null ? strUserName : ( owner.getUserInfo( LuteceUser.NAME_GIVEN )
+                + CONSTANT_BLANK_SPACE + owner.getUserInfo( LuteceUser.NAME_FAMILY ) );
+        model.put( MARK_ANNOUNCE_OWNER, StringUtils.isNotBlank( strUserRealName ) ? strUserRealName : strUserName );
+        model.put( MARK_ANNOUNCE_OWNER_NAME, strUserName );
         model.put( MARK_ANNOUNCES_PUBLISHED_AMOUNT, nNbPlublishedAnnounces );
         model.put( MARK_LIST_FIELDS, getSectorList( ) );
         model.put( MARK_LOCALE, request.getLocale( ) );

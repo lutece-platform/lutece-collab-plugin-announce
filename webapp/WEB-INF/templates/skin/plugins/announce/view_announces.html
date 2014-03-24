@@ -3,6 +3,13 @@
 		#i18n{announce.view_announces.page.title} ${owner}
 	</div>
 	<div class="portlet-background-content -lutece-border-radius-bottom">
+		<#if user?? && !hasSubscribedToUser >
+			<div class="pull-right">
+			    <a class="btn btn-primary" href="jsp/site/Portal.jsp?page=announce-subscribe&action=doCreateUserSubscription&username=${owner_name}" title="#i18n{announce.labelCreateUsertSubscriptionTitle}">
+			    	#i18n{announce.labelCreateUserSubscription}
+			    </a>
+		    </div>
+		</#if>
 		<div class="announce-result clearfix">
 			<#if announces_list?has_content>
 				<#if announce_qty &gt; 1 >

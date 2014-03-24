@@ -42,6 +42,7 @@ import fr.paris.lutece.plugins.subscribe.business.SubscriptionFilter;
 import fr.paris.lutece.plugins.subscribe.service.ISubscriptionProviderService;
 import fr.paris.lutece.plugins.subscribe.service.SubscriptionService;
 import fr.paris.lutece.portal.service.security.LuteceUser;
+import fr.paris.lutece.portal.service.security.LuteceUserService;
 import fr.paris.lutece.portal.service.spring.SpringContextService;
 import fr.paris.lutece.portal.service.template.AppTemplateService;
 import fr.paris.lutece.portal.web.LocalVariables;
@@ -76,12 +77,16 @@ public class AnnounceSubscriptionProvider implements ISubscriptionProviderServic
     // Markers
     private static final String MARK_FILTER = "filter";
     private static final String MARK_CATEGORY = "category";
+    private static final String MARK_USER_NAME = "user_name";
+    private static final String MARK_USER = "user";
 
     private static final String PROVIDER_NAME = "announce.announceSubscriptionProvider";
     private static final String BEAN_NAME = "announce.announceSubscriptionProvider";
 
     // Templates
-    private static final String TEMPLATE_FILTER_SUBSCRIPTION_DESCRIPTION = "skin/plugins/announce/filter_subscriction_description.html";
+    private static final String TEMPLATE_FILTER_SUBSCRIPTION_DESCRIPTION = "skin/plugins/announce/subscription/filter_subscriction_description.html";
+    private static final String TEMPLATE_USER_SUBSCRIPTION_DESCRIPTION = "skin/plugins/announce/subscription/user_subscriction_description.html";
+    private static final String TEMPLATE_CATEGORY_SUBSCRIPTION_DESCRIPTION = "skin/plugins/announce/subscription/category_subscriction_description.html";
 
     private static AnnounceSubscriptionProvider _instance;
 
@@ -117,33 +122,41 @@ public class AnnounceSubscriptionProvider implements ISubscriptionProviderServic
     public String getSubscriptionHtmlDescription( LuteceUser user, String strSubscriptionKey,
             String strIdSubscribedResource, Locale locale )
     {
-        int nId = ( ( strIdSubscribedResource != null ) && StringUtils.isNumeric( strIdSubscribedResource ) ) ? Integer
-                .parseInt( strIdSubscribedResource ) : 0;
-
-        if ( nId > 0 )
+        if ( StringUtils.equals( SUBSCRIPTION_USER, strSubscriptionKey ) )
         {
-            if ( StringUtils.equals( SUBSCRIPTION_USER, strSubscriptionKey ) )
+            Map<String, Object> model = new HashMap<String, Object>( );
+            LuteceUser subscribedUser = LuteceUserService.getLuteceUserFromName( strIdSubscribedResource );
+
+            model.put( MARK_USER_NAME, strIdSubscribedResource );
+            model.put( MARK_USER, subscribedUser );
+            HtmlTemplate template = AppTemplateService.getTemplate( TEMPLATE_USER_SUBSCRIPTION_DESCRIPTION, locale,
+                    model );
+            return template.getHtml( );
+        }
+        else if ( StringUtils.equals( SUBSCRIPTION_CATEGORY, strSubscriptionKey ) )
+        {
+            Map<String, Object> model = new HashMap<String, Object>( );
+
+            int nIdCategory = Integer.parseInt( strIdSubscribedResource );
+
+            model.put( MARK_CATEGORY, CategoryHome.findByPrimaryKey( nIdCategory ) );
+            HtmlTemplate template = AppTemplateService.getTemplate( TEMPLATE_CATEGORY_SUBSCRIPTION_DESCRIPTION, locale,
+                    model );
+            return template.getHtml( );
+        }
+        else if ( StringUtils.equals( SUBSCRIPTION_FILTER, strSubscriptionKey ) )
+        {
+            AnnounceSearchFilter filter = AnnounceSearchFilterHome.findByPrimaryKey( Integer
+                    .parseInt( strIdSubscribedResource ) );
+            Map<String, Object> model = new HashMap<String, Object>( );
+            model.put( MARK_FILTER, filter );
+            if ( filter.getIdCategory( ) > 0 )
             {
-                return StringUtils.EMPTY; //TODO : implement me !
+                model.put( MARK_CATEGORY, CategoryHome.findByPrimaryKey( filter.getIdCategory( ) ) );
             }
-            else if ( StringUtils.equals( SUBSCRIPTION_CATEGORY, strSubscriptionKey ) )
-            {
-                return StringUtils.EMPTY; //TODO : implement me !
-            }
-            else if ( StringUtils.equals( SUBSCRIPTION_FILTER, strSubscriptionKey ) )
-            {
-                AnnounceSearchFilter filter = AnnounceSearchFilterHome.findByPrimaryKey( Integer
-                        .parseInt( strIdSubscribedResource ) );
-                Map<String, Object> model = new HashMap<String, Object>( );
-                model.put( MARK_FILTER, filter );
-                if ( filter.getIdCategory( ) > 0 )
-                {
-                    model.put( MARK_CATEGORY, CategoryHome.findByPrimaryKey( filter.getIdCategory( ) ) );
-                }
-                HtmlTemplate template = AppTemplateService.getTemplate( TEMPLATE_FILTER_SUBSCRIPTION_DESCRIPTION,
-                        locale, model );
-                return template.getHtml( );
-            }
+            HtmlTemplate template = AppTemplateService.getTemplate( TEMPLATE_FILTER_SUBSCRIPTION_DESCRIPTION, locale,
+                    model );
+            return template.getHtml( );
         }
 
         return StringUtils.EMPTY;
@@ -280,6 +293,40 @@ public class AnnounceSubscriptionProvider implements ISubscriptionProviderServic
         {
             SubscriptionService.getInstance( ).removeSubscription( subscription, false );
         }
+    }
+
+    /**
+     * Check if a user has subscribed to another user
+     * @param user The subscriber user
+     * @param userName The name of the subscribed user
+     * @return True if the user has subscribed to another user, false otherwise
+     */
+    public boolean hasSubscribedToUser( LuteceUser user, String userName )
+    {
+        return hasSubscribedtoResource( user, userName, SUBSCRIPTION_USER );
+    }
+
+    /**
+     * Check if a user has subscribed to a category
+     * @param user The subscriber user
+     * @param nIdCategory The id of the subscribed category
+     * @return True if the user has subscribed to a category, false otherwise
+     */
+    public boolean hasSubscribedToCategory( LuteceUser user, int nIdCategory )
+    {
+        if ( nIdCategory == 0 )
+        {
+            return false;
+        }
+        return hasSubscribedtoResource( user, Integer.toString( nIdCategory ), SUBSCRIPTION_CATEGORY );
+    }
+
+    private boolean hasSubscribedtoResource( LuteceUser user, String strIdResource, String strSubscriptionKey )
+    {
+        SubscriptionFilter filter = new SubscriptionFilter( user.getName( ), getProviderName( ), strSubscriptionKey,
+                strIdResource );
+        List<Subscription> listSubscription = SubscriptionService.getInstance( ).findByFilter( filter );
+        return listSubscription != null && listSubscription.size( ) > 0;
     }
 
 }

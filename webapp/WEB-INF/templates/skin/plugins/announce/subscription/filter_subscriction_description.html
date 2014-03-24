@@ -1,0 +1,38 @@
+<div>
+	#i18n{announce.subscriptionDescription.filter.labelSubscription} :
+	<ul>
+		<#if filter.keywords?? && filter.keywords != ''>
+			<li>
+				#i18n{announce.subscriptionDescription.filter.labelKeybords} : "${filter.keywords}"
+			</li>
+		</#if>
+		<#if filter.idCategory &gt; 0>
+			<li>
+				#i18n{announce.subscriptionDescription.filter.labelCategory} : "${category.label}"
+			</li>
+		</#if>
+		<#if filter.dateMin??>
+			<li>
+				#i18n{announce.subscriptionDescription.filter.labelDateMin} ${filter.dateMin}
+			</li>
+		</#if>
+		<#if filter.dateMax??>
+			<li>
+				#i18n{announce.subscriptionDescription.filter.labelDateMax} ${filter.dateMax}
+			</li>
+		</#if>
+		<#if filter.priceMin &gt; 0 || filter.priceMax &gt; 0>
+			<li>
+				<#if filter.priceMin &gt; 0 && filter.priceMax &gt; 0 >
+					#i18n{announce.subscriptionDescription.filter.labelPriceBetween} ${filter.priceMin} &euro; #i18n{announce.subscriptionDescription.filter.labelPriceAnd} ${filter.priceMax} &euro;
+				<#else>
+					<#if filter.priceMin &gt; 0>
+						#i18n{announce.subscriptionDescription.filter.labelPriceGreaterThan} ${filter.priceMin} &euro;
+					<#else>
+						#i18n{announce.subscriptionDescription.filter.labelPriceLowerThan} ${filter.priceMax} &euro;
+					</#if>
+				</#if>
+			</li>
+		</#if>
+	</ul>
+</div>
