@@ -161,7 +161,8 @@ public class AnnounceLuceneSearchEngine implements IAnnounceSearchEngine
                 int nPriceMin = filter.getPriceMin( ) > 0 ? filter.getPriceMin( ) : 0;
                 int nPriceMax = filter.getPriceMax( ) > 0 ? filter.getPriceMax( ) : Integer.MAX_VALUE;
                 Query queryRangePrice = new TermRangeQuery( AnnounceSearchItem.FIELD_PRICE,
-                        Integer.toString( nPriceMin ), Integer.toString( nPriceMax ), true, true );
+                        AnnounceSearchService.formatPriceForIndexer( nPriceMin ),
+                        AnnounceSearchService.formatPriceForIndexer( nPriceMax ), true, true );
                 queries.add( queryRangePrice.toString( ) );
                 sectors.add( AnnounceSearchItem.FIELD_PRICE );
                 flags.add( BooleanClause.Occur.MUST );

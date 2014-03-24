@@ -58,6 +58,8 @@ import org.apache.lucene.store.NIOFSDirectory;
 
 import java.io.File;
 import java.io.IOException;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -76,6 +78,7 @@ public class AnnounceSearchService
     private static final String PROPERTY_WRITER_MAX_FIELD_LENGTH = "announce.internalIndexer.lucene.writer.maxSectorLength";
     private static final String PROPERTY_ANALYSER_CLASS_NAME = "announce.internalIndexer.lucene.analyser.className";
     private static final String PROPERTY_MAX_SKIPPED_INDEXATION = "announce.indexer.maxSkipedIndexation";
+    private static final String PROPERTY_INDEXER_PRICE_FORMAT = "announce.indexer.priceFormat";
 
     // Default values
     private static final int DEFAULT_WRITER_MERGE_FACTOR = 20;
@@ -84,6 +87,7 @@ public class AnnounceSearchService
     // Constants corresponding to the variables defined in the lutece.properties file
     private static volatile AnnounceSearchService _singleton;
     private static int _nSkipedIndexations;
+    private static String _strPriceFormat;
 
     private volatile String _strIndex;
     private Analyzer _analyzer;
@@ -364,5 +368,36 @@ public class AnnounceSearchService
     public Analyzer getAnalyzer( )
     {
         return _analyzer;
+    }
+
+    /**
+     * Format a price for the indexer
+     * @param dPrice The price to format
+     * @return The formated price
+     */
+    public static String formatPriceForIndexer( double dPrice )
+    {
+        NumberFormat formatter = new DecimalFormat( getPriceFormat( ) );
+        return formatter.format( dPrice );
+    }
+
+    /**
+     * Format a price for the indexer
+     * @param nPrice The price to format
+     * @return The formated price
+     */
+    public static String formatPriceForIndexer( int nPrice )
+    {
+        NumberFormat formatter = new DecimalFormat( getPriceFormat( ) );
+        return formatter.format( nPrice );
+    }
+
+    private static String getPriceFormat( )
+    {
+        if ( _strPriceFormat == null )
+        {
+            _strPriceFormat = AppPropertiesService.getProperty( PROPERTY_INDEXER_PRICE_FORMAT, "#0000000000.00" );
+        }
+        return _strPriceFormat;
     }
 }

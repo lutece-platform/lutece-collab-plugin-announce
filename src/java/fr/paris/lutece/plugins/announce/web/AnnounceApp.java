@@ -224,6 +224,7 @@ public class AnnounceApp implements XPageApplication
     private static final String MARK_LIST_ERRORS = "list_errors";
 
     // Constants
+    private static final String CONSTANT_BLANK_SPACE = " ";
     private static final String CONSTANT_COMA = ",";
     private static final String CONSTANT_POINT = ".";
 
@@ -1333,6 +1334,7 @@ public class AnnounceApp implements XPageApplication
 
             if ( StringUtils.isNotEmpty( strPriceMin ) )
             {
+                strPriceMin = strPriceMin.replaceAll( CONSTANT_BLANK_SPACE, StringUtils.EMPTY ).trim( );
                 if ( StringUtils.contains( strPriceMin, CONSTANT_COMA ) )
                 {
                     strPriceMin = strPriceMin.substring( 0, strPriceMin.indexOf( CONSTANT_COMA ) );
@@ -1348,6 +1350,7 @@ public class AnnounceApp implements XPageApplication
             }
             if ( StringUtils.isNotEmpty( strPriceMax ) )
             {
+                strPriceMax = strPriceMax.replaceAll( CONSTANT_BLANK_SPACE, StringUtils.EMPTY ).trim( );
                 if ( StringUtils.contains( strPriceMax, CONSTANT_COMA ) )
                 {
                     strPriceMax = strPriceMax.substring( 0, strPriceMax.indexOf( CONSTANT_COMA ) );
