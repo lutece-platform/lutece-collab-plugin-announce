@@ -118,9 +118,17 @@ import javax.servlet.http.HttpServletResponse;
  */
 public class AnnounceApp implements XPageApplication
 {
+    /**
+     * Pattern for dates
+     */
+    public static final String PATTERN_DATE = "dd/MM/yyyy";
+    /**
+     * Date format for filters
+     */
+    public static final DateFormat DATE_FORMAT = new SimpleDateFormat( PATTERN_DATE, Locale.FRENCH );
+
     private static final long serialVersionUID = 3586318619582357870L;
     private static final String PARAMETER_USERNAME = "username";
-    private static final String PATTERN_DATE = "dd/MM/yyyy";
 
     //Jsp redirections
     private static final String JSP_PORTAL = "jsp/site/Portal.jsp";
@@ -153,7 +161,6 @@ public class AnnounceApp implements XPageApplication
     // Actions
     private static final String ACTION_VIEW_ANNOUNCE = "view_announce";
     private static final String ACTION_VIEW_ANNOUNCES = "view_announces";
-    //    private static final String ACTION_CATEGORY_ANNOUNCES = "category_announces";
     private static final String ACTION_MY_ANNOUNCES = "my_announces";
     private static final String ACTION_MODIFY_ANNOUNCE = "modify_announce";
     private static final String ACTION_DELETE_ANNOUNCE = "delete_announce";
@@ -196,7 +203,6 @@ public class AnnounceApp implements XPageApplication
     private static final String TEMPLATE_MODIFY_ANNOUNCE = "skin/plugins/announce/modify_announce.html";
     private static final String TEMPLATE_LIST_ANNOUNCES = "skin/plugins/announce/list_announces.html";
     private static final String TEMPLATE_ANNOUNCE_NOTIFY_MESSAGE = "skin/plugins/announce/announce_notify_message.html";
-    private static final String TEMPLATE_ANNOUNCE_FRAMESET = "skin/plugins/announce/announce_frameset.html";
 
     // Session keys
     private static final String SESSION_KEY_ANNOUNCE_FILTER = "announce.session.announceSearchFilter";
@@ -211,7 +217,6 @@ public class AnnounceApp implements XPageApplication
     private static final String MARK_CONTACT_INFORMATION = "contact_information";
     private static final String MARK_LIST_RESPONSES = "list_responses";
     private static final String MARK_USER = "user";
-    private static final String MARK_CONTENT = "content";
     private static final String FULL_URL = "fullurl";
     private static final String MARK_FILTER_DATE_MIN = "filter_date_min";
     private static final String MARK_FILTER_DATE_MAX = "filter_date_max";
@@ -240,8 +245,6 @@ public class AnnounceApp implements XPageApplication
     //defaults
     private static final String DEFAULT_PAGE_INDEX = "1";
 
-    private static final DateFormat DATE_FORMAT = new SimpleDateFormat( PATTERN_DATE, Locale.FRENCH );
-
     // private fields
     private AnnounceService _announceService = SpringContextService.getBean( AnnounceService.BEAN_NAME );
     private int _nDefaultItemsPerPage;
@@ -265,7 +268,6 @@ public class AnnounceApp implements XPageApplication
         XPage page = new XPage( );
         page.setPathLabel( I18nService.getLocalizedString( PROPERTY_PAGE_PATH, request.getLocale( ) ) );
 
-        Map<String, Object> model = new HashMap<String, Object>( );
         if ( strAction != null )
         {
             if ( strAction.equals( PARAMETER_ACTION_ADDNEW ) )
@@ -317,16 +319,8 @@ public class AnnounceApp implements XPageApplication
             }
             else if ( strAction.equals( ACTION_SEARCH ) )
             {
-                AnnounceSearchFilter filter = getAnnounceFilterFromRequest( request );
-
                 page.setTitle( I18nService.getLocalizedString( PROPERTY_PAGE_TITLE_SEARCH_RESULTS, request.getLocale( ) ) );
-                page.setContent( getSearchAnnounces( request, filter ) );
-
-                model.put( MARK_FILTER_DATE_MIN,
-                        filter.getDateMin( ) != null ? DATE_FORMAT.format( filter.getDateMin( ) ) : null );
-                model.put( MARK_FILTER_DATE_MAX,
-                        filter.getDateMax( ) != null ? DATE_FORMAT.format( filter.getDateMax( ) ) : null );
-                model.put( MARK_FILTER, filter );
+                page.setContent( getSearchAnnounces( request ) );
             }
             else if ( strAction.equals( ACTION_DOWNLOAD ) )
             {
@@ -343,16 +337,6 @@ public class AnnounceApp implements XPageApplication
             page.setTitle( I18nService.getLocalizedString( PROPERTY_PAGE_TITLE, request.getLocale( ) ) );
             page.setContent( getDefaultPage( request ) );
         }
-
-        /* model and template declarations */
-        model.put( MARK_LIST_FIELDS, getSectorList( ) );
-        model.put( MARK_LOCALE, request.getLocale( ) );
-        LuteceUser user = SecurityService.getInstance( ).getRegisteredUser( request );
-        model.put( MARK_USER, user );
-        model.put( MARK_CONTENT, page.getContent( ) );
-        HtmlTemplate template = AppTemplateService
-                .getTemplate( TEMPLATE_ANNOUNCE_FRAMESET, request.getLocale( ), model );
-        page.setContent( template.getHtml( ) );
         return page;
     }
 
@@ -402,7 +386,8 @@ public class AnnounceApp implements XPageApplication
      */
     private String getDefaultPage( HttpServletRequest request )
     {
-        return getSearchAnnounces( request, new AnnounceSearchFilter( ) );
+        request.getSession( ).removeAttribute( SESSION_KEY_ANNOUNCE_FILTER );
+        return getSearchAnnounces( request );
     }
 
     /**
@@ -411,12 +396,14 @@ public class AnnounceApp implements XPageApplication
      * @param model The model
      * @return The HTML content to displayed
      */
-    private String getSearchAnnounces( HttpServletRequest request, AnnounceSearchFilter filter )
+    private String getSearchAnnounces( HttpServletRequest request )
     {
         _strCurrentPageIndex = Paginator.getPageIndex( request, Paginator.PARAMETER_PAGE_INDEX, DEFAULT_PAGE_INDEX );
         _nDefaultItemsPerPage = AppPropertiesService.getPropertyInt( PROPERTY_DEFAULT_FRONT_LIST_ANNOUNCE_PER_PAGE, 10 );
         _nItemsPerPage = Paginator.getItemsPerPage( request, Paginator.PARAMETER_ITEMS_PER_PAGE, _nItemsPerPage,
                 _nDefaultItemsPerPage );
+
+        AnnounceSearchFilter filter = getAnnounceFilterFromRequest( request );
 
         int nCurrentPageIndex = StringUtils.isNotEmpty( _strCurrentPageIndex )
                 && StringUtils.isNumeric( _strCurrentPageIndex ) ? Integer.parseInt( _strCurrentPageIndex ) : 1;
@@ -1269,7 +1256,7 @@ public class AnnounceApp implements XPageApplication
      * Get the list of sectors to be displayed in the navigation menu
      * @return The list of sectors
      */
-    private static Collection<Sector> getSectorList( )
+    public static Collection<Sector> getSectorList( )
     {
         Collection<Sector> listSectors = SectorHome.findAll( );
 
@@ -1297,6 +1284,11 @@ public class AnnounceApp implements XPageApplication
      */
     public static AnnounceSearchFilter getAnnounceFilterFromRequest( HttpServletRequest request )
     {
+        if ( request == null )
+        {
+            return new AnnounceSearchFilter( );
+        }
+
         String strIdFilter = request.getParameter( PARAMETER_ID_FILTER );
         if ( StringUtils.isNotEmpty( strIdFilter ) && StringUtils.isNumeric( strIdFilter ) )
         {
