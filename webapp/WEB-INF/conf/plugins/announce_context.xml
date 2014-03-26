@@ -33,5 +33,6 @@
     <bean id="announce.announceAsynchronousUploadHandler" class="fr.paris.lutece.plugins.announce.service.upload.AnnounceAsynchronousUploadHandler" />
     
     <bean id="announce.announceSubscriptionProvider" class="fr.paris.lutece.plugins.announce.service.AnnounceSubscriptionProvider" />
+	<bean id="announce.announceExtendableResourceService" class="fr.paris.lutece.plugins.announce.service.AnnounceExtendableResourceService" />
 	
 </beans>

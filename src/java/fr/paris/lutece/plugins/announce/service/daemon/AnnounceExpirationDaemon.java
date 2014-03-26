@@ -31,31 +31,46 @@
  *
  * License 1.0
  */
-package fr.paris.lutece.plugins.announce.service.announcesearch;
+package fr.paris.lutece.plugins.announce.service.daemon;
 
-import fr.paris.lutece.plugins.announce.business.AnnounceSearchFilter;
-import fr.paris.lutece.portal.service.plugin.Plugin;
-import fr.paris.lutece.portal.service.search.SearchResult;
+import fr.paris.lutece.plugins.announce.business.AnnounceHome;
+import fr.paris.lutece.portal.service.daemon.Daemon;
+import fr.paris.lutece.portal.service.util.AppPropertiesService;
 
+import java.sql.Timestamp;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
 import java.util.List;
 
 
 /**
- * SearchEngine
+ * Daemon to remove expired announces
  */
-public interface IAnnounceSearchEngine
+public class AnnounceExpirationDaemon extends Daemon
 {
+    private static final String PROPERTY_NB_DAYS_BEFORE_ANNOUNCES_REMOVAL = "announce.nbDaysBeforeAnnouncesRemoval";
+    private static final int DEFAULT_NB_DAYS_BEFORE_ANNOUNCES_REMOVAL = 90;
+
     /**
-     * Get list of record key return by the search. Only results of the current
-     * page are returned by this function
-     * @param filter The search filter
-     * @param plugin the plugin
-     * @param listSearchResult The list of search results
-     * @param nPage The number of the current page
-     * @param nItemsPerPage The number of items per page. 0 to ignore the
-     *            pagination
-     * @return The total number of results found
+     * {@inheritDoc}
      */
-    public int getSearchResults( AnnounceSearchFilter filter, Plugin plugin, List<SearchResult> listSearchResult,
-            int nPage, int nItemsPerPage );
+    @Override
+    public void run( )
+    {
+        Calendar calendar = new GregorianCalendar( );
+        int nNbDaysBeforeAnnouncesRemoval = AppPropertiesService.getPropertyInt(
+                PROPERTY_NB_DAYS_BEFORE_ANNOUNCES_REMOVAL, DEFAULT_NB_DAYS_BEFORE_ANNOUNCES_REMOVAL );
+        calendar.add( Calendar.DATE, nNbDaysBeforeAnnouncesRemoval );
+
+        Timestamp timestamp = new Timestamp( calendar.getTimeInMillis( ) );
+
+        List<Integer> listIdExpiredAnnounces = AnnounceHome.findIdAnnouncesByDateCreation( timestamp );
+        for ( Integer nIdExpiredAnnounce : listIdExpiredAnnounces )
+        {
+            AnnounceHome.remove( nIdExpiredAnnounce );
+        }
+
+        setLastRunLogs( listIdExpiredAnnounces.size( ) + " expired announces have been removed" );
+    }
+
 }

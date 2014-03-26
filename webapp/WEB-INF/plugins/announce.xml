@@ -60,6 +60,18 @@
             <daemon-description>announce.daemon.announceSearchIndexer.description</daemon-description>
             <daemon-class>fr.paris.lutece.plugins.announce.service.announcesearch.AnnounceSearchIndexerDaemon</daemon-class>
         </daemon>
+        <daemon>
+            <daemon-id>announceExpirationDaemon</daemon-id>
+            <daemon-name>announce.daemon.announceExpirationDaemon.name</daemon-name>
+            <daemon-description>announce.daemon.announceExpirationDaemon.description</daemon-description>
+            <daemon-class>fr.paris.lutece.plugins.announce.service.daemon.AnnounceExpirationDaemon</daemon-class>
+        </daemon>
+        <daemon>
+            <daemon-id>announceSubscriptionDaemon</daemon-id>
+            <daemon-name>announce.daemon.announceSubscriptionDaemon.name</daemon-name>
+            <daemon-description>announce.daemon.announceSubscriptionDaemon.description</daemon-description>
+            <daemon-class>fr.paris.lutece.plugins.announce.service.daemon.AnnounceSubscriptionDaemon</daemon-class>
+        </daemon>
     </daemons>
 
     <!-- Search Indexer Service -->

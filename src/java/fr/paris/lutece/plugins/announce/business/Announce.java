@@ -34,6 +34,8 @@
 package fr.paris.lutece.plugins.announce.business;
 
 import fr.paris.lutece.plugins.genericattributes.business.Response;
+import fr.paris.lutece.plugins.genericattributes.service.ResponseImageResourceProvider;
+import fr.paris.lutece.portal.service.resource.IExtendableResource;
 
 import java.io.Serializable;
 import java.sql.Timestamp;
@@ -43,8 +45,13 @@ import java.util.List;
 /**
  * This is the business class for the object Announce
  */
-public class Announce implements Serializable
+public class Announce implements Serializable, IExtendableResource
 {
+    /**
+     * Announce resource type
+     */
+    public static final String RESOURCE_TYPE = "announce";
+
     private static final long serialVersionUID = 4717207701123679302L;
 
     // Variables declarations
@@ -60,6 +67,7 @@ public class Announce implements Serializable
     private boolean _bHasPictures;
     private List<Integer> _listIdImageResponse;
     private Timestamp _dateCreation;
+    private long _lTimePublication;
     private String _strPrice;
     private String _strTags;
     private List<Response> _listResponse;
@@ -264,6 +272,24 @@ public class Announce implements Serializable
     }
 
     /**
+     * gets the publication time
+     * @return the publication time
+     */
+    public long getTimePublication( )
+    {
+        return _lTimePublication;
+    }
+
+    /**
+     * sets the publication time
+     * @param lTime the publication time
+     */
+    public void setTimePublication( long lTime )
+    {
+        this._lTimePublication = lTime;
+    }
+
+    /**
      * gets the contact information
      * @return the contact information
      */
@@ -335,5 +361,54 @@ public class Announce implements Serializable
     public void setTags( String strTags )
     {
         _strTags = strTags;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getIdExtendableResource( )
+    {
+        return Integer.toString( getId( ) );
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getExtendableResourceType( )
+    {
+        return RESOURCE_TYPE;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getExtendableResourceName( )
+    {
+        return getTitle( );
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getExtendableResourceDescription( )
+    {
+        return getDescription( );
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getExtendableResourceImageUrl( )
+    {
+        if ( getHasPictures( ) && getListIdImageResponse( ) != null && getListIdImageResponse( ).size( ) > 0 )
+        {
+            ResponseImageResourceProvider.getUrlDownloadImageResponse( getListIdImageResponse( ).get( 0 ) );
+        }
+        return null;
     }
 }

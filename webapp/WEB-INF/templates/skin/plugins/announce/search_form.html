@@ -32,17 +32,22 @@
             	<span class="add-on">&euro;</span>
             </div>
             <div class="form-actions">
-	            <input type="submit" value="#i18n{announce.search_form.search}"/>
+	            <button class="btn btn-primary" type="submit" name="search" value="#i18n{announce.search_form.search}">
+	            	<i class="icon-search icon-white">&nbsp;</i>&nbsp;#i18n{announce.search_form.search}
+	            </button>
+	            <a class="btn" href="jsp/site/Portal.jsp?page=announce&action=search&hasFilter=true" >
+	            	<i class="icon-remove-circle">&nbsp;</i>&nbsp;#i18n{announce.search_form.reset}
+	            </a> 
 	            <input type="hidden" name="action" value="search" />
 	            <input type="hidden" name="page" value="announce" />
 	            <input type="hidden" name="hasFilter" value="true" />
 	            <div class="pull-right">
-        		<#if user?? && filter?? && ( ( filter.keywords?? && filter.keywords != '' ) || filter.priceMin &gt; 0 || filter.priceMax &gt; 0 ) && filter.idFilter == 0 >
-		    		<a class="btn btn-primary" href="jsp/site/Portal.jsp?page=announce-subscribe&action=doCreateSubscriptionFilter" title="#i18n{announce.labelCreateFilterSubscriptionTitle}">
-		    			#i18n{announce.labelCreateFilterSubscription}
-		    		</a>
-		    	</#if>
-	    	</div>
+	        		<#if user?? && filter?? && ( ( filter.keywords?? && filter.keywords != '' ) || filter.priceMin &gt; 0 || filter.priceMax &gt; 0 ) && filter.idFilter == 0 >
+			    		<a class="btn btn-primary" href="jsp/site/Portal.jsp?page=announce-subscribe&action=doCreateSubscriptionFilter" title="#i18n{announce.labelCreateFilterSubscriptionTitle}">
+			    			#i18n{announce.labelCreateFilterSubscription}
+			    		</a>
+			    	</#if>
+		    	</div>
 	   		</div>
         </form>
     </div>

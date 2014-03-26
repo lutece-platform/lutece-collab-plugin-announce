@@ -19,9 +19,9 @@
 									</#if>
 								</#list>
 							</#if>
-							<#if announce.category.displayPrice>
+							<#if announce.category.displayPrice && announce.price?has_content>
 								<div class="price">
-									${announce.price} €
+									${announce.price}
 								</div>
 							</#if>
 							<div class="title">

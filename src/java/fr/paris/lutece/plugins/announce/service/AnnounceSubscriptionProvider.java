@@ -180,14 +180,23 @@ public class AnnounceSubscriptionProvider implements ISubscriptionProviderServic
     {
         if ( StringUtils.equals( SUBSCRIPTION_FILTER, strSubscriptionKey ) )
         {
-            int nIdFilter = ( ( strIdSubscribedResource != null ) && StringUtils.isNumeric( strIdSubscribedResource ) ) ? Integer
-                    .parseInt( strIdSubscribedResource ) : 0;
+            int nIdFilter = ( StringUtils.isNotEmpty( strIdSubscribedResource ) && StringUtils
+                    .isNumeric( strIdSubscribedResource ) ) ? Integer.parseInt( strIdSubscribedResource ) : 0;
             if ( nIdFilter > 0 )
             {
                 return AnnounceApp.getUrlSearchAnnounce( LocalVariables.getRequest( ), nIdFilter );
             }
         }
-        // subscriptions to users or categories can not be modified
+        else if ( StringUtils.equals( SUBSCRIPTION_USER, strSubscriptionKey ) )
+        {
+            return AnnounceApp.getUrlViewUserAnnounces( LocalVariables.getRequest( ), strIdSubscribedResource );
+        }
+        else if ( StringUtils.equals( SUBSCRIPTION_CATEGORY, strSubscriptionKey ) )
+        {
+            int nIdCategory = ( StringUtils.isNotEmpty( strIdSubscribedResource ) && StringUtils
+                    .isNumeric( strIdSubscribedResource ) ) ? Integer.parseInt( strIdSubscribedResource ) : 0;
+            return AnnounceApp.getUrlViewCategory( LocalVariables.getRequest( ), nIdCategory );
+        }
         return null;
     }
 
@@ -321,12 +330,59 @@ public class AnnounceSubscriptionProvider implements ISubscriptionProviderServic
         return hasSubscribedtoResource( user, Integer.toString( nIdCategory ), SUBSCRIPTION_CATEGORY );
     }
 
+    /**
+     * Check if a user has subscribed to a given resource
+     * @param user
+     * @param strIdResource
+     * @param strSubscriptionKey
+     * @return
+     */
     private boolean hasSubscribedtoResource( LuteceUser user, String strIdResource, String strSubscriptionKey )
     {
         SubscriptionFilter filter = new SubscriptionFilter( user.getName( ), getProviderName( ), strSubscriptionKey,
                 strIdResource );
         List<Subscription> listSubscription = SubscriptionService.getInstance( ).findByFilter( filter );
         return listSubscription != null && listSubscription.size( ) > 0;
+    }
+
+    /**
+     * Get the list of subscriptions to users
+     * @return The list of subscriptions to users
+     */
+    public List<Subscription> getSubscriptionsToUsers( )
+    {
+        return getSubscriptionsToResource( SUBSCRIPTION_USER );
+    }
+
+    /**
+     * Get the list of subscriptions to categories
+     * @return The list of subscriptions to categories
+     */
+    public List<Subscription> getsubscriptionsToCategories( )
+    {
+        return getSubscriptionsToResource( SUBSCRIPTION_CATEGORY );
+    }
+
+    /**
+     * Get the list of subscriptions to filters
+     * @return The list of subscriptions to filters
+     */
+    public List<Subscription> getSubscriptionsToFilters( )
+    {
+        return getSubscriptionsToResource( SUBSCRIPTION_FILTER );
+    }
+
+    /**
+     * Get the list of subscriptions of a given type
+     * @param strSubscriptionKey The type of subscriptions to get
+     * @return The list of subscriptions of the given type
+     */
+    private List<Subscription> getSubscriptionsToResource( String strSubscriptionKey )
+    {
+        SubscriptionFilter filter = new SubscriptionFilter( );
+        filter.setSubscriptionKey( strSubscriptionKey );
+        filter.setSubscriptionProvider( getProviderName( ) );
+        return SubscriptionService.getInstance( ).findByFilter( filter );
     }
 
 }

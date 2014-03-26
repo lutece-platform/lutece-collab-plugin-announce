@@ -39,6 +39,7 @@ import fr.paris.lutece.util.sql.DAOUtil;
 import fr.paris.lutece.util.sql.Transaction;
 
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -57,31 +58,32 @@ public final class AnnounceDAO implements IAnnounceDAO
     private static final String SQL_QUERY_SELECTALL = SQL_QUERY_SELECT_ID + DEFAULT_ORDER_BY;
     private static final String SQL_QUERY_SELECTALL_PUBLISHED_FOR_CATEGORY = "SELECT a.id_announce FROM announce_announce a WHERE a.id_category = ? AND a.published = 1 AND a.suspended = 0 AND a.suspended_by_user = 0 "
             + DEFAULT_ORDER_BY;
+    private static final String SQL_QUERY_SELECT_ID_BY_DATE_CREATION = "SELECT a.id_announce FROM announce_announce WHERE date_creation < ?";
+    private static final String SQL_QUERY_SELECT_ID_BY_TIME_PUBLICATION = "SELECT a.id_announce FROM announce_announce WHERE publication_time > ? > ?";
 
     // New primary key
     private static final String SQL_QUERY_NEW_PK = "SELECT max( id_announce ) FROM announce_announce";
 
     // Select
-    private static final String SQL_QUERY_SELECT_FIELD_LIST_WITH_CATEGORY = "SELECT a.id_announce, a.title_announce, a.description_announce, a.price_announce, a.date_creation, a.user_name, a.contact_information, a.published, a.suspended, a.suspended_by_user, a.tags, a.has_pictures, a.id_category,b.label_category, b.display_price FROM announce_announce a, announce_category b WHERE a.id_category = b.id_category ";
+    private static final String SQL_QUERY_SELECT_FIELD_LIST_WITH_CATEGORY = "SELECT a.id_announce, a.title_announce, a.description_announce, a.price_announce, a.date_creation, a.user_name, a.contact_information, a.published, a.suspended, a.suspended_by_user, a.tags, a.has_pictures, a.id_category, a.publication_time, b.label_category, b.display_price FROM announce_announce a, announce_category b WHERE a.id_category = b.id_category ";
     private static final String SQL_QUERY_SELECT = SQL_QUERY_SELECT_FIELD_LIST_WITH_CATEGORY
             + " AND a.id_announce = ? " + DEFAULT_ORDER_BY;
     private static final String SQL_QUERY_SELECTALL_PUBLISHED = SQL_QUERY_SELECT_FIELD_LIST_WITH_CATEGORY
-            + "AND a.published = 1 AND a.suspended = 0 AND a.suspended_by_user = 0 "
-            + DEFAULT_ORDER_BY;
+            + "AND a.published = 1 AND a.suspended = 0 AND a.suspended_by_user = 0 " + DEFAULT_ORDER_BY;
     private static final String SQL_QEURY_SELECT_BY_LIST_ID = SQL_QUERY_SELECT_FIELD_LIST_WITH_CATEGORY
             + " AND a.id_announce IN (";
     private static final String SQL_QUERY_SELECTALL_ANNOUNCES_FOR_USER = SQL_QUERY_SELECT_FIELD_LIST_WITH_CATEGORY
             + " AND a.user_name = ? " + DEFAULT_ORDER_BY;
 
     // insert, delete
-    private static final String SQL_QUERY_INSERT = "INSERT INTO announce_announce ( id_announce, user_name, contact_information, id_category, title_announce, description_announce, price_announce, date_creation, published, tags, has_pictures ) VALUES (?,?,?,?,?,?,?,?,?,?,?) ";
+    private static final String SQL_QUERY_INSERT = "INSERT INTO announce_announce ( id_announce, user_name, contact_information, id_category, title_announce, description_announce, price_announce, date_creation, published, tags, has_pictures, publication_time ) VALUES (?,?,?,?,?,?,?,?,?,?,?,?) ";
     private static final String SQL_QUERY_DELETE = "DELETE FROM announce_announce WHERE id_announce = ? ";
 
     // Update
     private static final String SQL_QUERY_UPDATE = "UPDATE announce_announce SET title_announce = ?, description_announce = ?, price_announce = ?, contact_information = ?, published = ?, tags = ?, has_pictures = ? WHERE id_announce = ?";
-    private static final String SQL_QUERY_SET_PUBLISHED = "UPDATE announce_announce SET published = ? WHERE id_announce = ?";
-    private static final String SQL_QUERY_SET_SUSPENDED = "UPDATE announce_announce SET suspended = ? WHERE id_announce = ?";
-    private static final String SQL_QUERY_SET_SUSPENDED_BY_USER = "UPDATE announce_announce SET suspended_by_user = ? WHERE id_announce = ?";
+    private static final String SQL_QUERY_SET_PUBLISHED = "UPDATE announce_announce SET published = ?, publication_time = ? WHERE id_announce = ?";
+    private static final String SQL_QUERY_SET_SUSPENDED = "UPDATE announce_announce SET suspended = ?, publication_time = ? WHERE id_announce = ?";
+    private static final String SQL_QUERY_SET_SUSPENDED_BY_USER = "UPDATE announce_announce SET suspended_by_user = ?, publication_time = ? WHERE id_announce = ?";
 
     // SQL commands to manage announce responses
     private static final String SQL_QUERY_INSERT_ANNOUNCE_RESPONSE = "INSERT INTO announce_announce_response (id_announce, id_response, is_image) VALUES (?,?,?)";
@@ -144,6 +146,7 @@ public final class AnnounceDAO implements IAnnounceDAO
             transaction.getStatement( ).setBoolean( nParam++, announce.getPublished( ) );
             transaction.getStatement( ).setString( nParam++, announce.getTags( ) );
             transaction.getStatement( ).setBoolean( nParam, announce.getHasPictures( ) );
+            transaction.getStatement( ).setLong( nParam++, announce.getTimePublication( ) );
             transaction.executeStatement( );
 
             /* COMMIT of all the transaction */
@@ -396,6 +399,7 @@ public final class AnnounceDAO implements IAnnounceDAO
         int nParam = 1;
         DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SET_PUBLISHED, plugin );
         daoUtil.setBoolean( nParam++, announce.getPublished( ) );
+        daoUtil.setLong( nParam++, announce.getTimePublication( ) );
         daoUtil.setInt( nParam, announce.getId( ) );
         daoUtil.executeUpdate( );
         daoUtil.free( );
@@ -410,6 +414,7 @@ public final class AnnounceDAO implements IAnnounceDAO
         int nParam = 1;
         DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SET_SUSPENDED, plugin );
         daoUtil.setBoolean( nParam++, announce.getSuspended( ) );
+        daoUtil.setLong( nParam++, announce.getTimePublication( ) );
         daoUtil.setInt( nParam, announce.getId( ) );
         daoUtil.executeUpdate( );
         daoUtil.free( );
@@ -424,9 +429,52 @@ public final class AnnounceDAO implements IAnnounceDAO
         int nParam = 1;
         DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SET_SUSPENDED_BY_USER, plugin );
         daoUtil.setBoolean( nParam++, announce.getSuspendedByUser( ) );
+        daoUtil.setLong( nParam++, announce.getTimePublication( ) );
         daoUtil.setInt( nParam, announce.getId( ) );
         daoUtil.executeUpdate( );
         daoUtil.free( );
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<Integer> findIdAnnouncesByDateCreation( Timestamp timestamp, Plugin plugin )
+    {
+        List<Integer> announceIdList = new ArrayList<Integer>( );
+        DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECT_ID_BY_DATE_CREATION, plugin );
+        daoUtil.setTimestamp( 1, timestamp );
+        daoUtil.executeQuery( );
+
+        while ( daoUtil.next( ) )
+        {
+            announceIdList.add( daoUtil.getInt( 1 ) );
+        }
+
+        daoUtil.free( );
+
+        return announceIdList;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<Integer> findIdAnnouncesByDatePublication( long lMinPublicationTime, Plugin plugin )
+    {
+        List<Integer> announceIdList = new ArrayList<Integer>( );
+        DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECT_ID_BY_TIME_PUBLICATION, plugin );
+        daoUtil.setLong( 1, lMinPublicationTime );
+        daoUtil.executeQuery( );
+
+        while ( daoUtil.next( ) )
+        {
+            announceIdList.add( daoUtil.getInt( 1 ) );
+        }
+
+        daoUtil.free( );
+
+        return announceIdList;
     }
 
     // ----------------------------------------
@@ -530,6 +578,7 @@ public final class AnnounceDAO implements IAnnounceDAO
         announce.setSuspendedByUser( daoUtil.getBoolean( nIndex++ ) );
         announce.setTags( daoUtil.getString( nIndex++ ) );
         announce.setHasPictures( daoUtil.getBoolean( nIndex++ ) );
+        announce.setTimePublication( daoUtil.getLong( nIndex++ ) );
 
         category.setId( daoUtil.getInt( nIndex++ ) );
         category.setLabel( daoUtil.getString( nIndex++ ) );

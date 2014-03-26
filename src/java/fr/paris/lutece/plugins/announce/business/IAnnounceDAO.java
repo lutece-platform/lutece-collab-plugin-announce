@@ -36,6 +36,7 @@ package fr.paris.lutece.plugins.announce.business;
 import fr.paris.lutece.portal.service.plugin.Plugin;
 import fr.paris.lutece.portal.service.security.LuteceUser;
 
+import java.sql.Timestamp;
 import java.util.List;
 
 
@@ -150,6 +151,14 @@ public interface IAnnounceDAO
      */
     void setSuspendedByUser( Announce announce, Plugin plugin );
 
+    /**
+     * Get the list of ids of announces that was created before the given date
+     * @param timestamp The timestamp
+     * @param plugin The plugin
+     * @return The list of ids
+     */
+    List<Integer> findIdAnnouncesByDateCreation( Timestamp timestamp, Plugin plugin );
+
     // ----------------------------------------
     // Announce response management
     // ----------------------------------------
@@ -185,4 +194,13 @@ public interface IAnnounceDAO
      * @param plugin The plugin
      */
     void deleteAnnounceResponse( int nIdAnnounce, Plugin plugin );
+
+    /**
+     * Get the list of ids of announces that were created after a given time
+     * @param lMinPublicationTime The minimum publication time of announces to
+     *            get
+     * @param plugin The plugin
+     * @return The list of ids of announces
+     */
+    List<Integer> findIdAnnouncesByDatePublication( long lMinPublicationTime, Plugin plugin );
 }

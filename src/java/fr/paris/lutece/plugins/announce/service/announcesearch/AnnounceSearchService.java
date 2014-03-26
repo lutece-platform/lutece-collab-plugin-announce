@@ -64,8 +64,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import javax.servlet.http.HttpServletRequest;
-
 
 /**
  * AnnounceSearchService
@@ -79,6 +77,12 @@ public class AnnounceSearchService
     private static final String PROPERTY_ANALYSER_CLASS_NAME = "announce.internalIndexer.lucene.analyser.className";
     private static final String PROPERTY_MAX_SKIPPED_INDEXATION = "announce.indexer.maxSkipedIndexation";
     private static final String PROPERTY_INDEXER_PRICE_FORMAT = "announce.indexer.priceFormat";
+
+    // Constants
+    private static final String CONSTANT_BLANK_SPACE = " ";
+    private static final String CONSTANT_COMA = ",";
+    private static final String CONSTANT_POINT = ".";
+    private static final String CONSTANT_EURO = "€";
 
     // Default values
     private static final int DEFAULT_WRITER_MERGE_FACTOR = 20;
@@ -148,21 +152,20 @@ public class AnnounceSearchService
     /**
      * Return search results
      * @param filter The search filter
-     * @param request The {@link HttpServletRequest}
      * @param nPageNumber The current page
      * @param nItemsPerPage The number of items per page to get
      * @param listIdAnnounces Results as a collection of id of announces
      * @return The total number of items found
      */
-    public int getSearchResults( AnnounceSearchFilter filter, HttpServletRequest request, int nPageNumber,
-            int nItemsPerPage, List<Integer> listIdAnnounces )
+    public int getSearchResults( AnnounceSearchFilter filter, int nPageNumber, int nItemsPerPage,
+            List<Integer> listIdAnnounces )
     {
         int nNbItems = 0;
         try
         {
             IAnnounceSearchEngine engine = SpringContextService.getBean( BEAN_SEARCH_ENGINE );
             List<SearchResult> listResults = new ArrayList<SearchResult>( );
-            nNbItems = engine.getSearchResults( filter, request, PluginService.getPlugin( AnnouncePlugin.PLUGIN_NAME ),
+            nNbItems = engine.getSearchResults( filter, PluginService.getPlugin( AnnouncePlugin.PLUGIN_NAME ),
                     listResults, nPageNumber, nItemsPerPage );
 
             for ( SearchResult searchResult : listResults )
@@ -379,6 +382,17 @@ public class AnnounceSearchService
     {
         NumberFormat formatter = new DecimalFormat( getPriceFormat( ) );
         return formatter.format( dPrice );
+    }
+
+    /**
+     * Format a numerous string
+     * @param strPrice The price
+     * @return The formated price
+     */
+    public static String getFormatedPriceString( String strPrice )
+    {
+        return strPrice.replaceAll( CONSTANT_BLANK_SPACE, StringUtils.EMPTY ).replace( CONSTANT_COMA, CONSTANT_POINT )
+                .replaceAll( CONSTANT_EURO, StringUtils.EMPTY ).trim( );
     }
 
     /**

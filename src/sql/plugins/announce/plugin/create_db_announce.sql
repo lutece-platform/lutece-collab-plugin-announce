@@ -18,13 +18,13 @@ PRIMARY KEY (id_sector)
 --
 DROP TABLE IF EXISTS announce_category;
 CREATE TABLE announce_category(
-id_category int default '0' NOT NULL,
-id_sector int default '0' NOT NULL,
-label_category varchar(50) NOT NULL,
-display_price smallint default '0',
-announces_validation smallint default '0',
-id_mailing_list int default NULL,
-PRIMARY KEY (id_category)
+	id_category int default '0' NOT NULL,
+	id_sector int default '0' NOT NULL,
+	label_category varchar(50) NOT NULL,
+	display_price smallint default '0',
+	announces_validation smallint default '0',
+	id_mailing_list int default NULL,
+	PRIMARY KEY (id_category)
 );
 
 --
@@ -32,22 +32,24 @@ PRIMARY KEY (id_category)
 --
 DROP TABLE IF EXISTS announce_announce;
 CREATE TABLE announce_announce(
-id_announce int default '0' NOT NULL,
-user_name varchar(255) NOT NULL,
-contact_information varchar(255) NOT NULL,
-id_category int default '0' NOT NULL,
-title_announce varchar(255) NOT NULL ,
-description_announce LONG VARCHAR NOT NULL ,
-price_announce varchar(50),
-date_creation timestamp default CURRENT_TIMESTAMP NOT NULL,
-published smallint default '0',
-suspended smallint default '0',
-suspended_by_user smallint default '0',
-tags varchar(255) NOT NULL,
-has_pictures smallint default '0',
-PRIMARY KEY (id_announce)
+	id_announce int default '0' NOT NULL,
+	user_name varchar(255) NOT NULL,
+	contact_information varchar(255) NOT NULL,
+	id_category int default '0' NOT NULL,
+	title_announce varchar(255) NOT NULL ,
+	description_announce LONG VARCHAR NOT NULL ,
+	price_announce varchar(50),
+	date_creation timestamp default CURRENT_TIMESTAMP NOT NULL,
+	published smallint default '0',
+	suspended smallint default '0',
+	suspended_by_user smallint default '0',
+	tags varchar(255) NOT NULL,
+	has_pictures smallint default '0',
+	publication_time BIGINT default 0,
+	PRIMARY KEY (id_announce)
 );
 
+CREATE INDEX announce_user_name ON announce_announce (user_name);
 
 /*==============================================================*/
 /* Table structure for table announce_indexer_action				*/

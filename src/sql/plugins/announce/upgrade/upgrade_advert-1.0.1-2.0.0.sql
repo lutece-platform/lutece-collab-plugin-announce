@@ -68,3 +68,7 @@ CREATE TABLE announce_search_filters(
 	price_max int not null default 0,
 	PRIMARY KEY (id_filter)
 );
+
+ALTER TABLE announce_announce ADD COLUMN publication_time BIGINT default 0;
+
+CREATE INDEX announce_user_name ON announce_announce (user_name);

@@ -43,18 +43,17 @@
                        </#if>
                    </#if>
                </#if>
-<!-- 	                <#if list_entry_values_slideshow?? && list_entry_values_slideshow?has_content> -->
-<!-- 	                    <#if list_entry_values_slideshow?size &gt; 1 > -->
-<!-- 	                        <#assign class = "pirobox_gall"> -->
-<!-- 	                    <#else> -->
-<!-- 	                        <#assign class = "pirobox"> -->
-<!-- 	                    </#if> -->
-<!-- 	                    <ul id="slideshow"> -->
-<!-- 	                        <#list list_entry_values_slideshow as entry_value> -->
-<!-- 	                            <li><a class="${class}" title="#i18n{announce.view_announce.imagesCaption}" href="image?resource_type=announce_entry_img_lowdef&id=${entry_value.id}">${entry_value.displayValue}</a></li> -->
-<!-- 	                        </#list> -->
-<!-- 	                    </ul> -->
-<!-- 	                </#if> -->
+				<#if isExtendInstalled?? && isExtendInstalled && announce.published && !announce.suspended && !announce.suspendedByUser>
+	                <div class="row-fluid">
+						<div class="span3 offset9">
+							<div class="pull-right">
+								@Extender[${announce.id},announce,opengraph,{footer:false, header:false}]@
+								@Extender[${announce.id},announce,hit,{show:true}]@
+								@Extender[${announce.id},announce,rating,{show:"all"}]@
+							</div>
+					    </div>
+					</div>
+				</#if>
                <table class="entry-value-table">
                    <#if announce.category.displayPrice>
                        <tr><th>#i18n{announce.view_announce.price}</th><td>${announce.price}</td></tr>
@@ -80,6 +79,11 @@
                    	</td>
                    </tr>
                </table>
+               <#if isExtendInstalled?? && isExtendInstalled && announce.published && !announce.suspended && !announce.suspendedByUser >
+					@Extender[${announce.id},announce,comment]@
+					@Extender[${announce.id},announce,feedback]@
+					@Extender[${announce.id},announce,opengraph,{footer:true}]@
+				</#if>
            </div>
        </div>
    <#else>

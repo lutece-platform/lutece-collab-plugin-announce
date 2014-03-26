@@ -41,9 +41,11 @@ import fr.paris.lutece.plugins.genericattributes.business.ResponseHome;
 import fr.paris.lutece.portal.business.file.FileHome;
 import fr.paris.lutece.portal.service.plugin.Plugin;
 import fr.paris.lutece.portal.service.plugin.PluginService;
+import fr.paris.lutece.portal.service.resource.ExtendableResourceRemovalListenerService;
 import fr.paris.lutece.portal.service.security.LuteceUser;
 import fr.paris.lutece.portal.service.spring.SpringContextService;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -75,6 +77,7 @@ public final class AnnounceHome
      */
     public static Announce create( Announce announce )
     {
+        updateAnnouncePublicationTime( announce );
         _dao.insert( announce, _plugin );
 
         if ( announce.getPublished( ) && !announce.getSuspended( ) && !announce.getSuspendedByUser( ) )
@@ -83,9 +86,6 @@ public final class AnnounceHome
                     _plugin );
             AnnounceCacheService.getService( ).removeKey( AnnounceCacheService.getListIdPublishedAnnouncesCacheKey( ) );
         }
-
-        AnnounceCacheService.getService( ).putInCache( AnnounceCacheService.getAnnounceCacheKey( announce.getId( ) ),
-                announce );
 
         return announce;
     }
@@ -131,6 +131,10 @@ public final class AnnounceHome
             ResponseHome.remove( nIdResponse );
         }
         removeAnnounceResponse( nAnnounceId );
+
+        ExtendableResourceRemovalListenerService.doRemoveResourceExtentions( Announce.RESOURCE_TYPE,
+                Integer.toString( nAnnounceId ) );
+
         _dao.delete( nAnnounceId, _plugin );
         AnnounceCacheService.getService( ).removeKey( AnnounceCacheService.getListIdPublishedAnnouncesCacheKey( ) );
         AnnounceCacheService.getService( ).removeKey( AnnounceCacheService.getAnnounceCacheKey( nAnnounceId ) );
@@ -244,8 +248,8 @@ public final class AnnounceHome
      */
     public static void setPublished( Announce announce )
     {
+        updateAnnouncePublicationTime( announce );
         _dao.setPublished( announce, _plugin );
-
         if ( announce.getPublished( ) && !announce.getSuspended( ) && !announce.getSuspendedByUser( ) )
         {
             AnnounceSearchService.getInstance( ).addIndexerAction( announce.getId( ), IndexerAction.TASK_CREATE,
@@ -265,6 +269,7 @@ public final class AnnounceHome
      */
     public static void setSuspended( Announce announce )
     {
+        updateAnnouncePublicationTime( announce );
         _dao.setSuspended( announce, _plugin );
 
         if ( announce.getPublished( ) && !announce.getSuspended( ) && !announce.getSuspendedByUser( ) )
@@ -286,6 +291,7 @@ public final class AnnounceHome
      */
     public static void setSuspendedByUser( Announce announce )
     {
+        updateAnnouncePublicationTime( announce );
         _dao.setSuspendedByUser( announce, _plugin );
 
         if ( announce.getPublished( ) && !announce.getSuspended( ) && !announce.getSuspendedByUser( ) )
@@ -301,6 +307,27 @@ public final class AnnounceHome
         AnnounceCacheService.getService( ).removeKey( AnnounceCacheService.getListIdPublishedAnnouncesCacheKey( ) );
     }
 
+    /**
+     * Get the list of ids of announces that was created before the given date
+     * @param timestamp The timestamp
+     * @return The list of ids
+     */
+    public static List<Integer> findIdAnnouncesByDateCreation( Timestamp timestamp )
+    {
+        return _dao.findIdAnnouncesByDateCreation( timestamp, _plugin );
+    }
+
+    /**
+     * Get the list of ids of announces that were created after a given time
+     * @param lMinPublicationTime The minimum publication time of announces to
+     *            get
+     * @return The list of ids of announces
+     */
+    public static List<Integer> findIdAnnouncesByDatePublication( long lMinPublicationTime )
+    {
+        return _dao.findIdAnnouncesByDatePublication( lMinPublicationTime, _plugin );
+    }
+
     // -----------------------------------------------
     // Announce response management
     // -----------------------------------------------
@@ -311,7 +338,7 @@ public final class AnnounceHome
      * @param nIdResponse The id of the response
      * @param bIsImage True if the response is an image, false otherwise
      */
-    public static void insertAppointmentResponse( int nIdAnnounce, int nIdResponse, boolean bIsImage )
+    public static void insertAnnounceResponse( int nIdAnnounce, int nIdResponse, boolean bIsImage )
     {
         _dao.insertAnnounceResponse( nIdAnnounce, nIdResponse, bIsImage, _plugin );
     }
@@ -368,5 +395,17 @@ public final class AnnounceHome
     public static void removeAnnounceResponse( int nIdAnnounce )
     {
         _dao.deleteAnnounceResponse( nIdAnnounce, _plugin );
+    }
+
+    /**
+     * Update the publication time of an announce according to its published,
+     * its suspended and its suspended by user parameters.<br />
+     * Note that the announce is not flushed in the database
+     * @param announce the announce to update
+     */
+    private static void updateAnnouncePublicationTime( Announce announce )
+    {
+        announce.setTimePublication( announce.getPublished( ) && !announce.getSuspended( )
+                && !announce.getSuspendedByUser( ) ? System.currentTimeMillis( ) : 0 );
     }
 }

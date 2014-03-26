@@ -60,6 +60,7 @@ import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
@@ -76,8 +77,6 @@ public class DefaultAnnounceIndexer implements IAnnounceSearchIndexer
     private static final String PROPERTY_INDEXER_VERSION = "announce.indexer.version";
     private static final String PROPERTY_INDEXER_ENABLE = "announce.indexer.enable";
     private static final String BLANK_SPACE = " ";
-    private static final String CONSTANT_COMA = ",";
-    private static final String CONSTANT_POINT = ".";
 
     /**
      * {@inheritDoc}
@@ -259,24 +258,25 @@ public class DefaultAnnounceIndexer implements IAnnounceSearchIndexer
         // Add the last modified date of the file a field named "modified".
         // Use a field that is indexed (i.e. searchable), but don't tokenize
         // the field into words.
-        String strDate = DateTools.dateToString( announce.getDateCreation( ), DateTools.Resolution.DAY );
+        String strDate = DateTools.dateToString(
+                ( announce.getTimePublication( ) > 0 ) ? new Date( announce.getTimePublication( ) ) : announce
+                        .getDateCreation( ), DateTools.Resolution.DAY );
         doc.add( new Field( AnnounceSearchItem.FIELD_DATE, strDate, Field.Store.YES, Field.Index.NOT_ANALYZED ) );
 
-        if ( StringUtils.isNotEmpty( announce.getPrice( ) ) )
+        if ( StringUtils.isNotBlank( announce.getPrice( ) ) )
         {
-            announce.setPrice( announce.getPrice( ).replaceAll( BLANK_SPACE, StringUtils.EMPTY )
-                    .replace( CONSTANT_COMA, CONSTANT_POINT ).trim( ) );
 
             try
             {
-                double dPrice = Double.parseDouble( announce.getPrice( ) );
+                double dPrice = Double
+                        .parseDouble( AnnounceSearchService.getFormatedPriceString( announce.getPrice( ) ) );
                 // Add the price of the announce
                 doc.add( new Field( AnnounceSearchItem.FIELD_PRICE, AnnounceSearchService
                         .formatPriceForIndexer( dPrice ), Field.Store.YES, Field.Index.NOT_ANALYZED ) );
             }
             catch ( NumberFormatException nfe )
             {
-                AppLogService.error( "Announce price could not be parsed : " + announce.getPrice( ), nfe );
+                AppLogService.error( "Announce price could not be parsed : " + announce.getPrice( ) );
             }
         }
 

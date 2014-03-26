@@ -68,6 +68,7 @@ import fr.paris.lutece.portal.service.message.SiteMessage;
 import fr.paris.lutece.portal.service.message.SiteMessageException;
 import fr.paris.lutece.portal.service.message.SiteMessageService;
 import fr.paris.lutece.portal.service.plugin.Plugin;
+import fr.paris.lutece.portal.service.portal.PortalService;
 import fr.paris.lutece.portal.service.security.LuteceUser;
 import fr.paris.lutece.portal.service.security.LuteceUserService;
 import fr.paris.lutece.portal.service.security.SecurityService;
@@ -233,6 +234,7 @@ public class AnnounceApp implements XPageApplication
     private static final String MARK_PROD_URL = "prod_url";
     private static final String MARK_FORM_HTML = "form_html";
     private static final String MARK_LIST_ERRORS = "list_errors";
+    private static final String MARK_IS_EXTEND_INSTALLED = "isExtendInstalled";
 
     // Constants
     private static final String CONSTANT_BLANK_SPACE = " ";
@@ -408,7 +410,7 @@ public class AnnounceApp implements XPageApplication
         int nCurrentPageIndex = StringUtils.isNotEmpty( _strCurrentPageIndex )
                 && StringUtils.isNumeric( _strCurrentPageIndex ) ? Integer.parseInt( _strCurrentPageIndex ) : 1;
         List<Integer> listIdAnnounces = new ArrayList<Integer>( );
-        int nNbItems = AnnounceSearchService.getInstance( ).getSearchResults( filter, request, nCurrentPageIndex,
+        int nNbItems = AnnounceSearchService.getInstance( ).getSearchResults( filter, nCurrentPageIndex,
                 _nItemsPerPage, listIdAnnounces );
 
         List<Announce> listAnnounces = AnnounceHome.findByListId( listIdAnnounces );
@@ -614,7 +616,7 @@ public class AnnounceApp implements XPageApplication
         for ( Response response : announceDTO.getListResponse( ) )
         {
             ResponseHome.create( response );
-            AnnounceHome.insertAppointmentResponse( announce.getId( ), response.getIdResponse( ),
+            AnnounceHome.insertAnnounceResponse( announce.getId( ), response.getIdResponse( ),
                     response.getFile( ) != null && FileUtil.hasImageExtension( response.getFile( ).getTitle( ) ) );
         }
 
@@ -776,7 +778,7 @@ public class AnnounceApp implements XPageApplication
         for ( Response response : announceDTO.getListResponse( ) )
         {
             ResponseHome.create( response );
-            AnnounceHome.insertAppointmentResponse( announce.getId( ), response.getIdResponse( ),
+            AnnounceHome.insertAnnounceResponse( announce.getId( ), response.getIdResponse( ),
                     response.getFile( ) != null && FileUtil.hasImageExtension( response.getFile( ).getTitle( ) ) );
         }
 
@@ -931,6 +933,7 @@ public class AnnounceApp implements XPageApplication
             model.put( MARK_LIST_RESPONSES, listResponses );
             model.put( MARK_LIST_FIELDS, getSectorList( ) );
             model.put( MARK_LOCALE, request.getLocale( ) );
+            model.put( MARK_IS_EXTEND_INSTALLED, PortalService.isExtendActivated( ) );
 
             Category category = CategoryHome.findByPrimaryKey( announce.getCategory( ).getId( ) );
             announce.setCategory( category );
@@ -1305,8 +1308,6 @@ public class AnnounceApp implements XPageApplication
             String strDateMax = request.getParameter( PARAMETER_DATE_MAX );
             String strPriceMin = request.getParameter( PARAMETER_PRICE_MIN );
             String strPriceMax = request.getParameter( PARAMETER_PRICE_MAX );
-            int nIdCategory = Integer.parseInt( strIdCategory );
-
             strKeywords = ( strKeywords == null ) ? StringUtils.EMPTY : strKeywords;
 
             Date formatedDateMin = null;
@@ -1338,7 +1339,10 @@ public class AnnounceApp implements XPageApplication
 
             AnnounceSearchFilter filter = new AnnounceSearchFilter( );
             filter.setKeywords( strKeywords );
-            filter.setIdCategory( nIdCategory );
+            if ( StringUtils.isNotEmpty( strIdCategory ) && StringUtils.isNumeric( strIdCategory ) )
+            {
+                filter.setIdCategory( Integer.parseInt( strIdCategory ) );
+            }
             filter.setDateMin( formatedDateMin );
             filter.setDateMax( formatedDateMax );
 
@@ -1415,6 +1419,51 @@ public class AnnounceApp implements XPageApplication
             urlItem.addParameter( PARAMETER_ID_FILTER, nIdFilter );
         }
 
+        return urlItem.getUrl( );
+    }
+
+    /**
+     * Get the URl to view an announce
+     * @param nIdAnnounce The id of the announce to view
+     * @return The relative URL to view the announce
+     */
+    public static String getRelativeUrlViewAnnounce( int nIdAnnounce )
+    {
+        UrlItem urlItem = new UrlItem( AppPathService.getPortalUrl( ) );
+        urlItem.addParameter( PARAMETER_PAGE, AnnounceUtils.PARAMETER_PAGE_ANNOUNCE );
+        urlItem.addParameter( MVCUtils.PARAMETER_ACTION, ACTION_VIEW_ANNOUNCE );
+        urlItem.addParameter( PARAMETER_ANNOUNCE_ID, nIdAnnounce );
+        return urlItem.getUrl( );
+    }
+
+    /**
+     * Get the URL to search for a given category
+     * @param request The request
+     * @param nIdCategory The of the category to search for
+     * @return The URL
+     */
+    public static String getUrlViewCategory( HttpServletRequest request, int nIdCategory )
+    {
+        UrlItem urlItem = new UrlItem( AppPathService.getBaseUrl( request ) + AppPathService.getPortalUrl( ) );
+        urlItem.addParameter( PARAMETER_PAGE, AnnounceUtils.PARAMETER_PAGE_ANNOUNCE );
+        urlItem.addParameter( MVCUtils.PARAMETER_ACTION, ACTION_SEARCH );
+        urlItem.addParameter( PARAMETER_CATEGORY_ID, nIdCategory );
+        urlItem.addParameter( PARAMETER_HAS_FILTER, Boolean.TRUE.toString( ) );
+        return urlItem.getUrl( );
+    }
+
+    /**
+     * Get the URL to view announces of a user
+     * @param request The request
+     * @param strUserName The name of the user to view announces of
+     * @return The URL
+     */
+    public static String getUrlViewUserAnnounces( HttpServletRequest request, String strUserName )
+    {
+        UrlItem urlItem = new UrlItem( AppPathService.getBaseUrl( request ) + AppPathService.getPortalUrl( ) );
+        urlItem.addParameter( PARAMETER_PAGE, AnnounceUtils.PARAMETER_PAGE_ANNOUNCE );
+        urlItem.addParameter( MVCUtils.PARAMETER_ACTION, ACTION_VIEW_ANNOUNCES );
+        urlItem.addParameter( PARAMETER_USERNAME, strUserName );
         return urlItem.getUrl( );
     }
 }

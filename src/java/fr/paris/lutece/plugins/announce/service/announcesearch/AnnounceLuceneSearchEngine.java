@@ -64,8 +64,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
-import javax.servlet.http.HttpServletRequest;
-
 
 /**
  * LuceneSearchEngine
@@ -80,8 +78,8 @@ public class AnnounceLuceneSearchEngine implements IAnnounceSearchEngine
      * {@inheritDoc}
      */
     @Override
-    public int getSearchResults( AnnounceSearchFilter filter, HttpServletRequest request, Plugin plugin,
-            List<SearchResult> listSearchResult, int nPage, int nItemsPerPage )
+    public int getSearchResults( AnnounceSearchFilter filter, Plugin plugin, List<SearchResult> listSearchResult,
+            int nPage, int nItemsPerPage )
     {
         ArrayList<SearchItem> listResults = new ArrayList<SearchItem>( );
         Searcher searcher = null;

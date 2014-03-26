@@ -68,22 +68,6 @@ public class AnnounceIndexer implements SearchIndexer
         return DefaultAnnounceIndexer.getDocuments( strDocument );
     }
 
-    //    /**
-    //     * Builds a document which will be used by Lucene during the indexing of the
-    //     * announces list
-    //     * @param announce the announce
-    //     * @param strUrl the url
-    //     * @param plugin the plugin
-    //     * @throws java.io.IOException I/O exceiption
-    //     * @throws java.lang.InterruptedException interrupted exception
-    //     * @return the document
-    //     */
-    //    public static org.apache.lucene.document.Document getDocument( Announce announce, String strUrl, Plugin plugin )
-    //        throws IOException, InterruptedException
-    //    {
-    //        return DefaultAnnounceIndexer.getDocument( announce, strUrl, plugin );
-    //    }
-
     /**
      * {@inheritDoc}
      */
