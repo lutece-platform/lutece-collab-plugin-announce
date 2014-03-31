@@ -88,7 +88,7 @@ public class AnnounceSubscriptionProvider implements ISubscriptionProviderServic
     private static final String TEMPLATE_USER_SUBSCRIPTION_DESCRIPTION = "skin/plugins/announce/subscription/user_subscriction_description.html";
     private static final String TEMPLATE_CATEGORY_SUBSCRIPTION_DESCRIPTION = "skin/plugins/announce/subscription/category_subscriction_description.html";
 
-    private static AnnounceSubscriptionProvider _instance;
+    private static volatile AnnounceSubscriptionProvider _instance;
 
     /**
      * {@inheritDoc}
@@ -107,10 +107,7 @@ public class AnnounceSubscriptionProvider implements ISubscriptionProviderServic
     {
         if ( _instance == null )
         {
-            synchronized ( AnnounceSubscriptionProvider.class )
-            {
-                _instance = SpringContextService.getBean( BEAN_NAME );
-            }
+            _instance = SpringContextService.getBean( BEAN_NAME );
         }
         return _instance;
     }
