@@ -439,7 +439,7 @@ public class AnnounceApp implements XPageApplication
      * Get the page to create an announce
      * @param request The request
      * @return The HTML content to display
-     * @throws SiteMessageException
+     * @throws SiteMessageException If a site message needs to be displayed
      */
     private String getCreateAnnounce( HttpServletRequest request ) throws SiteMessageException
     {
@@ -519,7 +519,7 @@ public class AnnounceApp implements XPageApplication
      * @param user The user
      * @return The list of error, or null if no error was found and if the
      *         announce was created
-     * @throws SiteMessageException
+     * @throws SiteMessageException If a site message needs to be displayed
      */
     private List<GenericAttributeError> doCreateAnnounce( HttpServletRequest request, Sector sector, Category category,
             Announce announce, LuteceUser user ) throws SiteMessageException
@@ -929,6 +929,7 @@ public class AnnounceApp implements XPageApplication
      * Gets template in order to view all the user's announces
      * @param request httpRequest
      * @param strUserName the name of the user
+     * @return The HTML content to display
      * @throws SiteMessageException If a site message needs to be displayed
      */
     private String getViewUserAnnounces( HttpServletRequest request, String strUserName ) throws SiteMessageException

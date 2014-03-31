@@ -336,10 +336,11 @@ public class AnnounceSubscriptionProvider implements ISubscriptionProviderServic
 
     /**
      * Check if a user has subscribed to a given resource
-     * @param user
-     * @param strIdResource
-     * @param strSubscriptionKey
-     * @return
+     * @param user The user to check the subscription of
+     * @param strIdResource The id of the resource
+     * @param strSubscriptionKey The subscription key
+     * @return True if the user has subscribed to the given resource, false
+     *         otherwise
      */
     private boolean hasSubscribedtoResource( LuteceUser user, String strIdResource, String strSubscriptionKey )
     {
