@@ -39,7 +39,7 @@ import fr.paris.lutece.portal.service.cache.AbstractCacheableService;
 /**
  * Cache service for announces
  */
-public class AnnounceCacheService extends AbstractCacheableService
+public final class AnnounceCacheService extends AbstractCacheableService
 {
     private static final String CACHE_SERVICE_NAME = "announce.announceCacheService";
     private static final String ANNOUNCE_KEY_PREFIXE = "announce.announce.";
@@ -47,6 +47,9 @@ public class AnnounceCacheService extends AbstractCacheableService
 
     private static AnnounceCacheService _instance = new AnnounceCacheService( );
 
+    /**
+     * Private constructor
+     */
     private AnnounceCacheService( )
     {
         initCache( );

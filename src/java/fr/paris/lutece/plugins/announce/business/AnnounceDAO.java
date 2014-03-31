@@ -524,7 +524,7 @@ public final class AnnounceDAO implements IAnnounceDAO
      * @param daoUtil The daoUtil to load data from. Note that the cursor of the
      *            daoUtil will NOT be moved by this method, and that the call to
      *            the daoUtil.free( ) will NOT be performed.
-     * @return
+     * @return The announce
      */
     private Announce getAnnounceWithCategory( DAOUtil daoUtil )
     {

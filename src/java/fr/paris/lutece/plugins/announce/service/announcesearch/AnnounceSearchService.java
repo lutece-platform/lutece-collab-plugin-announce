@@ -68,7 +68,7 @@ import java.util.List;
 /**
  * AnnounceSearchService
  */
-public class AnnounceSearchService
+public final class AnnounceSearchService
 {
     private static final String BEAN_SEARCH_ENGINE = "announce.announceSearchEngine";
     private static final String PATH_INDEX = "announce.internalIndexer.lucene.indexPath";
@@ -99,7 +99,9 @@ public class AnnounceSearchService
     private int _nWriterMergeFactor;
     private int _nWriterMaxSectorLength;
 
-    /** Creates a new instance of DirectorySearchService */
+    /**
+     * Creates a new instance of DirectorySearchService
+     */
     private AnnounceSearchService( )
     {
         // Read configuration properties
@@ -136,7 +138,6 @@ public class AnnounceSearchService
 
     /**
      * Get the HelpdeskSearchService instance
-     * 
      * @return The {@link AnnounceSearchService}
      */
     public static AnnounceSearchService getInstance( )
@@ -406,6 +407,10 @@ public class AnnounceSearchService
         return formatter.format( nPrice );
     }
 
+    /**
+     * Get the price format to use
+     * @return the price format to use
+     */
     private static String getPriceFormat( )
     {
         if ( _strPriceFormat == null )

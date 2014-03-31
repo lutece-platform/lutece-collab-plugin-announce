@@ -293,6 +293,13 @@ public class AnnounceSubscriptionProvider implements ISubscriptionProviderServic
         SubscriptionService.getInstance( ).createSubscription( subscription, user );
     }
 
+    /**
+     * Do remove a subscription
+     * @param user The user
+     * @param strIdResource The id of the resource to remove the subscription to
+     * @param strSubscriptionKey The subscription key of the subscription to
+     *            remove
+     */
     private void removeSubscription( LuteceUser user, String strIdResource, String strSubscriptionKey )
     {
         SubscriptionFilter filter = new SubscriptionFilter( user.getName( ), getProviderName( ), strSubscriptionKey,

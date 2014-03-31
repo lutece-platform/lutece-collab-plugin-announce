@@ -498,6 +498,8 @@ public class CategoryJspBean extends PluginAdminPageJspBean
      * @param strPermissionType The type of permission (see
      *            {@link CategoryResourceIdService} class)
      * @return The category or null if user have no access
+     * @throws AccessDeniedException If the user is not authorized to access
+     *             this feature
      */
     private Category getAuthorizedCategory( HttpServletRequest request, String strPermissionType )
             throws AccessDeniedException

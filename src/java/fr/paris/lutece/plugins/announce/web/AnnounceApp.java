@@ -372,7 +372,6 @@ public class AnnounceApp implements XPageApplication
     /**
      * Get the default page to display
      * @param request The request
-     * @param model The model
      * @return The HTML content to display
      */
     private String getDefaultPage( HttpServletRequest request )
@@ -384,7 +383,6 @@ public class AnnounceApp implements XPageApplication
     /**
      * Get the page to search for announces
      * @param request The request
-     * @param model The model
      * @return The HTML content to displayed
      */
     private String getSearchAnnounces( HttpServletRequest request )
@@ -622,7 +620,6 @@ public class AnnounceApp implements XPageApplication
     /**
      * Get the page to create an announce
      * @param request The request
-     * @param model The model
      * @return The HTML content to display
      * @throws SiteMessageException If a site message needs to be displayed
      */
@@ -783,7 +780,6 @@ public class AnnounceApp implements XPageApplication
     /**
      * Get the confirmation page before removing an announce
      * @param request The request
-     * @param model The model
      * @return The HTML content if the site message could not be displayed
      * @throws SiteMessageException If a site message needs to be displayed
      */
@@ -811,7 +807,6 @@ public class AnnounceApp implements XPageApplication
     /**
      * Get the confirmation page before suspending an announce
      * @param request The request
-     * @param model The model
      * @return The HTML content if the site message could not be displayed
      * @throws SiteMessageException If a site message needs to be displayed
      */
@@ -848,8 +843,7 @@ public class AnnounceApp implements XPageApplication
     /**
      * Do enable an announce
      * @param request The request
-     * @param model The model
-     * @return
+     * @return The HTML to display
      * @throws SiteMessageException If a site message needs to be displayed
      */
     private String enableAnnounceByUser( HttpServletRequest request ) throws SiteMessageException
@@ -872,8 +866,7 @@ public class AnnounceApp implements XPageApplication
      * View an announce
      * @param request The request
      * @param announce The announce
-     * @param model The model
-     * @returnThe HTML content to display
+     * @return The HTML content to display
      */
     private String getViewAnnounce( HttpServletRequest request, Announce announce )
     {
@@ -933,10 +926,9 @@ public class AnnounceApp implements XPageApplication
     }
 
     /**
-     * gets template in order to view all the user's announces
+     * Gets template in order to view all the user's announces
      * @param request httpRequest
      * @param strUserName the name of the user
-     * @param model HashMap model
      * @throws SiteMessageException If a site message needs to be displayed
      */
     private String getViewUserAnnounces( HttpServletRequest request, String strUserName ) throws SiteMessageException
