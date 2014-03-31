@@ -40,6 +40,9 @@ package fr.paris.lutece.plugins.announce.business;
  */
 public class IndexerActionFilter
 {
+    /**
+     * Represent any integer
+     */
     public static final int ALL_INT = -1;
     private int _nIdTask = ALL_INT;
     private int _nIdAnnounce = ALL_INT;

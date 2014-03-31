@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="fr">
+	<head>
+		<link rel="stylesheet" href="${prod_url}css/bootstrap.min.css" type="text/css" />
+		<link rel="stylesheet" href="${prod_url}css/bootstrap-responsive.min.css" type="text/css"/>
+		<link rel="stylesheet"  href="${prod_url}css/page_template_styles.css" type="text/css" />
+	</head>
+	<body>
+		<div class="container">
+			<#list list_announces as announce>
+				<div class="row-fluid">
+					<div class="span12">
+						<legend>
+							<a href="${prod_url}jsp/site/Portal.jsp?page=announce&action=view_announce&announce_id=${announce.id}">
+								${announce.title}
+							</a>
+						</legend>
+						<div class="row-fluid">
+							<#if announce.hasPictures>
+								<div class="span1">
+									<#list announce.listIdImageResponse as idImageResponse>
+										<#if idImageResponse_index == 0>
+											<a href="${prod_url}jsp/site/Portal.jsp?page=announce&action=view_announce&announce_id=${announce.id}">
+												<img src="${prod_url}image?resource_type=GENERICATTRIBUTES_RESPONSE&id=${idImageResponse}" />
+											</a>
+										</#if>
+									</#list>
+								</div>
+							</#if>
+							<div class="span11">
+							    ${announce.description}
+					    	</div>
+					    </div>
+					</div>
+			    </div>
+		    </#list>
+		</div>
+	</body>
+</html>

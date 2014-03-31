@@ -45,14 +45,14 @@ import java.util.List;
 /**
  * the Home class for categry
  */
-public class CategoryHome
+public final class CategoryHome
 {
     // Static variable pointed at the DAO instance
     private static ICategoryDAO _dao = SpringContextService.getBean( "announce.categoryDAO" );
     private static Plugin _plugin = PluginService.getPlugin( AnnouncePlugin.PLUGIN_NAME );
 
     /** Creates a new instance of CategoryHome */
-    public CategoryHome( )
+    private CategoryHome( )
     {
     }
 

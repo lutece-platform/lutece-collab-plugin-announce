@@ -100,7 +100,6 @@ import org.apache.commons.lang.StringUtils;
 import java.io.IOException;
 import java.text.DateFormat;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -119,15 +118,6 @@ import javax.servlet.http.HttpServletResponse;
  */
 public class AnnounceApp implements XPageApplication
 {
-    /**
-     * Pattern for dates
-     */
-    public static final String PATTERN_DATE = "dd/MM/yyyy";
-    /**
-     * Date format for filters
-     */
-    public static final DateFormat DATE_FORMAT = new SimpleDateFormat( PATTERN_DATE, Locale.FRENCH );
-
     private static final long serialVersionUID = 3586318619582357870L;
     private static final String PARAMETER_USERNAME = "username";
 
@@ -252,11 +242,10 @@ public class AnnounceApp implements XPageApplication
     private int _nDefaultItemsPerPage;
     private String _strCurrentPageIndex;
     private int _nItemsPerPage;
-
-    static
-    {
-        DATE_FORMAT.setLenient( false );
-    }
+    /**
+     * Date format for filters
+     */
+    private final DateFormat _dateFormat = AnnounceService.getDateFormat( );
 
     /**
      * {@inheritDoc}
@@ -431,9 +420,9 @@ public class AnnounceApp implements XPageApplication
         }
 
         model.put( MARK_ANNOUNCES_LIST, paginator.getPageItems( ) );
-        model.put( MARK_FILTER_DATE_MIN, filter.getDateMin( ) != null ? DATE_FORMAT.format( filter.getDateMin( ) )
+        model.put( MARK_FILTER_DATE_MIN, filter.getDateMin( ) != null ? _dateFormat.format( filter.getDateMin( ) )
                 : null );
-        model.put( MARK_FILTER_DATE_MAX, filter.getDateMax( ) != null ? DATE_FORMAT.format( filter.getDateMax( ) )
+        model.put( MARK_FILTER_DATE_MAX, filter.getDateMax( ) != null ? _dateFormat.format( filter.getDateMax( ) )
                 : null );
         model.put( MARK_FILTER, filter );
         model.put( MARK_LOCALE, request.getLocale( ) );
@@ -1000,8 +989,8 @@ public class AnnounceApp implements XPageApplication
 
         LuteceUser owner = LuteceUserService.getLuteceUserFromName( strUserName );
 
-        model.put( MARK_HAS_SUBSCRIBED_TO_USER,
-                AnnounceSubscriptionProvider.getService( ).hasSubscribedToUser( user, strUserName ) );
+        model.put( MARK_HAS_SUBSCRIBED_TO_USER, user != null ? AnnounceSubscriptionProvider.getService( )
+                .hasSubscribedToUser( user, strUserName ) : null );
         String strUserRealName = owner == null ? strUserName : ( owner.getUserInfo( LuteceUser.NAME_GIVEN )
                 + CONSTANT_BLANK_SPACE + owner.getUserInfo( LuteceUser.NAME_FAMILY ) );
         model.put( MARK_ANNOUNCE_OWNER, StringUtils.isNotBlank( strUserRealName ) ? strUserRealName : strUserName );
@@ -1072,30 +1061,34 @@ public class AnnounceApp implements XPageApplication
     private void sendAnnounceNotification( HttpServletRequest request, Announce announce )
     {
         int nIdMailingList = announce.getCategory( ).getIdMailingList( );
-        Collection<Recipient> listRecipients = AdminMailingListService.getRecipients( nIdMailingList );
-
-        for ( Recipient recipient : listRecipients )
+        if ( nIdMailingList > 0 )
         {
-            HashMap<String, Object> model = new HashMap<String, Object>( );
+            Collection<Recipient> listRecipients = AdminMailingListService.getRecipients( nIdMailingList );
 
-            String strSenderEmail = AppPropertiesService.getProperty( PROPERTY_WEBMASTER_EMAIL );
-            String strSenderName = AppPropertiesService.getProperty( PROPERTY_WEBMASTER_NAME );
-            String strSubject = I18nService.getLocalizedString( PROPERTY_ANNOUNCE_NOTIFY_SUBJECT, request.getLocale( ) );
+            for ( Recipient recipient : listRecipients )
+            {
+                HashMap<String, Object> model = new HashMap<String, Object>( );
 
-            // Generate the subject of the message
-            strSubject += ( " " + announce.getCategory( ).getLabel( ) );
+                String strSenderEmail = AppPropertiesService.getProperty( PROPERTY_WEBMASTER_EMAIL );
+                String strSenderName = AppPropertiesService.getProperty( PROPERTY_WEBMASTER_NAME );
+                String strSubject = I18nService.getLocalizedString( PROPERTY_ANNOUNCE_NOTIFY_SUBJECT,
+                        request.getLocale( ) );
 
-            // Generate the body of the message
-            model.put( MARK_PROD_URL, AppPropertiesService.getProperty( PROPERTY_PROD_URL ) );
-            model.put( MARK_ANNOUNCE, announce );
-            model.put( MARK_LIST_FIELDS, getSectorList( ) );
-            model.put( MARK_LOCALE, request.getLocale( ) );
+                // Generate the subject of the message
+                strSubject += ( " " + announce.getCategory( ).getLabel( ) );
 
-            HtmlTemplate template = AppTemplateService.getTemplate( TEMPLATE_ANNOUNCE_NOTIFY_MESSAGE,
-                    request.getLocale( ), model );
-            String strBody = template.getHtml( );
+                // Generate the body of the message
+                model.put( MARK_PROD_URL, AppPropertiesService.getProperty( PROPERTY_PROD_URL ) );
+                model.put( MARK_ANNOUNCE, announce );
+                model.put( MARK_LIST_FIELDS, getSectorList( ) );
+                model.put( MARK_LOCALE, request.getLocale( ) );
 
-            MailService.sendMailHtml( recipient.getEmail( ), strSenderName, strSenderEmail, strSubject, strBody );
+                HtmlTemplate template = AppTemplateService.getTemplate( TEMPLATE_ANNOUNCE_NOTIFY_MESSAGE,
+                        request.getLocale( ), model );
+                String strBody = template.getHtml( );
+
+                MailService.sendMailHtml( recipient.getEmail( ), strSenderName, strSenderEmail, strSubject, strBody );
+            }
         }
     }
 
@@ -1313,11 +1306,13 @@ public class AnnounceApp implements XPageApplication
             Date formatedDateMin = null;
             Date formatedDateMax = null;
 
+            DateFormat dateFormat = AnnounceService.getDateFormat( );
+
             if ( StringUtils.isNotEmpty( strDateMin ) )
             {
                 try
                 {
-                    formatedDateMin = DATE_FORMAT.parse( strDateMin.trim( ) );
+                    formatedDateMin = dateFormat.parse( strDateMin.trim( ) );
                 }
                 catch ( ParseException e )
                 {
@@ -1329,7 +1324,7 @@ public class AnnounceApp implements XPageApplication
             {
                 try
                 {
-                    formatedDateMax = DATE_FORMAT.parse( strDateMax.trim( ) );
+                    formatedDateMax = dateFormat.parse( strDateMax.trim( ) );
                 }
                 catch ( ParseException e )
                 {

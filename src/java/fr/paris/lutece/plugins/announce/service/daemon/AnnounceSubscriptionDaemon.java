@@ -42,11 +42,19 @@ import fr.paris.lutece.plugins.announce.service.announcesearch.AnnounceSearchSer
 import fr.paris.lutece.plugins.subscribe.business.Subscription;
 import fr.paris.lutece.portal.service.daemon.Daemon;
 import fr.paris.lutece.portal.service.datastore.DatastoreService;
+import fr.paris.lutece.portal.service.mail.MailService;
+import fr.paris.lutece.portal.service.security.LuteceUser;
+import fr.paris.lutece.portal.service.security.LuteceUserService;
+import fr.paris.lutece.portal.service.template.AppTemplateService;
+import fr.paris.lutece.portal.service.util.AppPathService;
+import fr.paris.lutece.portal.service.util.AppPropertiesService;
+import fr.paris.lutece.util.html.HtmlTemplate;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -58,6 +66,13 @@ public class AnnounceSubscriptionDaemon extends Daemon
 {
 
     private static final String DATASTORE_KEY_SUBSCRIPTION_DAEMON_LAST_RUN = "announce.announceSubscriptionDaemon.timeDaemonLastRun";
+
+    private static final String MARK_LIST_ANNOUNCES = "list_announces";
+    private static final String MARK_PROD_URL = "prod_url";
+
+    private static final String PROPERTY_SUBSCRIPTION_NOTIFICATION_SUBJECT = "announce.subscription.notificationSubject";
+
+    private static final String TEMPLATE_EMAIL_ANNOUNCES = "skin/plugins/announce/email_notify_announces.html";
 
     /**
      * {@inheritDoc}
@@ -87,6 +102,12 @@ public class AnnounceSubscriptionDaemon extends Daemon
         {
             // We get the list of announces
             List<Announce> listAnnounce = AnnounceHome.findByListId( listIdAnnounces );
+
+            for ( Announce announce : listAnnounce )
+            {
+                announce.setListIdImageResponse( AnnounceHome.findListIdImageResponse( announce.getId( ) ) );
+                announce.setListResponse( AnnounceHome.findListResponse( announce.getId( ), false ) );
+            }
 
             // We associated announces to the id of the associated category
             Map<Integer, List<Announce>> mapAnnouncesByCategories = new HashMap<Integer, List<Announce>>(
@@ -149,14 +170,36 @@ public class AnnounceSubscriptionDaemon extends Daemon
                     filter.setDateMin( new Date( lTimeLastRun ) );
                 }
                 List<Integer> listIdFilteredAnnounces = new ArrayList<Integer>( );
+                // We get every announces matching the given filter with the last run date
                 AnnounceSearchService.getInstance( ).getSearchResults( filter, 0, 0, listIdFilteredAnnounces );
-                addAnnounceToMap( getListAnnouncesFromId( listIdFilteredAnnounces, mapAnnouncesById ),
-                        subscription.getUserId( ), mapUserAnnounces );
+
+                // We remove announces that are not newly published
+                if ( listIdFilteredAnnounces.size( ) > 0 )
+                {
+                    List<Integer> listIdNewlyPublishedAnnounces = new ArrayList<Integer>(
+                            listIdFilteredAnnounces.size( ) );
+                    for ( Integer nId : listIdFilteredAnnounces )
+                    {
+                        if ( listIdAnnounces.contains( nId ) )
+                        {
+                            listIdNewlyPublishedAnnounces.add( nId );
+                        }
+                    }
+                    if ( listIdNewlyPublishedAnnounces.size( ) > 0 )
+                    {
+                        addAnnounceToMap( getListAnnouncesFromId( listIdNewlyPublishedAnnounces, mapAnnouncesById ),
+                                subscription.getUserId( ), mapUserAnnounces );
+                    }
+                }
             }
+
+            String strSubject = AppPropertiesService.getProperty( PROPERTY_SUBSCRIPTION_NOTIFICATION_SUBJECT );
+            String strSenderName = MailService.getNoReplyEmail( );
+            String strSenderEmail = strSenderName;
 
             for ( Entry<String, List<Announce>> entry : mapUserAnnounces.entrySet( ) )
             {
-                notifyUser( entry.getKey( ), entry.getValue( ) );
+                notifyUser( entry.getKey( ), entry.getValue( ), strSubject, strSenderName, strSenderEmail );
             }
         }
     }
@@ -183,6 +226,8 @@ public class AnnounceSubscriptionDaemon extends Daemon
             if ( announce == null )
             {
                 announce = AnnounceHome.findByPrimaryKey( nIdAnnounce );
+                announce.setListIdImageResponse( AnnounceHome.findListIdImageResponse( announce.getId( ) ) );
+                announce.setListResponse( AnnounceHome.findListResponse( announce.getId( ), false ) );
                 mapAnnouncesById.put( nIdAnnounce, announce );
             }
             listAnnounces.add( announce );
@@ -204,17 +249,47 @@ public class AnnounceSubscriptionDaemon extends Daemon
             listMapAnnounces = new ArrayList<Announce>( );
             map.put( strUserName, listMapAnnounces );
         }
-        listMapAnnounces.addAll( listAnnounce );
+
+        // We check that the announce has not already been added to the map
+        for ( Announce announceToAdd : listAnnounce )
+        {
+            boolean bHasAnnounce = false;
+            for ( Announce announce : listMapAnnounces )
+            {
+                if ( announce.getId( ) == announceToAdd.getId( ) )
+                {
+                    bHasAnnounce = true;
+                    break;
+                }
+            }
+            if ( !bHasAnnounce )
+            {
+                listMapAnnounces.add( announceToAdd );
+            }
+        }
     }
 
     /**
      * Notify a user that announces ha has subscribed to have been published
      * @param strUserName The name of the user to notify
      * @param listAnnouncesToNotify The list of published announces
+     * @param strSubject The subject of the email to send
+     * @param strSenderName The name of the sender of the email
+     * @param strSenderEmail The email address of the sender of the email
      */
-    private void notifyUser( String strUserName, List<Announce> listAnnouncesToNotify )
+    private void notifyUser( String strUserName, List<Announce> listAnnouncesToNotify, String strSubject,
+            String strSenderName, String strSenderEmail )
     {
-        // TODO Auto-generated method stub
+        LuteceUser user = LuteceUserService.getLuteceUserFromName( strUserName );
 
+        String strUserEmail = user != null ? user.getEmail( ) : strUserName;
+
+        Map<String, Object> model = new HashMap<String, Object>( );
+        model.put( MARK_LIST_ANNOUNCES, listAnnouncesToNotify );
+        model.put( MARK_PROD_URL, AppPathService.getProdUrl( ) );
+
+        HtmlTemplate template = AppTemplateService.getTemplate( TEMPLATE_EMAIL_ANNOUNCES, Locale.getDefault( ), model );
+
+        MailService.sendMailHtml( strUserEmail, strSenderName, strSenderEmail, strSubject, template.getHtml( ) );
     }
 }

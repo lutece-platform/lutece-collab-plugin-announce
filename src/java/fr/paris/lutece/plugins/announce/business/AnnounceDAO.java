@@ -36,9 +36,7 @@ package fr.paris.lutece.plugins.announce.business;
 import fr.paris.lutece.portal.service.plugin.Plugin;
 import fr.paris.lutece.portal.service.security.LuteceUser;
 import fr.paris.lutece.util.sql.DAOUtil;
-import fr.paris.lutece.util.sql.Transaction;
 
-import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
@@ -58,14 +56,14 @@ public final class AnnounceDAO implements IAnnounceDAO
     private static final String SQL_QUERY_SELECTALL = SQL_QUERY_SELECT_ID + DEFAULT_ORDER_BY;
     private static final String SQL_QUERY_SELECTALL_PUBLISHED_FOR_CATEGORY = "SELECT a.id_announce FROM announce_announce a WHERE a.id_category = ? AND a.published = 1 AND a.suspended = 0 AND a.suspended_by_user = 0 "
             + DEFAULT_ORDER_BY;
-    private static final String SQL_QUERY_SELECT_ID_BY_DATE_CREATION = "SELECT a.id_announce FROM announce_announce WHERE date_creation < ?";
-    private static final String SQL_QUERY_SELECT_ID_BY_TIME_PUBLICATION = "SELECT a.id_announce FROM announce_announce WHERE publication_time > ? > ?";
+    private static final String SQL_QUERY_SELECT_ID_BY_DATE_CREATION = "SELECT id_announce FROM announce_announce WHERE date_creation < ?";
+    private static final String SQL_QUERY_SELECT_ID_BY_TIME_PUBLICATION = "SELECT id_announce FROM announce_announce WHERE publication_time > ? ";
 
     // New primary key
     private static final String SQL_QUERY_NEW_PK = "SELECT max( id_announce ) FROM announce_announce";
 
     // Select
-    private static final String SQL_QUERY_SELECT_FIELD_LIST_WITH_CATEGORY = "SELECT a.id_announce, a.title_announce, a.description_announce, a.price_announce, a.date_creation, a.user_name, a.contact_information, a.published, a.suspended, a.suspended_by_user, a.tags, a.has_pictures, a.id_category, a.publication_time, b.label_category, b.display_price FROM announce_announce a, announce_category b WHERE a.id_category = b.id_category ";
+    private static final String SQL_QUERY_SELECT_FIELD_LIST_WITH_CATEGORY = "SELECT a.id_announce, a.title_announce, a.description_announce, a.price_announce, a.date_creation, a.user_name, a.contact_information, a.published, a.suspended, a.suspended_by_user, a.tags, a.has_pictures, a.publication_time, a.id_category, b.label_category, b.display_price FROM announce_announce a, announce_category b WHERE a.id_category = b.id_category ";
     private static final String SQL_QUERY_SELECT = SQL_QUERY_SELECT_FIELD_LIST_WITH_CATEGORY
             + " AND a.id_announce = ? " + DEFAULT_ORDER_BY;
     private static final String SQL_QUERY_SELECTALL_PUBLISHED = SQL_QUERY_SELECT_FIELD_LIST_WITH_CATEGORY
@@ -124,38 +122,29 @@ public final class AnnounceDAO implements IAnnounceDAO
      * {@inheritDoc}
      */
     @Override
-    public void insert( Announce announce, Plugin plugin )
+    public synchronized void insert( Announce announce, Plugin plugin )
     {
         announce.setId( newPrimaryKey( plugin ) );
 
-        int nParam = 1;
-        Transaction transaction = new Transaction( plugin );
+        int nIndex = 1;
 
-        try
-        {
-            /* Creation of Announce */
-            transaction.prepareStatement( SQL_QUERY_INSERT );
-            transaction.getStatement( ).setInt( nParam++, announce.getId( ) );
-            transaction.getStatement( ).setString( nParam++, announce.getUserName( ) );
-            transaction.getStatement( ).setString( nParam++, announce.getContactInformation( ) );
-            transaction.getStatement( ).setInt( nParam++, announce.getCategory( ).getId( ) );
-            transaction.getStatement( ).setString( nParam++, announce.getTitle( ) );
-            transaction.getStatement( ).setString( nParam++, announce.getDescription( ) );
-            transaction.getStatement( ).setString( nParam++, announce.getPrice( ) );
-            transaction.getStatement( ).setTimestamp( nParam++, announce.getDateCreation( ) );
-            transaction.getStatement( ).setBoolean( nParam++, announce.getPublished( ) );
-            transaction.getStatement( ).setString( nParam++, announce.getTags( ) );
-            transaction.getStatement( ).setBoolean( nParam, announce.getHasPictures( ) );
-            transaction.getStatement( ).setLong( nParam++, announce.getTimePublication( ) );
-            transaction.executeStatement( );
+        DAOUtil daoUtil = new DAOUtil( SQL_QUERY_INSERT, plugin );
+        /* Creation of Announce */
+        daoUtil.setInt( nIndex++, announce.getId( ) );
+        daoUtil.setString( nIndex++, announce.getUserName( ) );
+        daoUtil.setString( nIndex++, announce.getContactInformation( ) );
+        daoUtil.setInt( nIndex++, announce.getCategory( ).getId( ) );
+        daoUtil.setString( nIndex++, announce.getTitle( ) );
+        daoUtil.setString( nIndex++, announce.getDescription( ) );
+        daoUtil.setString( nIndex++, announce.getPrice( ) );
+        daoUtil.setTimestamp( nIndex++, announce.getDateCreation( ) );
+        daoUtil.setBoolean( nIndex++, announce.getPublished( ) );
+        daoUtil.setString( nIndex++, announce.getTags( ) );
+        daoUtil.setBoolean( nIndex++, announce.getHasPictures( ) );
+        daoUtil.setLong( nIndex, announce.getTimePublication( ) );
 
-            /* COMMIT of all the transaction */
-            transaction.commit( );
-        }
-        catch ( SQLException ex )
-        {
-            transaction.rollback( ex );
-        }
+        daoUtil.executeUpdate( );
+        daoUtil.free( );
     }
 
     /**
@@ -186,22 +175,10 @@ public final class AnnounceDAO implements IAnnounceDAO
     @Override
     public void delete( int nAnnounceId, Plugin plugin )
     {
-        Transaction transaction = new Transaction( plugin );
-
-        try
-        {
-            /* Delete Announce */
-            transaction.prepareStatement( SQL_QUERY_DELETE );
-            transaction.getStatement( ).setInt( 1, nAnnounceId );
-            transaction.executeStatement( );
-
-            /* COMMIT of all the transaction */
-            transaction.commit( );
-        }
-        catch ( SQLException ex )
-        {
-            transaction.rollback( ex );
-        }
+        DAOUtil daoUtil = new DAOUtil( SQL_QUERY_DELETE, plugin );
+        daoUtil.setInt( 1, nAnnounceId );
+        daoUtil.executeUpdate( );
+        daoUtil.free( );
     }
 
     /**
@@ -211,30 +188,19 @@ public final class AnnounceDAO implements IAnnounceDAO
     public void store( Announce announce, Plugin plugin )
     {
         int nIndex = 1;
-        Transaction transaction = new Transaction( plugin );
+        DAOUtil daoUtil = new DAOUtil( SQL_QUERY_UPDATE, plugin );
 
-        try
-        {
-            /* Update of Announce */
-            transaction.prepareStatement( SQL_QUERY_UPDATE );
-            transaction.getStatement( ).setString( nIndex++, announce.getTitle( ) );
-            transaction.getStatement( ).setString( nIndex++, announce.getDescription( ) );
-            transaction.getStatement( ).setString( nIndex++, announce.getPrice( ) );
-            transaction.getStatement( ).setString( nIndex++, announce.getContactInformation( ) );
-            transaction.getStatement( ).setBoolean( nIndex++, announce.getPublished( ) );
-            transaction.getStatement( ).setString( nIndex++, announce.getTags( ) );
-            transaction.getStatement( ).setBoolean( nIndex++, announce.getHasPictures( ) );
+        daoUtil.setString( nIndex++, announce.getTitle( ) );
+        daoUtil.setString( nIndex++, announce.getDescription( ) );
+        daoUtil.setString( nIndex++, announce.getPrice( ) );
+        daoUtil.setString( nIndex++, announce.getContactInformation( ) );
+        daoUtil.setBoolean( nIndex++, announce.getPublished( ) );
+        daoUtil.setString( nIndex++, announce.getTags( ) );
+        daoUtil.setBoolean( nIndex++, announce.getHasPictures( ) );
+        daoUtil.setInt( nIndex, announce.getId( ) );
 
-            transaction.getStatement( ).setInt( nIndex, announce.getId( ) );
-            transaction.executeStatement( );
-
-            /* COMMIT of all the transaction */
-            transaction.commit( );
-        }
-        catch ( SQLException ex )
-        {
-            transaction.rollback( ex );
-        }
+        daoUtil.executeUpdate( );
+        daoUtil.free( );
     }
 
     /**
@@ -582,7 +548,7 @@ public final class AnnounceDAO implements IAnnounceDAO
 
         category.setId( daoUtil.getInt( nIndex++ ) );
         category.setLabel( daoUtil.getString( nIndex++ ) );
-        category.setDisplayPrice( daoUtil.getBoolean( nIndex++ ) );
+        category.setDisplayPrice( daoUtil.getBoolean( nIndex ) );
 
         announce.setCategory( category );
         return announce;

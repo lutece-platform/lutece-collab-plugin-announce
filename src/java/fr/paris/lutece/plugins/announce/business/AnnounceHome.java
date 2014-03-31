@@ -156,8 +156,11 @@ public final class AnnounceHome
         if ( announce == null )
         {
             announce = _dao.load( nKey, _plugin );
-            AnnounceCacheService.getService( ).putInCache(
-                    AnnounceCacheService.getAnnounceCacheKey( announce.getId( ) ), announce );
+            if ( announce != null )
+            {
+                AnnounceCacheService.getService( ).putInCache(
+                        AnnounceCacheService.getAnnounceCacheKey( announce.getId( ) ), announce );
+            }
         }
 
         return announce;

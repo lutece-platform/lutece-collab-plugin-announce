@@ -33,9 +33,9 @@
  */
 package fr.paris.lutece.plugins.announce.service;
 
-import fr.paris.lutece.plugins.announce.business.AnnounceFileItem;
 import fr.paris.lutece.plugins.announce.business.Announce;
 import fr.paris.lutece.plugins.announce.business.AnnounceDTO;
+import fr.paris.lutece.plugins.announce.business.AnnounceFileItem;
 import fr.paris.lutece.plugins.announce.business.AnnounceHome;
 import fr.paris.lutece.plugins.announce.business.Category;
 import fr.paris.lutece.plugins.announce.business.Sector;
@@ -66,6 +66,8 @@ import fr.paris.lutece.util.url.UrlItem;
 import org.apache.commons.fileupload.FileItem;
 
 import java.io.Serializable;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -80,6 +82,11 @@ import javax.servlet.http.HttpServletRequest;
  */
 public class AnnounceService implements Serializable
 {
+    /**
+     * Pattern for dates
+     */
+    public static final String PATTERN_DATE = "dd/MM/yyyy";
+
     /**
      * Name of the bean of the service
      */
@@ -286,9 +293,8 @@ public class AnnounceService implements Serializable
             model.put( MARK_LIST_RESPONSES, listResponses );
         }
 
-        template = AppTemplateService
-                .getTemplate( EntryTypeServiceManager.getEntryTypeService( entry ).getTemplateHtmlForm( entry, bDisplayFront ),
-                        locale, model );
+        template = AppTemplateService.getTemplate( EntryTypeServiceManager.getEntryTypeService( entry )
+                .getTemplateHtmlForm( entry, bDisplayFront ), locale, model );
         stringBuffer.append( template.getHtml( ) );
     }
 
@@ -441,7 +447,6 @@ public class AnnounceService implements Serializable
         return url.getUrl( );
     }
 
-
     /**
      * Convert an AppointmentDTO to an Appointment by transferring response from
      * the map of class AppointmentDTO to the list of class Appointment.
@@ -458,5 +463,16 @@ public class AnnounceService implements Serializable
 
         announce.setMapResponsesByIdEntry( null );
         announce.setListResponse( listResponse );
+    }
+
+    /**
+     * Get the date format to use
+     * @return The date format to use
+     */
+    public static DateFormat getDateFormat( )
+    {
+        DateFormat dateFormat = new SimpleDateFormat( PATTERN_DATE, Locale.FRENCH );
+        dateFormat.setLenient( false );
+        return dateFormat;
     }
 }

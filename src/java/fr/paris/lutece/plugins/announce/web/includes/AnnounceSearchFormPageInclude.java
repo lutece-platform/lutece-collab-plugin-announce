@@ -34,6 +34,7 @@
 package fr.paris.lutece.plugins.announce.web.includes;
 
 import fr.paris.lutece.plugins.announce.business.AnnounceSearchFilter;
+import fr.paris.lutece.plugins.announce.service.AnnounceService;
 import fr.paris.lutece.plugins.announce.web.AnnounceApp;
 import fr.paris.lutece.portal.service.content.PageData;
 import fr.paris.lutece.portal.service.includes.PageInclude;
@@ -41,6 +42,7 @@ import fr.paris.lutece.portal.service.security.SecurityService;
 import fr.paris.lutece.portal.service.template.AppTemplateService;
 import fr.paris.lutece.util.html.HtmlTemplate;
 
+import java.text.DateFormat;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -73,11 +75,13 @@ public class AnnounceSearchFormPageInclude implements PageInclude
 
         AnnounceSearchFilter filter = AnnounceApp.getAnnounceFilterFromRequest( request );
 
+        DateFormat dateFormat = AnnounceService.getDateFormat( );
+
         model.put( MARK_LIST_SECTORS, AnnounceApp.getSectorList( ) );
-        model.put( MARK_FILTER_DATE_MIN,
-                filter.getDateMin( ) != null ? AnnounceApp.DATE_FORMAT.format( filter.getDateMin( ) ) : null );
-        model.put( MARK_FILTER_DATE_MAX,
-                filter.getDateMax( ) != null ? AnnounceApp.DATE_FORMAT.format( filter.getDateMax( ) ) : null );
+        model.put( MARK_FILTER_DATE_MIN, filter.getDateMin( ) != null ? dateFormat.format( filter.getDateMin( ) )
+                : null );
+        model.put( MARK_FILTER_DATE_MAX, filter.getDateMax( ) != null ? dateFormat.format( filter.getDateMax( ) )
+                : null );
         model.put( MARK_FILTER, filter );
         Locale locale = request == null ? Locale.getDefault( ) : request.getLocale( );
 

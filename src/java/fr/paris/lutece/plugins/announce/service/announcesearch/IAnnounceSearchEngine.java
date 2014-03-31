@@ -56,6 +56,6 @@ public interface IAnnounceSearchEngine
      *            pagination
      * @return The total number of results found
      */
-    public int getSearchResults( AnnounceSearchFilter filter, Plugin plugin, List<SearchResult> listSearchResult,
+    int getSearchResults( AnnounceSearchFilter filter, Plugin plugin, List<SearchResult> listSearchResult,
             int nPage, int nItemsPerPage );
 }

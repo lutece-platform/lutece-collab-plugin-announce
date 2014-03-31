@@ -35,16 +35,23 @@ package fr.paris.lutece.plugins.announce.business;
 
 import fr.paris.lutece.portal.service.rbac.RBACResource;
 
+import java.io.Serializable;
+
 
 /**
  * Business class for category
  */
-public class Category implements RBACResource
+public class Category implements RBACResource, Serializable
 {
     /**
      * The resource type of categories
      */
     public static final String RESOURCE_TYPE = "CATEGORY";
+
+    /**
+     * Serial version UID
+     */
+    private static final long serialVersionUID = -5333528106051789202L;
 
     /////////////////////////////////////////////////////////////////////////////////
     // Constants

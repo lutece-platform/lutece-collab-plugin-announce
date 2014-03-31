@@ -60,7 +60,7 @@ public class AnnounceExpirationDaemon extends Daemon
         Calendar calendar = new GregorianCalendar( );
         int nNbDaysBeforeAnnouncesRemoval = AppPropertiesService.getPropertyInt(
                 PROPERTY_NB_DAYS_BEFORE_ANNOUNCES_REMOVAL, DEFAULT_NB_DAYS_BEFORE_ANNOUNCES_REMOVAL );
-        calendar.add( Calendar.DATE, nNbDaysBeforeAnnouncesRemoval );
+        calendar.add( Calendar.DATE, -1 * nNbDaysBeforeAnnouncesRemoval );
 
         Timestamp timestamp = new Timestamp( calendar.getTimeInMillis( ) );
 

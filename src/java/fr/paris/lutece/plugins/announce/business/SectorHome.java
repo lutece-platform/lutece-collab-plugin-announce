@@ -46,14 +46,14 @@ import java.util.Locale;
 /**
  * Home for sectors
  */
-public class SectorHome
+public final class SectorHome
 {
     // Static variable pointed at the DAO instance
     private static ISectorDAO _dao = SpringContextService.getBean( "announce.sectorDAO" );
     private static Plugin _plugin = PluginService.getPlugin( AnnouncePlugin.PLUGIN_NAME );
 
     /** Creates a new instance of SectorHome */
-    public SectorHome( )
+    private SectorHome( )
     {
     }
 

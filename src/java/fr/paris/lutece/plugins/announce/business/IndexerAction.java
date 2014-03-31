@@ -33,16 +33,26 @@
  */
 package fr.paris.lutece.plugins.announce.business;
 
-
 /**
- *
+ * 
  * IndexerAction
- *
+ * 
  */
 public class IndexerAction
 {
+    /**
+     * Add a document to the index
+     */
     public static final int TASK_CREATE = 1;
+
+    /**
+     * Update a document of the index
+     */
     public static final int TASK_MODIFY = 2;
+
+    /**
+     * Remove a document from the index
+     */
     public static final int TASK_DELETE = 3;
     private int _nIdAction;
     private int _nIdTask;
@@ -52,7 +62,7 @@ public class IndexerAction
      * gets the action id
      * @return the action id
      */
-    public int getIdAction(  )
+    public int getIdAction( )
     {
         return _nIdAction;
     }
@@ -70,14 +80,14 @@ public class IndexerAction
      * gets announce id
      * @return the record Id
      */
-    public int getIdAnnounce(  )
+    public int getIdAnnounce( )
     {
         return _nIdAnnounce;
     }
 
     /**
      * set the recordId
-     * @param nIdAnnounce  record if
+     * @param nIdAnnounce record if
      */
     public void setIdAnnounce( int nIdAnnounce )
     {
@@ -88,7 +98,7 @@ public class IndexerAction
      * get the task id
      * @return the task id
      */
-    public int getIdTask(  )
+    public int getIdTask( )
     {
         return _nIdTask;
     }
