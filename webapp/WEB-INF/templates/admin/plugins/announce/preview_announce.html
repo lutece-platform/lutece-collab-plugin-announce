@@ -48,19 +48,19 @@
 				</div>
 			</div>
 			<#list list_responses as response>
-                  	<#if response.toStringValueResponse?has_content || response.file??>
-                  		<#if entrySave?exists && entrySave.idEntry!=response.entry.idEntry>
-                  				</div>
-                  			</div>
-                  			<#if isImage?? && isImage>
-                  				</ul>
-                  				<#assign isImage = false>
-                  			</#if>
-                  		</#if>
-                  		<#if !entrySave?exists || entrySave.idEntry!=response.entry.idEntry>
-                  			<#assign entrySave=response.entry>
-                  			<div class="control-group">
-                            <label class="control-label">${response.entry.title}</label>
+            	<#if response.toStringValueResponse?has_content || response.file??>
+                	<#if entrySave?exists && entrySave.idEntry!=response.entry.idEntry>
+                  		</div>
+                  	</div>
+                  	<#if isImage?? && isImage>
+                  		</ul>
+                  		<#assign isImage = false>
+                  	</#if>
+      			</#if>
+       			<#if !entrySave?exists || entrySave.idEntry!=response.entry.idEntry>
+                  	<#assign entrySave=response.entry>
+                		<div class="control-group">
+                    	    <label class="control-label">${response.entry.title}</label>
                             <div class="controls">
                             <#if response.file?? && response.file.idFile &gt; 0>
                             	<#assign isImage = true>
@@ -74,20 +74,25 @@
                             	${response.toStringValueResponse}
                             </#if>
                   		<#else>
-                    	<#if isImage?? && isImage>
-                    		<li>
-								<a class="pirobox_gall" title="#i18n{announce.view_announce.imagesCaption}" href="image?resource_type=GENERICATTRIBUTES_RESPONSE&id=${response.idResponse}">
-									<img height="80px" src="image?resource_type=GENERICATTRIBUTES_RESPONSE&id=${response.idResponse}" />
-								</a>
-							</li>
-                    	<#else>
-                    		<br />${response.toStringValueResponse}
-                    	</#if>
-                 	</#if>
-				</#if>
-			</#list>
+	                    	<#if isImage?? && isImage>
+	                    		<li>
+									<a class="pirobox_gall" title="#i18n{announce.view_announce.imagesCaption}" href="image?resource_type=GENERICATTRIBUTES_RESPONSE&id=${response.idResponse}">
+										<img height="80px" src="image?resource_type=GENERICATTRIBUTES_RESPONSE&id=${response.idResponse}" />
+									</a>
+								</li>
+	                    	<#else>
+	                    		<br />${response.toStringValueResponse}
+	                    	</#if>
+	                 	</#if>
+					</#if>
+				</#list>
 				</div>
 			</div>
+			<#if resource_history?? && resource_history != ''>
+				<div class="well">
+					${resource_history}
+				</div> 
+			</#if>
 			<div class="form-actions">
 				<button class="btn btn-small btn-primary" type="button" onclick="javascript:history.go(-1);" title="#i18n{portal.util.labelBack}" >
 					<i class="icon-remove-circle icon-white">&nbsp;</i>&nbsp;#i18n{portal.util.labelBack}

@@ -69,6 +69,13 @@
 									<i class="icon-globe icon-white">&nbsp;</i>
 								</a>
 							</#if>
+							<#if announce.listWorkflowActions?? && announce.listWorkflowActions?size &gt; 0>
+								<#list announce.listWorkflowActions as action>
+									<a class="btn btn-small btn-primary" href="jsp/admin/plugins/announce/ManageAnnounceWorkflow.jsp?view=viewWorkflowActionForm&id_action=${action.id}&amp;id_announce=${announce.id}">	
+										<img src="image?resource_type=workflow_icon_img&id=${action.icon.id}" <#if action.icon.width!=-1> width="${action.icon.width}" </#if><#if action.icon.height!=-1> height="${action.icon.height}"</#if> title="${action.name}" alt="${action.name}"	/>
+									</a>
+								</#list>
+							</#if>
 							<#if announce.suspended>
 								<a href="jsp/admin/plugins/announce/DoEnableAnnounce.jsp?announce_id=${announce.id}" class="btn btn-success btn-small" title="#i18n{announce.announce.actions.enable}" >
 									<i class="icon-ok icon-white">&nbsp;</i>

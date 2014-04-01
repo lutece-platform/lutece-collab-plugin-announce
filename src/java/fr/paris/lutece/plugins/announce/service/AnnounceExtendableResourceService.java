@@ -71,7 +71,12 @@ public class AnnounceExtendableResourceService implements IExtendableResourceSer
                 && StringUtils.isNumeric( strIdResource ) )
         {
             int nIdResource = Integer.parseInt( strIdResource );
-            return AnnounceHome.findByPrimaryKey( nIdResource );
+            Announce announce = AnnounceHome.findByPrimaryKey( nIdResource );
+            if ( announce != null )
+            {
+                announce.setListIdImageResponse( AnnounceHome.findListIdImageResponse( nIdResource ) );
+                return announce;
+            }
         }
         return null;
     }

@@ -33,6 +33,7 @@
  */
 package fr.paris.lutece.plugins.announce.business;
 
+import fr.paris.lutece.plugins.announce.service.AnnounceCacheService;
 import fr.paris.lutece.plugins.announce.service.AnnouncePlugin;
 import fr.paris.lutece.portal.service.plugin.Plugin;
 import fr.paris.lutece.portal.service.plugin.PluginService;
@@ -43,7 +44,7 @@ import java.util.List;
 
 
 /**
- * the Home class for categry
+ * the Home class for category
  */
 public final class CategoryHome
 {
@@ -61,14 +62,10 @@ public final class CategoryHome
      * 
      * @param category The instance of the category which contains the
      *            informations to store
-     * @return The instance of category which has been created with its primary
-     *         key.
      */
-    public static Category create( Category category )
+    public static void create( Category category )
     {
         _dao.insert( category, _plugin );
-
-        return category;
     }
 
     /**
@@ -81,7 +78,8 @@ public final class CategoryHome
     public static Category update( Category category )
     {
         _dao.store( category, _plugin );
-
+        AnnounceCacheService.getService( ).putInCache( AnnounceCacheService.getCategoryCacheKey( category.getId( ) ),
+                category );
         return category;
     }
 
@@ -94,6 +92,7 @@ public final class CategoryHome
     {
         AnnounceSearchFilterHome.deleteByIdCategory( category.getId( ) );
         _dao.delete( category, _plugin );
+        AnnounceCacheService.getService( ).removeKey( AnnounceCacheService.getCategoryCacheKey( category.getId( ) ) );
     }
 
     ///////////////////////////////////////////////////////////////////////////
@@ -109,7 +108,19 @@ public final class CategoryHome
      */
     public static Category findByPrimaryKey( int nKey )
     {
-        return _dao.load( nKey, _plugin );
+        Category category = (Category) AnnounceCacheService.getService( ).getFromCache(
+                AnnounceCacheService.getCategoryCacheKey( nKey ) );
+        if ( category == null )
+        {
+            category = _dao.load( nKey, _plugin );
+            if ( category != null )
+            {
+                AnnounceCacheService.getService( ).putInCache(
+                        AnnounceCacheService.getCategoryCacheKey( category.getId( ) ), category );
+            }
+        }
+
+        return category;
     }
 
     /**

@@ -56,6 +56,7 @@ import fr.paris.lutece.portal.service.spring.SpringContextService;
 import fr.paris.lutece.portal.service.template.AppTemplateService;
 import fr.paris.lutece.portal.service.util.AppPathService;
 import fr.paris.lutece.portal.service.util.AppPropertiesService;
+import fr.paris.lutece.portal.service.workflow.WorkflowService;
 import fr.paris.lutece.portal.web.admin.PluginAdminPageJspBean;
 import fr.paris.lutece.portal.web.constants.Messages;
 import fr.paris.lutece.util.ReferenceList;
@@ -97,6 +98,7 @@ public class CategoryJspBean extends PluginAdminPageJspBean
     private static final String PARAMETER_CATEGORY_ANNOUNCES_VALIDATION = "category_announces_validation";
     private static final String PARAMETER_DISPLAY_PRICE = "display_price";
     private static final String PARAMETER_MAILING_LIST_ID = "mailing_list_id";
+    private static final String PARAMETER_ID_WORKFLOW = "id_workflow";
 
     /* properties */
     private static final String PROPERTY_PAGE_TITLE_MANAGE_CATEGORIES = "announce.manage_categories.pageTitle";
@@ -143,6 +145,7 @@ public class CategoryJspBean extends PluginAdminPageJspBean
     private static final String MARK_MAILING_LIST_LIST = "mailing_list_list";
     private static final String MARK_GROUP_ENTRY_LIST = "entry_group_list";
     private static final String MARK_LIST_ORDER_FIRST_LEVEL = "listOrderFirstLevel";
+    private static final String MARK_LIST_WORKFLOWS = "listWorkflows";
 
     /* Variables */
     private AnnounceService _announceService = SpringContextService.getBean( AnnounceService.BEAN_NAME );
@@ -234,6 +237,7 @@ public class CategoryJspBean extends PluginAdminPageJspBean
         model.put( MARK_LIST_FIELDS, listSectors );
         model.put( MARK_MAILING_LIST_LIST, refMailingList );
         model.put( MARK_LIST_ANNOUNCES_VALIDATION, listAnnouncesValidation );
+        model.put( MARK_LIST_WORKFLOWS, WorkflowService.getInstance( ).getWorkflowsEnabled( getUser( ), getLocale( ) ) );
 
         HtmlTemplate template = AppTemplateService.getTemplate( TEMPLATE_CREATE_CATEGORY, getLocale( ), model );
 
@@ -260,9 +264,10 @@ public class CategoryJspBean extends PluginAdminPageJspBean
         int nAnnouncesValidation = Integer.parseInt( request.getParameter( PARAMETER_CATEGORY_ANNOUNCES_VALIDATION ) );
         String strDisplayPrice = request.getParameter( PARAMETER_DISPLAY_PRICE );
         int nIdMailingList = Integer.parseInt( request.getParameter( PARAMETER_MAILING_LIST_ID ) );
+        int nIdWorkflow = Integer.parseInt( request.getParameter( PARAMETER_ID_WORKFLOW ) );
 
         // Mandatory sectors
-        if ( ( strCategoryLabel == null ) || ( nIdSector == 0 ) || strCategoryLabel.equals( "" ) )
+        if ( nIdSector == 0 || StringUtils.isEmpty( strCategoryLabel ) )
         {
             return AdminMessageService.getMessageUrl( request, Messages.MANDATORY_FIELDS, AdminMessage.TYPE_STOP );
         }
@@ -272,6 +277,7 @@ public class CategoryJspBean extends PluginAdminPageJspBean
         category.setIdSector( nIdSector );
         category.setIdMailingList( nIdMailingList );
         category.setAnnouncesValidation( nAnnouncesValidation );
+        category.setIdWorkflow( nIdWorkflow );
 
         if ( strDisplayPrice != null )
         {
@@ -353,6 +359,7 @@ public class CategoryJspBean extends PluginAdminPageJspBean
         model.put( MARK_ENTRY_TYPE_LIST, EntryTypeService.getInstance( ).getEntryTypeReferenceList( ) );
         model.put( MARK_ENTRY_LIST, listEntry );
         model.put( MARK_LIST_ORDER_FIRST_LEVEL, listOrderFirstLevel );
+        model.put( MARK_LIST_WORKFLOWS, WorkflowService.getInstance( ).getWorkflowsEnabled( getUser( ), getLocale( ) ) );
 
         UrlItem url = new UrlItem( JSP_URL_MODIFY );
         url.addParameter( PARAMETER_CATEGORY_ID, category.getId( ) );
@@ -383,6 +390,7 @@ public class CategoryJspBean extends PluginAdminPageJspBean
         int nAnnouncesValidation = Integer.parseInt( request.getParameter( PARAMETER_CATEGORY_ANNOUNCES_VALIDATION ) );
         String strDisplayPrice = request.getParameter( PARAMETER_DISPLAY_PRICE );
         int nIdMailingList = Integer.parseInt( request.getParameter( PARAMETER_MAILING_LIST_ID ) );
+        int nIdWorkflow = Integer.parseInt( request.getParameter( PARAMETER_ID_WORKFLOW ) );
 
         // Mandatory categories
         if ( StringUtils.isEmpty( strCategoryLabel ) || ( nIdSector == 0 ) )
@@ -395,6 +403,7 @@ public class CategoryJspBean extends PluginAdminPageJspBean
         category.setIdSector( nIdSector );
         category.setAnnouncesValidation( nAnnouncesValidation );
         category.setIdMailingList( nIdMailingList );
+        category.setIdWorkflow( nIdWorkflow );
 
         if ( strDisplayPrice != null )
         {
@@ -424,8 +433,7 @@ public class CategoryJspBean extends PluginAdminPageJspBean
         int nIdCategory = Integer.parseInt( request.getParameter( PARAMETER_CATEGORY_ID ) );
         Category category = getAuthorizedCategory( request, CategoryResourceIdService.PERMISSION_DELETE );
 
-        if ( ( category.getNumberAnnounces( ) == 0 )
- && ( CategoryHome.countEntriesForCategory( category ) == 0 ) )
+        if ( ( category.getNumberAnnounces( ) == 0 ) && ( CategoryHome.countEntriesForCategory( category ) == 0 ) )
         {
             UrlItem url = new UrlItem( JSP_DO_REMOVE_CATEGORY );
             url.addParameter( PARAMETER_CATEGORY_ID, nIdCategory );

@@ -35,13 +35,17 @@ package fr.paris.lutece.plugins.announce.web;
 
 import fr.paris.lutece.plugins.announce.business.Announce;
 import fr.paris.lutece.plugins.announce.business.AnnounceHome;
+import fr.paris.lutece.plugins.announce.business.Category;
+import fr.paris.lutece.plugins.announce.business.CategoryHome;
 import fr.paris.lutece.plugins.announce.utils.AnnounceUtils;
 import fr.paris.lutece.plugins.genericattributes.business.Response;
 import fr.paris.lutece.portal.service.message.AdminMessage;
 import fr.paris.lutece.portal.service.message.AdminMessageService;
 import fr.paris.lutece.portal.service.plugin.Plugin;
 import fr.paris.lutece.portal.service.template.AppTemplateService;
+import fr.paris.lutece.portal.service.util.AppPathService;
 import fr.paris.lutece.portal.service.util.AppPropertiesService;
+import fr.paris.lutece.portal.service.workflow.WorkflowService;
 import fr.paris.lutece.portal.web.admin.PluginAdminPageJspBean;
 import fr.paris.lutece.portal.web.util.LocalizedDelegatePaginator;
 import fr.paris.lutece.util.html.HtmlTemplate;
@@ -101,6 +105,7 @@ public class AnnounceJspBean extends PluginAdminPageJspBean
     private static final String MARK_PAGINATOR = "paginator";
     private static final String MARK_NB_ITEMS_PER_PAGE = "nb_items_per_page";
     private static final String MARK_LIST_RESPONSES = "list_responses";
+    private static final String MARK_RESOURCE_HISTORY = "resource_history";
 
     /* Variables */
     private int _nDefaultItemsPerPage;
@@ -148,12 +153,21 @@ public class AnnounceJspBean extends PluginAdminPageJspBean
 
         List<Announce> listAnnounces = AnnounceHome.findByListId( paginatorId.getPageItems( ) );
 
+        if ( WorkflowService.getInstance( ).isAvailable( ) )
+        {
+            for ( Announce announce : listAnnounces )
+            {
+                announce.setCategory( CategoryHome.findByPrimaryKey( announce.getCategory( ).getId( ) ) );
+                announce.setListWorkflowActions( WorkflowService.getInstance( ).getActions( announce.getId( ),
+                        Announce.RESOURCE_TYPE, announce.getCategory( ).getIdWorkflow( ), getUser( ) ) );
+            }
+        }
+
         Map<String, Object> model = new HashMap<String, Object>( );
 
         LocalizedDelegatePaginator<Announce> paginator = new LocalizedDelegatePaginator<Announce>( listAnnounces,
-                _nItemsPerPage, getUrlPage( ), Paginator.PARAMETER_PAGE_INDEX, _strCurrentPageIndex,
-                listIdAnnounces.size( ),
-                getLocale( ) );
+                _nItemsPerPage, getURLManageAnnounces( request ), Paginator.PARAMETER_PAGE_INDEX, _strCurrentPageIndex,
+                listIdAnnounces.size( ), getLocale( ) );
 
         model.put( MARK_NB_ITEMS_PER_PAGE, Integer.toString( _nItemsPerPage ) );
         model.put( MARK_PAGINATOR, paginator );
@@ -181,6 +195,17 @@ public class AnnounceJspBean extends PluginAdminPageJspBean
         HashMap<String, Object> model = new HashMap<String, Object>( );
         model.put( MARK_LIST_RESPONSES, listResponses );
         model.put( MARK_ANNOUNCE, announce );
+
+        Category category = CategoryHome.findByPrimaryKey( announce.getCategory( ).getId( ) );
+        announce.setCategory( category );
+
+        if ( ( category.getIdWorkflow( ) > 0 ) && WorkflowService.getInstance( ).isAvailable( ) )
+        {
+            model.put(
+                    MARK_RESOURCE_HISTORY,
+                    WorkflowService.getInstance( ).getDisplayDocumentHistory( nIdAnnounce, Announce.RESOURCE_TYPE,
+                            category.getIdWorkflow( ), request, getLocale( ) ) );
+        }
 
         HtmlTemplate template = AppTemplateService.getTemplate( TEMPLATE_PREVIEW_ANNOUNCE, getLocale( ), model );
 
@@ -245,17 +270,6 @@ public class AnnounceJspBean extends PluginAdminPageJspBean
     }
 
     /**
-     * Return UrlPage Url
-     * @return url
-     */
-    private String getUrlPage( )
-    {
-        UrlItem url = new UrlItem( JSP_MANAGE_ANNOUNCES );
-
-        return url.getUrl( );
-    }
-
-    /**
      * Publish a category
      * 
      * @param request The Http request
@@ -305,5 +319,17 @@ public class AnnounceJspBean extends PluginAdminPageJspBean
 
         // if the operation occurred well, redirects towards the list
         return JSP_REDIRECT_TO_MANAGE_ANNOUNCES;
+    }
+
+    /**
+     * Get the URL to manage announces
+     * @param request The request
+     * @return The URL to manage announces.
+     */
+    public static String getURLManageAnnounces( HttpServletRequest request )
+    {
+        UrlItem url = new UrlItem( AppPathService.getBaseUrl( request ) + JSP_MANAGE_ANNOUNCES );
+
+        return url.getUrl( );
     }
 }

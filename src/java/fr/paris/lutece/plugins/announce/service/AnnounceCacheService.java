@@ -43,6 +43,7 @@ public final class AnnounceCacheService extends AbstractCacheableService
 {
     private static final String CACHE_SERVICE_NAME = "announce.announceCacheService";
     private static final String ANNOUNCE_KEY_PREFIXE = "announce.announce.";
+    private static final String CATEGORY_KEY_PREFIXE = "announce.category.";
     private static final String PUBLISHED_ANNOUNCES_ID_LIST_KEY_PREFIXE = "announce.announce.allPublishedId";
 
     private static AnnounceCacheService _instance = new AnnounceCacheService( );
@@ -72,6 +73,16 @@ public final class AnnounceCacheService extends AbstractCacheableService
     public static String getAnnounceCacheKey( int nIdAnnounce )
     {
         return ANNOUNCE_KEY_PREFIXE + nIdAnnounce;
+    }
+
+    /**
+     * Get the cache key of a category
+     * @param nIdCategory The id of the category to get the key of
+     * @return The cache key of the category
+     */
+    public static String getCategoryCacheKey( int nIdCategory )
+    {
+        return CATEGORY_KEY_PREFIXE + nIdCategory;
     }
 
     /**

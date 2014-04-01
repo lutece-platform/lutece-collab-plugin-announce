@@ -47,11 +47,11 @@ import java.util.List;
 public final class CategoryDAO implements ICategoryDAO
 {
     private static final String SQL_QUERY_NEWPK = "SELECT max( id_category ) FROM announce_category ";
-    private static final String SQL_QUERY_SELECT = "SELECT id_category, id_sector, label_category, display_price, announces_validation, id_mailing_list FROM announce_category WHERE id_category = ? ";
+    private static final String SQL_QUERY_SELECT = "SELECT id_category, id_sector, label_category, display_price, announces_validation, id_mailing_list, id_workflow FROM announce_category WHERE id_category = ? ";
     private static final String SQL_QUERY_SELECTALL = "SELECT a.id_category, a.id_sector, a.label_category, b.label_sector FROM announce_category a, announce_sector b WHERE a.id_sector = b.id_sector ORDER BY a.id_sector, a.label_category";
-    private static final String SQL_QUERY_INSERT = "INSERT INTO announce_category ( id_category, id_sector, label_category, display_price, announces_validation, id_mailing_list )  VALUES (?,?,?,?,?,? ) ";
+    private static final String SQL_QUERY_INSERT = "INSERT INTO announce_category ( id_category, id_sector, label_category, display_price, announces_validation, id_mailing_list, id_workflow )  VALUES (?,?,?,?,?,?,? ) ";
     private static final String SQL_QUERY_DELETE = "DELETE FROM announce_category WHERE id_category = ? ";
-    private static final String SQL_QUERY_UPDATE = "UPDATE announce_category SET id_sector = ?, label_category = ?, display_price = ?, announces_validation = ?, id_mailing_list = ? WHERE id_category = ? ";
+    private static final String SQL_QUERY_UPDATE = "UPDATE announce_category SET id_sector = ?, label_category = ?, display_price = ?, announces_validation = ?, id_mailing_list = ?, id_workflow = ? WHERE id_category = ? ";
     private static final String SQL_QUERY_COUNT_ANNOUNCES_FOR_CATEORY = "SELECT COUNT(*) FROM announce_announce WHERE id_category = ?";
     private static final String SQL_QUERY_COUNT_PUBLISHED_ANNOUNCES_FOR_CATEORY = "SELECT COUNT(*) FROM announce_announce WHERE id_category = ? AND published = 1 AND suspended = 0 AND suspended_by_user = 0 ";
     private static final String SQL_QUERY_COUNT_ENTRIES_FOR_CATEGORY = "SELECT COUNT(*) FROM announce_entry WHERE id_category = ?";
@@ -97,6 +97,7 @@ public final class CategoryDAO implements ICategoryDAO
         daoUtil.setBoolean( 4, category.getDisplayPrice(  ) );
         daoUtil.setInt( 5, category.getAnnouncesValidation(  ) );
         daoUtil.setInt( 6, category.getIdMailingList(  ) );
+        daoUtil.setInt( 7, category.getIdWorkflow( ) );
         daoUtil.executeUpdate(  );
         daoUtil.free(  );
     }
@@ -122,6 +123,7 @@ public final class CategoryDAO implements ICategoryDAO
             category.setDisplayPrice( daoUtil.getBoolean( 4 ) );
             category.setAnnouncesValidation( daoUtil.getInt( 5 ) );
             category.setIdMailingList( daoUtil.getInt( 6 ) );
+            category.setIdWorkflow( daoUtil.getInt( 7 ) );
             category.setNumberAnnounces( countAnnouncesForCategory( category, plugin ) );
         }
 
@@ -155,7 +157,8 @@ public final class CategoryDAO implements ICategoryDAO
         daoUtil.setBoolean( 3, category.getDisplayPrice(  ) );
         daoUtil.setInt( 4, category.getAnnouncesValidation(  ) );
         daoUtil.setInt( 5, category.getIdMailingList(  ) );
-        daoUtil.setInt( 6, category.getId(  ) );
+        daoUtil.setInt( 6, category.getIdWorkflow( ) );
+        daoUtil.setInt( 7, category.getId( ) );
         daoUtil.executeUpdate(  );
         daoUtil.free(  );
     }

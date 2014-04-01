@@ -1,96 +1,101 @@
-   <#if allow_access>
-       <div class="portlet-background append-bottom">
-           <div class="portlet-background-header -lutece-border-radius-top">${announce.title}</div>
-           <div class="portlet-background-content -lutece-border-radius-bottom">
-               <#if user_is_author>
-                   <!-- user controls on his announce -->
-                   <div class="possible-actions">
-                       #i18n{announce.view_announce.actions.title}: 
-                       <a href="jsp/site/Portal.jsp?page=announce&action=modify_announce&announce_id=${announce.id}">
-                           <img src="images/local/skin/plugins/announce/actions/modify.png" alt="#i18n{announce.my_announces.actionTitleModify}" title="#i18n{announce.my_announces.actionTitleModify}"/>
-                       </a>
-                       <a href="jsp/site/Portal.jsp?page=announce&action=delete_announce&announce_id=${announce.id}">
-                           <img src="images/local/skin/plugins/announce/actions/delete.png" alt="#i18n{announce.my_announces.actionTitleDelete}" title="#i18n{announce.my_announces.actionTitleDelete}"/>
-                       </a>
-                       
-                       <#if !announce.suspendedByUser>
-                           <a href="jsp/site/Portal.jsp?page=announce&action=suspend_by_user&announce_id=${announce.id}">
-                               <img src="images/local/skin/plugins/announce/actions/suspend_by_user.png" alt="#i18n{announce.my_announces.actionTitleSuspend}" title="#i18n{announce.my_announces.actionTitleSuspend}"/>
-                           </a>
-                       <#else>
-                           <a href="jsp/site/Portal.jsp?page=announce&action=enable_by_user&announce_id=${announce.id}">
-                               <img src="images/local/skin/plugins/announce/actions/enable_by_user.png" alt="#i18n{announce.my_announces.actionTitleEnable}" title="#i18n{announce.my_announces.actionTitleEnable}"/>
-                           </a>
-                       </#if>
-                   </div>
-               </#if>
-               
-               <#if user?exists && user.name == announce.userName>
-                   <!-- Eventual messages -->
-                   <#if !announce.published && !announce.suspended>
-                       <div class="portlet-background-content -lutece-border-radius-bottom">
-                           <div class="notice">#i18n{announce.view_announce.message.notPublishedYet}</div>
-                       </div>
-                   <#else>
-                       <#if announce.suspendedByUser>
-                           <div class="portlet-background-content -lutece-border-radius-bottom">
-                               <div class="notice">#i18n{announce.view_announce.message.suspendedByUser}</div>
-                           </div>
-                       <#elseif announce.suspended>
-                           <div class="portlet-background-content -lutece-border-radius-bottom">
-                               <div class="error">#i18n{announce.view_announce.message.suspended}</div>
-                           </div>
-                       </#if>
-                   </#if>
-               </#if>
-				<#if isExtendInstalled?? && isExtendInstalled && announce.published && !announce.suspended && !announce.suspendedByUser>
-	                <div class="row-fluid">
-						<div class="span3 offset9">
-							<div class="pull-right">
-								@Extender[${announce.id},announce,opengraph,{footer:false, header:false}]@
-								@Extender[${announce.id},announce,hit,{show:true}]@
-								@Extender[${announce.id},announce,rating,{show:"all"}]@
-							</div>
-					    </div>
-					</div>
-				</#if>
-               <table class="entry-value-table">
-                   <#if announce.category.displayPrice>
-                       <tr><th>#i18n{announce.view_announce.price}</th><td>${announce.price}</td></tr>
-                   </#if>
-                   <tr><th>#i18n{announce.view_announce.contactInformation}</th><td>${announce.contactInformation}</td></tr>
-                   <tr><th>#i18n{announce.view_announce.description.title}</th><td>${announce.description}</td></tr>
-                   <#list list_responses as response>
-                   	<#if response.toStringValueResponse?has_content>
-                   		<#if entrySave?exists && entrySave.idEntry!=response.entry.idEntry>
-                   				</td>
-                   			</tr>
-                   		</#if>
-                   		<#if !entrySave?exists || entrySave.idEntry!=response.entry.idEntry>
-                   			<#assign entrySave=response.entry>
-                   			<tr>
-	                            <th>${response.entry.title}</th>
-	                            <td>${response.toStringValueResponse}
-                   		<#else>
-	                    	<br />${response.toStringValueResponse}
-                   		</#if>
+<#if isExtendInstalled?? && isExtendInstalled && announce.published && !announce.suspended && !announce.suspendedByUser>
+	@ExtenderParameter[${announce.id},announce,opengraph]@
+</#if>
+<#if allow_access>
+	<div class="portlet-background append-bottom">
+		<div class="portlet-background-header -lutece-border-radius-top">
+			${announce.title}
+		</div>
+		<div class="portlet-background-content -lutece-border-radius-bottom">
+			<#if user_is_author>
+				<!-- user controls on his announce -->
+				<div class="possible-actions">
+					#i18n{announce.view_announce.actions.title}: 
+					<a href="jsp/site/Portal.jsp?page=announce&action=modify_announce&announce_id=${announce.id}">
+						<img src="images/local/skin/plugins/announce/actions/modify.png" alt="#i18n{announce.my_announces.actionTitleModify}" title="#i18n{announce.my_announces.actionTitleModify}"/>
+					</a>
+					<a href="jsp/site/Portal.jsp?page=announce&action=delete_announce&announce_id=${announce.id}">
+						<img src="images/local/skin/plugins/announce/actions/delete.png" alt="#i18n{announce.my_announces.actionTitleDelete}" title="#i18n{announce.my_announces.actionTitleDelete}"/>
+					</a>
+					
+					<#if !announce.suspendedByUser>
+						<a href="jsp/site/Portal.jsp?page=announce&action=suspend_by_user&announce_id=${announce.id}">
+							<img src="images/local/skin/plugins/announce/actions/suspend_by_user.png" alt="#i18n{announce.my_announces.actionTitleSuspend}" title="#i18n{announce.my_announces.actionTitleSuspend}"/>
+						</a>
+					<#else>
+						<a href="jsp/site/Portal.jsp?page=announce&action=enable_by_user&announce_id=${announce.id}">
+							<img src="images/local/skin/plugins/announce/actions/enable_by_user.png" alt="#i18n{announce.my_announces.actionTitleEnable}" title="#i18n{announce.my_announces.actionTitleEnable}"/>
+						</a>
 					</#if>
-                   </#list>
-                   	</td>
-                   </tr>
-               </table>
-               <#if isExtendInstalled?? && isExtendInstalled && announce.published && !announce.suspended && !announce.suspendedByUser >
-					@Extender[${announce.id},announce,comment]@
-					@Extender[${announce.id},announce,feedback]@
-					@Extender[${announce.id},announce,opengraph,{footer:true}]@
+				</div>
+			</#if>
+			
+			<#if user?exists && user.name == announce.userName>
+				<!-- Eventual messages -->
+				<#if !announce.published && !announce.suspended>
+					<div class="portlet-background-content -lutece-border-radius-bottom">
+						<div class="notice">#i18n{announce.view_announce.message.notPublishedYet}</div>
+					</div>
+				<#else>
+					<#if announce.suspendedByUser>
+						<div class="portlet-background-content -lutece-border-radius-bottom">
+							<div class="notice">#i18n{announce.view_announce.message.suspendedByUser}</div>
+						</div>
+					<#elseif announce.suspended>
+						<div class="portlet-background-content -lutece-border-radius-bottom">
+							<div class="error">#i18n{announce.view_announce.message.suspended}</div>
+						</div>
+					</#if>
 				</#if>
-           </div>
-       </div>
-   <#else>
-       <div class="portlet-background append-bottom">
-           <div class="portlet-background-header -lutece-border-radius-top">#i18n{announce.view_announce.unvailableTitle}</div>
-           <div class="portlet-background-content -lutece-border-radius-bottom">
-               <div class="notice">#i18n{announce.view_announce.message.unvailable}</div>
-           </div>
-       </div>
-   </#if>
+			</#if>
+			<#if isExtendInstalled?? && isExtendInstalled && announce.published && !announce.suspended && !announce.suspendedByUser>
+				<div class="row-fluid">
+					<div class="span3 offset9">
+						<div class="pull-right">
+							@Extender[${announce.id},announce,opengraph,{footer:false, header:false}]@
+							@Extender[${announce.id},announce,hit,{show:true}]@
+							@Extender[${announce.id},announce,rating,{show:"all"}]@
+						</div>
+					</div>
+				</div>
+			</#if>
+			<table class="entry-value-table">
+				<#if announce.category.displayPrice>
+					<tr><th>#i18n{announce.view_announce.price}</th><td>${announce.price}</td></tr>
+				</#if>
+				<tr><th>#i18n{announce.view_announce.contactInformation}</th><td>${announce.contactInformation}</td></tr>
+				<tr><th>#i18n{announce.view_announce.description.title}</th><td>${announce.description}</td></tr>
+				<#list list_responses as response>
+					<#if response.toStringValueResponse?has_content>
+						<#if entrySave?exists && entrySave.idEntry!=response.entry.idEntry>
+								</td>
+							</tr>
+						</#if>
+						<#if !entrySave?exists || entrySave.idEntry!=response.entry.idEntry>
+							<#assign entrySave=response.entry>
+							<tr>
+							<th>${response.entry.title}</th>
+							<td>${response.toStringValueResponse}
+						<#else>
+						<br />${response.toStringValueResponse}
+						</#if>
+				</#if>
+				</#list>
+					</td>
+				</tr>
+			</table>
+			<#if isExtendInstalled?? && isExtendInstalled && announce.published && !announce.suspended && !announce.suspendedByUser >
+				@Extender[${announce.id},announce,comment]@
+				@Extender[${announce.id},announce,feedback]@
+				@Extender[${announce.id},announce,opengraph,{footer:true}]@
+			</#if>
+		</div>
+	</div>
+<#else>
+	<div class="portlet-background append-bottom">
+		<div class="portlet-background-header -lutece-border-radius-top">#i18n{announce.view_announce.unvailableTitle}</div>
+		<div class="portlet-background-content -lutece-border-radius-bottom">
+			<div class="notice">#i18n{announce.view_announce.message.unvailable}</div>
+		</div>
+	</div>
+</#if>

@@ -64,6 +64,7 @@ public class Category implements RBACResource, Serializable
     private int _nIdMailingList;
     private String _strTags;
     private String _strLabelSector;
+    private int _nIdWorkflow;
 
     /**
      * gets the id of category
@@ -244,5 +245,23 @@ public class Category implements RBACResource, Serializable
     public void setLabelSector( String strLabelSector )
     {
         this._strLabelSector = strLabelSector;
+    }
+
+    /**
+     * Get the id of the associated workflow
+     * @return The id of the associated workflow
+     */
+    public int getIdWorkflow( )
+    {
+        return _nIdWorkflow;
+    }
+
+    /**
+     * Set the id of the associated workflow
+     * @param nIdWorkflow The id of the associated workflow
+     */
+    public void setIdWorkflow( int nIdWorkflow )
+    {
+        this._nIdWorkflow = nIdWorkflow;
     }
 }

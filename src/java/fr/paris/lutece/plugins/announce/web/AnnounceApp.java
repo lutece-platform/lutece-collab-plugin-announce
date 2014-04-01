@@ -77,6 +77,7 @@ import fr.paris.lutece.portal.service.template.AppTemplateService;
 import fr.paris.lutece.portal.service.util.AppLogService;
 import fr.paris.lutece.portal.service.util.AppPathService;
 import fr.paris.lutece.portal.service.util.AppPropertiesService;
+import fr.paris.lutece.portal.service.workflow.WorkflowService;
 import fr.paris.lutece.portal.util.mvc.utils.MVCUtils;
 import fr.paris.lutece.portal.web.LocalVariables;
 import fr.paris.lutece.portal.web.constants.Messages;
@@ -605,6 +606,14 @@ public class AnnounceApp implements XPageApplication
             ResponseHome.create( response );
             AnnounceHome.insertAnnounceResponse( announce.getId( ), response.getIdResponse( ),
                     response.getFile( ) != null && FileUtil.hasImageExtension( response.getFile( ).getTitle( ) ) );
+        }
+
+        if ( category.getIdWorkflow( ) > 0 )
+        {
+            WorkflowService.getInstance( ).getState( announce.getId( ), Announce.RESOURCE_TYPE,
+                    category.getIdWorkflow( ), category.getId( ) );
+            WorkflowService.getInstance( ).executeActionAutomatic( announce.getId( ), Announce.RESOURCE_TYPE,
+                    category.getIdWorkflow( ), category.getId( ) );
         }
 
         // send mail notification only if announce is not published

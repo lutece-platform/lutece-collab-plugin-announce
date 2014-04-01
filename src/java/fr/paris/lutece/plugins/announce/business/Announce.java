@@ -35,10 +35,12 @@ package fr.paris.lutece.plugins.announce.business;
 
 import fr.paris.lutece.plugins.genericattributes.business.Response;
 import fr.paris.lutece.plugins.genericattributes.service.ResponseImageResourceProvider;
+import fr.paris.lutece.plugins.workflowcore.business.action.Action;
 import fr.paris.lutece.portal.service.resource.IExtendableResource;
 
 import java.io.Serializable;
 import java.sql.Timestamp;
+import java.util.Collection;
 import java.util.List;
 
 
@@ -71,6 +73,7 @@ public class Announce implements Serializable, IExtendableResource
     private String _strPrice;
     private String _strTags;
     private List<Response> _listResponse;
+    private transient Collection<Action> _listActions;
 
     /**
      * Get the list of responses of this announce
@@ -407,8 +410,26 @@ public class Announce implements Serializable, IExtendableResource
     {
         if ( getHasPictures( ) && getListIdImageResponse( ) != null && getListIdImageResponse( ).size( ) > 0 )
         {
-            ResponseImageResourceProvider.getUrlDownloadImageResponse( getListIdImageResponse( ).get( 0 ) );
+            return ResponseImageResourceProvider.getUrlDownloadImageResponse( getListIdImageResponse( ).get( 0 ) );
         }
         return null;
+    }
+
+    /**
+     * Get the list of workflow actions of this announce
+     * @return The list of workflow announce of this announce
+     */
+    public Collection<Action> getListWorkflowActions( )
+    {
+        return _listActions;
+    }
+
+    /**
+     * Set the list of workflow actions of this announce
+     * @param listActions The list of workflow actions of this announce
+     */
+    public void setListWorkflowActions( Collection<Action> listActions )
+    {
+        this._listActions = listActions;
     }
 }
