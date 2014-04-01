@@ -71,5 +71,6 @@ CREATE TABLE announce_search_filters(
 
 ALTER TABLE announce_announce ADD COLUMN publication_time BIGINT default 0;
 ALTER TABLE announce_category ADD COLUMN id_workflow INT default 0;
+ALTER TABLE announce_category ADD COLUMN display_captcha smallint default '0';
 
 CREATE INDEX announce_user_name ON announce_announce (user_name);

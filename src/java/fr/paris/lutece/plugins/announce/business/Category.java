@@ -65,12 +65,13 @@ public class Category implements RBACResource, Serializable
     private String _strTags;
     private String _strLabelSector;
     private int _nIdWorkflow;
+    private boolean _bDisplayCaptcha;
 
     /**
      * gets the id of category
      * @return the id of category
      */
-    public int getId(  )
+    public int getId( )
     {
         return _nId;
     }
@@ -88,7 +89,7 @@ public class Category implements RBACResource, Serializable
      * gets the id of category sector
      * @return the id of category sector
      */
-    public int getIdSector(  )
+    public int getIdSector( )
     {
         return _nIdSector;
     }
@@ -106,7 +107,7 @@ public class Category implements RBACResource, Serializable
      * gets the label
      * @return the label
      */
-    public String getLabel(  )
+    public String getLabel( )
     {
         return _strLabel;
     }
@@ -124,7 +125,7 @@ public class Category implements RBACResource, Serializable
      * gets the number of announces
      * @return the number of announces
      */
-    public int getNumberAnnounces(  )
+    public int getNumberAnnounces( )
     {
         return _nNumberAnnounces;
     }
@@ -142,7 +143,7 @@ public class Category implements RBACResource, Serializable
      * weather or not the announces must be moderated before publishing
      * @return weather or not the announces must be moderated before publishing
      */
-    public int getAnnouncesValidation(  )
+    public int getAnnouncesValidation( )
     {
         return _nAnnouncesValidation;
     }
@@ -161,16 +162,16 @@ public class Category implements RBACResource, Serializable
      * {@inheritDoc}
      */
     @Override
-    public String getResourceId(  )
+    public String getResourceId( )
     {
-        return Integer.toString( getId(  ) );
+        return Integer.toString( getId( ) );
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public String getResourceTypeCode(  )
+    public String getResourceTypeCode( )
     {
         return RESOURCE_TYPE;
     }
@@ -179,7 +180,7 @@ public class Category implements RBACResource, Serializable
      * weather or not the category must display the price of announce
      * @return weather or not the category must display the price of announce
      */
-    public boolean getDisplayPrice(  )
+    public boolean getDisplayPrice( )
     {
         return _bDisplayPrice;
     }
@@ -198,7 +199,7 @@ public class Category implements RBACResource, Serializable
      * Get the id of the mailing list associated with this category
      * @return The id of the mailing list associated with this category
      */
-    public int getIdMailingList(  )
+    public int getIdMailingList( )
     {
         return _nIdMailingList;
     }
@@ -217,7 +218,7 @@ public class Category implements RBACResource, Serializable
      * gets the tags of category
      * @return gets the tags of category
      */
-    public String getTags(  )
+    public String getTags( )
     {
         return _strTags;
     }
@@ -263,5 +264,25 @@ public class Category implements RBACResource, Serializable
     public void setIdWorkflow( int nIdWorkflow )
     {
         this._nIdWorkflow = nIdWorkflow;
+    }
+
+    /**
+     * Check if a captcha should be displayed when creating an announce
+     * @return True if a captcha should be displayed when creating an announce,
+     *         false otherwise
+     */
+    public boolean getDisplayCaptcha( )
+    {
+        return _bDisplayCaptcha;
+    }
+
+    /**
+     * Set whether a captcha should be displayed when creating an announce
+     * @param bDisplayCaptcha True if a captcha should be displayed when
+     *            creating an announce, false otherwise
+     */
+    public void setDisplayCaptcha( boolean bDisplayCaptcha )
+    {
+        this._bDisplayCaptcha = bDisplayCaptcha;
     }
 }

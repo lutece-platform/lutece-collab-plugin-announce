@@ -25,6 +25,7 @@ CREATE TABLE announce_category(
 	announces_validation smallint default '0',
 	id_mailing_list int default NULL,
 	id_workflow INT default 0,
+	display_captcha smallint default '0',
 	PRIMARY KEY (id_category)
 );
 
