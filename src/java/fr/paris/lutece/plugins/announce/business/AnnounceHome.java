@@ -411,7 +411,9 @@ public final class AnnounceHome
      */
     private static void updateAnnouncePublicationTime( Announce announce )
     {
-        announce.setTimePublication( announce.getPublished( ) && !announce.getSuspended( )
-                && !announce.getSuspendedByUser( ) ? System.currentTimeMillis( ) : 0 );
+        if ( announce.getPublished( ) && !announce.getSuspended( ) && !announce.getSuspendedByUser( ) )
+        {
+            announce.setTimePublication( System.currentTimeMillis( ) );
+        }
     }
 }

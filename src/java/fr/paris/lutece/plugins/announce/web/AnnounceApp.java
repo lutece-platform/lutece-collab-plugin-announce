@@ -57,10 +57,7 @@ import fr.paris.lutece.plugins.genericattributes.business.ResponseHome;
 import fr.paris.lutece.plugins.genericattributes.service.entrytype.EntryTypeServiceManager;
 import fr.paris.lutece.plugins.genericattributes.service.entrytype.IEntryTypeService;
 import fr.paris.lutece.plugins.subscribe.web.SubscribeApp;
-import fr.paris.lutece.portal.business.file.FileHome;
 import fr.paris.lutece.portal.business.mailinglist.Recipient;
-import fr.paris.lutece.portal.business.physicalfile.PhysicalFile;
-import fr.paris.lutece.portal.business.physicalfile.PhysicalFileHome;
 import fr.paris.lutece.portal.service.captcha.CaptchaSecurityService;
 import fr.paris.lutece.portal.service.i18n.I18nService;
 import fr.paris.lutece.portal.service.mail.MailService;
@@ -68,24 +65,27 @@ import fr.paris.lutece.portal.service.mailinglist.AdminMailingListService;
 import fr.paris.lutece.portal.service.message.SiteMessage;
 import fr.paris.lutece.portal.service.message.SiteMessageException;
 import fr.paris.lutece.portal.service.message.SiteMessageService;
-import fr.paris.lutece.portal.service.plugin.Plugin;
 import fr.paris.lutece.portal.service.portal.PortalService;
 import fr.paris.lutece.portal.service.security.LuteceUser;
 import fr.paris.lutece.portal.service.security.LuteceUserService;
 import fr.paris.lutece.portal.service.security.SecurityService;
+import fr.paris.lutece.portal.service.security.UserNotSignedException;
 import fr.paris.lutece.portal.service.spring.SpringContextService;
 import fr.paris.lutece.portal.service.template.AppTemplateService;
 import fr.paris.lutece.portal.service.util.AppLogService;
 import fr.paris.lutece.portal.service.util.AppPathService;
 import fr.paris.lutece.portal.service.util.AppPropertiesService;
 import fr.paris.lutece.portal.service.workflow.WorkflowService;
+import fr.paris.lutece.portal.util.mvc.commons.annotations.Action;
+import fr.paris.lutece.portal.util.mvc.commons.annotations.View;
 import fr.paris.lutece.portal.util.mvc.utils.MVCUtils;
+import fr.paris.lutece.portal.util.mvc.xpage.MVCApplication;
+import fr.paris.lutece.portal.util.mvc.xpage.annotations.Controller;
 import fr.paris.lutece.portal.web.LocalVariables;
 import fr.paris.lutece.portal.web.constants.Messages;
 import fr.paris.lutece.portal.web.constants.Parameters;
 import fr.paris.lutece.portal.web.util.LocalizedDelegatePaginator;
 import fr.paris.lutece.portal.web.xpages.XPage;
-import fr.paris.lutece.portal.web.xpages.XPageApplication;
 import fr.paris.lutece.util.file.FileUtil;
 import fr.paris.lutece.util.html.HtmlTemplate;
 import fr.paris.lutece.util.html.Paginator;
@@ -112,14 +112,24 @@ import java.util.Locale;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 
 /**
  * This class manages Announce page.
  */
-public class AnnounceApp implements XPageApplication
+@Controller( xpageName = AnnounceUtils.PARAMETER_PAGE_ANNOUNCE, pageTitleI18nKey = AnnounceApp.PROPERTY_PAGE_TITLE, pagePathI18nKey = AnnounceApp.PROPERTY_PAGE_PATH )
+public class AnnounceApp extends MVCApplication
 {
+    // Public properties
+    /**
+     * The title of the default page
+     */
+    public static final String PROPERTY_PAGE_TITLE = "announce.page_announce.pageTitle";
+    /**
+     * The default path of pages of this application
+     */
+    public static final String PROPERTY_PAGE_PATH = "announce.page_announce.pagePathLabel";
+
     private static final long serialVersionUID = 3586318619582357870L;
     private static final String PARAMETER_USERNAME = "username";
 
@@ -142,12 +152,10 @@ public class AnnounceApp implements XPageApplication
     private static final String PARAMETER_DATE_MAX = "date_max";
     private static final String PARAMETER_PRICE_MIN = "price_min";
     private static final String PARAMETER_PRICE_MAX = "price_max";
-    private static final String PARAMETER_ENTRY_VALUE_ID = "entry_value_id";
     private static final String PARAMETER_PAGE_INDEX = "page_index";
     private static final String PARAMETER_TAGS = "tags";
     private static final String PARAMETER_ID_ENTRY = "id_entry";
     private static final String PARAMETER_FIELD_INDEX = "field_index";
-    private static final String PARAMETER_ACTION_ADDNEW = "addnew";
     private static final String PARAMETER_HAS_FILTER = "hasFilter";
     private static final String PARAMETER_ID_FILTER = "id_filter";
 
@@ -161,7 +169,10 @@ public class AnnounceApp implements XPageApplication
     private static final String ACTION_ENABLE_ANNOUNCE_BY_USER = "enable_by_user";
     private static final String ACTION_VIEW_SUBSCRIPTIONS = "view_subscriptions";
     private static final String ACTION_SEARCH = "search";
-    private static final String ACTION_DOWNLOAD = "download";
+    private static final String ACTION_ADDNEW = "addnew";
+
+    // Views
+    private static final String VIEW_DEFAULT_PAGE = "viewDefaultPage";
 
     // Validation flags
     private static final int PARAMETER_ANNOUNCES_VALIDATION_GLOBAL_PARAMETERS = 0;
@@ -172,8 +183,6 @@ public class AnnounceApp implements XPageApplication
     private static final String PROPERTY_NOT_AUTHORIZED = "announce.messages.notAuthorized";
     private static final String PROPERTY_QUOTA_EXCEEDED = "announce.messages.quotaExceeded";
     private static final String PROPERTY_REFUSED_ACCESS = "announce.messages.refusedAccess";
-    private static final String PROPERTY_PAGE_TITLE = "announce.page_announce.pageTitle";
-    private static final String PROPERTY_PAGE_PATH = "announce.page_announce.pagePathLabel";
     private static final String PROPERTY_CONFIRM_REMOVE_ANNOUNCE = "announce.messages.confirmRemoveAnnounce";
     private static final String PROPERTY_CONFIRM_SUSPEND_ANNOUNCE = "announce.messages.confirmSuspendAnnounce";
     private static final String PROPERTY_PAGE_TITLE_SEARCH_RESULTS = "announce.search_results.pageTitle";
@@ -256,133 +265,12 @@ public class AnnounceApp implements XPageApplication
     private final DateFormat _dateFormat = AnnounceService.getDateFormat( );
 
     /**
-     * {@inheritDoc}
-     */
-    @Override
-    public XPage getPage( HttpServletRequest request, int nMode, Plugin plugin ) throws SiteMessageException
-    {
-        /* Global variables for this App */
-        String strAction = request.getParameter( MVCUtils.PARAMETER_ACTION );
-
-        XPage page = new XPage( );
-        page.setPathLabel( I18nService.getLocalizedString( PROPERTY_PAGE_PATH, request.getLocale( ) ) );
-
-        if ( strAction != null )
-        {
-            if ( strAction.equals( PARAMETER_ACTION_ADDNEW ) )
-            {
-                page.setTitle( I18nService.getLocalizedString( PROPERTY_PAGE_TITLE_CREATE_ANNOUNCE, request.getLocale( ) ) );
-                page.setContent( getCreateAnnounce( request ) );
-            }
-            else if ( strAction.equals( ACTION_VIEW_ANNOUNCE ) )
-            {
-                int nIdAnnounce = Integer.parseInt( request.getParameter( PARAMETER_ANNOUNCE_ID ) );
-                Announce announce = AnnounceHome.findByPrimaryKey( nIdAnnounce );
-                page.setTitle( announce.getTitle( ) );
-                page.setContent( getViewAnnounce( request, announce ) );
-            }
-            else if ( strAction.equals( ACTION_VIEW_ANNOUNCES ) )
-            {
-                String strUserName = request.getParameter( PARAMETER_USERNAME );
-                page.setContent( getViewUserAnnounces( request, strUserName ) );
-            }
-            else if ( strAction.equals( ACTION_MY_ANNOUNCES ) )
-            {
-                page.setTitle( I18nService.getLocalizedString( PROPERTY_PAGE_TITLE_MY_ANNOUNCES, request.getLocale( ) ) );
-                page.setContent( getManageUserAnnounces( request ) );
-            }
-            else if ( strAction.equals( ACTION_MODIFY_ANNOUNCE ) )
-            {
-                page.setTitle( I18nService.getLocalizedString( PROPERTY_PAGE_TITLE_MODIFY_ANNOUNCE, request.getLocale( ) ) );
-                page.setContent( getModifyAnnounce( request ) );
-            }
-            else if ( strAction.equals( ACTION_DELETE_ANNOUNCE ) )
-            {
-                page.setTitle( I18nService.getLocalizedString( PROPERTY_PAGE_TITLE, request.getLocale( ) ) );
-                page.setContent( getDeleteAnnounce( request ) );
-            }
-            else if ( strAction.equals( ACTION_SUSPEND_ANNOUNCE_BY_USER ) )
-            {
-                page.setTitle( I18nService.getLocalizedString( PROPERTY_PAGE_TITLE, request.getLocale( ) ) );
-                page.setContent( getSuspendAnnounceByUser( request ) );
-            }
-            else if ( strAction.equals( ACTION_ENABLE_ANNOUNCE_BY_USER ) )
-            {
-                page.setTitle( I18nService.getLocalizedString( PROPERTY_PAGE_TITLE, request.getLocale( ) ) );
-                page.setContent( enableAnnounceByUser( request ) );
-            }
-            else if ( strAction.equals( ACTION_VIEW_SUBSCRIPTIONS ) )
-            {
-                page.setTitle( I18nService.getLocalizedString( PROPERTY_PAGE_TITLE, request.getLocale( ) ) );
-                page.setContent( SubscribeApp.getSubscriptionList( request ) );
-            }
-            else if ( strAction.equals( ACTION_SEARCH ) )
-            {
-                page.setTitle( I18nService.getLocalizedString( PROPERTY_PAGE_TITLE_SEARCH_RESULTS, request.getLocale( ) ) );
-                page.setContent( getSearchAnnounces( request ) );
-            }
-            else if ( strAction.equals( ACTION_DOWNLOAD ) )
-            {
-                getFileDownload( request );
-            }
-            else
-            {
-                page.setTitle( I18nService.getLocalizedString( PROPERTY_PAGE_TITLE, request.getLocale( ) ) );
-                page.setContent( getDefaultPage( request ) );
-            }
-        }
-        else
-        {
-            page.setTitle( I18nService.getLocalizedString( PROPERTY_PAGE_TITLE, request.getLocale( ) ) );
-            page.setContent( getDefaultPage( request ) );
-        }
-        return page;
-    }
-
-    /**
-     * gets the file for download
-     * @param request httpRequest
-     */
-    public void getFileDownload( HttpServletRequest request )
-    {
-        HttpServletResponse response = LocalVariables.getResponse( );
-
-        int nIdEntryValue = Integer.parseInt( request.getParameter( PARAMETER_ENTRY_VALUE_ID ) );
-        Response entryValue = ResponseHome.findByPrimaryKey( nIdEntryValue );
-
-        if ( entryValue.getFile( ) != null )
-        {
-            entryValue.setFile( FileHome.findByPrimaryKey( entryValue.getFile( ).getIdFile( ) ) );
-            String strFileName = entryValue.getFile( ).getTitle( );
-
-            // ----------------------------------------------------------------------- 
-            AnnounceUtils.addHeaderResponse( request, response, strFileName );
-
-            response.setContentType( entryValue.getFile( ).getMimeType( ) );
-
-            PhysicalFile physicalFile = PhysicalFileHome.findByPrimaryKey( entryValue.getFile( ).getPhysicalFile( )
-                    .getIdPhysicalFile( ) );
-            byte[] bResult = physicalFile.getValue( );
-
-            try
-            {
-                response.setContentLength( bResult.length );
-                response.getOutputStream( ).write( bResult );
-                response.getOutputStream( ).close( );
-            }
-            catch ( IOException e )
-            {
-                AppLogService.error( e );
-            }
-        }
-    }
-
-    /**
      * Get the default page to display
      * @param request The request
      * @return The HTML content to display
      */
-    private String getDefaultPage( HttpServletRequest request )
+    @View( value = VIEW_DEFAULT_PAGE, defaultView = true )
+    public XPage getDefaultPage( HttpServletRequest request )
     {
         request.getSession( ).removeAttribute( SESSION_KEY_ANNOUNCE_FILTER );
         return getSearchAnnounces( request );
@@ -393,7 +281,8 @@ public class AnnounceApp implements XPageApplication
      * @param request The request
      * @return The HTML content to displayed
      */
-    private String getSearchAnnounces( HttpServletRequest request )
+    @Action( ACTION_SEARCH )
+    public XPage getSearchAnnounces( HttpServletRequest request )
     {
         _strCurrentPageIndex = Paginator.getPageIndex( request, Paginator.PARAMETER_PAGE_INDEX, DEFAULT_PAGE_INDEX );
         _nDefaultItemsPerPage = AppPropertiesService.getPropertyInt( PROPERTY_DEFAULT_FRONT_LIST_ANNOUNCE_PER_PAGE, 10 );
@@ -438,9 +327,9 @@ public class AnnounceApp implements XPageApplication
         //useful if you want to work with Portal.jsp and RunStandaloneApp.jsp
         model.put( FULL_URL, request.getRequestURL( ) );
 
-        HtmlTemplate template = AppTemplateService.getTemplate( TEMPLATE_LIST_ANNOUNCES, request.getLocale( ), model );
-
-        return template.getHtml( );
+        XPage page = getXPage( TEMPLATE_LIST_ANNOUNCES, request.getLocale( ), model );
+        page.setTitle( I18nService.getLocalizedString( PROPERTY_PAGE_TITLE_SEARCH_RESULTS, request.getLocale( ) ) );
+        return page;
     }
 
     /**
@@ -449,13 +338,13 @@ public class AnnounceApp implements XPageApplication
      * @return The HTML content to display
      * @throws SiteMessageException If a site message needs to be displayed
      */
-    private String getCreateAnnounce( HttpServletRequest request ) throws SiteMessageException
+    @Action( ACTION_ADDNEW )
+    public XPage getCreateAnnounce( HttpServletRequest request ) throws SiteMessageException
     {
         LuteceUser user = getLuteceUserAuthentication( request );
 
         String strCategoryId = request.getParameter( PARAMETER_CATEGORY_ID );
         String strFormSend = request.getParameter( PARAMETER_FORM_SEND );
-        HtmlTemplate template;
         Map<String, Object> model = new HashMap<String, Object>( );
 
         /* CATEOGRY */
@@ -472,13 +361,9 @@ public class AnnounceApp implements XPageApplication
                 List<GenericAttributeError> listErrors = doCreateAnnounce( request, sector, category, announce, user );
                 if ( listErrors == null || listErrors.size( ) == 0 )
                 {
-                    UrlItem urlItem = new UrlItem( AppPathService.getBaseUrl( request ) + AppPathService.getPortalUrl( ) );
-                    urlItem.addParameter( MVCUtils.PARAMETER_ACTION, ACTION_VIEW_ANNOUNCE );
-                    urlItem.addParameter( PARAMETER_PAGE, AnnounceUtils.PARAMETER_PAGE_ANNOUNCE );
-                    urlItem.addParameter( PARAMETER_ANNOUNCE_ID, announce.getId( ) );
                     try
                     {
-                        LocalVariables.getResponse( ).sendRedirect( urlItem.getUrl( ) );
+                        LocalVariables.getResponse( ).sendRedirect( getUrlViewAnnounce( request, announce.getId( ) ) );
                     }
                     catch ( IOException e )
                     {
@@ -495,7 +380,9 @@ public class AnnounceApp implements XPageApplication
             model.put( MARK_ANNOUNCE, announce );
             model.put( MARK_CONTACT_INFORMATION, user.getUserInfo( LuteceUser.BUSINESS_INFO_ONLINE_EMAIL ) );
 
-            return getAnnounceFormHtml( request, announce, category, request.getLocale( ), model );
+            XPage page = getAnnounceFormHtml( request, announce, category, request.getLocale( ), model );
+            page.setTitle( I18nService.getLocalizedString( PROPERTY_PAGE_TITLE_CREATE_ANNOUNCE, request.getLocale( ) ) );
+            return page;
         }
 
         AnnounceAsynchronousUploadHandler.getHandler( ).removeSessionFiles( request.getSession( ).getId( ) );
@@ -505,142 +392,11 @@ public class AnnounceApp implements XPageApplication
         if ( listAnnounces.size( ) < AppPropertiesService.getPropertyInt( PROPERTY_MAX_AMOUNT_ANNOUNCE, 20 ) )
         {
             model.put( MARK_LIST_FIELDS, getSectorList( ) );
-            template = AppTemplateService.getTemplate( TEMPLATE_PAGE_CREATE_ANNOUNCE_STEP_CATEGORY,
-                    request.getLocale( ), model );
+            XPage page = getXPage( TEMPLATE_PAGE_CREATE_ANNOUNCE_STEP_CATEGORY, request.getLocale( ), model );
+            page.setTitle( I18nService.getLocalizedString( PROPERTY_PAGE_TITLE_CREATE_ANNOUNCE, request.getLocale( ) ) );
+            return page;
         }
-        else
-        {
-            SiteMessageService.setMessage( request, PROPERTY_QUOTA_EXCEEDED, SiteMessage.TYPE_STOP );
-
-            return null;
-        }
-
-        return template.getHtml( );
-    }
-
-    /**
-     * Do create an announce
-     * @param request The request
-     * @param sector The sector
-     * @param category The category
-     * @param announce The announce
-     * @param user The user
-     * @return The list of error, or null if no error was found and if the
-     *         announce was created
-     * @throws SiteMessageException If a site message needs to be displayed
-     */
-    private List<GenericAttributeError> doCreateAnnounce( HttpServletRequest request, Sector sector, Category category,
-            Announce announce, LuteceUser user ) throws SiteMessageException
-    {
-        String strTitleAnnounce = request.getParameter( PARAMETER_TITLE_ANNOUNCE );
-        String strDescriptionAnnounce = request.getParameter( PARAMETER_DESCRIPTION_ANNOUNCE );
-        String strContactInformation = request.getParameter( PARAMETER_CONTACT_INFORMATION );
-        String strTags = request.getParameter( PARAMETER_TAGS );
-        String strPriceAnnounce = ( request.getParameter( PARAMETER_PRICE_ANNOUNCE ) == null ) ? StringUtils.EMPTY
-                : request.getParameter( PARAMETER_PRICE_ANNOUNCE );
-
-        if ( StringUtils.isEmpty( strTitleAnnounce ) || StringUtils.isEmpty( strDescriptionAnnounce )
-                || StringUtils.isEmpty( strContactInformation ) )
-        {
-            SiteMessageService.setMessage( request, Messages.MANDATORY_FIELDS, SiteMessage.TYPE_STOP );
-
-            return null;
-        }
-
-        switch ( category.getAnnouncesValidation( ) )
-        {
-        case PARAMETER_ANNOUNCES_VALIDATION_YES:
-            announce.setPublished( false );
-
-            break;
-
-        case PARAMETER_ANNOUNCES_VALIDATION_NO:
-            announce.setPublished( true );
-
-            break;
-        case PARAMETER_ANNOUNCES_VALIDATION_GLOBAL_PARAMETERS:
-        default:
-            announce.setPublished( !sector.getAnnouncesValidation( ) );
-        }
-
-        announce.setCategory( category );
-        announce.setTitle( strTitleAnnounce );
-        announce.setDescription( strDescriptionAnnounce );
-        announce.setPrice( strPriceAnnounce );
-        announce.setContactInformation( strContactInformation );
-        announce.setUserName( user.getName( ) );
-        announce.setTags( strTags );
-
-        EntryFilter filter = new EntryFilter( );
-        filter.setIdResource( category.getId( ) );
-        filter.setResourceType( Category.RESOURCE_TYPE );
-        filter.setEntryParentNull( EntryFilter.FILTER_TRUE );
-        filter.setFieldDependNull( EntryFilter.FILTER_TRUE );
-        filter.setIdIsComment( EntryFilter.FILTER_FALSE );
-
-        List<Entry> listEntryFirstLevel = EntryHome.getEntryList( filter );
-        List<GenericAttributeError> listErrors = new ArrayList<GenericAttributeError>( );
-
-        AnnounceDTO announceDTO = new AnnounceDTO( announce );
-
-        for ( Entry entry : listEntryFirstLevel )
-        {
-            listErrors.addAll( _announceService.getResponseEntry( request, entry.getIdEntry( ),
-                    request.getLocale( ), announceDTO ) );
-        }
-
-        if ( category.getDisplayCaptcha( ) && _captchaSecurityService.isAvailable( ) )
-        {
-            if ( !_captchaSecurityService.validate( request ) )
-            {
-                GenericAttributeError genAttError = new GenericAttributeError( );
-                genAttError.setErrorMessage( I18nService.getLocalizedString( ERROR_MESSAGE_WRONG_CAPTCHA,
-                        request.getLocale( ) ) );
-                listErrors.add( genAttError );
-            }
-        }
-        
-        _announceService.convertMapResponseToList( announceDTO );
-        announce.setListResponse( announceDTO.getListResponse( ) );
-        if ( listErrors.size( ) > 0 )
-        {
-            return listErrors;
-        }
-
-        announce.setHasPictures( false );
-        for ( Response response : announceDTO.getListResponse( ) )
-        {
-            if ( response.getFile( ) != null && FileUtil.hasImageExtension( response.getFile( ).getTitle( ) ) )
-            {
-                announce.setHasPictures( true );
-                break;
-            }
-        }
-
-        AnnounceHome.create( announce );
-
-        for ( Response response : announceDTO.getListResponse( ) )
-        {
-            ResponseHome.create( response );
-            AnnounceHome.insertAnnounceResponse( announce.getId( ), response.getIdResponse( ),
-                    response.getFile( ) != null && FileUtil.hasImageExtension( response.getFile( ).getTitle( ) ) );
-        }
-
-        if ( category.getIdWorkflow( ) > 0 )
-        {
-            WorkflowService.getInstance( ).getState( announce.getId( ), Announce.RESOURCE_TYPE,
-                    category.getIdWorkflow( ), category.getId( ) );
-            WorkflowService.getInstance( ).executeActionAutomatic( announce.getId( ), Announce.RESOURCE_TYPE,
-                    category.getIdWorkflow( ), category.getId( ) );
-        }
-
-        // send mail notification only if announce is not published
-        if ( !announce.getPublished( ) )
-        {
-            sendAnnounceNotification( request, announce );
-        }
-
-        AnnounceAsynchronousUploadHandler.getHandler( ).removeSessionFiles( request.getSession( ).getId( ) );
+        SiteMessageService.setMessage( request, PROPERTY_QUOTA_EXCEEDED, SiteMessage.TYPE_STOP );
         return null;
     }
 
@@ -650,7 +406,8 @@ public class AnnounceApp implements XPageApplication
      * @return The HTML content to display
      * @throws SiteMessageException If a site message needs to be displayed
      */
-    private String getModifyAnnounce( HttpServletRequest request ) throws SiteMessageException
+    @Action( ACTION_MODIFY_ANNOUNCE )
+    public XPage getModifyAnnounce( HttpServletRequest request ) throws SiteMessageException
     {
         LuteceUser user = getLuteceUserAuthentication( request );
         int nIdAnnounce = Integer.parseInt( request.getParameter( PARAMETER_ANNOUNCE_ID ) );
@@ -667,7 +424,7 @@ public class AnnounceApp implements XPageApplication
             List<GenericAttributeError> listErrors = doModifyAnnounce( request, announce );
             if ( listErrors == null )
             {
-                return getViewAnnounce( request, announce );
+                return redirect( request, getUrlViewAnnounce( request, nIdAnnounce ) );
             }
             model.put( MARK_LIST_ERRORS, listErrors );
         }
@@ -697,122 +454,9 @@ public class AnnounceApp implements XPageApplication
         model.put( MARK_MODERATED, bModerated );
         model.put( MARK_ANNOUNCE, announce );
 
-        return getAnnounceFormHtml( request, announce, category, request.getLocale( ), model );
-    }
-
-    /**
-     * Do modify an announce
-     * @param request The request
-     * @param announce The announce
-     * @return The list of errors, or null if no error occurred
-     * @throws SiteMessageException If a site message needs to be displayed
-     */
-    private List<GenericAttributeError> doModifyAnnounce( HttpServletRequest request, Announce announce )
-            throws SiteMessageException
-    {
-        announce.setTitle( request.getParameter( PARAMETER_TITLE_ANNOUNCE ) );
-        announce.setDescription( request.getParameter( PARAMETER_DESCRIPTION_ANNOUNCE ) );
-        announce.setContactInformation( request.getParameter( PARAMETER_CONTACT_INFORMATION ) );
-
-        String strPriceAnnounce = ( request.getParameter( PARAMETER_PRICE_ANNOUNCE ) == null ) ? "" : request
-                .getParameter( PARAMETER_PRICE_ANNOUNCE );
-        announce.setPrice( strPriceAnnounce );
-
-        Category category = CategoryHome.findByPrimaryKey( announce.getCategory( ).getId( ) );
-        Sector sector = SectorHome.findByPrimaryKey( category.getIdSector( ) );
-
-        // unpublish announce if category moderation is on
-        switch ( category.getAnnouncesValidation( ) )
-        {
-        case PARAMETER_ANNOUNCES_VALIDATION_YES:
-            announce.setPublished( false );
-
-            break;
-
-        case PARAMETER_ANNOUNCES_VALIDATION_NO:
-            announce.setPublished( true );
-
-            break;
-        case PARAMETER_ANNOUNCES_VALIDATION_GLOBAL_PARAMETERS:
-        default:
-            announce.setPublished( !sector.getAnnouncesValidation( ) );
-        }
-
-        EntryFilter filter = new EntryFilter( );
-        filter.setIdResource( category.getId( ) );
-        filter.setResourceType( Category.RESOURCE_TYPE );
-        filter.setEntryParentNull( EntryFilter.FILTER_TRUE );
-        filter.setFieldDependNull( EntryFilter.FILTER_TRUE );
-        filter.setIdIsComment( EntryFilter.FILTER_FALSE );
-
-        List<Entry> listEntryFirstLevel = EntryHome.getEntryList( filter );
-        List<GenericAttributeError> listErrors = new ArrayList<GenericAttributeError>( );
-
-        AnnounceDTO announceDTO = new AnnounceDTO( announce );
-
-        for ( Entry entry : listEntryFirstLevel )
-        {
-            listErrors.addAll( _announceService.getResponseEntry( request, entry.getIdEntry( ),
-                    request.getLocale( ), announceDTO ) );
-        }
-
-        if ( category.getDisplayCaptcha( ) && _captchaSecurityService.isAvailable( ) )
-        {
-            if ( !_captchaSecurityService.validate( request ) )
-            {
-                GenericAttributeError genAttError = new GenericAttributeError( );
-                genAttError.setErrorMessage( I18nService.getLocalizedString( ERROR_MESSAGE_WRONG_CAPTCHA,
-                        request.getLocale( ) ) );
-                listErrors.add( genAttError );
-            }
-        }
-
-        // If there is some errors, we redirect the user to the form page
-        if ( listErrors.size( ) > 0 )
-        {
-            _announceService.convertMapResponseToList( announceDTO );
-            announce.setListResponse( announceDTO.getListResponse( ) );
-            return listErrors;
-        }
-
-        _announceService.convertMapResponseToList( announceDTO );
-        announce.setListResponse( announceDTO.getListResponse( ) );
-
-        announce.setHasPictures( false );
-        for ( Response response : announceDTO.getListResponse( ) )
-        {
-            if ( response.getFile( ) != null && FileUtil.hasImageExtension( response.getFile( ).getTitle( ) ) )
-            {
-                announce.setHasPictures( true );
-                break;
-            }
-        }
-
-        AnnounceHome.update( announce );
-
-        List<Integer> listIdResponse = AnnounceHome.findListIdResponse( announce.getId( ) );
-
-        for ( int nIdResponse : listIdResponse )
-        {
-            ResponseHome.remove( nIdResponse );
-        }
-
-        AnnounceHome.removeAnnounceResponse( announce.getId( ) );
-
-        for ( Response response : announceDTO.getListResponse( ) )
-        {
-            ResponseHome.create( response );
-            AnnounceHome.insertAnnounceResponse( announce.getId( ), response.getIdResponse( ),
-                    response.getFile( ) != null && FileUtil.hasImageExtension( response.getFile( ).getTitle( ) ) );
-        }
-
-        // send mail notification only if announce is not published
-        if ( !announce.getPublished( ) )
-        {
-            sendAnnounceNotification( request, announce );
-        }
-
-        return null;
+        XPage page = getAnnounceFormHtml( request, announce, category, request.getLocale( ), model );
+        page.setTitle( I18nService.getLocalizedString( PROPERTY_PAGE_TITLE_MODIFY_ANNOUNCE, request.getLocale( ) ) );
+        return page;
     }
 
     /**
@@ -821,7 +465,8 @@ public class AnnounceApp implements XPageApplication
      * @return The HTML content if the site message could not be displayed
      * @throws SiteMessageException If a site message needs to be displayed
      */
-    private String getDeleteAnnounce( HttpServletRequest request ) throws SiteMessageException
+    @Action( ACTION_DELETE_ANNOUNCE )
+    public XPage getDeleteAnnounce( HttpServletRequest request ) throws SiteMessageException
     {
         String strConfirmRemoveAnnounce = request.getParameter( PARAMETER_CONFIRM_REMOVE_ANNOUNCE );
         int nIdAnnounce = Integer.parseInt( request.getParameter( PARAMETER_ANNOUNCE_ID ) );
@@ -829,7 +474,7 @@ public class AnnounceApp implements XPageApplication
         if ( strConfirmRemoveAnnounce != null )
         {
             AnnounceHome.remove( nIdAnnounce );
-            return getManageUserAnnounces( request );
+            return redirect( request, AppPathService.getBaseUrl( request ) + getActionFullUrl( ACTION_MY_ANNOUNCES ) );
         }
         Map<String, Object> requestParameters = new HashMap<String, Object>( );
         requestParameters.put( PARAMETER_PAGE, AnnounceUtils.PARAMETER_PAGE_ANNOUNCE );
@@ -845,10 +490,11 @@ public class AnnounceApp implements XPageApplication
     /**
      * Get the confirmation page before suspending an announce
      * @param request The request
-     * @return The HTML content if the site message could not be displayed
+     * @return the XPage to display
      * @throws SiteMessageException If a site message needs to be displayed
      */
-    private String getSuspendAnnounceByUser( HttpServletRequest request ) throws SiteMessageException
+    @Action( ACTION_SUSPEND_ANNOUNCE_BY_USER )
+    public XPage getSuspendAnnounceByUser( HttpServletRequest request ) throws SiteMessageException
     {
         String strConfirmSuspendAnnounce = request.getParameter( PARAMETER_CONFIRM_SUSPEND_ANNOUNCE );
         int nIdAnnounce = Integer.parseInt( request.getParameter( PARAMETER_ANNOUNCE_ID ) );
@@ -864,7 +510,7 @@ public class AnnounceApp implements XPageApplication
             announce.setSuspendedByUser( true );
             AnnounceHome.setSuspendedByUser( announce );
 
-            return getManageUserAnnounces( request );
+            return redirect( request, AppPathService.getBaseUrl( request ) + getActionFullUrl( ACTION_MY_ANNOUNCES ) );
         }
 
         Map<String, Object> requestParameters = new HashMap<String, Object>( );
@@ -884,7 +530,8 @@ public class AnnounceApp implements XPageApplication
      * @return The HTML to display
      * @throws SiteMessageException If a site message needs to be displayed
      */
-    private String enableAnnounceByUser( HttpServletRequest request ) throws SiteMessageException
+    @Action( ACTION_ENABLE_ANNOUNCE_BY_USER )
+    public XPage enableAnnounceByUser( HttpServletRequest request ) throws SiteMessageException
     {
         int nIdAnnounce = Integer.parseInt( request.getParameter( PARAMETER_ANNOUNCE_ID ) );
 
@@ -897,17 +544,20 @@ public class AnnounceApp implements XPageApplication
         announce.setSuspendedByUser( false );
         AnnounceHome.setSuspendedByUser( announce );
 
-        return getManageUserAnnounces( request );
+        return redirect( request, AppPathService.getBaseUrl( request ) + getActionFullUrl( ACTION_MY_ANNOUNCES ) );
     }
 
     /**
      * View an announce
      * @param request The request
-     * @param announce The announce
      * @return The HTML content to display
      */
-    private String getViewAnnounce( HttpServletRequest request, Announce announce )
+    @Action( ACTION_VIEW_ANNOUNCE )
+    public XPage getViewAnnounce( HttpServletRequest request )
     {
+        int nIdAnnounce = Integer.parseInt( request.getParameter( PARAMETER_ANNOUNCE_ID ) );
+        Announce announce = AnnounceHome.findByPrimaryKey( nIdAnnounce );
+
         boolean bAllowAccess = false;
         boolean bUserIsAuthor = false;
 
@@ -958,20 +608,22 @@ public class AnnounceApp implements XPageApplication
             Category category = CategoryHome.findByPrimaryKey( announce.getCategory( ).getId( ) );
             announce.setCategory( category );
         }
-        HtmlTemplate template = AppTemplateService.getTemplate( TEMPLATE_VIEW_ANNOUNCE, request.getLocale( ), model );
-
-        return template.getHtml( );
+        XPage xpage = getXPage( TEMPLATE_VIEW_ANNOUNCE, request.getLocale( ), model );
+        xpage.setTitle( announce.getTitle( ) );
+        return xpage;
     }
 
     /**
      * Gets template in order to view all the user's announces
      * @param request httpRequest
-     * @param strUserName the name of the user
      * @return The HTML content to display
      * @throws SiteMessageException If a site message needs to be displayed
      */
-    private String getViewUserAnnounces( HttpServletRequest request, String strUserName ) throws SiteMessageException
+    @Action( ACTION_VIEW_ANNOUNCES )
+    public XPage getViewUserAnnounces( HttpServletRequest request ) throws SiteMessageException
     {
+        String strUserName = request.getParameter( PARAMETER_USERNAME );
+
         _strCurrentPageIndex = Paginator.getPageIndex( request, Paginator.PARAMETER_PAGE_INDEX, DEFAULT_PAGE_INDEX );
         _nDefaultItemsPerPage = AppPropertiesService.getPropertyInt( PROPERTY_DEFAULT_FRONT_LIST_ANNOUNCE_PER_PAGE, 10 );
         _nItemsPerPage = Paginator.getItemsPerPage( request, Paginator.PARAMETER_ITEMS_PER_PAGE, _nItemsPerPage,
@@ -1030,9 +682,105 @@ public class AnnounceApp implements XPageApplication
         model.put( MARK_LIST_FIELDS, getSectorList( ) );
         model.put( MARK_LOCALE, request.getLocale( ) );
 
-        HtmlTemplate template = AppTemplateService.getTemplate( TEMPLATE_VIEW_ANNOUNCES, request.getLocale( ), model );
+        return getXPage( TEMPLATE_VIEW_ANNOUNCES, request.getLocale( ), model );
+    }
 
-        return template.getHtml( );
+    /**
+     * Get the page to view the list of subscriptions of the current user
+     * @param request The request
+     * @return The XPage to display
+     * @throws UserNotSignedException If the user has not signed in
+     */
+    @Action( ACTION_VIEW_SUBSCRIPTIONS )
+    public XPage getViewSubscriptions( HttpServletRequest request ) throws UserNotSignedException
+    {
+        if ( SecurityService.isAuthenticationEnable( ) )
+        {
+            LuteceUser user = SecurityService.getInstance( ).getRegisteredUser( request );
+            if ( user != null )
+            {
+                XPage page = getXPage( );
+                page.setTitle( I18nService.getLocalizedString( PROPERTY_PAGE_TITLE, request.getLocale( ) ) );
+                page.setContent( SubscribeApp.getSubscriptionList( request ) );
+                return page;
+            }
+        }
+        throw new UserNotSignedException( );
+    }
+
+    /**
+     * Get the XPage to display the announces of the current user
+     * @param request The request
+     * @return The
+     * @throws SiteMessageException If a site message needs to be displayed
+     */
+    @Action( ACTION_MY_ANNOUNCES )
+    public XPage getUserAnnounces( HttpServletRequest request ) throws SiteMessageException
+    {
+        XPage page = getXPage( );
+        page.setContent( getManageUserAnnounces( request ) );
+        page.setTitle( I18nService.getLocalizedString( PROPERTY_PAGE_TITLE_MY_ANNOUNCES, request.getLocale( ) ) );
+
+        return page;
+    }
+
+    /**
+     * Removes the uploaded fileItem
+     * @param request the request
+     * @return The JSON result
+     */
+    public String doRemoveAsynchronousUploadedFile( HttpServletRequest request )
+    {
+        String strIdEntry = request.getParameter( PARAMETER_ID_ENTRY );
+        String strFieldIndex = request.getParameter( PARAMETER_FIELD_INDEX );
+
+        if ( StringUtils.isBlank( strIdEntry ) || StringUtils.isBlank( strFieldIndex ) )
+        {
+            return JSONUtils.buildJsonErrorRemovingFile( request ).toString( );
+        }
+
+        // parse json
+        JSON jsonFieldIndexes = JSONSerializer.toJSON( strFieldIndex );
+
+        if ( !jsonFieldIndexes.isArray( ) )
+        {
+            return JSONUtils.buildJsonErrorRemovingFile( request ).toString( );
+        }
+
+        JSONArray jsonArrayFieldIndexers = (JSONArray) jsonFieldIndexes;
+        int[] tabFieldIndex = new int[jsonArrayFieldIndexers.size( )];
+
+        for ( int nIndex = 0; nIndex < jsonArrayFieldIndexers.size( ); nIndex++ )
+        {
+            try
+            {
+                tabFieldIndex[nIndex] = Integer.parseInt( jsonArrayFieldIndexers.getString( nIndex ) );
+            }
+            catch ( NumberFormatException nfe )
+            {
+                return JSONUtils.buildJsonErrorRemovingFile( request ).toString( );
+            }
+        }
+
+        // inverse order (removing using index - remove greater first to keep order)
+        Arrays.sort( tabFieldIndex );
+        ArrayUtils.reverse( tabFieldIndex );
+
+        AnnounceAsynchronousUploadHandler handler = AnnounceAsynchronousUploadHandler.getHandler( );
+
+        for ( int nFieldIndex : tabFieldIndex )
+        {
+            handler.removeFileItem( strIdEntry, request.getSession( ).getId( ), nFieldIndex );
+        }
+
+        JSONObject json = new JSONObject( );
+        // operation successful
+        json.element( JSONUtils.JSON_KEY_SUCCESS, JSONUtils.JSON_KEY_SUCCESS );
+        json.accumulateAll( JSONUtils.getUploadedFileJSON( handler.getFileItems( strIdEntry, request.getSession( )
+                .getId( ) ) ) );
+        json.element( JSONUtils.JSON_KEY_FIELD_NAME, handler.buildFieldName( strIdEntry ) );
+
+        return json.toString( );
     }
 
     /**
@@ -1124,6 +872,247 @@ public class AnnounceApp implements XPageApplication
     }
 
     /**
+     * Do create an announce
+     * @param request The request
+     * @param sector The sector
+     * @param category The category
+     * @param announce The announce
+     * @param user The user
+     * @return The list of error, or null if no error was found and if the
+     *         announce was created
+     * @throws SiteMessageException If a site message needs to be displayed
+     */
+    private List<GenericAttributeError> doCreateAnnounce( HttpServletRequest request, Sector sector, Category category,
+            Announce announce, LuteceUser user ) throws SiteMessageException
+    {
+        String strTitleAnnounce = request.getParameter( PARAMETER_TITLE_ANNOUNCE );
+        String strDescriptionAnnounce = request.getParameter( PARAMETER_DESCRIPTION_ANNOUNCE );
+        String strContactInformation = request.getParameter( PARAMETER_CONTACT_INFORMATION );
+        String strTags = request.getParameter( PARAMETER_TAGS );
+        String strPriceAnnounce = ( request.getParameter( PARAMETER_PRICE_ANNOUNCE ) == null ) ? StringUtils.EMPTY
+                : request.getParameter( PARAMETER_PRICE_ANNOUNCE );
+
+        if ( StringUtils.isEmpty( strTitleAnnounce ) || StringUtils.isEmpty( strDescriptionAnnounce )
+                || StringUtils.isEmpty( strContactInformation ) )
+        {
+            SiteMessageService.setMessage( request, Messages.MANDATORY_FIELDS, SiteMessage.TYPE_STOP );
+
+            return null;
+        }
+
+        switch ( category.getAnnouncesValidation( ) )
+        {
+        case PARAMETER_ANNOUNCES_VALIDATION_YES:
+            announce.setPublished( false );
+
+            break;
+
+        case PARAMETER_ANNOUNCES_VALIDATION_NO:
+            announce.setPublished( true );
+
+            break;
+        case PARAMETER_ANNOUNCES_VALIDATION_GLOBAL_PARAMETERS:
+        default:
+            announce.setPublished( !sector.getAnnouncesValidation( ) );
+        }
+
+        announce.setCategory( category );
+        announce.setTitle( strTitleAnnounce );
+        announce.setDescription( strDescriptionAnnounce );
+        announce.setPrice( strPriceAnnounce );
+        announce.setContactInformation( strContactInformation );
+        announce.setUserName( user.getName( ) );
+        announce.setTags( strTags );
+
+        EntryFilter filter = new EntryFilter( );
+        filter.setIdResource( category.getId( ) );
+        filter.setResourceType( Category.RESOURCE_TYPE );
+        filter.setEntryParentNull( EntryFilter.FILTER_TRUE );
+        filter.setFieldDependNull( EntryFilter.FILTER_TRUE );
+        filter.setIdIsComment( EntryFilter.FILTER_FALSE );
+
+        List<Entry> listEntryFirstLevel = EntryHome.getEntryList( filter );
+        List<GenericAttributeError> listErrors = new ArrayList<GenericAttributeError>( );
+
+        AnnounceDTO announceDTO = new AnnounceDTO( announce );
+
+        for ( Entry entry : listEntryFirstLevel )
+        {
+            listErrors.addAll( _announceService.getResponseEntry( request, entry.getIdEntry( ), request.getLocale( ),
+                    announceDTO ) );
+        }
+
+        if ( category.getDisplayCaptcha( ) && _captchaSecurityService.isAvailable( ) )
+        {
+            if ( !_captchaSecurityService.validate( request ) )
+            {
+                GenericAttributeError genAttError = new GenericAttributeError( );
+                genAttError.setErrorMessage( I18nService.getLocalizedString( ERROR_MESSAGE_WRONG_CAPTCHA,
+                        request.getLocale( ) ) );
+                listErrors.add( genAttError );
+            }
+        }
+
+        _announceService.convertMapResponseToList( announceDTO );
+        announce.setListResponse( announceDTO.getListResponse( ) );
+        if ( listErrors.size( ) > 0 )
+        {
+            return listErrors;
+        }
+
+        announce.setHasPictures( false );
+        for ( Response response : announceDTO.getListResponse( ) )
+        {
+            if ( response.getFile( ) != null && FileUtil.hasImageExtension( response.getFile( ).getTitle( ) ) )
+            {
+                announce.setHasPictures( true );
+                break;
+            }
+        }
+
+        AnnounceHome.create( announce );
+
+        for ( Response response : announceDTO.getListResponse( ) )
+        {
+            ResponseHome.create( response );
+            AnnounceHome.insertAnnounceResponse( announce.getId( ), response.getIdResponse( ),
+                    response.getFile( ) != null && FileUtil.hasImageExtension( response.getFile( ).getTitle( ) ) );
+        }
+
+        if ( category.getIdWorkflow( ) > 0 )
+        {
+            WorkflowService.getInstance( ).getState( announce.getId( ), Announce.RESOURCE_TYPE,
+                    category.getIdWorkflow( ), category.getId( ) );
+            WorkflowService.getInstance( ).executeActionAutomatic( announce.getId( ), Announce.RESOURCE_TYPE,
+                    category.getIdWorkflow( ), category.getId( ) );
+        }
+
+        // send mail notification only if announce is not published
+        if ( !announce.getPublished( ) )
+        {
+            sendAnnounceNotification( request, announce );
+        }
+
+        AnnounceAsynchronousUploadHandler.getHandler( ).removeSessionFiles( request.getSession( ).getId( ) );
+        return null;
+    }
+
+    /**
+     * Do modify an announce
+     * @param request The request
+     * @param announce The announce
+     * @return The list of errors, or null if no error occurred
+     * @throws SiteMessageException If a site message needs to be displayed
+     */
+    private List<GenericAttributeError> doModifyAnnounce( HttpServletRequest request, Announce announce )
+            throws SiteMessageException
+    {
+        announce.setTitle( request.getParameter( PARAMETER_TITLE_ANNOUNCE ) );
+        announce.setDescription( request.getParameter( PARAMETER_DESCRIPTION_ANNOUNCE ) );
+        announce.setContactInformation( request.getParameter( PARAMETER_CONTACT_INFORMATION ) );
+
+        String strPriceAnnounce = ( request.getParameter( PARAMETER_PRICE_ANNOUNCE ) == null ) ? "" : request
+                .getParameter( PARAMETER_PRICE_ANNOUNCE );
+        announce.setPrice( strPriceAnnounce );
+
+        Category category = CategoryHome.findByPrimaryKey( announce.getCategory( ).getId( ) );
+        Sector sector = SectorHome.findByPrimaryKey( category.getIdSector( ) );
+
+        // unpublish announce if category moderation is on
+        switch ( category.getAnnouncesValidation( ) )
+        {
+        case PARAMETER_ANNOUNCES_VALIDATION_YES:
+            announce.setPublished( false );
+
+            break;
+
+        case PARAMETER_ANNOUNCES_VALIDATION_NO:
+            announce.setPublished( true );
+
+            break;
+        case PARAMETER_ANNOUNCES_VALIDATION_GLOBAL_PARAMETERS:
+        default:
+            announce.setPublished( !sector.getAnnouncesValidation( ) );
+        }
+
+        EntryFilter filter = new EntryFilter( );
+        filter.setIdResource( category.getId( ) );
+        filter.setResourceType( Category.RESOURCE_TYPE );
+        filter.setEntryParentNull( EntryFilter.FILTER_TRUE );
+        filter.setFieldDependNull( EntryFilter.FILTER_TRUE );
+        filter.setIdIsComment( EntryFilter.FILTER_FALSE );
+
+        List<Entry> listEntryFirstLevel = EntryHome.getEntryList( filter );
+        List<GenericAttributeError> listErrors = new ArrayList<GenericAttributeError>( );
+
+        AnnounceDTO announceDTO = new AnnounceDTO( announce );
+
+        for ( Entry entry : listEntryFirstLevel )
+        {
+            listErrors.addAll( _announceService.getResponseEntry( request, entry.getIdEntry( ), request.getLocale( ),
+                    announceDTO ) );
+        }
+
+        if ( category.getDisplayCaptcha( ) && _captchaSecurityService.isAvailable( ) )
+        {
+            if ( !_captchaSecurityService.validate( request ) )
+            {
+                GenericAttributeError genAttError = new GenericAttributeError( );
+                genAttError.setErrorMessage( I18nService.getLocalizedString( ERROR_MESSAGE_WRONG_CAPTCHA,
+                        request.getLocale( ) ) );
+                listErrors.add( genAttError );
+            }
+        }
+
+        // If there is some errors, we redirect the user to the form page
+        if ( listErrors.size( ) > 0 )
+        {
+            _announceService.convertMapResponseToList( announceDTO );
+            announce.setListResponse( announceDTO.getListResponse( ) );
+            return listErrors;
+        }
+
+        _announceService.convertMapResponseToList( announceDTO );
+        announce.setListResponse( announceDTO.getListResponse( ) );
+
+        announce.setHasPictures( false );
+        for ( Response response : announceDTO.getListResponse( ) )
+        {
+            if ( response.getFile( ) != null && FileUtil.hasImageExtension( response.getFile( ).getTitle( ) ) )
+            {
+                announce.setHasPictures( true );
+                break;
+            }
+        }
+
+        AnnounceHome.update( announce );
+
+        List<Integer> listIdResponse = AnnounceHome.findListIdResponse( announce.getId( ) );
+
+        for ( int nIdResponse : listIdResponse )
+        {
+            ResponseHome.remove( nIdResponse );
+        }
+
+        AnnounceHome.removeAnnounceResponse( announce.getId( ) );
+
+        for ( Response response : announceDTO.getListResponse( ) )
+        {
+            ResponseHome.create( response );
+            AnnounceHome.insertAnnounceResponse( announce.getId( ), response.getIdResponse( ),
+                    response.getFile( ) != null && FileUtil.hasImageExtension( response.getFile( ).getTitle( ) ) );
+        }
+
+        // send mail notification only if announce is not published
+        if ( !announce.getPublished( ) )
+        {
+            sendAnnounceNotification( request, announce );
+        }
+
+        return null;
+    }
+
+    /**
      * Get the HTML code of the form to create or modify an announce
      * @param request The request
      * @param announce The announce to get the form of (null to get a creation
@@ -1131,15 +1120,15 @@ public class AnnounceApp implements XPageApplication
      * @param category The category of the announce
      * @param locale the locale
      * @param model The model to use to display the page
-     * @return The HTML code to display, or an empty string if the form is null
+     * @return The XPage to display, or an empty string if the form is null
      *         or not active
      */
-    public String getAnnounceFormHtml( HttpServletRequest request, Announce announce, Category category, Locale locale,
+    private XPage getAnnounceFormHtml( HttpServletRequest request, Announce announce, Category category, Locale locale,
             Map<String, Object> model )
     {
         if ( category == null )
         {
-            return StringUtils.EMPTY;
+            return new XPage( );
         }
 
         Sector sector = SectorHome.findByPrimaryKey( category.getIdSector( ) );
@@ -1154,70 +1143,21 @@ public class AnnounceApp implements XPageApplication
             model.put( MARK_CAPTCHA, _captchaSecurityService.getHtmlCode( ) );
         }
 
-        HtmlTemplate template = AppTemplateService.getTemplate(
-                announce == null || announce.getId( ) == 0 ? TEMPLATE_PAGE_CREATE_ANNOUNCE_STEP_FORM
-                        : TEMPLATE_MODIFY_ANNOUNCE, locale, model );
-
-        return template.getHtml( );
+        return getXPage( announce == null || announce.getId( ) == 0 ? TEMPLATE_PAGE_CREATE_ANNOUNCE_STEP_FORM
+                : TEMPLATE_MODIFY_ANNOUNCE, locale, model );
     }
 
     /**
-     * Removes the uploaded fileItem
-     * @param request the request
-     * @return The JSON result
+     * Get the URL to view an announce
+     * @param request The request
+     * @param nIdAnnounce The id of the announce to view
+     * @return The URL to view the announce
      */
-    public String doRemoveAsynchronousUploadedFile( HttpServletRequest request )
+    private String getUrlViewAnnounce( HttpServletRequest request, int nIdAnnounce )
     {
-        String strIdEntry = request.getParameter( PARAMETER_ID_ENTRY );
-        String strFieldIndex = request.getParameter( PARAMETER_FIELD_INDEX );
-
-        if ( StringUtils.isBlank( strIdEntry ) || StringUtils.isBlank( strFieldIndex ) )
-        {
-            return JSONUtils.buildJsonErrorRemovingFile( request ).toString( );
-        }
-
-        // parse json
-        JSON jsonFieldIndexes = JSONSerializer.toJSON( strFieldIndex );
-
-        if ( !jsonFieldIndexes.isArray( ) )
-        {
-            return JSONUtils.buildJsonErrorRemovingFile( request ).toString( );
-        }
-
-        JSONArray jsonArrayFieldIndexers = (JSONArray) jsonFieldIndexes;
-        int[] tabFieldIndex = new int[jsonArrayFieldIndexers.size( )];
-
-        for ( int nIndex = 0; nIndex < jsonArrayFieldIndexers.size( ); nIndex++ )
-        {
-            try
-            {
-                tabFieldIndex[nIndex] = Integer.parseInt( jsonArrayFieldIndexers.getString( nIndex ) );
-            }
-            catch ( NumberFormatException nfe )
-            {
-                return JSONUtils.buildJsonErrorRemovingFile( request ).toString( );
-            }
-        }
-
-        // inverse order (removing using index - remove greater first to keep order)
-        Arrays.sort( tabFieldIndex );
-        ArrayUtils.reverse( tabFieldIndex );
-
-        AnnounceAsynchronousUploadHandler handler = AnnounceAsynchronousUploadHandler.getHandler( );
-
-        for ( int nFieldIndex : tabFieldIndex )
-        {
-            handler.removeFileItem( strIdEntry, request.getSession( ).getId( ), nFieldIndex );
-        }
-
-        JSONObject json = new JSONObject( );
-        // operation successful
-        json.element( JSONUtils.JSON_KEY_SUCCESS, JSONUtils.JSON_KEY_SUCCESS );
-        json.accumulateAll( JSONUtils.getUploadedFileJSON( handler.getFileItems( strIdEntry, request.getSession( )
-                .getId( ) ) ) );
-        json.element( JSONUtils.JSON_KEY_FIELD_NAME, handler.buildFieldName( strIdEntry ) );
-
-        return json.toString( );
+        UrlItem url = new UrlItem( AppPathService.getBaseUrl( request ) + getActionFullUrl( ACTION_VIEW_ANNOUNCE ) );
+        url.addParameter( PARAMETER_ANNOUNCE_ID, nIdAnnounce );
+        return url.getUrl( );
     }
 
     /**
