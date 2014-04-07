@@ -33,6 +33,8 @@
  */
 package fr.paris.lutece.plugins.announce.service;
 
+import fr.paris.lutece.plugins.announce.business.Announce;
+import fr.paris.lutece.plugins.announce.business.Category;
 import fr.paris.lutece.portal.service.cache.AbstractCacheableService;
 
 
@@ -101,6 +103,45 @@ public final class AnnounceCacheService extends AbstractCacheableService
     public String getName( )
     {
         return CACHE_SERVICE_NAME;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Object getFromCache( String strKey )
+    {
+        Object object = super.getFromCache( strKey );
+        if ( object != null )
+        {
+            if ( object instanceof Announce )
+            {
+                return ( (Announce) object ).clone( );
+            }
+            if ( object instanceof Category )
+            {
+                return ( (Category) object ).clone( );
+            }
+        }
+        return object;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void putInCache( String strKey, Object object )
+    {
+        Object clonedObject = object;
+        if ( object instanceof Announce )
+        {
+            clonedObject = ( (Announce) object ).clone( );
+        }
+        if ( object instanceof Category )
+        {
+            clonedObject = ( (Category) object ).clone( );
+        }
+        super.putInCache( strKey, clonedObject );
     }
 
 }

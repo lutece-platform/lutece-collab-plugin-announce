@@ -46,6 +46,11 @@
             		<span class="help-block">#i18n{announce.create_announce_step_form.tags.helper}</span>
             	</div>
             </div>
+            <#if captcha?? && captcha != "">
+				<div class="control-group">
+					${captcha}
+				</div>
+			</#if>
 			<div class="form-actions">
 	            <input type="hidden" name="category_id" value="${category.id}" />
 	            <input type="hidden" name="form_send" value="1" />

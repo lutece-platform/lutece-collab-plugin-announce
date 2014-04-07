@@ -61,6 +61,7 @@ import fr.paris.lutece.portal.business.file.FileHome;
 import fr.paris.lutece.portal.business.mailinglist.Recipient;
 import fr.paris.lutece.portal.business.physicalfile.PhysicalFile;
 import fr.paris.lutece.portal.business.physicalfile.PhysicalFileHome;
+import fr.paris.lutece.portal.service.captcha.CaptchaSecurityService;
 import fr.paris.lutece.portal.service.i18n.I18nService;
 import fr.paris.lutece.portal.service.mail.MailService;
 import fr.paris.lutece.portal.service.mailinglist.AdminMailingListService;
@@ -226,6 +227,10 @@ public class AnnounceApp implements XPageApplication
     private static final String MARK_FORM_HTML = "form_html";
     private static final String MARK_LIST_ERRORS = "list_errors";
     private static final String MARK_IS_EXTEND_INSTALLED = "isExtendInstalled";
+    private static final String MARK_CAPTCHA = "captcha";
+
+    // Messages
+    private static final String ERROR_MESSAGE_WRONG_CAPTCHA = "portal.admin.message.wrongCaptcha";
 
     // Constants
     private static final String CONSTANT_BLANK_SPACE = " ";
@@ -237,6 +242,8 @@ public class AnnounceApp implements XPageApplication
 
     //defaults
     private static final String DEFAULT_PAGE_INDEX = "1";
+
+    private static final CaptchaSecurityService _captchaSecurityService = new CaptchaSecurityService( );
 
     // private fields
     private AnnounceService _announceService = SpringContextService.getBean( AnnounceService.BEAN_NAME );
@@ -572,21 +579,32 @@ public class AnnounceApp implements XPageApplication
         filter.setIdIsComment( EntryFilter.FILTER_FALSE );
 
         List<Entry> listEntryFirstLevel = EntryHome.getEntryList( filter );
-        List<GenericAttributeError> listFormErrors = new ArrayList<GenericAttributeError>( );
+        List<GenericAttributeError> listErrors = new ArrayList<GenericAttributeError>( );
 
         AnnounceDTO announceDTO = new AnnounceDTO( announce );
 
         for ( Entry entry : listEntryFirstLevel )
         {
-            listFormErrors.addAll( _announceService.getResponseEntry( request, entry.getIdEntry( ),
+            listErrors.addAll( _announceService.getResponseEntry( request, entry.getIdEntry( ),
                     request.getLocale( ), announceDTO ) );
         }
 
+        if ( category.getDisplayCaptcha( ) && _captchaSecurityService.isAvailable( ) )
+        {
+            if ( !_captchaSecurityService.validate( request ) )
+            {
+                GenericAttributeError genAttError = new GenericAttributeError( );
+                genAttError.setErrorMessage( I18nService.getLocalizedString( ERROR_MESSAGE_WRONG_CAPTCHA,
+                        request.getLocale( ) ) );
+                listErrors.add( genAttError );
+            }
+        }
+        
         _announceService.convertMapResponseToList( announceDTO );
         announce.setListResponse( announceDTO.getListResponse( ) );
-        if ( listFormErrors.size( ) > 0 )
+        if ( listErrors.size( ) > 0 )
         {
-            return listFormErrors;
+            return listErrors;
         }
 
         announce.setHasPictures( false );
@@ -728,22 +746,33 @@ public class AnnounceApp implements XPageApplication
         filter.setIdIsComment( EntryFilter.FILTER_FALSE );
 
         List<Entry> listEntryFirstLevel = EntryHome.getEntryList( filter );
-        List<GenericAttributeError> listFormErrors = new ArrayList<GenericAttributeError>( );
+        List<GenericAttributeError> listErrors = new ArrayList<GenericAttributeError>( );
 
         AnnounceDTO announceDTO = new AnnounceDTO( announce );
 
         for ( Entry entry : listEntryFirstLevel )
         {
-            listFormErrors.addAll( _announceService.getResponseEntry( request, entry.getIdEntry( ),
+            listErrors.addAll( _announceService.getResponseEntry( request, entry.getIdEntry( ),
                     request.getLocale( ), announceDTO ) );
         }
 
+        if ( category.getDisplayCaptcha( ) && _captchaSecurityService.isAvailable( ) )
+        {
+            if ( !_captchaSecurityService.validate( request ) )
+            {
+                GenericAttributeError genAttError = new GenericAttributeError( );
+                genAttError.setErrorMessage( I18nService.getLocalizedString( ERROR_MESSAGE_WRONG_CAPTCHA,
+                        request.getLocale( ) ) );
+                listErrors.add( genAttError );
+            }
+        }
+
         // If there is some errors, we redirect the user to the form page
-        if ( listFormErrors.size( ) > 0 )
+        if ( listErrors.size( ) > 0 )
         {
             _announceService.convertMapResponseToList( announceDTO );
             announce.setListResponse( announceDTO.getListResponse( ) );
-            return listFormErrors;
+            return listErrors;
         }
 
         _announceService.convertMapResponseToList( announceDTO );
@@ -1120,9 +1149,14 @@ public class AnnounceApp implements XPageApplication
         model.put( MARK_SECTOR, sector );
         model.put( MARK_LIST_FIELDS, getSectorList( ) );
         model.put( MARK_LOCALE, request.getLocale( ) );
+        if ( category.getDisplayCaptcha( ) && _captchaSecurityService.isAvailable( ) )
+        {
+            model.put( MARK_CAPTCHA, _captchaSecurityService.getHtmlCode( ) );
+        }
 
         HtmlTemplate template = AppTemplateService.getTemplate(
-                announce == null ? TEMPLATE_PAGE_CREATE_ANNOUNCE_STEP_FORM : TEMPLATE_MODIFY_ANNOUNCE, locale, model );
+                announce == null || announce.getId( ) == 0 ? TEMPLATE_PAGE_CREATE_ANNOUNCE_STEP_FORM
+                        : TEMPLATE_MODIFY_ANNOUNCE, locale, model );
 
         return template.getHtml( );
     }

@@ -43,10 +43,15 @@
 					<div class="control-group">
 						<label class="control-label" for="tags">#i18n{announce.create_announce_step_form.tags}</label>
 						<div class="controls">
-							<input value="<#if announce?? && announce.tags>${(announce.tags)!}<#else>${sector.tags!}</#if>" type="text" name="tags"/>
+							<input value="<#if announce?? && announce.tags??>${(announce.tags)!}<#else>${sector.tags!}</#if>" type="text" name="tags"/>
 							<span class="help-block">#i18n{announce.create_announce_step_form.tags.helper}</span>
 						</div>
 					</div>
+					<#if captcha?? && captcha != "">
+						<div class="control-group">
+							${captcha}
+						</div>
+					</#if>
 					<div class="form-actions">
 						<input type="hidden" name="category_id" value="${category.id}" />
 						<input type="hidden" name="form_send" value="1" />

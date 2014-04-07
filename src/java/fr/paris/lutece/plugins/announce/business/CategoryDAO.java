@@ -160,8 +160,8 @@ public final class CategoryDAO implements ICategoryDAO
         daoUtil.setInt( 4, category.getAnnouncesValidation(  ) );
         daoUtil.setInt( 5, category.getIdMailingList(  ) );
         daoUtil.setInt( 6, category.getIdWorkflow( ) );
-        daoUtil.setInt( 7, category.getId( ) );
-        daoUtil.setBoolean( 8, category.getDisplayCaptcha( ) );
+        daoUtil.setBoolean( 7, category.getDisplayCaptcha( ) );
+        daoUtil.setInt( 8, category.getId( ) );
         daoUtil.executeUpdate(  );
         daoUtil.free(  );
     }

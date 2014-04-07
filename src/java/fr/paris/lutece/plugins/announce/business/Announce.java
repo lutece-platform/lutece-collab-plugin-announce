@@ -37,6 +37,7 @@ import fr.paris.lutece.plugins.genericattributes.business.Response;
 import fr.paris.lutece.plugins.genericattributes.service.ResponseImageResourceProvider;
 import fr.paris.lutece.plugins.workflowcore.business.action.Action;
 import fr.paris.lutece.portal.service.resource.IExtendableResource;
+import fr.paris.lutece.portal.service.util.AppLogService;
 
 import java.io.Serializable;
 import java.sql.Timestamp;
@@ -47,7 +48,7 @@ import java.util.List;
 /**
  * This is the business class for the object Announce
  */
-public class Announce implements Serializable, IExtendableResource
+public class Announce implements Serializable, IExtendableResource, Cloneable
 {
     /**
      * Announce resource type
@@ -431,5 +432,22 @@ public class Announce implements Serializable, IExtendableResource
     public void setListWorkflowActions( Collection<Action> listActions )
     {
         this._listActions = listActions;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Object clone( )
+    {
+        try
+        {
+            return (Announce) super.clone( );
+        }
+        catch ( CloneNotSupportedException e )
+        {
+            AppLogService.error( e.getMessage( ), e );
+        }
+        return this;
     }
 }

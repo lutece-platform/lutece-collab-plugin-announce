@@ -34,6 +34,7 @@
 package fr.paris.lutece.plugins.announce.business;
 
 import fr.paris.lutece.portal.service.rbac.RBACResource;
+import fr.paris.lutece.portal.service.util.AppLogService;
 
 import java.io.Serializable;
 
@@ -41,7 +42,7 @@ import java.io.Serializable;
 /**
  * Business class for category
  */
-public class Category implements RBACResource, Serializable
+public class Category implements RBACResource, Serializable, Cloneable
 {
     /**
      * The resource type of categories
@@ -284,5 +285,22 @@ public class Category implements RBACResource, Serializable
     public void setDisplayCaptcha( boolean bDisplayCaptcha )
     {
         this._bDisplayCaptcha = bDisplayCaptcha;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Object clone( )
+    {
+        try
+        {
+            return (Category) super.clone( );
+        }
+        catch ( CloneNotSupportedException e )
+        {
+            AppLogService.error( e.getMessage( ), e );
+        }
+        return this;
     }
 }

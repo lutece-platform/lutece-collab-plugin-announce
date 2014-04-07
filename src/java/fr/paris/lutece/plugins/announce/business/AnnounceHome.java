@@ -264,6 +264,7 @@ public final class AnnounceHome
                     _plugin );
         }
         AnnounceCacheService.getService( ).removeKey( AnnounceCacheService.getListIdPublishedAnnouncesCacheKey( ) );
+        AnnounceCacheService.getService( ).removeKey( AnnounceCacheService.getAnnounceCacheKey( announce.getId( ) ) );
     }
 
     /**
@@ -286,6 +287,7 @@ public final class AnnounceHome
                     _plugin );
         }
         AnnounceCacheService.getService( ).removeKey( AnnounceCacheService.getListIdPublishedAnnouncesCacheKey( ) );
+        AnnounceCacheService.getService( ).removeKey( AnnounceCacheService.getAnnounceCacheKey( announce.getId( ) ) );
     }
 
     /**
@@ -308,6 +310,7 @@ public final class AnnounceHome
                     _plugin );
         }
         AnnounceCacheService.getService( ).removeKey( AnnounceCacheService.getListIdPublishedAnnouncesCacheKey( ) );
+        AnnounceCacheService.getService( ).removeKey( AnnounceCacheService.getAnnounceCacheKey( announce.getId( ) ) );
     }
 
     /**
