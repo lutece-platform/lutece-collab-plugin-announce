@@ -237,6 +237,7 @@ public class AnnounceApp extends MVCApplication
     private static final String MARK_LIST_ERRORS = "list_errors";
     private static final String MARK_IS_EXTEND_INSTALLED = "isExtendInstalled";
     private static final String MARK_CAPTCHA = "captcha";
+    private static final String MARK_LIST_SECTORS = "list_sectors";
 
     // Messages
     private static final String ERROR_MESSAGE_WRONG_CAPTCHA = "portal.admin.message.wrongCaptcha";
@@ -326,6 +327,13 @@ public class AnnounceApp extends MVCApplication
 
         //useful if you want to work with Portal.jsp and RunStandaloneApp.jsp
         model.put( FULL_URL, request.getRequestURL( ) );
+
+        model.put( MARK_LIST_SECTORS, AnnounceApp.getSectorList( ) );
+
+        if ( SecurityService.isAuthenticationEnable( ) )
+        {
+            model.put( MARK_USER, SecurityService.getInstance( ).getRegisteredUser( request ) );
+        }
 
         XPage page = getXPage( TEMPLATE_LIST_ANNOUNCES, request.getLocale( ), model );
         page.setTitle( I18nService.getLocalizedString( PROPERTY_PAGE_TITLE_SEARCH_RESULTS, request.getLocale( ) ) );

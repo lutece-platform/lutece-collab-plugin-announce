@@ -70,6 +70,7 @@ CREATE TABLE announce_search_filters(
 );
 
 ALTER TABLE announce_announce ADD COLUMN publication_time BIGINT default 0;
+ALTER TABLE announce_announce ADD COLUMN user_email varchar(255) NOT NULL;
 ALTER TABLE announce_category ADD COLUMN id_workflow INT default 0;
 ALTER TABLE announce_category ADD COLUMN display_captcha smallint default '0';
 
