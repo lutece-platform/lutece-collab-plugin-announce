@@ -50,6 +50,9 @@
         <rbac-resource-type>
             <rbac-resource-type-class>fr.paris.lutece.plugins.announce.service.SectorResourceIdService</rbac-resource-type-class>
         </rbac-resource-type>
+        <rbac-resource-type>
+            <rbac-resource-type-class>fr.paris.lutece.plugins.announce.service.AnnounceResourceIdService</rbac-resource-type-class>
+        </rbac-resource-type>
     </rbac-resource-types>
 
     <!-- Daemons -->

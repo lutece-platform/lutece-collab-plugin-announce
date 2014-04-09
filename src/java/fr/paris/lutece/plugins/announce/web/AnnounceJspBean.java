@@ -37,11 +37,17 @@ import fr.paris.lutece.plugins.announce.business.Announce;
 import fr.paris.lutece.plugins.announce.business.AnnounceHome;
 import fr.paris.lutece.plugins.announce.business.Category;
 import fr.paris.lutece.plugins.announce.business.CategoryHome;
+import fr.paris.lutece.plugins.announce.service.AnnounceResourceIdService;
 import fr.paris.lutece.plugins.announce.utils.AnnounceUtils;
 import fr.paris.lutece.plugins.genericattributes.business.Response;
+import fr.paris.lutece.portal.business.rbac.RBAC;
+import fr.paris.lutece.portal.business.user.AdminUser;
+import fr.paris.lutece.portal.service.admin.AccessDeniedException;
+import fr.paris.lutece.portal.service.admin.AdminUserService;
 import fr.paris.lutece.portal.service.message.AdminMessage;
 import fr.paris.lutece.portal.service.message.AdminMessageService;
 import fr.paris.lutece.portal.service.plugin.Plugin;
+import fr.paris.lutece.portal.service.rbac.RBACService;
 import fr.paris.lutece.portal.service.template.AppTemplateService;
 import fr.paris.lutece.portal.service.util.AppPathService;
 import fr.paris.lutece.portal.service.util.AppPropertiesService;
@@ -82,13 +88,11 @@ public class AnnounceJspBean extends PluginAdminPageJspBean
 
     /* properties */
     private static final String PROPERTY_PAGE_TITLE_MANAGE_ANNOUNCES = "announce.manage_announces.pageTitle";
-    private static final String PROPERTY_PAGE_TITLE_MODIFY_ANNOUNCE = "announce.modify_announce.pageTitle";
     private static final String PROPERTY_DEFAULT_LIST_ANNOUNCE_PER_PAGE = "announce.announce.itemsPerPage";
     private static final String PROPERTY_PAGE_TITLE_PREVIEW_ANNOUNCE = "announce.preview_announce.pageTitle";
 
     /* templates */
     private static final String TEMPLATE_MANAGE_ANNOUNCES = "admin/plugins/announce/manage_announces.html";
-    private static final String TEMPLATE_MODIFY_ANNOUNCE = "admin/plugins/announce/modify_announce.html";
     private static final String TEMPLATE_PREVIEW_ANNOUNCE = "admin/plugins/announce/preview_announce.html";
 
     /* Jsp Definition */
@@ -106,6 +110,10 @@ public class AnnounceJspBean extends PluginAdminPageJspBean
     private static final String MARK_NB_ITEMS_PER_PAGE = "nb_items_per_page";
     private static final String MARK_LIST_RESPONSES = "list_responses";
     private static final String MARK_RESOURCE_HISTORY = "resource_history";
+    private static final String MARK_RIGHT_DELETE = "right_delete_announce";
+    private static final String MARK_RIGHT_PUBLISH = "right_publish_announce";
+    private static final String MARK_RIGHT_SUSPEND = "right_suspend_announce";
+    private static final String MARK_RIGHT_WORKFLOW_ACTION = "right_execute_workflow_action";
 
     /* Variables */
     private int _nDefaultItemsPerPage;
@@ -151,15 +159,21 @@ public class AnnounceJspBean extends PluginAdminPageJspBean
         Paginator<Integer> paginatorId = new Paginator<Integer>( listIdAnnounces, _nItemsPerPage, StringUtils.EMPTY,
                 PARAMETER_PAGE_INDEX, _strCurrentPageIndex );
 
+        AdminUser user = AdminUserService.getAdminUser( request );
         List<Announce> listAnnounces = AnnounceHome.findByListId( paginatorId.getPageItems( ) );
-
+        boolean bCanExecuteWorkflowAction = false;
         if ( WorkflowService.getInstance( ).isAvailable( ) )
         {
+            bCanExecuteWorkflowAction = RBACService.isAuthorized( Announce.RESOURCE_TYPE, RBAC.WILDCARD_RESOURCES_ID,
+                    AnnounceResourceIdService.PERMISSION_EXECUTE_WORKFLOW_ACTION, user );
             for ( Announce announce : listAnnounces )
             {
                 announce.setCategory( CategoryHome.findByPrimaryKey( announce.getCategory( ).getId( ) ) );
-                announce.setListWorkflowActions( WorkflowService.getInstance( ).getActions( announce.getId( ),
-                        Announce.RESOURCE_TYPE, announce.getCategory( ).getIdWorkflow( ), getUser( ) ) );
+                if ( bCanExecuteWorkflowAction )
+                {
+                    announce.setListWorkflowActions( WorkflowService.getInstance( ).getActions( announce.getId( ),
+                            Announce.RESOURCE_TYPE, announce.getCategory( ).getIdWorkflow( ), getUser( ) ) );
+                }
             }
         }
 
@@ -172,6 +186,14 @@ public class AnnounceJspBean extends PluginAdminPageJspBean
         model.put( MARK_NB_ITEMS_PER_PAGE, Integer.toString( _nItemsPerPage ) );
         model.put( MARK_PAGINATOR, paginator );
         model.put( MARK_ANNOUNCE_LIST, paginator.getPageItems( ) );
+
+        model.put( MARK_RIGHT_DELETE, RBACService.isAuthorized( Announce.RESOURCE_TYPE, RBAC.WILDCARD_RESOURCES_ID,
+                AnnounceResourceIdService.PERMISSION_DELETE, user ) );
+        model.put( MARK_RIGHT_PUBLISH, RBACService.isAuthorized( Announce.RESOURCE_TYPE, RBAC.WILDCARD_RESOURCES_ID,
+                AnnounceResourceIdService.PERMISSION_PUBLISH, user ) );
+        model.put( MARK_RIGHT_SUSPEND, RBACService.isAuthorized( Announce.RESOURCE_TYPE, RBAC.WILDCARD_RESOURCES_ID,
+                AnnounceResourceIdService.PERMISSION_SUSPEND, user ) );
+        model.put( MARK_RIGHT_WORKFLOW_ACTION, bCanExecuteWorkflowAction );
 
         HtmlTemplate templateList = AppTemplateService.getTemplate( TEMPLATE_MANAGE_ANNOUNCES, getLocale( ), model );
 
@@ -213,36 +235,26 @@ public class AnnounceJspBean extends PluginAdminPageJspBean
     }
 
     /**
-     * Returns the form to update info about a announce
-     * 
-     * @param request The Http request
-     * @return The HTML form to update info
-     */
-    public String getModifyAnnounce( HttpServletRequest request )
-    {
-        setPageTitleProperty( PROPERTY_PAGE_TITLE_MODIFY_ANNOUNCE );
-
-        int nIdAnnounce = Integer.parseInt( request.getParameter( PARAMETER_ANNOUNCE_ID ) );
-        Announce announce = AnnounceHome.findByPrimaryKey( nIdAnnounce );
-
-        HashMap<String, Object> model = new HashMap<String, Object>( );
-        model.put( MARK_ANNOUNCE, announce );
-
-        HtmlTemplate template = AppTemplateService.getTemplate( TEMPLATE_MODIFY_ANNOUNCE, getLocale( ), model );
-
-        return getAdminPage( template.getHtml( ) );
-    }
-
-    /**
      * Manages the removal form of a announce whose identifier is in the http
      * request
      * 
-     * @param request The Http request
-     * @return the html code to confirm
+     * @param request The HTTP request
+     * @return the HTML code to confirm
+     * @throws AccessDeniedException Id the user is not authorized to access
+     *             this feature
      */
-    public String getConfirmRemoveAnnounce( HttpServletRequest request )
+    public String getConfirmRemoveAnnounce( HttpServletRequest request ) throws AccessDeniedException
     {
-        int nIdAnnounce = Integer.parseInt( request.getParameter( PARAMETER_ANNOUNCE_ID ) );
+        String strAnnounceId = request.getParameter( PARAMETER_ANNOUNCE_ID );
+        AdminUser adminUser = AdminUserService.getAdminUser( request );
+        if ( !RBACService.isAuthorized( Announce.RESOURCE_TYPE, strAnnounceId,
+                AnnounceResourceIdService.PERMISSION_DELETE, adminUser ) )
+        {
+            throw new AccessDeniedException( "User '" + adminUser.getFirstName( ) + " " + adminUser.getLastName( )
+                    + "' is not authorized to remove announce with id " + strAnnounceId );
+        }
+
+        int nIdAnnounce = Integer.parseInt( strAnnounceId );
 
         UrlItem url = new UrlItem( JSP_DO_REMOVE_ANNOUNCE );
         url.addParameter( PARAMETER_ANNOUNCE_ID, nIdAnnounce );
@@ -254,14 +266,23 @@ public class AnnounceJspBean extends PluginAdminPageJspBean
     /**
      * Treats the removal form of a announce
      * 
-     * @param request The Http request
-     * @return the jsp URL to display the form to manage announces
+     * @param request The HTTP request
+     * @return the JSP URL to display the form to manage announces
+     * @throws AccessDeniedException Id the user is not authorized to access
+     *             this feature
      */
-    public String doRemoveAnnounce( HttpServletRequest request )
+    public String doRemoveAnnounce( HttpServletRequest request ) throws AccessDeniedException
     {
-        int nIdAnnounce = Integer.parseInt( request.getParameter( PARAMETER_ANNOUNCE_ID ) );
+        String strAnnounceId = request.getParameter( PARAMETER_ANNOUNCE_ID );
+        AdminUser adminUser = AdminUserService.getAdminUser( request );
+        if ( !RBACService.isAuthorized( Announce.RESOURCE_TYPE, strAnnounceId,
+                AnnounceResourceIdService.PERMISSION_DELETE, adminUser ) )
+        {
+            throw new AccessDeniedException( "User '" + adminUser.getFirstName( ) + " " + adminUser.getLastName( )
+                    + "' is not authorized to remove announce with id " + strAnnounceId );
+        }
 
-        // TODO : removed associated objects
+        int nIdAnnounce = Integer.parseInt( strAnnounceId );
 
         AnnounceHome.remove( nIdAnnounce );
 
@@ -275,15 +296,27 @@ public class AnnounceJspBean extends PluginAdminPageJspBean
      * @param request The Http request
      * @param bPublished True to publish the announce, false to unpublish it
      * @return the jsp URL to display the form to manage categories
+     * @throws AccessDeniedException Id the user is not authorized to access
+     *             this feature
      */
-    public String doPublishAnnounce( HttpServletRequest request, boolean bPublished )
+    public String doPublishAnnounce( HttpServletRequest request, boolean bPublished ) throws AccessDeniedException
     {
-        int nIdAnnounce = Integer.parseInt( request.getParameter( PARAMETER_ANNOUNCE_ID ) );
-        Announce announce = AnnounceHome.findByPrimaryKey( nIdAnnounce );
-        announce.setDateCreation( new Timestamp( GregorianCalendar.getInstance( ).getTimeInMillis( ) ) );
-        announce.setPublished( bPublished );
-        AnnounceHome.setPublished( announce );
-
+        String strAnnounceId = request.getParameter( PARAMETER_ANNOUNCE_ID );
+        AdminUser adminUser = AdminUserService.getAdminUser( request );
+        if ( !RBACService.isAuthorized( Announce.RESOURCE_TYPE, strAnnounceId,
+                AnnounceResourceIdService.PERMISSION_PUBLISH, adminUser ) )
+        {
+            throw new AccessDeniedException( "User '" + adminUser.getFirstName( ) + " " + adminUser.getLastName( )
+                    + "' is not authorized to publish/unpublish announce with id " + strAnnounceId );
+        }
+        if ( StringUtils.isNumeric( strAnnounceId ) )
+        {
+            int nIdAnnounce = Integer.parseInt( strAnnounceId );
+            Announce announce = AnnounceHome.findByPrimaryKey( nIdAnnounce );
+            announce.setDateCreation( new Timestamp( GregorianCalendar.getInstance( ).getTimeInMillis( ) ) );
+            announce.setPublished( bPublished );
+            AnnounceHome.setPublished( announce );
+        }
         // if the operation occurred well, redirects towards the list
         return JSP_REDIRECT_TO_MANAGE_ANNOUNCES;
     }
@@ -292,10 +325,21 @@ public class AnnounceJspBean extends PluginAdminPageJspBean
      * enables an announce
      * @param request the httpRequest
      * @return template redirection
+     * @throws AccessDeniedException Id the user is not authorized to access
+     *             this feature
      */
-    public String doEnableAnnounce( HttpServletRequest request )
+    public String doEnableAnnounce( HttpServletRequest request ) throws AccessDeniedException
     {
-        int nIdAnnounce = Integer.parseInt( request.getParameter( PARAMETER_ANNOUNCE_ID ) );
+        String strAnnounceId = request.getParameter( PARAMETER_ANNOUNCE_ID );
+        AdminUser adminUser = AdminUserService.getAdminUser( request );
+        if ( !RBACService.isAuthorized( Announce.RESOURCE_TYPE, strAnnounceId,
+                AnnounceResourceIdService.PERMISSION_SUSPEND, adminUser ) )
+        {
+            throw new AccessDeniedException( "User '" + adminUser.getFirstName( ) + " " + adminUser.getLastName( )
+                    + "' is not authorized to enable/disable announce with id " + strAnnounceId );
+        }
+
+        int nIdAnnounce = Integer.parseInt( strAnnounceId );
         Announce announce = AnnounceHome.findByPrimaryKey( nIdAnnounce );
         announce.setSuspended( false );
         AnnounceHome.setSuspended( announce );
@@ -307,12 +351,23 @@ public class AnnounceJspBean extends PluginAdminPageJspBean
     /**
      * Publish a category
      * 
-     * @param request The Http request
-     * @return the jsp URL to display the form to manage categories
+     * @param request The HTTP request
+     * @return the JSP URL to display the form to manage categories
+     * @throws AccessDeniedException Id the user is not authorized to access
+     *             this feature
      */
-    public String doSuspendAnnounce( HttpServletRequest request )
+    public String doSuspendAnnounce( HttpServletRequest request ) throws AccessDeniedException
     {
-        int nIdAnnounce = Integer.parseInt( request.getParameter( PARAMETER_ANNOUNCE_ID ) );
+        String strAnnounceId = request.getParameter( PARAMETER_ANNOUNCE_ID );
+        AdminUser adminUser = AdminUserService.getAdminUser( request );
+        if ( !RBACService.isAuthorized( Announce.RESOURCE_TYPE, strAnnounceId,
+                AnnounceResourceIdService.PERMISSION_SUSPEND, adminUser ) )
+        {
+            throw new AccessDeniedException( "User '" + adminUser.getFirstName( ) + " " + adminUser.getLastName( )
+                    + "' is not authorized to enable/disable announce with id " + strAnnounceId );
+        }
+
+        int nIdAnnounce = Integer.parseInt( strAnnounceId );
         Announce announce = AnnounceHome.findByPrimaryKey( nIdAnnounce );
         announce.setSuspended( true );
         AnnounceHome.setSuspended( announce );

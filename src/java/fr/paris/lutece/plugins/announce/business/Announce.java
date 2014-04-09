@@ -36,6 +36,7 @@ package fr.paris.lutece.plugins.announce.business;
 import fr.paris.lutece.plugins.genericattributes.business.Response;
 import fr.paris.lutece.plugins.genericattributes.service.ResponseImageResourceProvider;
 import fr.paris.lutece.plugins.workflowcore.business.action.Action;
+import fr.paris.lutece.portal.service.rbac.RBACResource;
 import fr.paris.lutece.portal.service.resource.IExtendableResource;
 import fr.paris.lutece.portal.service.util.AppLogService;
 
@@ -48,7 +49,7 @@ import java.util.List;
 /**
  * This is the business class for the object Announce
  */
-public class Announce implements Serializable, IExtendableResource, Cloneable
+public class Announce implements Serializable, IExtendableResource, RBACResource, Cloneable
 {
     /**
      * Announce resource type
@@ -438,11 +439,29 @@ public class Announce implements Serializable, IExtendableResource, Cloneable
      * {@inheritDoc}
      */
     @Override
+    public String getResourceTypeCode( )
+    {
+        return getExtendableResourceType( );
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getResourceId( )
+    {
+        return getIdExtendableResource( );
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public Object clone( )
     {
         try
         {
-            return (Announce) super.clone( );
+            return super.clone( );
         }
         catch ( CloneNotSupportedException e )
         {

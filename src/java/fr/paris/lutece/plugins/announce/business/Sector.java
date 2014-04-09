@@ -173,7 +173,7 @@ public class Sector implements RBACResource
     @Override
     public String getResourceId(  )
     {
-        return "" + getId(  );
+        return Integer.toString( getId( ) );
     }
 
     /**

@@ -44,6 +44,7 @@ import fr.paris.lutece.portal.service.plugin.PluginService;
 import fr.paris.lutece.portal.service.resource.ExtendableResourceRemovalListenerService;
 import fr.paris.lutece.portal.service.security.LuteceUser;
 import fr.paris.lutece.portal.service.spring.SpringContextService;
+import fr.paris.lutece.portal.service.workflow.WorkflowService;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -134,6 +135,11 @@ public final class AnnounceHome
 
         ExtendableResourceRemovalListenerService.doRemoveResourceExtentions( Announce.RESOURCE_TYPE,
                 Integer.toString( nAnnounceId ) );
+
+        if ( WorkflowService.getInstance( ).isAvailable( ) )
+        {
+            WorkflowService.getInstance( ).doRemoveWorkFlowResource( nAnnounceId, Announce.RESOURCE_TYPE );
+        }
 
         _dao.delete( nAnnounceId, _plugin );
         AnnounceCacheService.getService( ).removeKey( AnnounceCacheService.getListIdPublishedAnnouncesCacheKey( ) );

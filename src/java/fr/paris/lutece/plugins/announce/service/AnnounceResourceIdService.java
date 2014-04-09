@@ -33,8 +33,8 @@
  */
 package fr.paris.lutece.plugins.announce.service;
 
-import fr.paris.lutece.plugins.announce.business.Sector;
-import fr.paris.lutece.plugins.announce.business.SectorHome;
+import fr.paris.lutece.plugins.announce.business.Announce;
+import fr.paris.lutece.plugins.announce.business.AnnounceHome;
 import fr.paris.lutece.portal.service.rbac.Permission;
 import fr.paris.lutece.portal.service.rbac.ResourceIdService;
 import fr.paris.lutece.portal.service.rbac.ResourceType;
@@ -46,31 +46,33 @@ import java.util.Locale;
 
 
 /**
- *
- * class SectorResourceIdService
- *
+ * Class AnnounceResourceIdService
  */
-public class SectorResourceIdService extends ResourceIdService
+public class AnnounceResourceIdService extends ResourceIdService
 {
     /* Permissions */
 
-    /** Permission for creating a sector */
-    public static final String PERMISSION_CREATE = "CREATE";
+    /** Permission for publishing or unpublishing an announce */
+    public static final String PERMISSION_PUBLISH = "PUBLISH";
 
-    /** Permission for deleting a sector */
+    /** Permission for suspending an announce */
+    public static final String PERMISSION_SUSPEND = "SUSPEND";
+
+    /** Permission for deleting an announce */
     public static final String PERMISSION_DELETE = "DELETE";
 
-    /** Permission for modifying a sector */
-    public static final String PERMISSION_MODIFY = "MODIFY";
+    /** Permission for executing a workflow action on an announce */
+    public static final String PERMISSION_EXECUTE_WORKFLOW_ACTION = "WORFKLOW_ACTION";
 
     /* Properties */
-    private static final String PROPERTY_LABEL_RESOURCE_TYPE = "announce.permission.resourceType.sector.label";
-    private static final String PROPERTY_LABEL_CREATE = "announce.permission.resourceType.sector.create";
-    private static final String PROPERTY_LABEL_MODIFY = "announce.permission.resourceType.sector.modify";
-    private static final String PROPERTY_LABEL_DELETE = "announce.permission.resourceType.sector.delete";
+    private static final String PROPERTY_LABEL_RESOURCE_TYPE = "announce.permission.resourceType.announce.label";
+    private static final String PROPERTY_LABEL_PUBLISH = "announce.permission.resourceType.announce.publish";
+    private static final String PROPERTY_LABEL_SUSPEND = "announce.permission.resourceType.announce.suspend";
+    private static final String PROPERTY_LABEL_DELETE = "announce.permission.resourceType.announce.delete";
+    private static final String PROPERTY_LABEL_WORKFLOW_ACTION = "announce.permission.resourceType.announce.workflowAction";
 
     /** Creates a new instance of SectorResourceIdService */
-    public SectorResourceIdService(  )
+    public AnnounceResourceIdService( )
     {
         setPluginName( AnnouncePlugin.PLUGIN_NAME );
     }
@@ -79,27 +81,32 @@ public class SectorResourceIdService extends ResourceIdService
      * {@inheritDoc}
      */
     @Override
-    public void register(  )
+    public void register( )
     {
-        ResourceType rt = new ResourceType(  );
-        rt.setResourceIdServiceClass( SectorResourceIdService.class.getName(  ) );
+        ResourceType rt = new ResourceType( );
+        rt.setResourceIdServiceClass( AnnounceResourceIdService.class.getName( ) );
         rt.setPluginName( AnnouncePlugin.PLUGIN_NAME );
-        rt.setResourceTypeKey( Sector.RESOURCE_TYPE );
+        rt.setResourceTypeKey( Announce.RESOURCE_TYPE );
         rt.setResourceTypeLabelKey( PROPERTY_LABEL_RESOURCE_TYPE );
 
-        Permission p = new Permission(  );
-        p.setPermissionKey( PERMISSION_CREATE );
-        p.setPermissionTitleKey( PROPERTY_LABEL_CREATE );
+        Permission p = new Permission( );
+        p.setPermissionKey( PERMISSION_PUBLISH );
+        p.setPermissionTitleKey( PROPERTY_LABEL_PUBLISH );
         rt.registerPermission( p );
 
-        p = new Permission(  );
-        p.setPermissionKey( PERMISSION_MODIFY );
-        p.setPermissionTitleKey( PROPERTY_LABEL_MODIFY );
-        rt.registerPermission( p );
-
-        p = new Permission(  );
+        p = new Permission( );
         p.setPermissionKey( PERMISSION_DELETE );
         p.setPermissionTitleKey( PROPERTY_LABEL_DELETE );
+        rt.registerPermission( p );
+
+        p = new Permission( );
+        p.setPermissionKey( PERMISSION_SUSPEND );
+        p.setPermissionTitleKey( PROPERTY_LABEL_SUSPEND );
+        rt.registerPermission( p );
+
+        p = new Permission( );
+        p.setPermissionKey( PERMISSION_EXECUTE_WORKFLOW_ACTION );
+        p.setPermissionTitleKey( PROPERTY_LABEL_WORKFLOW_ACTION );
         rt.registerPermission( p );
 
         ResourceTypeManager.registerResourceType( rt );
@@ -111,7 +118,7 @@ public class SectorResourceIdService extends ResourceIdService
     @Override
     public ReferenceList getResourceIdList( Locale locale )
     {
-        return SectorHome.findReferenceList( );
+        return new ReferenceList( );
     }
 
     /**
@@ -120,19 +127,19 @@ public class SectorResourceIdService extends ResourceIdService
     @Override
     public String getTitle( String strId, Locale locale )
     {
-        int nIdSector = -1;
+        int nIdAnnounce = -1;
 
         try
         {
-            nIdSector = Integer.parseInt( strId );
+            nIdAnnounce = Integer.parseInt( strId );
         }
         catch ( NumberFormatException ne )
         {
             AppLogService.error( ne );
         }
 
-        Sector sector = SectorHome.findByPrimaryKey( nIdSector );
+        Announce announce = AnnounceHome.findByPrimaryKey( nIdAnnounce );
 
-        return sector.getLabel(  );
+        return announce.getTitle( );
     }
 }
