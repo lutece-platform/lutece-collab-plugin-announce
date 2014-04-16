@@ -38,6 +38,7 @@ import fr.paris.lutece.plugins.announce.business.AnnounceDTO;
 import fr.paris.lutece.plugins.announce.business.AnnounceHome;
 import fr.paris.lutece.plugins.announce.business.AnnounceSearchFilter;
 import fr.paris.lutece.plugins.announce.business.AnnounceSearchFilterHome;
+import fr.paris.lutece.plugins.announce.business.AnnounceSort;
 import fr.paris.lutece.plugins.announce.business.Category;
 import fr.paris.lutece.plugins.announce.business.CategoryHome;
 import fr.paris.lutece.plugins.announce.business.Sector;
@@ -298,7 +299,7 @@ public class AnnounceApp extends MVCApplication
         int nNbItems = AnnounceSearchService.getInstance( ).getSearchResults( filter, nCurrentPageIndex,
                 _nItemsPerPage, listIdAnnounces );
 
-        List<Announce> listAnnounces = AnnounceHome.findByListId( listIdAnnounces );
+        List<Announce> listAnnounces = AnnounceHome.findByListId( listIdAnnounces, AnnounceSort.DEFAULT_SORT );
 
         LocalizedDelegatePaginator<Announce> paginator = new LocalizedDelegatePaginator<Announce>( listAnnounces,
                 _nItemsPerPage, getUrlSearchAnnounce( request ), PARAMETER_PAGE_INDEX, _strCurrentPageIndex, nNbItems,
@@ -395,7 +396,7 @@ public class AnnounceApp extends MVCApplication
 
         AnnounceAsynchronousUploadHandler.getHandler( ).removeSessionFiles( request.getSession( ).getId( ) );
 
-        Collection<Announce> listAnnounces = AnnounceHome.getAnnouncesForUser( user );
+        Collection<Announce> listAnnounces = AnnounceHome.getAnnouncesForUser( user, AnnounceSort.DEFAULT_SORT );
 
         if ( listAnnounces.size( ) < AppPropertiesService.getPropertyInt( PROPERTY_MAX_AMOUNT_ANNOUNCE, 20 ) )
         {
@@ -639,7 +640,7 @@ public class AnnounceApp extends MVCApplication
 
         int nNbPlublishedAnnounces;
 
-        List<Announce> listAnnounces = AnnounceHome.getAnnouncesForUser( strUserName );
+        List<Announce> listAnnounces = AnnounceHome.getAnnouncesForUser( strUserName, AnnounceSort.DEFAULT_SORT );
 
         Paginator<Announce> paginator = new Paginator<Announce>( listAnnounces, _nItemsPerPage, JSP_PORTAL + "?"
                 + PARAMETER_PAGE + "=" + AnnounceUtils.PARAMETER_PAGE_ANNOUNCE + "&" + MVCUtils.PARAMETER_ACTION + "="
@@ -1192,7 +1193,7 @@ public class AnnounceApp extends MVCApplication
 
         request.getSession( ).setAttribute( SESSION_ATTRIBUTE_MY_ANNOUNCES_ITEMS_PER_PAGE, nItemsPerPage );
 
-        List<Announce> listAnnounces = AnnounceHome.getAnnouncesForUser( user );
+        List<Announce> listAnnounces = AnnounceHome.getAnnouncesForUser( user, AnnounceSort.DEFAULT_SORT );
 
         UrlItem urlItem = new UrlItem( AppPathService.getPortalUrl( ) );
         if ( StringUtils.isNotEmpty( request.getParameter( PARAMETER_PAGE ) ) )

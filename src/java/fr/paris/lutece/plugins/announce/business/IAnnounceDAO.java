@@ -34,7 +34,6 @@
 package fr.paris.lutece.plugins.announce.business;
 
 import fr.paris.lutece.portal.service.plugin.Plugin;
-import fr.paris.lutece.portal.service.security.LuteceUser;
 
 import java.sql.Timestamp;
 import java.util.List;
@@ -79,56 +78,54 @@ public interface IAnnounceDAO
 
     /**
      * Load the data of all the announce objects and returns them as a List
+     * @param announceSort the sort to use
      * @param plugin the Plugin
      * @return The List which contains the data of all the announce objects
      */
-    List<Integer> selectAll( Plugin plugin );
+    List<Integer> selectAll( AnnounceSort announceSort, Plugin plugin );
 
     /**
      * selects id of published announces
+     * @param announceSort the sort to use
      * @param plugin the plugin
      * @return id of published announces
      */
-    List<Integer> selectAllPublishedId( Plugin plugin );
+    List<Integer> selectAllPublishedId( AnnounceSort announceSort, Plugin plugin );
 
     /**
      * selects all the published announces
+     * @param announceSort the sort to use
      * @param plugin the plugin
      * @return announces list
      */
-    List<Announce> selectAllPublished( Plugin plugin );
+    List<Announce> selectAllPublished( AnnounceSort announceSort, Plugin plugin );
 
     /**
      * Get the list of announces from a list of ids
+     * @param announceSort the sort to use
      * @param listIdAnnounces The list of ids of announces to get
      * @param plugin The plugin
      * @return The list of announces
      */
-    List<Announce> findByListId( List<Integer> listIdAnnounces, Plugin plugin );
+    List<Announce> findByListId( List<Integer> listIdAnnounces, AnnounceSort announceSort, Plugin plugin );
 
     /**
      * selects all published announces for a given category
+     * @param announceSort the sort to use
      * @param category announces list
      * @param plugin the plugin
      * @return announces list
      */
-    List<Integer> selectAllPublishedForCategory( Category category, Plugin plugin );
+    List<Integer> selectAllPublishedForCategory( Category category, AnnounceSort announceSort, Plugin plugin );
 
     /**
      * selects all announces for a given user
-     * @param user the user
-     * @param plugin the plugin
-     * @return all announces for a given user
-     */
-    List<Announce> selectAllForUser( LuteceUser user, Plugin plugin );
-
-    /**
-     * selects all announces for a given user
+     * @param announceSort the sort to use
      * @param strUsername the username
      * @param plugin the plugin
      * @return all announces for a given user
      */
-    List<Announce> selectAllForUser( String strUsername, Plugin plugin );
+    List<Announce> selectAllForUser( String strUsername, AnnounceSort announceSort, Plugin plugin );
 
     /**
      * publish or unpublish an announce

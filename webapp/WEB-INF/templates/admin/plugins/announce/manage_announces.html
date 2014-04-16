@@ -11,12 +11,18 @@
 				<tr>
 					<th>
 						#i18n{announce.manage_announces.columnTitleTitle}
+						<@sort jsp_url="jsp/admin/plugins/announce/ManageAnnounces.jsp" attribute="title_announce" />
 					</th>
 					<th>
 						#i18n{announce.manage_announces.columnTitleDescription}
+						<@sort jsp_url="jsp/admin/plugins/announce/ManageAnnounces.jsp" attribute="description_announce" />
 					</th>
 					<th>
 						#i18n{announce.manage_announces.columnTitleCategory}
+					</th>
+					<th>
+						#i18n{announce.manage_announces.columnTitleCreationDate}
+						<@sort jsp_url="jsp/admin/plugins/announce/ManageAnnounces.jsp" attribute="date_creation" />
 					</th>
 					<th>
 						#i18n{announce.manage_announces.columnTitlePublished}
@@ -40,6 +46,9 @@
 						
 						<td>
 							${announce.category.label}
+						</td>
+						<td>
+							${announce.dateCreation}
 						</td>
 						<td>
 							<#if announce.published>

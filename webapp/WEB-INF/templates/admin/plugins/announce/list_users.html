@@ -15,8 +15,14 @@
 					<tr>
 						<#if name_found=true>
 						<th>#i18n{announce.list_users.name}</th> </#if>
-						<th>#i18n{announce.list_users.mail}</th>
-						<th>#i18n{announce.list_users.login}</th>
+						<th>
+							#i18n{announce.list_users.mail}
+							<@sort jsp_url="jsp/admin/plugins/announce/ShowAnnounceUsers.jsp" attribute="email" />
+						</th>
+						<th>
+							#i18n{announce.list_users.login}
+							<@sort jsp_url="jsp/admin/plugins/announce/ShowAnnounceUsers.jsp" attribute="name" />
+						</th>
 						<th>#i18n{announce.list_users.actions}</th>
 					</tr>
 					<#list users_list as user>
@@ -27,7 +33,7 @@
 								</td>
 							</#if>
 							<td>
-								${user.userInfos["user.home-info.online.email"]!}
+								${user.email}
 							</td>
 							<td>
 								${user.name}

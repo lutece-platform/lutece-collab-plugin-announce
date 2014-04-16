@@ -35,6 +35,7 @@ package fr.paris.lutece.plugins.announce.service.announcesearch;
 
 import fr.paris.lutece.plugins.announce.business.Announce;
 import fr.paris.lutece.plugins.announce.business.AnnounceHome;
+import fr.paris.lutece.plugins.announce.business.AnnounceSort;
 import fr.paris.lutece.plugins.announce.business.IndexerAction;
 import fr.paris.lutece.plugins.announce.service.AnnouncePlugin;
 import fr.paris.lutece.plugins.announce.utils.AnnounceUtils;
@@ -171,7 +172,7 @@ public class DefaultAnnounceIndexer implements IAnnounceSearchIndexer
         }
         else
         {
-            for ( Announce announce : AnnounceHome.findAllPublished( ) )
+            for ( Announce announce : AnnounceHome.findAllPublished( AnnounceSort.DEFAULT_SORT ) )
             {
                 if ( !announce.getSuspended( ) && !announce.getSuspendedByUser( ) )
                 {
@@ -203,7 +204,7 @@ public class DefaultAnnounceIndexer implements IAnnounceSearchIndexer
         String strPortalUrl = AppPathService.getPortalUrl( );
         Plugin plugin = PluginService.getPlugin( AnnouncePlugin.PLUGIN_NAME );
 
-        for ( Announce announce : AnnounceHome.findAllPublished( ) )
+        for ( Announce announce : AnnounceHome.findAllPublished( AnnounceSort.DEFAULT_SORT ) )
         {
             if ( !announce.getSuspended( ) && !announce.getSuspendedByUser( ) )
             {

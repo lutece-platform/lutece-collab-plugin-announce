@@ -35,6 +35,7 @@ package fr.paris.lutece.plugins.announce.web;
 
 import fr.paris.lutece.plugins.announce.business.Announce;
 import fr.paris.lutece.plugins.announce.business.AnnounceHome;
+import fr.paris.lutece.plugins.announce.business.AnnounceSort;
 import fr.paris.lutece.plugins.announce.business.Category;
 import fr.paris.lutece.plugins.announce.business.CategoryHome;
 import fr.paris.lutece.plugins.announce.service.AnnounceResourceIdService;
@@ -53,6 +54,7 @@ import fr.paris.lutece.portal.service.util.AppPathService;
 import fr.paris.lutece.portal.service.util.AppPropertiesService;
 import fr.paris.lutece.portal.service.workflow.WorkflowService;
 import fr.paris.lutece.portal.web.admin.PluginAdminPageJspBean;
+import fr.paris.lutece.portal.web.constants.Parameters;
 import fr.paris.lutece.portal.web.util.LocalizedDelegatePaginator;
 import fr.paris.lutece.util.html.HtmlTemplate;
 import fr.paris.lutece.util.html.Paginator;
@@ -83,8 +85,8 @@ public class AnnounceJspBean extends PluginAdminPageJspBean
     private static final long serialVersionUID = 6293138267315605660L;
 
     /* parameter */
-    private static final String PARAMETER_PAGE_INDEX = "page_index";
     private static final String PARAMETER_ANNOUNCE_ID = "announce_id";
+    private static final String SESSION_SORT = "announce.sessionAnnounceSort";
 
     /* properties */
     private static final String PROPERTY_PAGE_TITLE_MANAGE_ANNOUNCES = "announce.manage_announces.pageTitle";
@@ -154,13 +156,30 @@ public class AnnounceJspBean extends PluginAdminPageJspBean
         _nItemsPerPage = Paginator.getItemsPerPage( request, Paginator.PARAMETER_ITEMS_PER_PAGE, _nItemsPerPage,
                 _nDefaultItemsPerPage );
 
-        List<Integer> listIdAnnounces = AnnounceHome.findAll( );
+        String strSort = request.getParameter( Parameters.SORTED_ATTRIBUTE_NAME );
+        boolean bSortAsc = Boolean.parseBoolean( request.getParameter( Parameters.SORTED_ASC ) );
+        AnnounceSort announceSort;
+        if ( strSort == null )
+        {
+            announceSort = (AnnounceSort) request.getSession( ).getAttribute( SESSION_SORT );
+            if ( announceSort == null )
+            {
+                announceSort = AnnounceSort.DEFAULT_SORT;
+            }
+        }
+        else
+        {
+            announceSort = AnnounceSort.getAnnounceSort( strSort, bSortAsc );
+            request.getSession( ).setAttribute( SESSION_SORT, announceSort );
+        }
+
+        List<Integer> listIdAnnounces = AnnounceHome.findAll( announceSort );
 
         Paginator<Integer> paginatorId = new Paginator<Integer>( listIdAnnounces, _nItemsPerPage, StringUtils.EMPTY,
-                PARAMETER_PAGE_INDEX, _strCurrentPageIndex );
+                Paginator.PARAMETER_PAGE_INDEX, _strCurrentPageIndex );
 
         AdminUser user = AdminUserService.getAdminUser( request );
-        List<Announce> listAnnounces = AnnounceHome.findByListId( paginatorId.getPageItems( ) );
+        List<Announce> listAnnounces = AnnounceHome.findByListId( paginatorId.getPageItems( ), announceSort );
         boolean bCanExecuteWorkflowAction = false;
         if ( WorkflowService.getInstance( ).isAvailable( ) )
         {

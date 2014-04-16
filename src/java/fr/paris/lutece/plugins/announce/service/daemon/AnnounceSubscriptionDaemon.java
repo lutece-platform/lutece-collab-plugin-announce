@@ -37,6 +37,7 @@ import fr.paris.lutece.plugins.announce.business.Announce;
 import fr.paris.lutece.plugins.announce.business.AnnounceHome;
 import fr.paris.lutece.plugins.announce.business.AnnounceSearchFilter;
 import fr.paris.lutece.plugins.announce.business.AnnounceSearchFilterHome;
+import fr.paris.lutece.plugins.announce.business.AnnounceSort;
 import fr.paris.lutece.plugins.announce.service.AnnounceSubscriptionProvider;
 import fr.paris.lutece.plugins.announce.service.announcesearch.AnnounceSearchService;
 import fr.paris.lutece.plugins.subscribe.business.Subscription;
@@ -101,7 +102,7 @@ public class AnnounceSubscriptionDaemon extends Daemon
         if ( listIdAnnounces != null && listIdAnnounces.size( ) > 0 )
         {
             // We get the list of announces
-            List<Announce> listAnnounce = AnnounceHome.findByListId( listIdAnnounces );
+            List<Announce> listAnnounce = AnnounceHome.findByListId( listIdAnnounces, AnnounceSort.DEFAULT_SORT );
 
             for ( Announce announce : listAnnounce )
             {

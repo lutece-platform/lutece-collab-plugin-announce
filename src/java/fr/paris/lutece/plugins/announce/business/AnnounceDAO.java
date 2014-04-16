@@ -34,7 +34,6 @@
 package fr.paris.lutece.plugins.announce.business;
 
 import fr.paris.lutece.portal.service.plugin.Plugin;
-import fr.paris.lutece.portal.service.security.LuteceUser;
 import fr.paris.lutece.util.sql.DAOUtil;
 
 import java.sql.Timestamp;
@@ -47,15 +46,16 @@ import java.util.List;
  */
 public final class AnnounceDAO implements IAnnounceDAO
 {
-    private static final String DEFAULT_ORDER_BY = " ORDER BY a.date_creation DESC ";
+    private static final String ORDER_BY = " ORDER BY ";
+    private static final String ORDER_BY_ASCENDING = " ASC ";
+    private static final String ORDER_BY_DESCENDING = " DESC ";
 
     // Select id
     private static final String SQL_QUERY_SELECT_ID = "SELECT a.id_announce FROM announce_announce a, announce_category b WHERE a.id_category = b.id_category";
     private static final String SQL_QUERY_SELECTALL_ID_PUBLISHED = SQL_QUERY_SELECT_ID
-            + " AND a.published = 1 AND a.suspended = 0 AND a.suspended_by_user = 0 " + DEFAULT_ORDER_BY;
-    private static final String SQL_QUERY_SELECTALL = SQL_QUERY_SELECT_ID + DEFAULT_ORDER_BY;
-    private static final String SQL_QUERY_SELECTALL_PUBLISHED_FOR_CATEGORY = "SELECT a.id_announce FROM announce_announce a WHERE a.id_category = ? AND a.published = 1 AND a.suspended = 0 AND a.suspended_by_user = 0 "
-            + DEFAULT_ORDER_BY;
+            + " AND a.published = 1 AND a.suspended = 0 AND a.suspended_by_user = 0 ";
+    private static final String SQL_QUERY_SELECTALL = SQL_QUERY_SELECT_ID;
+    private static final String SQL_QUERY_SELECTALL_PUBLISHED_FOR_CATEGORY = "SELECT a.id_announce FROM announce_announce a WHERE a.id_category = ? AND a.published = 1 AND a.suspended = 0 AND a.suspended_by_user = 0 ";
     private static final String SQL_QUERY_SELECT_ID_BY_DATE_CREATION = "SELECT id_announce FROM announce_announce WHERE date_creation < ?";
     private static final String SQL_QUERY_SELECT_ID_BY_TIME_PUBLICATION = "SELECT id_announce FROM announce_announce WHERE publication_time > ? ";
 
@@ -65,13 +65,13 @@ public final class AnnounceDAO implements IAnnounceDAO
     // Select
     private static final String SQL_QUERY_SELECT_FIELD_LIST_WITH_CATEGORY = "SELECT a.id_announce, a.title_announce, a.description_announce, a.price_announce, a.date_creation, a.user_name, a.contact_information, a.published, a.suspended, a.suspended_by_user, a.tags, a.has_pictures, a.publication_time, a.id_category, b.label_category, b.display_price FROM announce_announce a, announce_category b WHERE a.id_category = b.id_category ";
     private static final String SQL_QUERY_SELECT = SQL_QUERY_SELECT_FIELD_LIST_WITH_CATEGORY
-            + " AND a.id_announce = ? " + DEFAULT_ORDER_BY;
+            + " AND a.id_announce = ? ";
     private static final String SQL_QUERY_SELECTALL_PUBLISHED = SQL_QUERY_SELECT_FIELD_LIST_WITH_CATEGORY
-            + "AND a.published = 1 AND a.suspended = 0 AND a.suspended_by_user = 0 " + DEFAULT_ORDER_BY;
+            + "AND a.published = 1 AND a.suspended = 0 AND a.suspended_by_user = 0 ";
     private static final String SQL_QEURY_SELECT_BY_LIST_ID = SQL_QUERY_SELECT_FIELD_LIST_WITH_CATEGORY
             + " AND a.id_announce IN (";
     private static final String SQL_QUERY_SELECTALL_ANNOUNCES_FOR_USER = SQL_QUERY_SELECT_FIELD_LIST_WITH_CATEGORY
-            + " AND a.user_name = ? " + DEFAULT_ORDER_BY;
+            + " AND a.user_name = ? ";
 
     // insert, delete
     private static final String SQL_QUERY_INSERT = "INSERT INTO announce_announce ( id_announce, user_name, contact_information, id_category, title_announce, description_announce, price_announce, date_creation, published, tags, has_pictures, publication_time ) VALUES (?,?,?,?,?,?,?,?,?,?,?,?) ";
@@ -93,6 +93,7 @@ public final class AnnounceDAO implements IAnnounceDAO
     // Constants
     private static final String CONSTANT_COMA = ",";
     private static final String CONSTANT_CLOSE_PARENTHESIS = ")";
+    private static final String CONSTANT_SPACE = " ";
 
     /**
      * Generates a new primary key
@@ -207,10 +208,10 @@ public final class AnnounceDAO implements IAnnounceDAO
      * {@inheritDoc}
      */
     @Override
-    public List<Integer> selectAll( Plugin plugin )
+    public List<Integer> selectAll( AnnounceSort announceSort, Plugin plugin )
     {
         List<Integer> announceList = new ArrayList<Integer>( );
-        DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECTALL, plugin );
+        DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECTALL + getOrderBy( announceSort ), plugin );
         daoUtil.executeQuery( );
 
         while ( daoUtil.next( ) )
@@ -227,10 +228,10 @@ public final class AnnounceDAO implements IAnnounceDAO
      * {@inheritDoc}
      */
     @Override
-    public List<Integer> selectAllPublishedId( Plugin plugin )
+    public List<Integer> selectAllPublishedId( AnnounceSort announceSort, Plugin plugin )
     {
         List<Integer> listIdAnnounce = new ArrayList<Integer>( );
-        DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECTALL_ID_PUBLISHED, plugin );
+        DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECTALL_ID_PUBLISHED + getOrderBy( announceSort ), plugin );
         daoUtil.executeQuery( );
 
         while ( daoUtil.next( ) )
@@ -247,10 +248,10 @@ public final class AnnounceDAO implements IAnnounceDAO
      * {@inheritDoc}
      */
     @Override
-    public List<Announce> selectAllPublished( Plugin plugin )
+    public List<Announce> selectAllPublished( AnnounceSort announceSort, Plugin plugin )
     {
         List<Announce> announceList = new ArrayList<Announce>( );
-        DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECTALL_PUBLISHED, plugin );
+        DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECTALL_PUBLISHED + getOrderBy( announceSort ), plugin );
         daoUtil.executeQuery( );
 
         while ( daoUtil.next( ) )
@@ -267,7 +268,7 @@ public final class AnnounceDAO implements IAnnounceDAO
      * {@inheritDoc}
      */
     @Override
-    public List<Announce> findByListId( List<Integer> listIdAnnounces, Plugin plugin )
+    public List<Announce> findByListId( List<Integer> listIdAnnounces, AnnounceSort announceSort, Plugin plugin )
     {
         List<Announce> announceList = new ArrayList<Announce>( );
         if ( listIdAnnounces == null || listIdAnnounces.size( ) == 0 )
@@ -290,8 +291,7 @@ public final class AnnounceDAO implements IAnnounceDAO
             sbSql.append( nId );
         }
         sbSql.append( CONSTANT_CLOSE_PARENTHESIS );
-        sbSql.append( DEFAULT_ORDER_BY );
-
+        sbSql.append( getOrderBy( announceSort ) );
         DAOUtil daoUtil = new DAOUtil( sbSql.toString( ), plugin );
         daoUtil.executeQuery( );
 
@@ -309,10 +309,10 @@ public final class AnnounceDAO implements IAnnounceDAO
      * {@inheritDoc}
      */
     @Override
-    public List<Integer> selectAllPublishedForCategory( Category category, Plugin plugin )
+    public List<Integer> selectAllPublishedForCategory( Category category, AnnounceSort announceSort, Plugin plugin )
     {
         List<Integer> announceList = new ArrayList<Integer>( );
-        DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECTALL_PUBLISHED_FOR_CATEGORY, plugin );
+        DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECTALL_PUBLISHED_FOR_CATEGORY + getOrderBy( announceSort ), plugin );
         daoUtil.setInt( 1, category.getId( ) );
         daoUtil.executeQuery( );
 
@@ -330,19 +330,10 @@ public final class AnnounceDAO implements IAnnounceDAO
      * {@inheritDoc}
      */
     @Override
-    public List<Announce> selectAllForUser( LuteceUser user, Plugin plugin )
-    {
-        return selectAllForUser( user.getName( ), plugin );
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public List<Announce> selectAllForUser( String strUsername, Plugin plugin )
+    public List<Announce> selectAllForUser( String strUsername, AnnounceSort announceSort, Plugin plugin )
     {
         List<Announce> announceList = new ArrayList<Announce>( );
-        DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECTALL_ANNOUNCES_FOR_USER, plugin );
+        DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECTALL_ANNOUNCES_FOR_USER + getOrderBy( announceSort ), plugin );
         daoUtil.setString( 1, strUsername );
         daoUtil.executeQuery( );
 
@@ -552,5 +543,16 @@ public final class AnnounceDAO implements IAnnounceDAO
 
         announce.setCategory( category );
         return announce;
+    }
+
+    /**
+     * Get the order by of a given announce sort
+     * @param announceSort The announce sort
+     * @return The order of the announce sort
+     */
+    private String getOrderBy( AnnounceSort announceSort )
+    {
+        return ORDER_BY + announceSort.getSortColumn( ) + CONSTANT_SPACE
+                + ( announceSort.getSortAsc( ) ? ORDER_BY_ASCENDING : ORDER_BY_DESCENDING );
     }
 }
