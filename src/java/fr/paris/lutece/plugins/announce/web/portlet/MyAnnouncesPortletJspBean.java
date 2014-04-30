@@ -36,7 +36,6 @@ package fr.paris.lutece.plugins.announce.web.portlet;
 import fr.paris.lutece.plugins.announce.business.portlet.MyAnnouncesPortlet;
 import fr.paris.lutece.plugins.announce.business.portlet.MyAnnouncesPortletHome;
 import fr.paris.lutece.portal.business.portlet.PortletHome;
-import fr.paris.lutece.portal.service.util.AppPathService;
 import fr.paris.lutece.portal.web.portlet.PortletJspBean;
 import fr.paris.lutece.util.html.HtmlTemplate;
 
@@ -106,7 +105,7 @@ public class MyAnnouncesPortletJspBean extends PortletJspBean
         MyAnnouncesPortletHome.getInstance( ).create( portlet );
 
         //Displays the page with the new Portlet
-        return AppPathService.getBaseUrl( request ) + getPageUrl( nPageId );
+        return "../" + getPageUrl( nPageId );
     }
 
     /**
@@ -132,6 +131,6 @@ public class MyAnnouncesPortletJspBean extends PortletJspBean
         portlet.update(  );
 
         // displays the page with the updated portlet
-        return AppPathService.getBaseUrl( request ) + getPageUrl( portlet.getPageId( ) );
+        return "../" + getPageUrl( portlet.getPageId( ) );
     }
 }

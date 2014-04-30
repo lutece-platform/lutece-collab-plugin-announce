@@ -97,12 +97,12 @@ public class LastAnnouncesPortlet extends PortletHtmlContent
     {
         if ( request != null )
         {
-            AnnounceSort announceSort = AnnounceSort.getAnnounceSort( AnnounceSort.SORT_DATE_MODIFICATION, true );
+            AnnounceSort announceSort = AnnounceSort.getAnnounceSort( AnnounceSort.SORT_DATE_CREATION, true );
             List<Integer> listAllIdAnnounces = AnnounceHome.findAllPublishedId( announceSort );
 
             String strContent = AnnounceApp.getAnnounceListById( request,
                     ( getNbAnnouncesToDisplay( ) > listAllIdAnnounces.size( ) ) ? listAllIdAnnounces
-                            : listAllIdAnnounces.subList( 0, getNbAnnouncesToDisplay( ) ) );
+                            : listAllIdAnnounces.subList( 0, getNbAnnouncesToDisplay( ) ), announceSort );
 
             Map<String, Object> model = new HashMap<String, Object>( );
             model.put( MARK_PORTLET, this );
@@ -120,7 +120,7 @@ public class LastAnnouncesPortlet extends PortletHtmlContent
      */
     public void update( )
     {
-        MyAnnouncesPortletHome.getInstance( ).update( this );
+        LastAnnouncesPortletHome.getInstance( ).update( this );
     }
 
     /**
@@ -129,6 +129,6 @@ public class LastAnnouncesPortlet extends PortletHtmlContent
     @Override
     public void remove( )
     {
-        MyAnnouncesPortletHome.getInstance( ).remove( this );
+        LastAnnouncesPortletHome.getInstance( ).remove( this );
     }
 }

@@ -341,9 +341,17 @@ public class AnnounceApp extends MVCApplication
         return page;
     }
 
-    public static String getAnnounceListById( HttpServletRequest request, List<Integer> listIdAnnounces )
+    /**
+     * Get the HTML to describe a list of announces
+     * @param request The request
+     * @param listIdAnnounces The list of ids of announces
+     * @param announceSort the sort to use
+     * @return The HTML content to display
+     */
+    public static String getAnnounceListById( HttpServletRequest request, List<Integer> listIdAnnounces,
+            AnnounceSort announceSort )
     {
-        List<Announce> listAnnounces = AnnounceHome.findByListId( listIdAnnounces, AnnounceSort.DEFAULT_SORT );
+        List<Announce> listAnnounces = AnnounceHome.findByListId( listIdAnnounces, announceSort );
 
         Map<String, Object> model = new HashMap<String, Object>( );
         model.put( MARK_LIST_FIELDS, getSectorList( ) );
