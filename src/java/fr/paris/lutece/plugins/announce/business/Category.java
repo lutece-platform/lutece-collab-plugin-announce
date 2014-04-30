@@ -62,6 +62,7 @@ public class Category implements RBACResource, Serializable, Cloneable
     private int _nNumberAnnounces;
     private int _nAnnouncesValidation;
     private boolean _bDisplayPrice;
+    private boolean _bPriceMandatory;
     private int _nIdMailingList;
     private String _strTags;
     private String _strLabelSector;
@@ -197,6 +198,25 @@ public class Category implements RBACResource, Serializable, Cloneable
     }
 
     /**
+     * Check if the price attribute is mandatory or not
+     * @return True if the price attribute is mandatory, false otherwise
+     */
+    public boolean getPriceMandatory( )
+    {
+        return _bPriceMandatory;
+    }
+
+    /**
+     * Set the price attribute mandatory or not
+     * @param bPriceMandatory True if the price attribute is mandatory, false
+     *            otherwise
+     */
+    public void setPriceMandatory( boolean bPriceMandatory )
+    {
+        this._bPriceMandatory = bPriceMandatory;
+    }
+
+    /**
      * Get the id of the mailing list associated with this category
      * @return The id of the mailing list associated with this category
      */
@@ -295,7 +315,7 @@ public class Category implements RBACResource, Serializable, Cloneable
     {
         try
         {
-            return (Category) super.clone( );
+            return super.clone( );
         }
         catch ( CloneNotSupportedException e )
         {

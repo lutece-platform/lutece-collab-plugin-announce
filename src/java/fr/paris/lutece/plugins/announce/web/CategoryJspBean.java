@@ -101,6 +101,7 @@ public class CategoryJspBean extends PluginAdminPageJspBean
     private static final String PARAMETER_MAILING_LIST_ID = "mailing_list_id";
     private static final String PARAMETER_ID_WORKFLOW = "id_workflow";
     private static final String PARAMETER_DISPLAY_CAPTCHA = "display_captcha";
+    private static final String PARAMETER_PRICE_MANDATORY = "price_mandatory";
 
     /* properties */
     private static final String PROPERTY_PAGE_TITLE_MANAGE_CATEGORIES = "announce.manage_categories.pageTitle";
@@ -271,6 +272,7 @@ public class CategoryJspBean extends PluginAdminPageJspBean
         int nIdMailingList = Integer.parseInt( request.getParameter( PARAMETER_MAILING_LIST_ID ) );
         int nIdWorkflow = Integer.parseInt( request.getParameter( PARAMETER_ID_WORKFLOW ) );
         boolean bDisplayCaptcha = Boolean.parseBoolean( request.getParameter( PARAMETER_DISPLAY_CAPTCHA ) );
+        boolean bPriceMandatory = Boolean.parseBoolean( request.getParameter( PARAMETER_PRICE_MANDATORY ) );
         // Mandatory sectors
         if ( nIdSector == 0 || StringUtils.isEmpty( strCategoryLabel ) )
         {
@@ -292,6 +294,7 @@ public class CategoryJspBean extends PluginAdminPageJspBean
         {
             category.setDisplayPrice( false );
         }
+        category.setPriceMandatory( category.getDisplayPrice( ) && bPriceMandatory );
         category.setDisplayCaptcha( bDisplayCaptcha );
 
         CategoryHome.create( category );
@@ -399,6 +402,7 @@ public class CategoryJspBean extends PluginAdminPageJspBean
         int nIdMailingList = Integer.parseInt( request.getParameter( PARAMETER_MAILING_LIST_ID ) );
         int nIdWorkflow = Integer.parseInt( request.getParameter( PARAMETER_ID_WORKFLOW ) );
         boolean bDisplayCaptcha = Boolean.parseBoolean( request.getParameter( PARAMETER_DISPLAY_CAPTCHA ) );
+        boolean bPriceMandatory = Boolean.parseBoolean( request.getParameter( PARAMETER_PRICE_MANDATORY ) );
 
         // Mandatory categories
         if ( StringUtils.isEmpty( strCategoryLabel ) || ( nIdSector == 0 ) )
@@ -422,6 +426,7 @@ public class CategoryJspBean extends PluginAdminPageJspBean
         {
             category.setDisplayPrice( false );
         }
+        category.setPriceMandatory( category.getDisplayPrice( ) && bPriceMandatory );
 
         CategoryHome.update( category );
 

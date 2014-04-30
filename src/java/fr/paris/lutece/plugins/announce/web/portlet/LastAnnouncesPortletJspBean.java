@@ -33,12 +33,21 @@
  */
 package fr.paris.lutece.plugins.announce.web.portlet;
 
-import fr.paris.lutece.plugins.announce.business.portlet.MyAnnouncesPortlet;
-import fr.paris.lutece.plugins.announce.business.portlet.MyAnnouncesPortletHome;
+import fr.paris.lutece.plugins.announce.business.portlet.LastAnnouncesPortlet;
+import fr.paris.lutece.plugins.announce.business.portlet.LastAnnouncesPortletHome;
 import fr.paris.lutece.portal.business.portlet.PortletHome;
+import fr.paris.lutece.portal.service.message.AdminMessage;
+import fr.paris.lutece.portal.service.message.AdminMessageService;
 import fr.paris.lutece.portal.service.util.AppPathService;
+import fr.paris.lutece.portal.service.util.AppPropertiesService;
+import fr.paris.lutece.portal.web.constants.Messages;
 import fr.paris.lutece.portal.web.portlet.PortletJspBean;
 import fr.paris.lutece.util.html.HtmlTemplate;
+
+import org.apache.commons.lang.StringUtils;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -46,12 +55,23 @@ import javax.servlet.http.HttpServletRequest;
 /**
  * This class provides the user interface to manage MyAnnouncesPortlet features
  */
-public class MyAnnouncesPortletJspBean extends PortletJspBean
+public class LastAnnouncesPortletJspBean extends PortletJspBean
 {
+
     /**
      * Serial version UID
      */
-    private static final long serialVersionUID = -7457066042840152130L;
+    private static final long serialVersionUID = 6187858592847623844L;
+
+    // Marks
+    private static final String MARK_DEFAULT_NB_ANNOUNCES_TO_DISPLAY = "defaultNbAnnouncesToDisplay";
+    private static final String MARK_PORTLET = "portlet";
+
+    // Parameters
+    private static final String PARAMETER_NB_ANNOUNCES_TO_DISPLAY = "nb_announces_to_display";
+
+    // Properties
+    private static final String PROPERTY_DEFAULT_NB_ANNOUNCES_TO_DISPLAY = "announce.portletLastAnnounces.defaultNbAnnouncesToDisplay";
 
     /**
      * {@inheritDoc}
@@ -61,9 +81,13 @@ public class MyAnnouncesPortletJspBean extends PortletJspBean
     {
         String strPageId = request.getParameter( PARAMETER_PAGE_ID );
         String strPortletTypeId = request.getParameter( PARAMETER_PORTLET_TYPE_ID );
-        HtmlTemplate template = getCreateTemplate( strPageId, strPortletTypeId );
+        Map<String, Object> model = new HashMap<String, Object>( );
+        model.put( MARK_DEFAULT_NB_ANNOUNCES_TO_DISPLAY,
+                AppPropertiesService.getProperty( PROPERTY_DEFAULT_NB_ANNOUNCES_TO_DISPLAY ) );
 
-        return template.getHtml(  );
+        HtmlTemplate template = getCreateTemplate( strPageId, strPortletTypeId, model );
+
+        return template.getHtml( );
     }
 
     /**
@@ -74,10 +98,14 @@ public class MyAnnouncesPortletJspBean extends PortletJspBean
     {
         String strPortletId = request.getParameter( PARAMETER_PORTLET_ID );
         int nPortletId = Integer.parseInt( strPortletId );
-        MyAnnouncesPortlet portlet = (MyAnnouncesPortlet) PortletHome.findByPrimaryKey( nPortletId );
-        HtmlTemplate template = getModifyTemplate( portlet );
+        LastAnnouncesPortlet portlet = (LastAnnouncesPortlet) PortletHome.findByPrimaryKey( nPortletId );
 
-        return template.getHtml(  );
+        Map<String, Object> model = new HashMap<String, Object>( );
+        model.put( MARK_PORTLET, portlet );
+
+        HtmlTemplate template = getModifyTemplate( portlet, model );
+
+        return template.getHtml( );
     }
 
     /**
@@ -86,7 +114,7 @@ public class MyAnnouncesPortletJspBean extends PortletJspBean
     @Override
     public String doCreate( HttpServletRequest request )
     {
-        MyAnnouncesPortlet portlet = new MyAnnouncesPortlet( );
+        LastAnnouncesPortlet portlet = new LastAnnouncesPortlet( );
 
         // recovers portlet specific attributes
         String strPageId = request.getParameter( PARAMETER_PAGE_ID );
@@ -100,10 +128,19 @@ public class MyAnnouncesPortletJspBean extends PortletJspBean
             return strErrorUrl;
         }
 
+        String strNbItemsToDisplay = request.getParameter( PARAMETER_NB_ANNOUNCES_TO_DISPLAY );
+        if ( StringUtils.isEmpty( strNbItemsToDisplay ) || !StringUtils.isNumeric( strNbItemsToDisplay ) )
+        {
+            return AdminMessageService.getMessageUrl( request, Messages.MANDATORY_FIELDS, AdminMessage.TYPE_STOP );
+        }
+
+        int nNbAnnouncesToDisplay = Integer.parseInt( strNbItemsToDisplay );
+
         portlet.setPageId( nPageId );
+        portlet.setNbAnnouncesToDisplay( nNbAnnouncesToDisplay );
 
         // Creates the portlet
-        MyAnnouncesPortletHome.getInstance( ).create( portlet );
+        LastAnnouncesPortletHome.getInstance( ).create( portlet );
 
         //Displays the page with the new Portlet
         return AppPathService.getBaseUrl( request ) + getPageUrl( nPageId );
@@ -118,7 +155,7 @@ public class MyAnnouncesPortletJspBean extends PortletJspBean
         // fetches portlet attributes
         String strPortletId = request.getParameter( PARAMETER_PORTLET_ID );
         int nPortletId = Integer.parseInt( strPortletId );
-        MyAnnouncesPortlet portlet = (MyAnnouncesPortlet) PortletHome.findByPrimaryKey( nPortletId );
+        LastAnnouncesPortlet portlet = (LastAnnouncesPortlet) PortletHome.findByPrimaryKey( nPortletId );
 
         // retrieve portlet common attributes
         String strErrorUrl = setPortletCommonData( request, portlet );
@@ -128,8 +165,18 @@ public class MyAnnouncesPortletJspBean extends PortletJspBean
             return strErrorUrl;
         }
 
+        String strNbItemsToDisplay = request.getParameter( PARAMETER_NB_ANNOUNCES_TO_DISPLAY );
+        if ( StringUtils.isEmpty( strNbItemsToDisplay ) || !StringUtils.isNumeric( strNbItemsToDisplay ) )
+        {
+            return AdminMessageService.getMessageUrl( request, Messages.MANDATORY_FIELDS, AdminMessage.TYPE_STOP );
+        }
+
+        int nNbAnnouncesToDisplay = Integer.parseInt( strNbItemsToDisplay );
+
+        portlet.setNbAnnouncesToDisplay( nNbAnnouncesToDisplay );
+
         // updates the portlet
-        portlet.update(  );
+        portlet.update( );
 
         // displays the page with the updated portlet
         return AppPathService.getBaseUrl( request ) + getPageUrl( portlet.getPageId( ) );

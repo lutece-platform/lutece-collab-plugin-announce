@@ -63,7 +63,7 @@ public final class AnnounceDAO implements IAnnounceDAO
     private static final String SQL_QUERY_NEW_PK = "SELECT max( id_announce ) FROM announce_announce";
 
     // Select
-    private static final String SQL_QUERY_SELECT_FIELD_LIST_WITH_CATEGORY = "SELECT a.id_announce, a.title_announce, a.description_announce, a.price_announce, a.date_creation, a.user_name, a.contact_information, a.published, a.suspended, a.suspended_by_user, a.tags, a.has_pictures, a.publication_time, a.id_category, b.label_category, b.display_price FROM announce_announce a, announce_category b WHERE a.id_category = b.id_category ";
+    private static final String SQL_QUERY_SELECT_FIELD_LIST_WITH_CATEGORY = "SELECT a.id_announce, a.title_announce, a.description_announce, a.price_announce, a.date_creation, a.date_modification, a.user_name, a.contact_information, a.published, a.suspended, a.suspended_by_user, a.tags, a.has_pictures, a.publication_time, a.id_category, b.label_category, b.display_price FROM announce_announce a, announce_category b WHERE a.id_category = b.id_category ";
     private static final String SQL_QUERY_SELECT = SQL_QUERY_SELECT_FIELD_LIST_WITH_CATEGORY
             + " AND a.id_announce = ? ";
     private static final String SQL_QUERY_SELECTALL_PUBLISHED = SQL_QUERY_SELECT_FIELD_LIST_WITH_CATEGORY
@@ -74,11 +74,11 @@ public final class AnnounceDAO implements IAnnounceDAO
             + " AND a.user_name = ? ";
 
     // insert, delete
-    private static final String SQL_QUERY_INSERT = "INSERT INTO announce_announce ( id_announce, user_name, contact_information, id_category, title_announce, description_announce, price_announce, date_creation, published, tags, has_pictures, publication_time ) VALUES (?,?,?,?,?,?,?,?,?,?,?,?) ";
+    private static final String SQL_QUERY_INSERT = "INSERT INTO announce_announce ( id_announce, user_name, contact_information, id_category, title_announce, description_announce, price_announce, date_creation, date_modification, published, tags, has_pictures, publication_time ) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?) ";
     private static final String SQL_QUERY_DELETE = "DELETE FROM announce_announce WHERE id_announce = ? ";
 
     // Update
-    private static final String SQL_QUERY_UPDATE = "UPDATE announce_announce SET title_announce = ?, description_announce = ?, price_announce = ?, contact_information = ?, published = ?, tags = ?, has_pictures = ? WHERE id_announce = ?";
+    private static final String SQL_QUERY_UPDATE = "UPDATE announce_announce SET title_announce = ?, description_announce = ?, price_announce = ?, contact_information = ?, published = ?, tags = ?, has_pictures = ?, date_modification = ? WHERE id_announce = ?";
     private static final String SQL_QUERY_SET_PUBLISHED = "UPDATE announce_announce SET published = ?, publication_time = ? WHERE id_announce = ?";
     private static final String SQL_QUERY_SET_SUSPENDED = "UPDATE announce_announce SET suspended = ?, publication_time = ? WHERE id_announce = ?";
     private static final String SQL_QUERY_SET_SUSPENDED_BY_USER = "UPDATE announce_announce SET suspended_by_user = ?, publication_time = ? WHERE id_announce = ?";
@@ -139,6 +139,7 @@ public final class AnnounceDAO implements IAnnounceDAO
         daoUtil.setString( nIndex++, announce.getDescription( ) );
         daoUtil.setString( nIndex++, announce.getPrice( ) );
         daoUtil.setTimestamp( nIndex++, announce.getDateCreation( ) );
+        daoUtil.setTimestamp( nIndex++, announce.getDateModification( ) );
         daoUtil.setBoolean( nIndex++, announce.getPublished( ) );
         daoUtil.setString( nIndex++, announce.getTags( ) );
         daoUtil.setBoolean( nIndex++, announce.getHasPictures( ) );
@@ -198,6 +199,7 @@ public final class AnnounceDAO implements IAnnounceDAO
         daoUtil.setBoolean( nIndex++, announce.getPublished( ) );
         daoUtil.setString( nIndex++, announce.getTags( ) );
         daoUtil.setBoolean( nIndex++, announce.getHasPictures( ) );
+        daoUtil.setTimestamp( nIndex++, announce.getDateModification( ) );
         daoUtil.setInt( nIndex, announce.getId( ) );
 
         daoUtil.executeUpdate( );
@@ -528,6 +530,7 @@ public final class AnnounceDAO implements IAnnounceDAO
         announce.setDescription( daoUtil.getString( nIndex++ ) );
         announce.setPrice( daoUtil.getString( nIndex++ ) );
         announce.setDateCreation( daoUtil.getTimestamp( nIndex++ ) );
+        announce.setDateModification( daoUtil.getTimestamp( nIndex++ ) );
         announce.setUserName( daoUtil.getString( nIndex++ ) );
         announce.setContactInformation( daoUtil.getString( nIndex++ ) );
         announce.setPublished( daoUtil.getBoolean( nIndex++ ) );

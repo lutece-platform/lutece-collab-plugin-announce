@@ -71,6 +71,7 @@ public class Announce implements Serializable, IExtendableResource, RBACResource
     private boolean _bHasPictures;
     private List<Integer> _listIdImageResponse;
     private Timestamp _dateCreation;
+    private Timestamp _dateModification;
     private long _lTimePublication;
     private String _strPrice;
     private String _strTags;
@@ -274,6 +275,24 @@ public class Announce implements Serializable, IExtendableResource, RBACResource
     public void setDateCreation( Timestamp time )
     {
         this._dateCreation = time;
+    }
+
+    /**
+     * Get the modification date
+     * @return The modification date
+     */
+    public Timestamp getDateModification( )
+    {
+        return _dateModification;
+    }
+
+    /**
+     * Set the modification date
+     * @param dateModification The modification date
+     */
+    public void setDateModification( Timestamp dateModification )
+    {
+        this._dateModification = dateModification;
     }
 
     /**

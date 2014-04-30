@@ -113,6 +113,22 @@
 	        <portlet-create-specific-form-template></portlet-create-specific-form-template>
 	        <portlet-modify-specific-form-template></portlet-modify-specific-form-template> 
 		</portlet>
+		<portlet>
+			<portlet-class>fr.paris.lutece.plugins.announce.business.portlet.LastAnnouncesPortletHome</portlet-class>
+			<portlet-type-id>ANNOUNCE_LASTANNOUNCE_PORTLET</portlet-type-id>
+			<portlet-type-name>announce.portlet.LastAnnouncesPortlet.name</portlet-type-name>
+			<portlet-creation-url>plugins/announce/portlet/CreatePortletLastAnnounces.jsp</portlet-creation-url>
+			<portlet-update-url>plugins/announce/portlet/ModifyPortletLastAnnounces.jsp</portlet-update-url>
+			<portlet-create-action-url>plugins/announce/portlet/DoCreatePortletLastAnnounces.jsp</portlet-create-action-url>
+			<portlet-modify-action-url>plugins/announce/portlet/DoModifyPortletLastAnnounces.jsp</portlet-modify-action-url>
+		    <!-- optional entries -->
+	        <portlet-create-script-template>/admin/portlet/script_create_portlet.html</portlet-create-script-template>
+	        <portlet-modify-script-template>/admin/portlet/script_modify_portlet.html</portlet-modify-script-template>
+	        <portlet-create-specific-template>/admin/plugins/announce/portlet/create_portletlastannounces.html</portlet-create-specific-template>
+	        <portlet-modify-specific-template>/admin/plugins/announce/portlet/modify_portletlastannounces.html</portlet-modify-specific-template>
+	        <portlet-create-specific-form-template></portlet-create-specific-form-template>
+	        <portlet-modify-specific-form-template></portlet-modify-specific-form-template> 
+		</portlet>
 	</portlets>
 	
 	<page-include-services>

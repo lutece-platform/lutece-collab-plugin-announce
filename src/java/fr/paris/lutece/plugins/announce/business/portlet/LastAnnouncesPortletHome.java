@@ -40,20 +40,20 @@ import fr.paris.lutece.portal.service.spring.SpringContextService;
 
 
 /**
- * This class provides instances management methods for MyAnnounces portlet
+ * This class provides instances management methods for LastAnnounces portlet
  */
-public class MyAnnouncesPortletHome extends PortletHome
+public class LastAnnouncesPortletHome extends PortletHome
 {
     // Static variable pointed at the DAO instance
-    private static IMyAnnouncesPortletDAO _dao = SpringContextService.getBean( "announce.myAnnouncesPortletDAO" );
+    private static ILastAnnouncesPortletDAO _dao = SpringContextService.getBean( "announce.lastAnnouncesPortletDAO" );
 
     /* This class implements the Singleton design pattern. */
-    private static volatile MyAnnouncesPortletHome _singleton;
+    private static volatile LastAnnouncesPortletHome _singleton;
 
     /**
      * Constructor
      */
-    public MyAnnouncesPortletHome( )
+    public LastAnnouncesPortletHome( )
     {
         if ( _singleton == null )
         {
@@ -82,7 +82,7 @@ public class MyAnnouncesPortletHome extends PortletHome
     {
         if ( _singleton == null )
         {
-            _singleton = new MyAnnouncesPortletHome( );
+            _singleton = new LastAnnouncesPortletHome( );
         }
 
         return _singleton;

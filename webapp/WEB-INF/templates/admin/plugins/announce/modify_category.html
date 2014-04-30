@@ -22,7 +22,8 @@
 				<@fieldInputCombo items=list_announces_validation i18nLabelKey='announce.category.announcesValidation' inputName='category_announces_validation' mandatory=true value=category.announcesValidation?string i18nHelpBlockKey='announce.globalParameterHelp' />	
 				<@fieldInputCombo items=mailing_list_list i18nLabelKey='announce.category.mailingList' inputName='mailing_list_id' value=category.idMailingList?string i18nHelpBlockKey='announce.category.mailingList.helper' />	
 				<@fieldInputCheckBox i18nLabelKey='announce.category.displayPrice' inputName='display_price' value="true" checked=category.displayPrice i18nHelpBlockKey='announce.category.displayPrice.helper' />	
-				<#if isCaptchaEnabled?? && isCaptchaEnabled>
+				<@fieldInputCheckBox i18nLabelKey='announce.category.priceMandatory' inputName='price_mandatory' value="true" checked=category.priceMandatory i18nHelpBlockKey='announce.category.priceMandatory.helper' />	
+		        <#if isCaptchaEnabled?? && isCaptchaEnabled>
 		        	<@fieldInputCheckBox i18nLabelKey='announce.category.displayCaptcha' inputName='display_captcha' value="true" checked=category.displayCaptcha />
 		        </#if>	
 		        <#if listWorkflows??>

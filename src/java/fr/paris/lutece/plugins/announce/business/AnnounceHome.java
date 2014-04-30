@@ -78,6 +78,7 @@ public final class AnnounceHome
      */
     public static Announce create( Announce announce )
     {
+        announce.setDateModification( new Timestamp( System.currentTimeMillis( ) ) );
         updateAnnouncePublicationTime( announce );
         _dao.insert( announce, _plugin );
 
@@ -99,6 +100,7 @@ public final class AnnounceHome
      */
     public static Announce update( Announce announce )
     {
+        announce.setDateModification( new Timestamp( System.currentTimeMillis( ) ) );
         _dao.store( announce, _plugin );
 
         if ( announce.getPublished( ) && !announce.getSuspended( ) && !announce.getSuspendedByUser( ) )

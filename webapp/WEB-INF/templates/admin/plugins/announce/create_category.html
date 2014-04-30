@@ -8,11 +8,12 @@
 		        <@fieldInputCombo items=list_announces_validation i18nLabelKey='announce.category.announcesValidation' inputName='category_announces_validation' mandatory=true value="0" i18nHelpBlockKey='announce.globalParameterHelp' />	
 		        <@fieldInputCombo items=mailing_list_list i18nLabelKey='announce.category.mailingList' inputName='mailing_list_id' value="-1" i18nHelpBlockKey='announce.category.mailingList.helper' />	
 		        <@fieldInputCheckBox i18nLabelKey='announce.category.displayPrice' inputName='display_price' value="true" checked=false i18nHelpBlockKey='announce.category.displayPrice.helper' />	
+		        <@fieldInputCheckBox i18nLabelKey='announce.category.priceMandatory' inputName='price_mandatory' value="true" checked=false i18nHelpBlockKey='announce.category.priceMandatory.helper' />	
 		        <#if isCaptchaEnabled?? && isCaptchaEnabled>
 		        	<@fieldInputCheckBox i18nLabelKey='announce.category.displayCaptcha' inputName='display_captcha' value="true" checked=false />
 		        </#if>	
 		        <#if listWorkflows??>
-		        	<@fieldInputCombo items=listWorkflows i18nLabelKey='announce.create_category.labelWorkflow' value=category.idWorkflow?string inputName="id_workflow" />
+		        	<@fieldInputCombo items=listWorkflows i18nLabelKey='announce.create_category.labelWorkflow' value='' inputName="id_workflow" />
 			    </#if>
 		        <div class="form-actions">
 		        	<button class="btn btn-small btn-primary" type="submit" name="validate" value="validate" title="#i18n{announce.create_category.buttonValidate}">

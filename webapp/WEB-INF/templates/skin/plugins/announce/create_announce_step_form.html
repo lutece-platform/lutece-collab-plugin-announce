@@ -34,7 +34,7 @@
 					</div>
 					<#if category.displayPrice>
 						<div class="control-group">
-							<label class="control-label" for="price_announce">#i18n{announce.create_announce_step_form.labelPrice}</label>
+							<label class="control-label" for="price_announce">#i18n{announce.create_announce_step_form.labelPrice} <#if category.priceMandatory>*</#if></label>
 							<div class="controls">
 								<input type="text" name="price_announce" value="${(announce.price)!''}"/>
 							</div>

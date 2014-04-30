@@ -11,6 +11,7 @@
     <bean id="announce.categoryDAO"  class="fr.paris.lutece.plugins.announce.business.CategoryDAO" />
     <bean id="announce.announceDAO"  class="fr.paris.lutece.plugins.announce.business.AnnounceDAO" />
     <bean id="announce.myAnnouncesPortletDAO" class="fr.paris.lutece.plugins.announce.business.portlet.MyAnnouncesPortletDAO" />
+    <bean id="announce.lastAnnouncesPortletDAO" class="fr.paris.lutece.plugins.announce.business.portlet.LastAnnouncesPortletDAO" />
     <bean id="announce.announceSearchFilterDAO" class="fr.paris.lutece.plugins.announce.business.AnnounceSearchFilterDAO" />
     
     <bean id="announce.entryService" class="fr.paris.lutece.plugins.announce.service.EntryService" />    

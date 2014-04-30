@@ -25,6 +25,10 @@
 						<@sort jsp_url="jsp/admin/plugins/announce/ManageAnnounces.jsp" attribute="date_creation" />
 					</th>
 					<th>
+						#i18n{announce.manage_announces.columnTitleModificationDate}
+						<@sort jsp_url="jsp/admin/plugins/announce/ManageAnnounces.jsp" attribute="date_modification" />
+					</th>
+					<th>
 						#i18n{announce.manage_announces.columnTitlePublished}
 					</th>
 					<th>
@@ -49,6 +53,9 @@
 						</td>
 						<td>
 							${announce.dateCreation}
+						</td>
+						<td>
+							${announce.dateModification}
 						</td>
 						<td>
 							<#if announce.published>

@@ -71,7 +71,18 @@ CREATE TABLE announce_search_filters(
 
 ALTER TABLE announce_announce ADD COLUMN publication_time BIGINT default 0;
 ALTER TABLE announce_announce ADD COLUMN user_email varchar(255) NOT NULL;
+ALTER TABLE announce_announce ADD COLUMN date_modification timestamp NOT NULL;
+
+UPDATE announce_announce SET date_modification = date_creation;
+
 ALTER TABLE announce_category ADD COLUMN id_workflow INT default 0;
 ALTER TABLE announce_category ADD COLUMN display_captcha smallint default '0';
+ALTER TABLE announce_category ADD COLUMN price_mandatory smallint default '0';
 
 CREATE INDEX announce_user_name ON announce_announce (user_name);
+
+INSERT INTO core_admin_role_resource (rbac_id,role_key,resource_type,resource_id,permission) VALUES (1042,'announce_manager','announce','*','*');
+INSERT INTO core_portlet_type VALUES ('ANNOUNCE_MYDASHBOARD_PORTLET','announce.portlet.MyAnnouncesPortlet.name','plugins/announce/portlet/CreatePortletMyAnnounces.jsp','plugins/announce/portlet/ModifyPortletMyAnnounces.jsp','fr.paris.lutece.plugins.announce.business.portlet.MyAnnouncesPortletHome','announce','plugins/announce/portlet/DoCreatePortletMyAnnounces.jsp','/admin/portlet/script_create_portlet.html','/admin/plugins/announce/portlet/create_portletmyannounces.html','','plugins/announce/portlet/DoModifyPortletMyAnnounces.jsp','/admin/portlet/script_modify_portlet.html','/admin/plugins/announce/portlet/modify_portletmyannounces.html','');
+INSERT INTO core_portlet_type VALUES ('ANNOUNCE_LASTANNOUNCES_PORTLET','announce.portlet.LastAnnouncesPortlet.name','plugins/announce/portlet/CreatePortletLastAnnounces.jsp','plugins/announce/portlet/ModifyPortletLastAnnounces.jsp','fr.paris.lutece.plugins.announce.business.portlet.LastAnnouncesPortletHome','announce','plugins/announce/portlet/DoCreatePortletLastAnnounces.jsp','/admin/portlet/script_create_portlet.html','/admin/plugins/announce/portlet/create_portletlastannounces.html','','plugins/announce/portlet/DoModifyPortletLastAnnounces.jsp','/admin/portlet/script_modify_portlet.html','/admin/plugins/announce/portlet/modify_portletlastannounces.html','');
+INSERT INTO core_datastore VALUES ( 'core.cache.status.announce.announceCacheService.enabled', '1' );
+INSERT INTO core_datastore VALUES ( 'core.cache.status.announce.announceCacheService.maxElementsInMemory', '500' );

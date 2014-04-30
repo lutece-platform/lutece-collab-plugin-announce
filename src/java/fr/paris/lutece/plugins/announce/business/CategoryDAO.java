@@ -47,11 +47,11 @@ import java.util.List;
 public final class CategoryDAO implements ICategoryDAO
 {
     private static final String SQL_QUERY_NEWPK = "SELECT max( id_category ) FROM announce_category ";
-    private static final String SQL_QUERY_SELECT = "SELECT id_category, id_sector, label_category, display_price, announces_validation, id_mailing_list, id_workflow, display_captcha FROM announce_category WHERE id_category = ? ";
+    private static final String SQL_QUERY_SELECT = "SELECT id_category, id_sector, label_category, display_price, price_mandatory, announces_validation, id_mailing_list, id_workflow, display_captcha FROM announce_category WHERE id_category = ? ";
     private static final String SQL_QUERY_SELECTALL = "SELECT a.id_category, a.id_sector, a.label_category, b.label_sector FROM announce_category a, announce_sector b WHERE a.id_sector = b.id_sector ORDER BY a.id_sector, a.label_category";
-    private static final String SQL_QUERY_INSERT = "INSERT INTO announce_category ( id_category, id_sector, label_category, display_price, announces_validation, id_mailing_list, id_workflow, display_captcha )  VALUES (?,?,?,?,?,?,?,?) ";
+    private static final String SQL_QUERY_INSERT = "INSERT INTO announce_category ( id_category, id_sector, label_category, display_price, price_mandatory, announces_validation, id_mailing_list, id_workflow, display_captcha )  VALUES (?,?,?,?,?,?,?,?,?) ";
     private static final String SQL_QUERY_DELETE = "DELETE FROM announce_category WHERE id_category = ? ";
-    private static final String SQL_QUERY_UPDATE = "UPDATE announce_category SET id_sector = ?, label_category = ?, display_price = ?, announces_validation = ?, id_mailing_list = ?, id_workflow = ?, display_captcha = ? WHERE id_category = ? ";
+    private static final String SQL_QUERY_UPDATE = "UPDATE announce_category SET id_sector = ?, label_category = ?, display_price = ?, price_mandatory = ?, announces_validation = ?, id_mailing_list = ?, id_workflow = ?, display_captcha = ? WHERE id_category = ? ";
     private static final String SQL_QUERY_COUNT_ANNOUNCES_FOR_CATEORY = "SELECT COUNT(*) FROM announce_announce WHERE id_category = ?";
     private static final String SQL_QUERY_COUNT_PUBLISHED_ANNOUNCES_FOR_CATEORY = "SELECT COUNT(*) FROM announce_announce WHERE id_category = ? AND published = 1 AND suspended = 0 AND suspended_by_user = 0 ";
     private static final String SQL_QUERY_COUNT_ENTRIES_FOR_CATEGORY = "SELECT COUNT(*) FROM announce_entry WHERE id_category = ?";
@@ -91,14 +91,16 @@ public final class CategoryDAO implements ICategoryDAO
     {
         DAOUtil daoUtil = new DAOUtil( SQL_QUERY_INSERT, plugin );
         category.setId( newPrimaryKey( plugin ) );
-        daoUtil.setInt( 1, category.getId(  ) );
-        daoUtil.setInt( 2, category.getIdSector(  ) );
-        daoUtil.setString( 3, category.getLabel(  ) );
-        daoUtil.setBoolean( 4, category.getDisplayPrice(  ) );
-        daoUtil.setInt( 5, category.getAnnouncesValidation(  ) );
-        daoUtil.setInt( 6, category.getIdMailingList(  ) );
-        daoUtil.setBoolean( 7, category.getDisplayCaptcha( ) );
-        daoUtil.setInt( 8, category.getIdWorkflow( ) );
+        int nIndex = 1;
+        daoUtil.setInt( nIndex++, category.getId( ) );
+        daoUtil.setInt( nIndex++, category.getIdSector( ) );
+        daoUtil.setString( nIndex++, category.getLabel( ) );
+        daoUtil.setBoolean( nIndex++, category.getDisplayPrice( ) );
+        daoUtil.setBoolean( nIndex++, category.getPriceMandatory( ) );
+        daoUtil.setInt( nIndex++, category.getAnnouncesValidation( ) );
+        daoUtil.setInt( nIndex++, category.getIdMailingList( ) );
+        daoUtil.setBoolean( nIndex++, category.getDisplayCaptcha( ) );
+        daoUtil.setInt( nIndex, category.getIdWorkflow( ) );
         daoUtil.executeUpdate(  );
         daoUtil.free(  );
     }
@@ -118,14 +120,16 @@ public final class CategoryDAO implements ICategoryDAO
         if ( daoUtil.next(  ) )
         {
             category = new Category(  );
-            category.setId( daoUtil.getInt( 1 ) );
-            category.setIdSector( daoUtil.getInt( 2 ) );
-            category.setLabel( daoUtil.getString( 3 ) );
-            category.setDisplayPrice( daoUtil.getBoolean( 4 ) );
-            category.setAnnouncesValidation( daoUtil.getInt( 5 ) );
-            category.setIdMailingList( daoUtil.getInt( 6 ) );
-            category.setIdWorkflow( daoUtil.getInt( 7 ) );
-            category.setDisplayCaptcha( daoUtil.getBoolean( 8 ) );
+            int nIndex = 1;
+            category.setId( daoUtil.getInt( nIndex++ ) );
+            category.setIdSector( daoUtil.getInt( nIndex++ ) );
+            category.setLabel( daoUtil.getString( nIndex++ ) );
+            category.setDisplayPrice( daoUtil.getBoolean( nIndex++ ) );
+            category.setPriceMandatory( daoUtil.getBoolean( nIndex++ ) );
+            category.setAnnouncesValidation( daoUtil.getInt( nIndex++ ) );
+            category.setIdMailingList( daoUtil.getInt( nIndex++ ) );
+            category.setIdWorkflow( daoUtil.getInt( nIndex++ ) );
+            category.setDisplayCaptcha( daoUtil.getBoolean( nIndex++ ) );
             category.setNumberAnnounces( countAnnouncesForCategory( category, plugin ) );
         }
 
@@ -153,15 +157,16 @@ public final class CategoryDAO implements ICategoryDAO
     public void store( Category category, Plugin plugin )
     {
         DAOUtil daoUtil = new DAOUtil( SQL_QUERY_UPDATE, plugin );
-
-        daoUtil.setInt( 1, category.getIdSector(  ) );
-        daoUtil.setString( 2, category.getLabel(  ) );
-        daoUtil.setBoolean( 3, category.getDisplayPrice(  ) );
-        daoUtil.setInt( 4, category.getAnnouncesValidation(  ) );
-        daoUtil.setInt( 5, category.getIdMailingList(  ) );
-        daoUtil.setInt( 6, category.getIdWorkflow( ) );
-        daoUtil.setBoolean( 7, category.getDisplayCaptcha( ) );
-        daoUtil.setInt( 8, category.getId( ) );
+        int nIndex = 1;
+        daoUtil.setInt( nIndex++, category.getIdSector( ) );
+        daoUtil.setString( nIndex++, category.getLabel( ) );
+        daoUtil.setBoolean( nIndex++, category.getDisplayPrice( ) );
+        daoUtil.setBoolean( nIndex++, category.getPriceMandatory( ) );
+        daoUtil.setInt( nIndex++, category.getAnnouncesValidation( ) );
+        daoUtil.setInt( nIndex++, category.getIdMailingList( ) );
+        daoUtil.setInt( nIndex++, category.getIdWorkflow( ) );
+        daoUtil.setBoolean( nIndex++, category.getDisplayCaptcha( ) );
+        daoUtil.setInt( nIndex, category.getId( ) );
         daoUtil.executeUpdate(  );
         daoUtil.free(  );
     }

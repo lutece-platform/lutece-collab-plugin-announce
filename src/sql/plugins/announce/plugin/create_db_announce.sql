@@ -22,6 +22,7 @@ CREATE TABLE announce_category(
 	id_sector int default '0' NOT NULL,
 	label_category varchar(50) NOT NULL,
 	display_price smallint default '0',
+	price_mandatory smallint default '0',
 	announces_validation smallint default '0',
 	id_mailing_list int default NULL,
 	id_workflow INT default 0,
@@ -42,6 +43,7 @@ CREATE TABLE announce_announce(
 	description_announce LONG VARCHAR NOT NULL ,
 	price_announce varchar(50),
 	date_creation timestamp default CURRENT_TIMESTAMP NOT NULL,
+	date_modification timestamp NOT NULL,
 	published smallint default '0',
 	suspended smallint default '0',
 	suspended_by_user smallint default '0',
@@ -84,4 +86,11 @@ CREATE TABLE announce_search_filters(
 	price_min int not null default 0,
 	price_max int not null default 0,
 	PRIMARY KEY (id_filter)
+);
+
+DROP TABLE IF EXISTS announce_portlet_last_announces;
+CREATE TABLE announce_portlet_last_announces(
+	id_portlet int NOT NULL,
+	nb_announces int NOT NULL,
+	PRIMARY KEY (id_portlet)
 );
