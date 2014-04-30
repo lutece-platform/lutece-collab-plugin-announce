@@ -97,7 +97,7 @@ public class LastAnnouncesPortlet extends PortletHtmlContent
     {
         if ( request != null )
         {
-            AnnounceSort announceSort = AnnounceSort.getAnnounceSort( AnnounceSort.SORT_DATE_CREATION, true );
+            AnnounceSort announceSort = AnnounceSort.getAnnounceSort( AnnounceSort.SORT_DATE_CREATION, false );
             List<Integer> listAllIdAnnounces = AnnounceHome.findAllPublishedId( announceSort );
 
             String strContent = AnnounceApp.getAnnounceListById( request,
