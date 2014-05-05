@@ -66,8 +66,10 @@ import fr.paris.lutece.util.url.UrlItem;
 import org.apache.commons.fileupload.FileItem;
 
 import java.io.Serializable;
+
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -125,12 +127,12 @@ public class AnnounceService implements Serializable
      * @return the HTML code of the form
      */
     public String getHtmlAnnounceForm( Announce announce, Category category, Locale locale, boolean bDisplayFront,
-            HttpServletRequest request )
+        HttpServletRequest request )
     {
-        Map<String, Object> model = new HashMap<String, Object>( );
-        StringBuffer strBuffer = new StringBuffer( );
-        EntryFilter filter = new EntryFilter( );
-        filter.setIdResource( category.getId( ) );
+        Map<String, Object> model = new HashMap<String, Object>(  );
+        StringBuffer strBuffer = new StringBuffer(  );
+        EntryFilter filter = new EntryFilter(  );
+        filter.setIdResource( category.getId(  ) );
         filter.setResourceType( Category.RESOURCE_TYPE );
         filter.setEntryParentNull( EntryFilter.FILTER_TRUE );
         filter.setFieldDependNull( EntryFilter.FILTER_TRUE );
@@ -139,38 +141,39 @@ public class AnnounceService implements Serializable
 
         if ( announce != null )
         {
-            if ( announce.getListResponse( ) == null && announce.getId( ) > 0 )
+            if ( ( announce.getListResponse(  ) == null ) && ( announce.getId(  ) > 0 ) )
             {
-                announce.setListResponse( AnnounceHome.findListResponse( announce.getId( ), true ) );
+                announce.setListResponse( AnnounceHome.findListResponse( announce.getId(  ), true ) );
             }
 
             announceDTO = new AnnounceDTO( announce );
 
-            if ( announce.getListResponse( ) != null )
+            if ( announce.getListResponse(  ) != null )
             {
-                for ( Response response : announce.getListResponse( ) )
+                for ( Response response : announce.getListResponse(  ) )
                 {
-                    if ( response.getFile( ) != null && response.getFile( ).getIdFile( ) > 0 )
+                    if ( ( response.getFile(  ) != null ) && ( response.getFile(  ).getIdFile(  ) > 0 ) )
                     {
-                        File file = FileHome.findByPrimaryKey( response.getFile( ).getIdFile( ) );
-                        PhysicalFile physicalFile = PhysicalFileHome.findByPrimaryKey( file.getPhysicalFile( )
-                                .getIdPhysicalFile( ) );
-                        FileItem fileItem = new AnnounceFileItem( physicalFile.getValue( ), file.getTitle( ) );
-                        AnnounceAsynchronousUploadHandler.getHandler( ).addFileItemToUploadedFile( fileItem,
-                                Integer.toString( response.getEntry( ).getIdEntry( ) ), request.getSession( ) );
+                        File file = FileHome.findByPrimaryKey( response.getFile(  ).getIdFile(  ) );
+                        PhysicalFile physicalFile = PhysicalFileHome.findByPrimaryKey( file.getPhysicalFile(  )
+                                                                                           .getIdPhysicalFile(  ) );
+                        FileItem fileItem = new AnnounceFileItem( physicalFile.getValue(  ), file.getTitle(  ) );
+                        AnnounceAsynchronousUploadHandler.getHandler(  )
+                                                         .addFileItemToUploadedFile( fileItem,
+                            Integer.toString( response.getEntry(  ).getIdEntry(  ) ), request.getSession(  ) );
                     }
                 }
 
-                Map<Integer, List<Response>> mapResponsesByIdEntry = announceDTO.getMapResponsesByIdEntry( );
+                Map<Integer, List<Response>> mapResponsesByIdEntry = announceDTO.getMapResponsesByIdEntry(  );
 
-                for ( Response response : announce.getListResponse( ) )
+                for ( Response response : announce.getListResponse(  ) )
                 {
-                    List<Response> listResponse = mapResponsesByIdEntry.get( response.getEntry( ).getIdEntry( ) );
+                    List<Response> listResponse = mapResponsesByIdEntry.get( response.getEntry(  ).getIdEntry(  ) );
 
                     if ( listResponse == null )
                     {
-                        listResponse = new ArrayList<Response>( );
-                        mapResponsesByIdEntry.put( response.getEntry( ).getIdEntry( ), listResponse );
+                        listResponse = new ArrayList<Response>(  );
+                        mapResponsesByIdEntry.put( response.getEntry(  ).getIdEntry(  ), listResponse );
                     }
 
                     listResponse.add( response );
@@ -182,20 +185,21 @@ public class AnnounceService implements Serializable
 
         for ( Entry entry : listEntryFirstLevel )
         {
-            getHtmlEntry( announceDTO, entry.getIdEntry( ), strBuffer, locale, bDisplayFront, request );
+            getHtmlEntry( announceDTO, entry.getIdEntry(  ), strBuffer, locale, bDisplayFront, request );
         }
 
-        Sector sector = SectorHome.findByPrimaryKey( category.getIdSector( ) );
+        Sector sector = SectorHome.findByPrimaryKey( category.getIdSector(  ) );
 
         model.put( MARK_CATEGORY, category );
         model.put( MARK_SECTOR, sector );
-        model.put( MARK_STR_ENTRY, strBuffer.toString( ) );
+        model.put( MARK_STR_ENTRY, strBuffer.toString(  ) );
         model.put( MARK_LOCALE, locale );
 
         HtmlTemplate template = AppTemplateService.getTemplate( bDisplayFront ? TEMPLATE_HTML_CODE_FORM
-                : TEMPLATE_HTML_CODE_FORM_ADMIN, locale, model );
+                                                                              : TEMPLATE_HTML_CODE_FORM_ADMIN, locale,
+                model );
 
-        return template.getHtml( );
+        return template.getHtml(  );
     }
 
     /**
@@ -211,73 +215,73 @@ public class AnnounceService implements Serializable
      * @param request HttpServletRequest
      */
     public void getHtmlEntry( AnnounceDTO announce, int nIdEntry, StringBuffer stringBuffer, Locale locale,
-            boolean bDisplayFront, HttpServletRequest request )
+        boolean bDisplayFront, HttpServletRequest request )
     {
-        Map<String, Object> model = new HashMap<String, Object>( );
+        Map<String, Object> model = new HashMap<String, Object>(  );
         StringBuffer strConditionalQuestionStringBuffer = null;
         HtmlTemplate template;
         Entry entry = EntryHome.findByPrimaryKey( nIdEntry );
 
-        if ( entry.getEntryType( ).getGroup( ) )
+        if ( entry.getEntryType(  ).getGroup(  ) )
         {
-            StringBuffer strGroupStringBuffer = new StringBuffer( );
+            StringBuffer strGroupStringBuffer = new StringBuffer(  );
 
-            for ( Entry entryChild : entry.getChildren( ) )
+            for ( Entry entryChild : entry.getChildren(  ) )
             {
-                getHtmlEntry( announce, entryChild.getIdEntry( ), strGroupStringBuffer, locale, bDisplayFront, request );
+                getHtmlEntry( announce, entryChild.getIdEntry(  ), strGroupStringBuffer, locale, bDisplayFront, request );
             }
 
-            model.put( MARK_STR_LIST_CHILDREN, strGroupStringBuffer.toString( ) );
+            model.put( MARK_STR_LIST_CHILDREN, strGroupStringBuffer.toString(  ) );
         }
         else
         {
-            if ( entry.getNumberConditionalQuestion( ) != 0 )
+            if ( entry.getNumberConditionalQuestion(  ) != 0 )
             {
-                for ( Field field : entry.getFields( ) )
+                for ( Field field : entry.getFields(  ) )
                 {
-                    field.setConditionalQuestions( FieldHome.findByPrimaryKey( field.getIdField( ) )
-                            .getConditionalQuestions( ) );
+                    field.setConditionalQuestions( FieldHome.findByPrimaryKey( field.getIdField(  ) )
+                                                            .getConditionalQuestions(  ) );
                 }
             }
         }
 
-        if ( entry.getNumberConditionalQuestion( ) != 0 )
+        if ( entry.getNumberConditionalQuestion(  ) != 0 )
         {
-            strConditionalQuestionStringBuffer = new StringBuffer( );
+            strConditionalQuestionStringBuffer = new StringBuffer(  );
 
-            for ( Field field : entry.getFields( ) )
+            for ( Field field : entry.getFields(  ) )
             {
-                if ( field.getConditionalQuestions( ).size( ) != 0 )
+                if ( field.getConditionalQuestions(  ).size(  ) != 0 )
                 {
-                    StringBuffer strGroupStringBuffer = new StringBuffer( );
+                    StringBuffer strGroupStringBuffer = new StringBuffer(  );
 
-                    for ( Entry entryConditional : field.getConditionalQuestions( ) )
+                    for ( Entry entryConditional : field.getConditionalQuestions(  ) )
                     {
-                        getHtmlEntry( announce, entryConditional.getIdEntry( ), strGroupStringBuffer, locale,
-                                bDisplayFront, request );
+                        getHtmlEntry( announce, entryConditional.getIdEntry(  ), strGroupStringBuffer, locale,
+                            bDisplayFront, request );
                     }
 
-                    model.put( MARK_STR_LIST_CHILDREN, strGroupStringBuffer.toString( ) );
+                    model.put( MARK_STR_LIST_CHILDREN, strGroupStringBuffer.toString(  ) );
                     model.put( MARK_FIELD, field );
                     template = AppTemplateService.getTemplate( TEMPLATE_DIV_CONDITIONAL_ENTRY, locale, model );
-                    strConditionalQuestionStringBuffer.append( template.getHtml( ) );
+                    strConditionalQuestionStringBuffer.append( template.getHtml(  ) );
                 }
             }
 
-            model.put( MARK_STR_LIST_CHILDREN, strConditionalQuestionStringBuffer.toString( ) );
+            model.put( MARK_STR_LIST_CHILDREN, strConditionalQuestionStringBuffer.toString(  ) );
         }
 
         model.put( MARK_ENTRY, entry );
         model.put( MARK_LOCALE, locale );
 
-        LuteceUser user = SecurityService.getInstance( ).getRegisteredUser( request );
+        LuteceUser user = SecurityService.getInstance(  ).getRegisteredUser( request );
 
-        if ( ( user == null ) && SecurityService.isAuthenticationEnable( )
-                && SecurityService.getInstance( ).isExternalAuthentication( ) )
+        if ( ( user == null ) && SecurityService.isAuthenticationEnable(  ) &&
+                SecurityService.getInstance(  ).isExternalAuthentication(  ) )
         {
             try
             {
-                user = SecurityService.getInstance( ).getRemoteUser( request );
+                user = SecurityService.getInstance(  ).getRemoteUser( request );
             }
             catch ( UserNotSignedException e )
             {
@@ -287,15 +291,16 @@ public class AnnounceService implements Serializable
 
         model.put( MARK_USER, user );
 
-        if ( ( announce != null ) && ( announce.getMapResponsesByIdEntry( ) != null ) )
+        if ( ( announce != null ) && ( announce.getMapResponsesByIdEntry(  ) != null ) )
         {
-            List<Response> listResponses = announce.getMapResponsesByIdEntry( ).get( entry.getIdEntry( ) );
+            List<Response> listResponses = announce.getMapResponsesByIdEntry(  ).get( entry.getIdEntry(  ) );
             model.put( MARK_LIST_RESPONSES, listResponses );
         }
 
         template = AppTemplateService.getTemplate( EntryTypeServiceManager.getEntryTypeService( entry )
-                .getTemplateHtmlForm( entry, bDisplayFront ), locale, model );
-        stringBuffer.append( template.getHtml( ) );
+                                                                          .getTemplateHtmlForm( entry, bDisplayFront ),
+                locale, model );
+        stringBuffer.append( template.getHtml(  ) );
     }
 
     /**
@@ -312,10 +317,10 @@ public class AnnounceService implements Serializable
      *         found
      */
     public List<GenericAttributeError> getResponseEntry( HttpServletRequest request, int nIdEntry, Locale locale,
-            AnnounceDTO announce )
+        AnnounceDTO announce )
     {
-        List<Response> listResponse = new ArrayList<Response>( );
-        announce.getMapResponsesByIdEntry( ).put( nIdEntry, listResponse );
+        List<Response> listResponse = new ArrayList<Response>(  );
+        announce.getMapResponsesByIdEntry(  ).put( nIdEntry, listResponse );
 
         return getResponseEntry( request, nIdEntry, listResponse, false, locale, announce );
     }
@@ -334,40 +339,40 @@ public class AnnounceService implements Serializable
      *         found
      */
     private List<GenericAttributeError> getResponseEntry( HttpServletRequest request, int nIdEntry,
-            List<Response> listResponse, boolean bResponseNull, Locale locale, AnnounceDTO announce )
+        List<Response> listResponse, boolean bResponseNull, Locale locale, AnnounceDTO announce )
     {
-        List<GenericAttributeError> listFormErrors = new ArrayList<GenericAttributeError>( );
+        List<GenericAttributeError> listFormErrors = new ArrayList<GenericAttributeError>(  );
         Entry entry = EntryHome.findByPrimaryKey( nIdEntry );
 
-        List<Field> listField = new ArrayList<Field>( );
+        List<Field> listField = new ArrayList<Field>(  );
 
-        for ( Field field : entry.getFields( ) )
+        for ( Field field : entry.getFields(  ) )
         {
-            field = FieldHome.findByPrimaryKey( field.getIdField( ) );
+            field = FieldHome.findByPrimaryKey( field.getIdField(  ) );
             listField.add( field );
         }
 
         entry.setFields( listField );
 
-        if ( entry.getEntryType( ).getGroup( ) )
+        if ( entry.getEntryType(  ).getGroup(  ) )
         {
-            for ( Entry entryChild : entry.getChildren( ) )
+            for ( Entry entryChild : entry.getChildren(  ) )
             {
-                List<Response> listResponseChild = new ArrayList<Response>( );
-                announce.getMapResponsesByIdEntry( ).put( entryChild.getIdEntry( ), listResponseChild );
+                List<Response> listResponseChild = new ArrayList<Response>(  );
+                announce.getMapResponsesByIdEntry(  ).put( entryChild.getIdEntry(  ), listResponseChild );
 
-                listFormErrors.addAll( getResponseEntry( request, entryChild.getIdEntry( ), listResponseChild, false,
+                listFormErrors.addAll( getResponseEntry( request, entryChild.getIdEntry(  ), listResponseChild, false,
                         locale, announce ) );
             }
         }
-        else if ( !entry.getEntryType( ).getComment( ) )
+        else if ( !entry.getEntryType(  ).getComment(  ) )
         {
             GenericAttributeError formError = null;
 
             if ( !bResponseNull )
             {
-                formError = EntryTypeServiceManager.getEntryTypeService( entry ).getResponseData( entry, request,
-                        listResponse, locale );
+                formError = EntryTypeServiceManager.getEntryTypeService( entry )
+                                                   .getResponseData( entry, request, listResponse, locale );
 
                 if ( formError != null )
                 {
@@ -376,7 +381,7 @@ public class AnnounceService implements Serializable
             }
             else
             {
-                Response response = new Response( );
+                Response response = new Response(  );
                 response.setEntry( entry );
                 listResponse.add( response );
             }
@@ -387,18 +392,18 @@ public class AnnounceService implements Serializable
                 listFormErrors.add( formError );
             }
 
-            if ( entry.getNumberConditionalQuestion( ) != 0 )
+            if ( entry.getNumberConditionalQuestion(  ) != 0 )
             {
-                for ( Field field : entry.getFields( ) )
+                for ( Field field : entry.getFields(  ) )
                 {
-                    boolean bIsFieldInResponseList = isFieldInTheResponseList( field.getIdField( ), listResponse );
+                    boolean bIsFieldInResponseList = isFieldInTheResponseList( field.getIdField(  ), listResponse );
 
-                    for ( Entry conditionalEntry : field.getConditionalQuestions( ) )
+                    for ( Entry conditionalEntry : field.getConditionalQuestions(  ) )
                     {
-                        List<Response> listResponseChild = new ArrayList<Response>( );
-                        announce.getMapResponsesByIdEntry( ).put( conditionalEntry.getIdEntry( ), listResponseChild );
+                        List<Response> listResponseChild = new ArrayList<Response>(  );
+                        announce.getMapResponsesByIdEntry(  ).put( conditionalEntry.getIdEntry(  ), listResponseChild );
 
-                        listFormErrors.addAll( getResponseEntry( request, conditionalEntry.getIdEntry( ),
+                        listFormErrors.addAll( getResponseEntry( request, conditionalEntry.getIdEntry(  ),
                                 listResponseChild, !bIsFieldInResponseList, locale, announce ) );
                     }
                 }
@@ -418,7 +423,7 @@ public class AnnounceService implements Serializable
     {
         for ( Response response : listResponse )
         {
-            if ( ( response.getField( ) != null ) && ( response.getField( ).getIdField( ) == nIdField ) )
+            if ( ( response.getField(  ) != null ) && ( response.getField(  ).getIdField(  ) == nIdField ) )
             {
                 return true;
             }
@@ -434,17 +439,17 @@ public class AnnounceService implements Serializable
      */
     public String getEntryUrl( Entry entry )
     {
-        UrlItem url = new UrlItem( AppPathService.getPortalUrl( ) );
+        UrlItem url = new UrlItem( AppPathService.getPortalUrl(  ) );
         url.addParameter( XPageAppService.PARAM_XPAGE_APP, AnnouncePlugin.PLUGIN_NAME );
         url.addParameter( MVCUtils.PARAMETER_VIEW, VIEW_GET_FORM );
 
-        if ( ( entry != null ) && ( entry.getIdResource( ) > 0 ) )
+        if ( ( entry != null ) && ( entry.getIdResource(  ) > 0 ) )
         {
-            url.addParameter( PARAMETER_ID_CATEGORY, entry.getIdResource( ) );
-            url.setAnchor( PREFIX_ATTRIBUTE + entry.getIdEntry( ) );
+            url.addParameter( PARAMETER_ID_CATEGORY, entry.getIdResource(  ) );
+            url.setAnchor( PREFIX_ATTRIBUTE + entry.getIdEntry(  ) );
         }
 
-        return url.getUrl( );
+        return url.getUrl(  );
     }
 
     /**
@@ -454,9 +459,9 @@ public class AnnounceService implements Serializable
      */
     public void convertMapResponseToList( AnnounceDTO announce )
     {
-        List<Response> listResponse = new ArrayList<Response>( );
+        List<Response> listResponse = new ArrayList<Response>(  );
 
-        for ( List<Response> listResponseByEntry : announce.getMapResponsesByIdEntry( ).values( ) )
+        for ( List<Response> listResponseByEntry : announce.getMapResponsesByIdEntry(  ).values(  ) )
         {
             listResponse.addAll( listResponseByEntry );
         }
@@ -469,10 +474,11 @@ public class AnnounceService implements Serializable
      * Get the date format to use
      * @return The date format to use
      */
-    public static DateFormat getDateFormat( )
+    public static DateFormat getDateFormat(  )
     {
         DateFormat dateFormat = new SimpleDateFormat( PATTERN_DATE, Locale.FRENCH );
         dateFormat.setLenient( false );
+
         return dateFormat;
     }
 }

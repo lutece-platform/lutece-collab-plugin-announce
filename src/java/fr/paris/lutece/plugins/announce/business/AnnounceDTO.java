@@ -49,13 +49,12 @@ public class AnnounceDTO extends Announce
      * Serial version UID
      */
     private static final long serialVersionUID = -8507335801957930807L;
-
-    private Map<Integer, List<Response>> _mapResponsesByIdEntry = new HashMap<Integer, List<Response>>( );
+    private Map<Integer, List<Response>> _mapResponsesByIdEntry = new HashMap<Integer, List<Response>>(  );
 
     /**
      * Default constructor
      */
-    public AnnounceDTO( )
+    public AnnounceDTO(  )
     {
         // Do nothing
     }
@@ -66,20 +65,20 @@ public class AnnounceDTO extends Announce
      */
     public AnnounceDTO( Announce announce )
     {
-        setId( announce.getId( ) );
-        setCategory( announce.getCategory( ) );
-        setContactInformation( announce.getContactInformation( ) );
-        setDateCreation( announce.getDateCreation( ) );
-        setDescription( announce.getDescription( ) );
-        setHasPictures( announce.getHasPictures( ) );
-        setPrice( announce.getPrice( ) );
-        setPublished( announce.getPublished( ) );
-        setSuspended( announce.getSuspended( ) );
-        setSuspendedByUser( announce.getSuspendedByUser( ) );
-        setTags( announce.getTags( ) );
-        setListIdImageResponse( announce.getListIdImageResponse( ) );
-        setTitle( announce.getTitle( ) );
-        setUserName( announce.getUserName( ) );
+        setId( announce.getId(  ) );
+        setCategory( announce.getCategory(  ) );
+        setContactInformation( announce.getContactInformation(  ) );
+        setDateCreation( announce.getDateCreation(  ) );
+        setDescription( announce.getDescription(  ) );
+        setHasPictures( announce.getHasPictures(  ) );
+        setPrice( announce.getPrice(  ) );
+        setPublished( announce.getPublished(  ) );
+        setSuspended( announce.getSuspended(  ) );
+        setSuspendedByUser( announce.getSuspendedByUser(  ) );
+        setTags( announce.getTags(  ) );
+        setListIdImageResponse( announce.getListIdImageResponse(  ) );
+        setTitle( announce.getTitle(  ) );
+        setUserName( announce.getUserName(  ) );
     }
 
     /**
@@ -89,7 +88,7 @@ public class AnnounceDTO extends Announce
      *         the
      *         id of the associated entry
      */
-    public Map<Integer, List<Response>> getMapResponsesByIdEntry( )
+    public Map<Integer, List<Response>> getMapResponsesByIdEntry(  )
     {
         return _mapResponsesByIdEntry;
     }

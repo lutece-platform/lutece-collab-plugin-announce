@@ -41,6 +41,7 @@ import fr.paris.lutece.portal.service.search.SearchResult;
 import fr.paris.lutece.portal.service.util.AppLogService;
 
 import org.apache.commons.lang.StringUtils;
+
 import org.apache.lucene.document.DateTools;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.Term;
@@ -56,8 +57,10 @@ import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.util.Version;
 
 import java.io.IOException;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -71,7 +74,6 @@ import java.util.Locale;
 public class AnnounceLuceneSearchEngine implements IAnnounceSearchEngine
 {
     private static final int NO_CATEGORY = 0;
-
     private static final SimpleDateFormat DAY_FORMAT = new SimpleDateFormat( "yyyyMMdd", Locale.US );
 
     /**
@@ -79,68 +81,68 @@ public class AnnounceLuceneSearchEngine implements IAnnounceSearchEngine
      */
     @Override
     public int getSearchResults( AnnounceSearchFilter filter, Plugin plugin, List<SearchResult> listSearchResult,
-            int nPage, int nItemsPerPage )
+        int nPage, int nItemsPerPage )
     {
-        ArrayList<SearchItem> listResults = new ArrayList<SearchItem>( );
+        ArrayList<SearchItem> listResults = new ArrayList<SearchItem>(  );
         Searcher searcher = null;
         Date dateMinToSearch;
         Date dateMaxToSearch;
         int nNbResults = 0;
+
         try
         {
-            searcher = AnnounceSearchService.getInstance( ).getSearcher( );
+            searcher = AnnounceSearchService.getInstance(  ).getSearcher(  );
 
-            Collection<String> queries = new ArrayList<String>( );
-            Collection<String> sectors = new ArrayList<String>( );
-            Collection<BooleanClause.Occur> flags = new ArrayList<BooleanClause.Occur>( );
+            Collection<String> queries = new ArrayList<String>(  );
+            Collection<String> sectors = new ArrayList<String>(  );
+            Collection<BooleanClause.Occur> flags = new ArrayList<BooleanClause.Occur>(  );
 
             //Category id
-            if ( filter.getIdCategory( ) != NO_CATEGORY )
+            if ( filter.getIdCategory(  ) != NO_CATEGORY )
             {
                 Query queryCategoryId = new TermQuery( new Term( AnnounceSearchItem.FIELD_CATEGORY_ID,
-                        String.valueOf( filter.getIdCategory( ) ) ) );
-                queries.add( queryCategoryId.toString( ) );
+                            String.valueOf( filter.getIdCategory(  ) ) ) );
+                queries.add( queryCategoryId.toString(  ) );
                 sectors.add( AnnounceSearchItem.FIELD_CATEGORY_ID );
                 flags.add( BooleanClause.Occur.MUST );
             }
 
             //Type (=announce)
-
-            PhraseQuery queryType = new PhraseQuery( );
+            PhraseQuery queryType = new PhraseQuery(  );
             queryType.add( new Term( AnnounceSearchItem.FIELD_TYPE, AnnouncePlugin.PLUGIN_NAME + "e" ) );
-            queries.add( queryType.toString( ) );
+            queries.add( queryType.toString(  ) );
             sectors.add( AnnounceSearchItem.FIELD_TYPE );
             flags.add( BooleanClause.Occur.MUST );
 
             //Keywords in title or description
-            if ( StringUtils.isNotBlank( filter.getKeywords( ) ) )
+            if ( StringUtils.isNotBlank( filter.getKeywords(  ) ) )
             {
-                PhraseQuery queryContent = new PhraseQuery( );
-                queryContent.add( new Term( AnnounceSearchItem.FIELD_CONTENTS, filter.getKeywords( ) + "a" ) );
-                queries.add( queryContent.toString( ) );
+                PhraseQuery queryContent = new PhraseQuery(  );
+                queryContent.add( new Term( AnnounceSearchItem.FIELD_CONTENTS, filter.getKeywords(  ) + "a" ) );
+                queries.add( queryContent.toString(  ) );
                 sectors.add( AnnounceSearchItem.FIELD_CONTENTS );
                 flags.add( BooleanClause.Occur.MUST );
             }
 
             //contains range date
-            if ( filter.getDateMin( ) != null || filter.getDateMax( ) != null )
+            if ( ( filter.getDateMin(  ) != null ) || ( filter.getDateMax(  ) != null ) )
             {
-                if ( filter.getDateMin( ) == null )
+                if ( filter.getDateMin(  ) == null )
                 {
-                    dateMinToSearch = new Date( 0l );
+                    dateMinToSearch = new Date( 0L );
                 }
                 else
                 {
-                    dateMinToSearch = filter.getDateMin( );
+                    dateMinToSearch = filter.getDateMin(  );
                 }
 
-                if ( filter.getDateMax( ) == null )
+                if ( filter.getDateMax(  ) == null )
                 {
-                    dateMaxToSearch = new Date( );
+                    dateMaxToSearch = new Date(  );
                 }
                 else
                 {
-                    dateMaxToSearch = filter.getDateMax( );
+                    dateMaxToSearch = filter.getDateMax(  );
                 }
 
                 //String stringDateMin = DateUtil.
@@ -148,28 +150,28 @@ public class AnnounceLuceneSearchEngine implements IAnnounceSearchEngine
                 String strUpperTerm = DAY_FORMAT.format( dateMaxToSearch );
                 Query queryRangeDate = new TermRangeQuery( AnnounceSearchItem.FIELD_DATE, strLowerTerm, strUpperTerm,
                         true, true );
-                queries.add( queryRangeDate.toString( ) );
+                queries.add( queryRangeDate.toString(  ) );
                 sectors.add( AnnounceSearchItem.FIELD_DATE );
                 flags.add( BooleanClause.Occur.MUST );
             }
 
             // contains range price
-            if ( filter.getPriceMin( ) > 0 || filter.getPriceMax( ) > 0 )
+            if ( ( filter.getPriceMin(  ) > 0 ) || ( filter.getPriceMax(  ) > 0 ) )
             {
-                int nPriceMin = filter.getPriceMin( ) > 0 ? filter.getPriceMin( ) : 0;
-                int nPriceMax = filter.getPriceMax( ) > 0 ? filter.getPriceMax( ) : Integer.MAX_VALUE;
+                int nPriceMin = ( filter.getPriceMin(  ) > 0 ) ? filter.getPriceMin(  ) : 0;
+                int nPriceMax = ( filter.getPriceMax(  ) > 0 ) ? filter.getPriceMax(  ) : Integer.MAX_VALUE;
                 Query queryRangePrice = new TermRangeQuery( AnnounceSearchItem.FIELD_PRICE,
                         AnnounceSearchService.formatPriceForIndexer( nPriceMin ),
                         AnnounceSearchService.formatPriceForIndexer( nPriceMax ), true, true );
-                queries.add( queryRangePrice.toString( ) );
+                queries.add( queryRangePrice.toString(  ) );
                 sectors.add( AnnounceSearchItem.FIELD_PRICE );
                 flags.add( BooleanClause.Occur.MUST );
             }
 
-            Query queryMulti = MultiFieldQueryParser.parse( Version.LUCENE_29, queries.toArray( new String[queries
-                    .size( )] ), sectors.toArray( new String[sectors.size( )] ), flags
-                    .toArray( new BooleanClause.Occur[flags.size( )] ), AnnounceSearchService.getInstance( )
-                    .getAnalyzer( ) );
+            Query queryMulti = MultiFieldQueryParser.parse( Version.LUCENE_29,
+                    queries.toArray( new String[queries.size(  )] ), sectors.toArray( new String[sectors.size(  )] ),
+                    flags.toArray( new BooleanClause.Occur[flags.size(  )] ),
+                    AnnounceSearchService.getInstance(  ).getAnalyzer(  ) );
 
             TopDocs topDocs = searcher.search( queryMulti, 1000000 );
             ScoreDoc[] hits = topDocs.scoreDocs;
@@ -177,12 +179,15 @@ public class AnnounceLuceneSearchEngine implements IAnnounceSearchEngine
 
             // We only get the documents of the current page
             int nFrom = ( nPage - 1 ) * nItemsPerPage;
+
             if ( nFrom < 0 )
             {
                 nFrom = 0;
             }
-            int nTo = nPage * nItemsPerPage + 1;
-            if ( nTo == 0 || nTo > nNbResults )
+
+            int nTo = ( nPage * nItemsPerPage ) + 1;
+
+            if ( ( nTo == 0 ) || ( nTo > nNbResults ) )
             {
                 nTo = nNbResults;
             }
@@ -197,7 +202,7 @@ public class AnnounceLuceneSearchEngine implements IAnnounceSearchEngine
         }
         catch ( Exception e )
         {
-            AppLogService.error( e.getMessage( ), e );
+            AppLogService.error( e.getMessage(  ), e );
         }
         finally
         {
@@ -205,15 +210,17 @@ public class AnnounceLuceneSearchEngine implements IAnnounceSearchEngine
             {
                 try
                 {
-                    searcher.close( );
+                    searcher.close(  );
                 }
                 catch ( IOException e )
                 {
-                    AppLogService.error( e.getMessage( ), e );
+                    AppLogService.error( e.getMessage(  ), e );
                 }
             }
         }
+
         convertList( listResults, listSearchResult );
+
         return nNbResults;
     }
 
@@ -226,23 +233,23 @@ public class AnnounceLuceneSearchEngine implements IAnnounceSearchEngine
     {
         for ( SearchItem item : listSource )
         {
-            SearchResult result = new SearchResult( );
-            result.setId( item.getId( ) );
+            SearchResult result = new SearchResult(  );
+            result.setId( item.getId(  ) );
 
             try
             {
-                result.setDate( DateTools.stringToDate( item.getDate( ) ) );
+                result.setDate( DateTools.stringToDate( item.getDate(  ) ) );
             }
             catch ( ParseException e )
             {
-                AppLogService.error( "Bad Date Format for indexed item \"" + item.getTitle( ) + "\" : "
-                        + e.getMessage( ) );
+                AppLogService.error( "Bad Date Format for indexed item \"" + item.getTitle(  ) + "\" : " +
+                    e.getMessage(  ) );
             }
 
-            result.setUrl( item.getUrl( ) );
-            result.setTitle( item.getTitle( ) );
-            result.setSummary( item.getSummary( ) );
-            result.setType( item.getType( ) );
+            result.setUrl( item.getUrl(  ) );
+            result.setTitle( item.getTitle(  ) );
+            result.setSummary( item.getSummary(  ) );
+            result.setType( item.getType(  ) );
             listSearchResult.add( result );
         }
     }

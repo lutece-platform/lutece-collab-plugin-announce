@@ -53,13 +53,13 @@ public final class CategoryHome
     private static Plugin _plugin = PluginService.getPlugin( AnnouncePlugin.PLUGIN_NAME );
 
     /** Creates a new instance of CategoryHome */
-    private CategoryHome( )
+    private CategoryHome(  )
     {
     }
 
     /**
      * Creation of an instance of category
-     * 
+     *
      * @param category The instance of the category which contains the
      *            informations to store
      */
@@ -70,7 +70,7 @@ public final class CategoryHome
 
     /**
      * Update of the category which is specified in parameter
-     * 
+     *
      * @param category The instance of the category which contains the
      *            informations to store
      * @return The instance of the category which has been updated
@@ -78,21 +78,22 @@ public final class CategoryHome
     public static Category update( Category category )
     {
         _dao.store( category, _plugin );
-        AnnounceCacheService.getService( ).putInCache( AnnounceCacheService.getCategoryCacheKey( category.getId( ) ),
-                category );
+        AnnounceCacheService.getService(  )
+                            .putInCache( AnnounceCacheService.getCategoryCacheKey( category.getId(  ) ), category );
+
         return category;
     }
 
     /**
      * Remove the Category whose identifier is specified in parameter
-     * 
+     *
      * @param category The Category object to remove
      */
     public static void remove( Category category )
     {
-        AnnounceSearchFilterHome.deleteByIdCategory( category.getId( ) );
+        AnnounceSearchFilterHome.deleteByIdCategory( category.getId(  ) );
         _dao.delete( category, _plugin );
-        AnnounceCacheService.getService( ).removeKey( AnnounceCacheService.getCategoryCacheKey( category.getId( ) ) );
+        AnnounceCacheService.getService(  ).removeKey( AnnounceCacheService.getCategoryCacheKey( category.getId(  ) ) );
     }
 
     ///////////////////////////////////////////////////////////////////////////
@@ -102,21 +103,25 @@ public final class CategoryHome
     /**
      * Returns an instance of a category whose identifier is specified in
      * parameter
-     * 
+     *
      * @param nKey The Primary key of the category
      * @return An instance of category
      */
     public static Category findByPrimaryKey( int nKey )
     {
-        Category category = (Category) AnnounceCacheService.getService( ).getFromCache(
-                AnnounceCacheService.getCategoryCacheKey( nKey ) );
+        Category category = (Category) AnnounceCacheService.getService(  )
+                                                           .getFromCache( AnnounceCacheService.getCategoryCacheKey( 
+                    nKey ) );
+
         if ( category == null )
         {
             category = _dao.load( nKey, _plugin );
+
             if ( category != null )
             {
-                AnnounceCacheService.getService( ).putInCache(
-                        AnnounceCacheService.getCategoryCacheKey( category.getId( ) ), category );
+                AnnounceCacheService.getService(  )
+                                    .putInCache( AnnounceCacheService.getCategoryCacheKey( category.getId(  ) ),
+                    category );
             }
         }
 
@@ -127,7 +132,7 @@ public final class CategoryHome
      * Returns a collection of categories objects
      * @return A collection of categories
      */
-    public static List<Category> findAll( )
+    public static List<Category> findAll(  )
     {
         return _dao.selectAll( _plugin );
     }
@@ -146,7 +151,7 @@ public final class CategoryHome
      * gets the categories reference list
      * @return the categories reference list
      */
-    public static ReferenceList findCategoriesReferenceList( )
+    public static ReferenceList findCategoriesReferenceList(  )
     {
         return _dao.selectCategoriesReferenceList( _plugin );
     }

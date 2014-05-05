@@ -125,10 +125,10 @@ public class CategoryFieldJspBean extends MVCAdminJspBean
     public String getCreateField( HttpServletRequest request )
     {
         Entry entry = EntryHome.findByPrimaryKey( Integer.parseInt( request.getParameter( PARAMETER_ID_ENTRY ) ) );
-        Field field = new Field( );
+        Field field = new Field(  );
         field.setParentEntry( entry );
 
-        Map<String, Object> model = new HashMap<String, Object>( );
+        Map<String, Object> model = new HashMap<String, Object>(  );
         model.put( MARK_FIELD, field );
 
         return getPage( PROPERTY_CREATE_FIELD_TITLE, TEMPLATE_CREATE_FIELD, model );
@@ -166,27 +166,27 @@ public class CategoryFieldJspBean extends MVCAdminJspBean
      */
     private String getModifyField( HttpServletRequest request, boolean bWithConditionalQuestion )
     {
-        if ( StringUtils.isEmpty( request.getParameter( PARAMETER_ID_FIELD ) )
-                || !StringUtils.isNumeric( request.getParameter( PARAMETER_ID_FIELD ) ) )
+        if ( StringUtils.isEmpty( request.getParameter( PARAMETER_ID_FIELD ) ) ||
+                !StringUtils.isNumeric( request.getParameter( PARAMETER_ID_FIELD ) ) )
         {
             return redirect( request, CategoryJspBean.getUrlManageCategories( request ) );
         }
 
         int nIdField = Integer.parseInt( request.getParameter( PARAMETER_ID_FIELD ) );
         Field field = FieldHome.findByPrimaryKey( nIdField );
-        Entry entry = EntryHome.findByPrimaryKey( field.getParentEntry( ).getIdEntry( ) );
+        Entry entry = EntryHome.findByPrimaryKey( field.getParentEntry(  ).getIdEntry(  ) );
 
         field.setParentEntry( entry );
 
-        HashMap<String, Object> model = new HashMap<String, Object>( );
+        HashMap<String, Object> model = new HashMap<String, Object>(  );
         model.put( MARK_FIELD, field );
 
         String strTemplateName;
 
         if ( bWithConditionalQuestion )
         {
-            model.put( MARK_ENTRY_TYPE_LIST, EntryTypeService.getInstance( ).getEntryTypeReferenceList( ) );
-            model.put( MARK_ENTRY_LIST, field.getConditionalQuestions( ) );
+            model.put( MARK_ENTRY_TYPE_LIST, EntryTypeService.getInstance(  ).getEntryTypeReferenceList(  ) );
+            model.put( MARK_ENTRY_LIST, field.getConditionalQuestions(  ) );
             strTemplateName = TEMPLATE_MODIFY_FIELD_WITH_CONDITIONAL_QUESTION;
         }
         else
@@ -205,8 +205,8 @@ public class CategoryFieldJspBean extends MVCAdminJspBean
     @Action( ACTION_DO_CREATE_FIELD )
     public String doCreateField( HttpServletRequest request )
     {
-        if ( StringUtils.isEmpty( request.getParameter( PARAMETER_ID_ENTRY ) )
-                || !StringUtils.isNumeric( request.getParameter( PARAMETER_ID_ENTRY ) ) )
+        if ( StringUtils.isEmpty( request.getParameter( PARAMETER_ID_ENTRY ) ) ||
+                !StringUtils.isNumeric( request.getParameter( PARAMETER_ID_ENTRY ) ) )
         {
             return redirect( request, CategoryJspBean.getUrlManageCategories( request ) );
         }
@@ -215,10 +215,10 @@ public class CategoryFieldJspBean extends MVCAdminJspBean
 
         if ( request.getParameter( PARAMETER_CANCEL ) == null )
         {
-            Entry entry = new Entry( );
+            Entry entry = new Entry(  );
             entry.setIdEntry( nIdEntry );
 
-            Field field = new Field( );
+            Field field = new Field(  );
             field.setParentEntry( entry );
 
             String strError = getFieldData( request, field );
@@ -292,11 +292,12 @@ public class CategoryFieldJspBean extends MVCAdminJspBean
         if ( request.getParameter( PARAMETER_APPLY ) == null )
         {
             return redirect( request,
-                    CategoryEntryJspBean.getURLModifyEntry( request, field.getParentEntry( ).getIdEntry( ) ) );
+                CategoryEntryJspBean.getURLModifyEntry( request, field.getParentEntry(  ).getIdEntry(  ) ) );
         }
 
-        return redirect( request, bWithConditionalQuestion ? VIEW_GET_MODIFY_FIELD_WITH_CONDITIONAL_QUESTIONS
-                : VIEW_GET_MODIFY_FIELD, PARAMETER_ID_FIELD, nIdField );
+        return redirect( request,
+            bWithConditionalQuestion ? VIEW_GET_MODIFY_FIELD_WITH_CONDITIONAL_QUESTIONS : VIEW_GET_MODIFY_FIELD,
+            PARAMETER_ID_FIELD, nIdField );
     }
 
     /**
@@ -318,8 +319,9 @@ public class CategoryFieldJspBean extends MVCAdminJspBean
         url.addParameter( MVCUtils.PARAMETER_ACTION, ACTION_DO_REMOVE_FIELD );
         url.addParameter( PARAMETER_ID_FIELD, strIdField );
 
-        return redirect( request, AdminMessageService.getMessageUrl( request, MESSAGE_CONFIRM_REMOVE_FIELD,
-                url.getUrl( ), AdminMessage.TYPE_CONFIRMATION ) );
+        return redirect( request,
+            AdminMessageService.getMessageUrl( request, MESSAGE_CONFIRM_REMOVE_FIELD, url.getUrl(  ),
+                AdminMessage.TYPE_CONFIRMATION ) );
     }
 
     /**
@@ -348,7 +350,7 @@ public class CategoryFieldJspBean extends MVCAdminJspBean
                 FieldHome.remove( nIdField );
 
                 return redirect( request,
-                        CategoryEntryJspBean.getURLModifyEntry( request, field.getParentEntry( ).getIdEntry( ) ) );
+                    CategoryEntryJspBean.getURLModifyEntry( request, field.getParentEntry(  ).getIdEntry(  ) ) );
             }
         }
 
@@ -397,23 +399,23 @@ public class CategoryFieldJspBean extends MVCAdminJspBean
         List<Field> listField;
         Field field = FieldHome.findByPrimaryKey( nIdField );
 
-        listField = FieldHome.getFieldListByIdEntry( field.getParentEntry( ).getIdEntry( ) );
+        listField = FieldHome.getFieldListByIdEntry( field.getParentEntry(  ).getIdEntry(  ) );
 
         int nIndexField = getIndexFieldInFieldList( nIdField, listField );
 
-        if ( nIndexField != ( listField.size( ) - 1 ) )
+        if ( nIndexField != ( listField.size(  ) - 1 ) )
         {
             int nNewPosition;
             Field fieldToInversePosition;
             fieldToInversePosition = listField.get( bMoveUp ? ( nIndexField - 1 ) : ( nIndexField + 1 ) );
-            nNewPosition = fieldToInversePosition.getPosition( );
-            fieldToInversePosition.setPosition( field.getPosition( ) );
+            nNewPosition = fieldToInversePosition.getPosition(  );
+            fieldToInversePosition.setPosition( field.getPosition(  ) );
             field.setPosition( nNewPosition );
             FieldHome.update( field );
             FieldHome.update( fieldToInversePosition );
 
             return redirect( request,
-                    CategoryEntryJspBean.getURLModifyEntry( request, field.getParentEntry( ).getIdEntry( ) ) );
+                CategoryEntryJspBean.getURLModifyEntry( request, field.getParentEntry(  ).getIdEntry(  ) ) );
         }
 
         return redirect( request, CategoryJspBean.getUrlManageCategories( request ) );
@@ -452,10 +454,10 @@ public class CategoryFieldJspBean extends MVCAdminJspBean
 
         if ( strFieldError != null )
         {
-            Object[] tabRequiredFields = { I18nService.getLocalizedString( strFieldError, getLocale( ) ) };
+            Object[] tabRequiredFields = { I18nService.getLocalizedString( strFieldError, getLocale(  ) ) };
 
             return AdminMessageService.getMessageUrl( request, MESSAGE_MANDATORY_FIELD, tabRequiredFields,
-                    AdminMessage.TYPE_STOP );
+                AdminMessage.TYPE_STOP );
         }
 
         field.setTitle( strTitle );
@@ -482,7 +484,7 @@ public class CategoryFieldJspBean extends MVCAdminJspBean
 
         for ( Field field : listField )
         {
-            if ( field.getIdField( ) == nIdField )
+            if ( field.getIdField(  ) == nIdField )
             {
                 return nIndex;
             }
@@ -506,6 +508,6 @@ public class CategoryFieldJspBean extends MVCAdminJspBean
         urlItem.addParameter( MVCUtils.PARAMETER_VIEW, VIEW_GET_MODIFY_FIELD_WITH_CONDITIONAL_QUESTIONS );
         urlItem.addParameter( PARAMETER_ID_FIELD, nIdField );
 
-        return urlItem.getUrl( );
+        return urlItem.getUrl(  );
     }
 }

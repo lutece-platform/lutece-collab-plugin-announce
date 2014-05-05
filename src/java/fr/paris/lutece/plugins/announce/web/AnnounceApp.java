@@ -101,8 +101,10 @@ import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 
 import java.io.IOException;
+
 import java.text.DateFormat;
 import java.text.ParseException;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -126,11 +128,11 @@ public class AnnounceApp extends MVCApplication
      * The title of the default page
      */
     public static final String PROPERTY_PAGE_TITLE = "announce.page_announce.pageTitle";
+
     /**
      * The default path of pages of this application
      */
     public static final String PROPERTY_PAGE_PATH = "announce.page_announce.pagePathLabel";
-
     private static final long serialVersionUID = 3586318619582357870L;
     private static final String PARAMETER_USERNAME = "username";
 
@@ -254,18 +256,18 @@ public class AnnounceApp extends MVCApplication
 
     //defaults
     private static final String DEFAULT_PAGE_INDEX = "1";
-
-    private static final CaptchaSecurityService _captchaSecurityService = new CaptchaSecurityService( );
+    private static final CaptchaSecurityService _captchaSecurityService = new CaptchaSecurityService(  );
 
     // private fields
     private AnnounceService _announceService = SpringContextService.getBean( AnnounceService.BEAN_NAME );
     private int _nDefaultItemsPerPage;
     private String _strCurrentPageIndex;
     private int _nItemsPerPage;
+
     /**
      * Date format for filters
      */
-    private final DateFormat _dateFormat = AnnounceService.getDateFormat( );
+    private final DateFormat _dateFormat = AnnounceService.getDateFormat(  );
 
     /**
      * Get the default page to display
@@ -275,7 +277,8 @@ public class AnnounceApp extends MVCApplication
     @View( value = VIEW_DEFAULT_PAGE, defaultView = true )
     public XPage getDefaultPage( HttpServletRequest request )
     {
-        request.getSession( ).removeAttribute( SESSION_KEY_ANNOUNCE_FILTER );
+        request.getSession(  ).removeAttribute( SESSION_KEY_ANNOUNCE_FILTER );
+
         return getSearchAnnounces( request );
     }
 
@@ -294,50 +297,53 @@ public class AnnounceApp extends MVCApplication
 
         AnnounceSearchFilter filter = getAnnounceFilterFromRequest( request );
 
-        int nCurrentPageIndex = StringUtils.isNotEmpty( _strCurrentPageIndex )
-                && StringUtils.isNumeric( _strCurrentPageIndex ) ? Integer.parseInt( _strCurrentPageIndex ) : 1;
-        List<Integer> listIdAnnounces = new ArrayList<Integer>( );
-        int nNbItems = AnnounceSearchService.getInstance( ).getSearchResults( filter, nCurrentPageIndex,
-                _nItemsPerPage, listIdAnnounces );
+        int nCurrentPageIndex = ( StringUtils.isNotEmpty( _strCurrentPageIndex ) &&
+            StringUtils.isNumeric( _strCurrentPageIndex ) ) ? Integer.parseInt( _strCurrentPageIndex ) : 1;
+        List<Integer> listIdAnnounces = new ArrayList<Integer>(  );
+        int nNbItems = AnnounceSearchService.getInstance(  )
+                                            .getSearchResults( filter, nCurrentPageIndex, _nItemsPerPage,
+                listIdAnnounces );
 
         List<Announce> listAnnounces = AnnounceHome.findByListId( listIdAnnounces, AnnounceSort.DEFAULT_SORT );
 
         LocalizedDelegatePaginator<Announce> paginator = new LocalizedDelegatePaginator<Announce>( listAnnounces,
                 _nItemsPerPage, getUrlSearchAnnounce( request ), PARAMETER_PAGE_INDEX, _strCurrentPageIndex, nNbItems,
-                request.getLocale( ) );
+                request.getLocale(  ) );
 
-        Map<String, Object> model = new HashMap<String, Object>( );
+        Map<String, Object> model = new HashMap<String, Object>(  );
         model.put( MARK_NB_ITEMS_PER_PAGE, Integer.toString( _nItemsPerPage ) );
         model.put( MARK_PAGINATOR, paginator );
-        model.put( MARK_LIST_FIELDS, getSectorList( ) );
-        model.put( MARK_LOCALE, request.getLocale( ) );
+        model.put( MARK_LIST_FIELDS, getSectorList(  ) );
+        model.put( MARK_LOCALE, request.getLocale(  ) );
 
-        for ( Announce announce : paginator.getPageItems( ) )
+        for ( Announce announce : paginator.getPageItems(  ) )
         {
-            announce.setListIdImageResponse( AnnounceHome.findListIdImageResponse( announce.getId( ) ) );
+            announce.setListIdImageResponse( AnnounceHome.findListIdImageResponse( announce.getId(  ) ) );
         }
 
-        model.put( MARK_ANNOUNCES_LIST, paginator.getPageItems( ) );
-        model.put( MARK_FILTER_DATE_MIN, filter.getDateMin( ) != null ? _dateFormat.format( filter.getDateMin( ) )
-                : null );
-        model.put( MARK_FILTER_DATE_MAX, filter.getDateMax( ) != null ? _dateFormat.format( filter.getDateMax( ) )
-                : null );
+        model.put( MARK_ANNOUNCES_LIST, paginator.getPageItems(  ) );
+        model.put( MARK_FILTER_DATE_MIN,
+            ( filter.getDateMin(  ) != null ) ? _dateFormat.format( filter.getDateMin(  ) ) : null );
+        model.put( MARK_FILTER_DATE_MAX,
+            ( filter.getDateMax(  ) != null ) ? _dateFormat.format( filter.getDateMax(  ) ) : null );
         model.put( MARK_FILTER, filter );
-        LuteceUser user = SecurityService.getInstance( ).getRegisteredUser( request );
+
+        LuteceUser user = SecurityService.getInstance(  ).getRegisteredUser( request );
         model.put( MARK_USER, user );
 
         //useful if you want to work with Portal.jsp and RunStandaloneApp.jsp
-        model.put( FULL_URL, request.getRequestURL( ) );
+        model.put( FULL_URL, request.getRequestURL(  ) );
 
-        model.put( MARK_LIST_SECTORS, AnnounceApp.getSectorList( ) );
+        model.put( MARK_LIST_SECTORS, AnnounceApp.getSectorList(  ) );
 
-        if ( SecurityService.isAuthenticationEnable( ) )
+        if ( SecurityService.isAuthenticationEnable(  ) )
         {
-            model.put( MARK_USER, SecurityService.getInstance( ).getRegisteredUser( request ) );
+            model.put( MARK_USER, SecurityService.getInstance(  ).getRegisteredUser( request ) );
         }
 
-        XPage page = getXPage( TEMPLATE_LIST_ANNOUNCES, request.getLocale( ), model );
-        page.setTitle( I18nService.getLocalizedString( PROPERTY_PAGE_TITLE_SEARCH_RESULTS, request.getLocale( ) ) );
+        XPage page = getXPage( TEMPLATE_LIST_ANNOUNCES, request.getLocale(  ), model );
+        page.setTitle( I18nService.getLocalizedString( PROPERTY_PAGE_TITLE_SEARCH_RESULTS, request.getLocale(  ) ) );
+
         return page;
     }
 
@@ -349,36 +355,38 @@ public class AnnounceApp extends MVCApplication
      * @return The HTML content to display
      */
     public static String getAnnounceListById( HttpServletRequest request, List<Integer> listIdAnnounces,
-            AnnounceSort announceSort )
+        AnnounceSort announceSort )
     {
         List<Announce> listAnnounces = AnnounceHome.findByListId( listIdAnnounces, announceSort );
 
-        Map<String, Object> model = new HashMap<String, Object>( );
-        model.put( MARK_LIST_FIELDS, getSectorList( ) );
-        model.put( MARK_LOCALE, request.getLocale( ) );
+        Map<String, Object> model = new HashMap<String, Object>(  );
+        model.put( MARK_LIST_FIELDS, getSectorList(  ) );
+        model.put( MARK_LOCALE, request.getLocale(  ) );
 
         for ( Announce announce : listAnnounces )
         {
-            announce.setListIdImageResponse( AnnounceHome.findListIdImageResponse( announce.getId( ) ) );
+            announce.setListIdImageResponse( AnnounceHome.findListIdImageResponse( announce.getId(  ) ) );
         }
 
         model.put( MARK_ANNOUNCES_LIST, listAnnounces );
-        LuteceUser user = SecurityService.getInstance( ).getRegisteredUser( request );
+
+        LuteceUser user = SecurityService.getInstance(  ).getRegisteredUser( request );
         model.put( MARK_USER, user );
 
         //useful if you want to work with Portal.jsp and RunStandaloneApp.jsp
-        model.put( FULL_URL, request.getRequestURL( ) );
+        model.put( FULL_URL, request.getRequestURL(  ) );
 
-        model.put( MARK_LIST_SECTORS, AnnounceApp.getSectorList( ) );
+        model.put( MARK_LIST_SECTORS, AnnounceApp.getSectorList(  ) );
 
-        if ( SecurityService.isAuthenticationEnable( ) )
+        if ( SecurityService.isAuthenticationEnable(  ) )
         {
-            model.put( MARK_USER, SecurityService.getInstance( ).getRegisteredUser( request ) );
+            model.put( MARK_USER, SecurityService.getInstance(  ).getRegisteredUser( request ) );
         }
 
-        HtmlTemplate template = AppTemplateService.getTemplate( TEMPLATE_LIST_ANNOUNCES_BY_ID, request.getLocale( ),
+        HtmlTemplate template = AppTemplateService.getTemplate( TEMPLATE_LIST_ANNOUNCES_BY_ID, request.getLocale(  ),
                 model );
-        return template.getHtml( );
+
+        return template.getHtml(  );
     }
 
     /**
@@ -388,64 +396,74 @@ public class AnnounceApp extends MVCApplication
      * @throws SiteMessageException If a site message needs to be displayed
      */
     @Action( ACTION_ADDNEW )
-    public XPage getCreateAnnounce( HttpServletRequest request ) throws SiteMessageException
+    public XPage getCreateAnnounce( HttpServletRequest request )
+        throws SiteMessageException
     {
         LuteceUser user = getLuteceUserAuthentication( request );
 
         String strCategoryId = request.getParameter( PARAMETER_CATEGORY_ID );
         String strFormSend = request.getParameter( PARAMETER_FORM_SEND );
-        Map<String, Object> model = new HashMap<String, Object>( );
+        Map<String, Object> model = new HashMap<String, Object>(  );
 
         /* CATEOGRY */
         if ( ( strCategoryId != null ) && ( Integer.parseInt( strCategoryId ) != 0 ) )
         {
             Category category = CategoryHome.findByPrimaryKey( Integer.parseInt( strCategoryId ) );
-            Sector sector = SectorHome.findByPrimaryKey( category.getIdSector( ) );
+            Sector sector = SectorHome.findByPrimaryKey( category.getIdSector(  ) );
             Announce announce = null;
+
             /* FORM */
             if ( strFormSend != null )
             {
-                announce = new Announce( );
+                announce = new Announce(  );
                 model.put( MARK_CATEGORY, category );
+
                 List<GenericAttributeError> listErrors = doCreateAnnounce( request, sector, category, announce, user );
-                if ( listErrors == null || listErrors.size( ) == 0 )
+
+                if ( ( listErrors == null ) || ( listErrors.size(  ) == 0 ) )
                 {
                     try
                     {
-                        LocalVariables.getResponse( ).sendRedirect( getUrlViewAnnounce( request, announce.getId( ) ) );
+                        LocalVariables.getResponse(  ).sendRedirect( getUrlViewAnnounce( request, announce.getId(  ) ) );
                     }
                     catch ( IOException e )
                     {
-                        AppLogService.error( e.getMessage( ), e );
+                        AppLogService.error( e.getMessage(  ), e );
                     }
                 }
+
                 model.put( MARK_LIST_ERRORS, listErrors );
             }
             else
             {
-                AnnounceAsynchronousUploadHandler.getHandler( ).removeSessionFiles( request.getSession( ).getId( ) );
+                AnnounceAsynchronousUploadHandler.getHandler(  ).removeSessionFiles( request.getSession(  ).getId(  ) );
             }
 
             model.put( MARK_ANNOUNCE, announce );
             model.put( MARK_CONTACT_INFORMATION, user.getUserInfo( LuteceUser.BUSINESS_INFO_ONLINE_EMAIL ) );
 
-            XPage page = getAnnounceFormHtml( request, announce, category, request.getLocale( ), model );
-            page.setTitle( I18nService.getLocalizedString( PROPERTY_PAGE_TITLE_CREATE_ANNOUNCE, request.getLocale( ) ) );
+            XPage page = getAnnounceFormHtml( request, announce, category, request.getLocale(  ), model );
+            page.setTitle( I18nService.getLocalizedString( PROPERTY_PAGE_TITLE_CREATE_ANNOUNCE, request.getLocale(  ) ) );
+
             return page;
         }
 
-        AnnounceAsynchronousUploadHandler.getHandler( ).removeSessionFiles( request.getSession( ).getId( ) );
+        AnnounceAsynchronousUploadHandler.getHandler(  ).removeSessionFiles( request.getSession(  ).getId(  ) );
 
         Collection<Announce> listAnnounces = AnnounceHome.getAnnouncesForUser( user, AnnounceSort.DEFAULT_SORT );
 
-        if ( listAnnounces.size( ) < AppPropertiesService.getPropertyInt( PROPERTY_MAX_AMOUNT_ANNOUNCE, 20 ) )
+        if ( listAnnounces.size(  ) < AppPropertiesService.getPropertyInt( PROPERTY_MAX_AMOUNT_ANNOUNCE, 20 ) )
         {
-            model.put( MARK_LIST_FIELDS, getSectorList( ) );
-            XPage page = getXPage( TEMPLATE_PAGE_CREATE_ANNOUNCE_STEP_CATEGORY, request.getLocale( ), model );
-            page.setTitle( I18nService.getLocalizedString( PROPERTY_PAGE_TITLE_CREATE_ANNOUNCE, request.getLocale( ) ) );
+            model.put( MARK_LIST_FIELDS, getSectorList(  ) );
+
+            XPage page = getXPage( TEMPLATE_PAGE_CREATE_ANNOUNCE_STEP_CATEGORY, request.getLocale(  ), model );
+            page.setTitle( I18nService.getLocalizedString( PROPERTY_PAGE_TITLE_CREATE_ANNOUNCE, request.getLocale(  ) ) );
+
             return page;
         }
+
         SiteMessageService.setMessage( request, PROPERTY_QUOTA_EXCEEDED, SiteMessage.TYPE_STOP );
+
         return null;
     }
 
@@ -456,7 +474,8 @@ public class AnnounceApp extends MVCApplication
      * @throws SiteMessageException If a site message needs to be displayed
      */
     @Action( ACTION_MODIFY_ANNOUNCE )
-    public XPage getModifyAnnounce( HttpServletRequest request ) throws SiteMessageException
+    public XPage getModifyAnnounce( HttpServletRequest request )
+        throws SiteMessageException
     {
         LuteceUser user = getLuteceUserAuthentication( request );
         int nIdAnnounce = Integer.parseInt( request.getParameter( PARAMETER_ANNOUNCE_ID ) );
@@ -464,47 +483,53 @@ public class AnnounceApp extends MVCApplication
 
         String strFormSend = request.getParameter( PARAMETER_FORM_SEND );
 
-        Map<String, Object> model = new HashMap<String, Object>( );
-        model.put( MARK_LIST_FIELDS, getSectorList( ) );
-        model.put( MARK_LOCALE, request.getLocale( ) );
+        Map<String, Object> model = new HashMap<String, Object>(  );
+        model.put( MARK_LIST_FIELDS, getSectorList(  ) );
+        model.put( MARK_LOCALE, request.getLocale(  ) );
 
         if ( strFormSend != null )
         {
             List<GenericAttributeError> listErrors = doModifyAnnounce( request, announce );
+
             if ( listErrors == null )
             {
                 return redirect( request, getUrlViewAnnounce( request, nIdAnnounce ) );
             }
+
             model.put( MARK_LIST_ERRORS, listErrors );
         }
         else
         {
-            AnnounceAsynchronousUploadHandler.getHandler( ).removeSessionFiles( request.getSession( ).getId( ) );
+            AnnounceAsynchronousUploadHandler.getHandler(  ).removeSessionFiles( request.getSession(  ).getId(  ) );
         }
 
-        Category category = CategoryHome.findByPrimaryKey( announce.getCategory( ).getId( ) );
-        Sector sector = SectorHome.findByPrimaryKey( category.getIdSector( ) );
+        Category category = CategoryHome.findByPrimaryKey( announce.getCategory(  ).getId(  ) );
+        Sector sector = SectorHome.findByPrimaryKey( category.getIdSector(  ) );
         boolean bModerated = true;
 
         // unpublish announce if category moderation is on
-        switch ( category.getAnnouncesValidation( ) )
+        switch ( category.getAnnouncesValidation(  ) )
         {
-        case PARAMETER_ANNOUNCES_VALIDATION_YES:
-            bModerated = true;
-            break;
-        case PARAMETER_ANNOUNCES_VALIDATION_NO:
-            bModerated = false;
-            break;
-        case PARAMETER_ANNOUNCES_VALIDATION_GLOBAL_PARAMETERS:
-        default:
-            bModerated = sector.getAnnouncesValidation( );
+            case PARAMETER_ANNOUNCES_VALIDATION_YES:
+                bModerated = true;
+
+                break;
+
+            case PARAMETER_ANNOUNCES_VALIDATION_NO:
+                bModerated = false;
+
+                break;
+
+            case PARAMETER_ANNOUNCES_VALIDATION_GLOBAL_PARAMETERS:default:
+                bModerated = sector.getAnnouncesValidation(  );
         }
 
         model.put( MARK_MODERATED, bModerated );
         model.put( MARK_ANNOUNCE, announce );
 
-        XPage page = getAnnounceFormHtml( request, announce, category, request.getLocale( ), model );
-        page.setTitle( I18nService.getLocalizedString( PROPERTY_PAGE_TITLE_MODIFY_ANNOUNCE, request.getLocale( ) ) );
+        XPage page = getAnnounceFormHtml( request, announce, category, request.getLocale(  ), model );
+        page.setTitle( I18nService.getLocalizedString( PROPERTY_PAGE_TITLE_MODIFY_ANNOUNCE, request.getLocale(  ) ) );
+
         return page;
     }
 
@@ -515,7 +540,8 @@ public class AnnounceApp extends MVCApplication
      * @throws SiteMessageException If a site message needs to be displayed
      */
     @Action( ACTION_DELETE_ANNOUNCE )
-    public XPage getDeleteAnnounce( HttpServletRequest request ) throws SiteMessageException
+    public XPage getDeleteAnnounce( HttpServletRequest request )
+        throws SiteMessageException
     {
         String strConfirmRemoveAnnounce = request.getParameter( PARAMETER_CONFIRM_REMOVE_ANNOUNCE );
         int nIdAnnounce = Integer.parseInt( request.getParameter( PARAMETER_ANNOUNCE_ID ) );
@@ -523,15 +549,18 @@ public class AnnounceApp extends MVCApplication
         if ( strConfirmRemoveAnnounce != null )
         {
             AnnounceHome.remove( nIdAnnounce );
+
             return redirect( request, AppPathService.getBaseUrl( request ) + getActionFullUrl( ACTION_MY_ANNOUNCES ) );
         }
-        Map<String, Object> requestParameters = new HashMap<String, Object>( );
+
+        Map<String, Object> requestParameters = new HashMap<String, Object>(  );
         requestParameters.put( PARAMETER_PAGE, AnnounceUtils.PARAMETER_PAGE_ANNOUNCE );
         requestParameters.put( MVCUtils.PARAMETER_ACTION, ACTION_DELETE_ANNOUNCE );
         requestParameters.put( PARAMETER_ANNOUNCE_ID, nIdAnnounce );
         requestParameters.put( PARAMETER_CONFIRM_REMOVE_ANNOUNCE, "1" );
         SiteMessageService.setMessage( request, PROPERTY_CONFIRM_REMOVE_ANNOUNCE, SiteMessage.TYPE_CONFIRMATION,
-                JSP_PORTAL, requestParameters );
+            JSP_PORTAL, requestParameters );
+
         // Never return null because the setMessage method throw an exception
         return null;
     }
@@ -543,7 +572,8 @@ public class AnnounceApp extends MVCApplication
      * @throws SiteMessageException If a site message needs to be displayed
      */
     @Action( ACTION_SUSPEND_ANNOUNCE_BY_USER )
-    public XPage getSuspendAnnounceByUser( HttpServletRequest request ) throws SiteMessageException
+    public XPage getSuspendAnnounceByUser( HttpServletRequest request )
+        throws SiteMessageException
     {
         String strConfirmSuspendAnnounce = request.getParameter( PARAMETER_CONFIRM_SUSPEND_ANNOUNCE );
         int nIdAnnounce = Integer.parseInt( request.getParameter( PARAMETER_ANNOUNCE_ID ) );
@@ -562,13 +592,13 @@ public class AnnounceApp extends MVCApplication
             return redirect( request, AppPathService.getBaseUrl( request ) + getActionFullUrl( ACTION_MY_ANNOUNCES ) );
         }
 
-        Map<String, Object> requestParameters = new HashMap<String, Object>( );
+        Map<String, Object> requestParameters = new HashMap<String, Object>(  );
         requestParameters.put( PARAMETER_PAGE, AnnounceUtils.PARAMETER_PAGE_ANNOUNCE );
         requestParameters.put( MVCUtils.PARAMETER_ACTION, ACTION_SUSPEND_ANNOUNCE_BY_USER );
         requestParameters.put( PARAMETER_ANNOUNCE_ID, nIdAnnounce );
         requestParameters.put( PARAMETER_CONFIRM_SUSPEND_ANNOUNCE, "1" );
         SiteMessageService.setMessage( request, PROPERTY_CONFIRM_SUSPEND_ANNOUNCE, SiteMessage.TYPE_CONFIRMATION,
-                JSP_PORTAL, requestParameters );
+            JSP_PORTAL, requestParameters );
 
         return null;
     }
@@ -580,7 +610,8 @@ public class AnnounceApp extends MVCApplication
      * @throws SiteMessageException If a site message needs to be displayed
      */
     @Action( ACTION_ENABLE_ANNOUNCE_BY_USER )
-    public XPage enableAnnounceByUser( HttpServletRequest request ) throws SiteMessageException
+    public XPage enableAnnounceByUser( HttpServletRequest request )
+        throws SiteMessageException
     {
         int nIdAnnounce = Integer.parseInt( request.getParameter( PARAMETER_ANNOUNCE_ID ) );
 
@@ -612,10 +643,11 @@ public class AnnounceApp extends MVCApplication
 
         LuteceUser user = null;
 
-        Map<String, Object> model = new HashMap<String, Object>( );
-        if ( SecurityService.isAuthenticationEnable( ) )
+        Map<String, Object> model = new HashMap<String, Object>(  );
+
+        if ( SecurityService.isAuthenticationEnable(  ) )
         { // myLutece not installed or disabled
-            user = SecurityService.getInstance( ).getRegisteredUser( request );
+            user = SecurityService.getInstance(  ).getRegisteredUser( request );
 
             if ( user != null ) // user is logged
             {
@@ -623,13 +655,13 @@ public class AnnounceApp extends MVCApplication
             }
         }
 
-        if ( ( ( user != null ) && user.getName( ).equals( announce.getUserName( ) ) ) )
+        if ( ( ( user != null ) && user.getName(  ).equals( announce.getUserName(  ) ) ) )
         {
             bUserIsAuthor = true;
         }
 
-        if ( ( announce.getPublished( ) && !announce.getSuspended( ) && !announce.getSuspendedByUser( ) )
-                || bUserIsAuthor )
+        if ( ( announce.getPublished(  ) && !announce.getSuspended(  ) && !announce.getSuspendedByUser(  ) ) ||
+                bUserIsAuthor )
         {
             bAllowAccess = true;
         }
@@ -638,27 +670,29 @@ public class AnnounceApp extends MVCApplication
 
         if ( bAllowAccess )
         {
-            Collection<Response> listResponses = AnnounceHome.findListResponse( announce.getId( ), false );
+            Collection<Response> listResponses = AnnounceHome.findListResponse( announce.getId(  ), false );
 
             for ( Response response : listResponses )
             {
-                IEntryTypeService entryTypeService = EntryTypeServiceManager.getEntryTypeService( response.getEntry( ) );
-                response.setToStringValueResponse( entryTypeService.getResponseValueForRecap( response.getEntry( ),
-                        request, response, request.getLocale( ) ) );
+                IEntryTypeService entryTypeService = EntryTypeServiceManager.getEntryTypeService( response.getEntry(  ) );
+                response.setToStringValueResponse( entryTypeService.getResponseValueForRecap( response.getEntry(  ),
+                        request, response, request.getLocale(  ) ) );
             }
 
             model.put( MARK_USER_IS_AUTHOR, bUserIsAuthor );
             model.put( MARK_ANNOUNCE, announce );
             model.put( MARK_LIST_RESPONSES, listResponses );
-            model.put( MARK_LIST_FIELDS, getSectorList( ) );
-            model.put( MARK_LOCALE, request.getLocale( ) );
-            model.put( MARK_IS_EXTEND_INSTALLED, PortalService.isExtendActivated( ) );
+            model.put( MARK_LIST_FIELDS, getSectorList(  ) );
+            model.put( MARK_LOCALE, request.getLocale(  ) );
+            model.put( MARK_IS_EXTEND_INSTALLED, PortalService.isExtendActivated(  ) );
 
-            Category category = CategoryHome.findByPrimaryKey( announce.getCategory( ).getId( ) );
+            Category category = CategoryHome.findByPrimaryKey( announce.getCategory(  ).getId(  ) );
             announce.setCategory( category );
         }
-        XPage xpage = getXPage( TEMPLATE_VIEW_ANNOUNCE, request.getLocale( ), model );
-        xpage.setTitle( announce.getTitle( ) );
+
+        XPage xpage = getXPage( TEMPLATE_VIEW_ANNOUNCE, request.getLocale(  ), model );
+        xpage.setTitle( announce.getTitle(  ) );
+
         return xpage;
     }
 
@@ -669,7 +703,8 @@ public class AnnounceApp extends MVCApplication
      * @throws SiteMessageException If a site message needs to be displayed
      */
     @Action( ACTION_VIEW_ANNOUNCES )
-    public XPage getViewUserAnnounces( HttpServletRequest request ) throws SiteMessageException
+    public XPage getViewUserAnnounces( HttpServletRequest request )
+        throws SiteMessageException
     {
         String strUserName = request.getParameter( PARAMETER_USERNAME );
 
@@ -682,26 +717,26 @@ public class AnnounceApp extends MVCApplication
 
         List<Announce> listAnnounces = AnnounceHome.getAnnouncesForUser( strUserName, AnnounceSort.DEFAULT_SORT );
 
-        Paginator<Announce> paginator = new Paginator<Announce>( listAnnounces, _nItemsPerPage, JSP_PORTAL + "?"
-                + PARAMETER_PAGE + "=" + AnnounceUtils.PARAMETER_PAGE_ANNOUNCE + "&" + MVCUtils.PARAMETER_ACTION + "="
-                + ACTION_MY_ANNOUNCES, PARAMETER_PAGE_INDEX, _strCurrentPageIndex );
+        Paginator<Announce> paginator = new Paginator<Announce>( listAnnounces, _nItemsPerPage,
+                JSP_PORTAL + "?" + PARAMETER_PAGE + "=" + AnnounceUtils.PARAMETER_PAGE_ANNOUNCE + "&" +
+                MVCUtils.PARAMETER_ACTION + "=" + ACTION_MY_ANNOUNCES, PARAMETER_PAGE_INDEX, _strCurrentPageIndex );
 
-        Map<String, Object> model = new HashMap<String, Object>( );
+        Map<String, Object> model = new HashMap<String, Object>(  );
         model.put( MARK_NB_ITEMS_PER_PAGE, "" + _nItemsPerPage );
         model.put( MARK_PAGINATOR, paginator );
 
-        for ( Announce announce : paginator.getPageItems( ) )
+        for ( Announce announce : paginator.getPageItems(  ) )
         {
-            announce.setListIdImageResponse( AnnounceHome.findListIdImageResponse( announce.getId( ) ) );
+            announce.setListIdImageResponse( AnnounceHome.findListIdImageResponse( announce.getId(  ) ) );
         }
 
-        model.put( MARK_ANNOUNCES_LIST, paginator.getPageItems( ) );
+        model.put( MARK_ANNOUNCES_LIST, paginator.getPageItems(  ) );
 
         nNbPlublishedAnnounces = 0;
 
         for ( Announce a : listAnnounces )
         {
-            if ( a.getPublished( ) )
+            if ( a.getPublished(  ) )
             {
                 nNbPlublishedAnnounces++;
             }
@@ -709,9 +744,9 @@ public class AnnounceApp extends MVCApplication
 
         LuteceUser user = null;
 
-        if ( SecurityService.isAuthenticationEnable( ) )
+        if ( SecurityService.isAuthenticationEnable(  ) )
         { // myLutece not installed or disabled
-            user = SecurityService.getInstance( ).getRegisteredUser( request );
+            user = SecurityService.getInstance(  ).getRegisteredUser( request );
 
             if ( user != null ) // user is logged
             {
@@ -721,17 +756,19 @@ public class AnnounceApp extends MVCApplication
 
         LuteceUser owner = LuteceUserService.getLuteceUserFromName( strUserName );
 
-        model.put( MARK_HAS_SUBSCRIBED_TO_USER, user != null ? AnnounceSubscriptionProvider.getService( )
-                .hasSubscribedToUser( user, strUserName ) : null );
-        String strUserRealName = owner == null ? strUserName : ( owner.getUserInfo( LuteceUser.NAME_GIVEN )
-                + CONSTANT_BLANK_SPACE + owner.getUserInfo( LuteceUser.NAME_FAMILY ) );
+        model.put( MARK_HAS_SUBSCRIBED_TO_USER,
+            ( user != null ) ? AnnounceSubscriptionProvider.getService(  ).hasSubscribedToUser( user, strUserName ) : null );
+
+        String strUserRealName = ( owner == null ) ? strUserName
+                                                   : ( owner.getUserInfo( LuteceUser.NAME_GIVEN ) +
+            CONSTANT_BLANK_SPACE + owner.getUserInfo( LuteceUser.NAME_FAMILY ) );
         model.put( MARK_ANNOUNCE_OWNER, StringUtils.isNotBlank( strUserRealName ) ? strUserRealName : strUserName );
         model.put( MARK_ANNOUNCE_OWNER_NAME, strUserName );
         model.put( MARK_ANNOUNCES_PUBLISHED_AMOUNT, nNbPlublishedAnnounces );
-        model.put( MARK_LIST_FIELDS, getSectorList( ) );
-        model.put( MARK_LOCALE, request.getLocale( ) );
+        model.put( MARK_LIST_FIELDS, getSectorList(  ) );
+        model.put( MARK_LOCALE, request.getLocale(  ) );
 
-        return getXPage( TEMPLATE_VIEW_ANNOUNCES, request.getLocale( ), model );
+        return getXPage( TEMPLATE_VIEW_ANNOUNCES, request.getLocale(  ), model );
     }
 
     /**
@@ -741,20 +778,24 @@ public class AnnounceApp extends MVCApplication
      * @throws UserNotSignedException If the user has not signed in
      */
     @Action( ACTION_VIEW_SUBSCRIPTIONS )
-    public XPage getViewSubscriptions( HttpServletRequest request ) throws UserNotSignedException
+    public XPage getViewSubscriptions( HttpServletRequest request )
+        throws UserNotSignedException
     {
-        if ( SecurityService.isAuthenticationEnable( ) )
+        if ( SecurityService.isAuthenticationEnable(  ) )
         {
-            LuteceUser user = SecurityService.getInstance( ).getRegisteredUser( request );
+            LuteceUser user = SecurityService.getInstance(  ).getRegisteredUser( request );
+
             if ( user != null )
             {
-                XPage page = getXPage( );
-                page.setTitle( I18nService.getLocalizedString( PROPERTY_PAGE_TITLE, request.getLocale( ) ) );
+                XPage page = getXPage(  );
+                page.setTitle( I18nService.getLocalizedString( PROPERTY_PAGE_TITLE, request.getLocale(  ) ) );
                 page.setContent( SubscribeApp.getSubscriptionList( request ) );
+
                 return page;
             }
         }
-        throw new UserNotSignedException( );
+
+        throw new UserNotSignedException(  );
     }
 
     /**
@@ -764,11 +805,12 @@ public class AnnounceApp extends MVCApplication
      * @throws SiteMessageException If a site message needs to be displayed
      */
     @Action( ACTION_MY_ANNOUNCES )
-    public XPage getUserAnnounces( HttpServletRequest request ) throws SiteMessageException
+    public XPage getUserAnnounces( HttpServletRequest request )
+        throws SiteMessageException
     {
-        XPage page = getXPage( );
+        XPage page = getXPage(  );
         page.setContent( getManageUserAnnounces( request ) );
-        page.setTitle( I18nService.getLocalizedString( PROPERTY_PAGE_TITLE_MY_ANNOUNCES, request.getLocale( ) ) );
+        page.setTitle( I18nService.getLocalizedString( PROPERTY_PAGE_TITLE_MY_ANNOUNCES, request.getLocale(  ) ) );
 
         return page;
     }
@@ -785,21 +827,21 @@ public class AnnounceApp extends MVCApplication
 
         if ( StringUtils.isBlank( strIdEntry ) || StringUtils.isBlank( strFieldIndex ) )
         {
-            return JSONUtils.buildJsonErrorRemovingFile( request ).toString( );
+            return JSONUtils.buildJsonErrorRemovingFile( request ).toString(  );
         }
 
         // parse json
         JSON jsonFieldIndexes = JSONSerializer.toJSON( strFieldIndex );
 
-        if ( !jsonFieldIndexes.isArray( ) )
+        if ( !jsonFieldIndexes.isArray(  ) )
         {
-            return JSONUtils.buildJsonErrorRemovingFile( request ).toString( );
+            return JSONUtils.buildJsonErrorRemovingFile( request ).toString(  );
         }
 
         JSONArray jsonArrayFieldIndexers = (JSONArray) jsonFieldIndexes;
-        int[] tabFieldIndex = new int[jsonArrayFieldIndexers.size( )];
+        int[] tabFieldIndex = new int[jsonArrayFieldIndexers.size(  )];
 
-        for ( int nIndex = 0; nIndex < jsonArrayFieldIndexers.size( ); nIndex++ )
+        for ( int nIndex = 0; nIndex < jsonArrayFieldIndexers.size(  ); nIndex++ )
         {
             try
             {
@@ -807,7 +849,7 @@ public class AnnounceApp extends MVCApplication
             }
             catch ( NumberFormatException nfe )
             {
-                return JSONUtils.buildJsonErrorRemovingFile( request ).toString( );
+                return JSONUtils.buildJsonErrorRemovingFile( request ).toString(  );
             }
         }
 
@@ -815,21 +857,21 @@ public class AnnounceApp extends MVCApplication
         Arrays.sort( tabFieldIndex );
         ArrayUtils.reverse( tabFieldIndex );
 
-        AnnounceAsynchronousUploadHandler handler = AnnounceAsynchronousUploadHandler.getHandler( );
+        AnnounceAsynchronousUploadHandler handler = AnnounceAsynchronousUploadHandler.getHandler(  );
 
         for ( int nFieldIndex : tabFieldIndex )
         {
-            handler.removeFileItem( strIdEntry, request.getSession( ).getId( ), nFieldIndex );
+            handler.removeFileItem( strIdEntry, request.getSession(  ).getId(  ), nFieldIndex );
         }
 
-        JSONObject json = new JSONObject( );
+        JSONObject json = new JSONObject(  );
         // operation successful
         json.element( JSONUtils.JSON_KEY_SUCCESS, JSONUtils.JSON_KEY_SUCCESS );
-        json.accumulateAll( JSONUtils.getUploadedFileJSON( handler.getFileItems( strIdEntry, request.getSession( )
-                .getId( ) ) ) );
+        json.accumulateAll( JSONUtils.getUploadedFileJSON( handler.getFileItems( strIdEntry,
+                    request.getSession(  ).getId(  ) ) ) );
         json.element( JSONUtils.JSON_KEY_FIELD_NAME, handler.buildFieldName( strIdEntry ) );
 
-        return json.toString( );
+        return json.toString(  );
     }
 
     /**
@@ -839,13 +881,14 @@ public class AnnounceApp extends MVCApplication
      * @return The current Lutece User
      * @throws SiteMessageException If a site message needs to be displayed
      */
-    private static LuteceUser getLuteceUserAuthentication( HttpServletRequest request ) throws SiteMessageException
+    private static LuteceUser getLuteceUserAuthentication( HttpServletRequest request )
+        throws SiteMessageException
     {
         LuteceUser user = null;
 
-        if ( SecurityService.isAuthenticationEnable( ) )
+        if ( SecurityService.isAuthenticationEnable(  ) )
         { // myLutece not installed or disabled
-            user = SecurityService.getInstance( ).getRegisteredUser( request );
+            user = SecurityService.getInstance(  ).getRegisteredUser( request );
 
             if ( user == null ) // user is not logged
             {
@@ -869,11 +912,11 @@ public class AnnounceApp extends MVCApplication
      * @throws SiteMessageException If a site message needs to be displayed
      */
     private Announce getAuthorizedAnnounce( int nIdAnnounce, LuteceUser user, HttpServletRequest request )
-            throws SiteMessageException
+        throws SiteMessageException
     {
         Announce announce = AnnounceHome.findByPrimaryKey( nIdAnnounce );
 
-        if ( announce == null || !announce.getUserName( ).equals( user.getName( ) ) )
+        if ( ( announce == null ) || !announce.getUserName(  ).equals( user.getName(  ) ) )
         {
             SiteMessageService.setMessage( request, PROPERTY_REFUSED_ACCESS, SiteMessage.TYPE_STOP );
         }
@@ -888,34 +931,35 @@ public class AnnounceApp extends MVCApplication
      */
     private void sendAnnounceNotification( HttpServletRequest request, Announce announce )
     {
-        int nIdMailingList = announce.getCategory( ).getIdMailingList( );
+        int nIdMailingList = announce.getCategory(  ).getIdMailingList(  );
+
         if ( nIdMailingList > 0 )
         {
             Collection<Recipient> listRecipients = AdminMailingListService.getRecipients( nIdMailingList );
 
             for ( Recipient recipient : listRecipients )
             {
-                HashMap<String, Object> model = new HashMap<String, Object>( );
+                HashMap<String, Object> model = new HashMap<String, Object>(  );
 
                 String strSenderEmail = AppPropertiesService.getProperty( PROPERTY_WEBMASTER_EMAIL );
                 String strSenderName = AppPropertiesService.getProperty( PROPERTY_WEBMASTER_NAME );
                 String strSubject = I18nService.getLocalizedString( PROPERTY_ANNOUNCE_NOTIFY_SUBJECT,
-                        request.getLocale( ) );
+                        request.getLocale(  ) );
 
                 // Generate the subject of the message
-                strSubject += ( " " + announce.getCategory( ).getLabel( ) );
+                strSubject += ( " " + announce.getCategory(  ).getLabel(  ) );
 
                 // Generate the body of the message
                 model.put( MARK_PROD_URL, AppPropertiesService.getProperty( PROPERTY_PROD_URL ) );
                 model.put( MARK_ANNOUNCE, announce );
-                model.put( MARK_LIST_FIELDS, getSectorList( ) );
-                model.put( MARK_LOCALE, request.getLocale( ) );
+                model.put( MARK_LIST_FIELDS, getSectorList(  ) );
+                model.put( MARK_LOCALE, request.getLocale(  ) );
 
                 HtmlTemplate template = AppTemplateService.getTemplate( TEMPLATE_ANNOUNCE_NOTIFY_MESSAGE,
-                        request.getLocale( ), model );
-                String strBody = template.getHtml( );
+                        request.getLocale(  ), model );
+                String strBody = template.getHtml(  );
 
-                MailService.sendMailHtml( recipient.getEmail( ), strSenderName, strSenderEmail, strSubject, strBody );
+                MailService.sendMailHtml( recipient.getEmail(  ), strSenderName, strSenderEmail, strSubject, strBody );
             }
         }
     }
@@ -932,39 +976,39 @@ public class AnnounceApp extends MVCApplication
      * @throws SiteMessageException If a site message needs to be displayed
      */
     private List<GenericAttributeError> doCreateAnnounce( HttpServletRequest request, Sector sector, Category category,
-            Announce announce, LuteceUser user ) throws SiteMessageException
+        Announce announce, LuteceUser user ) throws SiteMessageException
     {
         String strTitleAnnounce = request.getParameter( PARAMETER_TITLE_ANNOUNCE );
         String strDescriptionAnnounce = request.getParameter( PARAMETER_DESCRIPTION_ANNOUNCE );
         String strContactInformation = request.getParameter( PARAMETER_CONTACT_INFORMATION );
         String strTags = request.getParameter( PARAMETER_TAGS );
         String strPriceAnnounce = ( request.getParameter( PARAMETER_PRICE_ANNOUNCE ) == null ) ? StringUtils.EMPTY
-                : request.getParameter( PARAMETER_PRICE_ANNOUNCE );
+                                                                                               : request.getParameter( PARAMETER_PRICE_ANNOUNCE );
 
-        if ( StringUtils.isEmpty( strTitleAnnounce ) || StringUtils.isEmpty( strDescriptionAnnounce )
-                || StringUtils.isEmpty( strContactInformation )
-                || ( category.getDisplayPrice( ) && category.getPriceMandatory( ) && StringUtils
-                        .isBlank( strPriceAnnounce ) ) )
+        if ( StringUtils.isEmpty( strTitleAnnounce ) || StringUtils.isEmpty( strDescriptionAnnounce ) ||
+                StringUtils.isEmpty( strContactInformation ) ||
+                ( category.getDisplayPrice(  ) && category.getPriceMandatory(  ) &&
+                StringUtils.isBlank( strPriceAnnounce ) ) )
         {
             SiteMessageService.setMessage( request, Messages.MANDATORY_FIELDS, SiteMessage.TYPE_STOP );
 
             return null;
         }
 
-        switch ( category.getAnnouncesValidation( ) )
+        switch ( category.getAnnouncesValidation(  ) )
         {
-        case PARAMETER_ANNOUNCES_VALIDATION_YES:
-            announce.setPublished( false );
+            case PARAMETER_ANNOUNCES_VALIDATION_YES:
+                announce.setPublished( false );
 
-            break;
+                break;
 
-        case PARAMETER_ANNOUNCES_VALIDATION_NO:
-            announce.setPublished( true );
+            case PARAMETER_ANNOUNCES_VALIDATION_NO:
+                announce.setPublished( true );
 
-            break;
-        case PARAMETER_ANNOUNCES_VALIDATION_GLOBAL_PARAMETERS:
-        default:
-            announce.setPublished( !sector.getAnnouncesValidation( ) );
+                break;
+
+            case PARAMETER_ANNOUNCES_VALIDATION_GLOBAL_PARAMETERS:default:
+                announce.setPublished( !sector.getAnnouncesValidation(  ) );
         }
 
         announce.setCategory( category );
@@ -972,79 +1016,85 @@ public class AnnounceApp extends MVCApplication
         announce.setDescription( strDescriptionAnnounce );
         announce.setPrice( strPriceAnnounce );
         announce.setContactInformation( strContactInformation );
-        announce.setUserName( user.getName( ) );
+        announce.setUserName( user.getName(  ) );
         announce.setTags( strTags );
 
-        EntryFilter filter = new EntryFilter( );
-        filter.setIdResource( category.getId( ) );
+        EntryFilter filter = new EntryFilter(  );
+        filter.setIdResource( category.getId(  ) );
         filter.setResourceType( Category.RESOURCE_TYPE );
         filter.setEntryParentNull( EntryFilter.FILTER_TRUE );
         filter.setFieldDependNull( EntryFilter.FILTER_TRUE );
         filter.setIdIsComment( EntryFilter.FILTER_FALSE );
 
         List<Entry> listEntryFirstLevel = EntryHome.getEntryList( filter );
-        List<GenericAttributeError> listErrors = new ArrayList<GenericAttributeError>( );
+        List<GenericAttributeError> listErrors = new ArrayList<GenericAttributeError>(  );
 
         AnnounceDTO announceDTO = new AnnounceDTO( announce );
 
         for ( Entry entry : listEntryFirstLevel )
         {
-            listErrors.addAll( _announceService.getResponseEntry( request, entry.getIdEntry( ), request.getLocale( ),
+            listErrors.addAll( _announceService.getResponseEntry( request, entry.getIdEntry(  ), request.getLocale(  ),
                     announceDTO ) );
         }
 
-        if ( category.getDisplayCaptcha( ) && _captchaSecurityService.isAvailable( ) )
+        if ( category.getDisplayCaptcha(  ) && _captchaSecurityService.isAvailable(  ) )
         {
             if ( !_captchaSecurityService.validate( request ) )
             {
-                GenericAttributeError genAttError = new GenericAttributeError( );
+                GenericAttributeError genAttError = new GenericAttributeError(  );
                 genAttError.setErrorMessage( I18nService.getLocalizedString( ERROR_MESSAGE_WRONG_CAPTCHA,
-                        request.getLocale( ) ) );
+                        request.getLocale(  ) ) );
                 listErrors.add( genAttError );
             }
         }
 
         _announceService.convertMapResponseToList( announceDTO );
-        announce.setListResponse( announceDTO.getListResponse( ) );
-        if ( listErrors.size( ) > 0 )
+        announce.setListResponse( announceDTO.getListResponse(  ) );
+
+        if ( listErrors.size(  ) > 0 )
         {
             return listErrors;
         }
 
         announce.setHasPictures( false );
-        for ( Response response : announceDTO.getListResponse( ) )
+
+        for ( Response response : announceDTO.getListResponse(  ) )
         {
-            if ( response.getFile( ) != null && FileUtil.hasImageExtension( response.getFile( ).getTitle( ) ) )
+            if ( ( response.getFile(  ) != null ) && FileUtil.hasImageExtension( response.getFile(  ).getTitle(  ) ) )
             {
                 announce.setHasPictures( true );
+
                 break;
             }
         }
 
         AnnounceHome.create( announce );
 
-        for ( Response response : announceDTO.getListResponse( ) )
+        for ( Response response : announceDTO.getListResponse(  ) )
         {
             ResponseHome.create( response );
-            AnnounceHome.insertAnnounceResponse( announce.getId( ), response.getIdResponse( ),
-                    response.getFile( ) != null && FileUtil.hasImageExtension( response.getFile( ).getTitle( ) ) );
+            AnnounceHome.insertAnnounceResponse( announce.getId(  ), response.getIdResponse(  ),
+                ( response.getFile(  ) != null ) && FileUtil.hasImageExtension( response.getFile(  ).getTitle(  ) ) );
         }
 
-        if ( category.getIdWorkflow( ) > 0 )
+        if ( category.getIdWorkflow(  ) > 0 )
         {
-            WorkflowService.getInstance( ).getState( announce.getId( ), Announce.RESOURCE_TYPE,
-                    category.getIdWorkflow( ), category.getId( ) );
-            WorkflowService.getInstance( ).executeActionAutomatic( announce.getId( ), Announce.RESOURCE_TYPE,
-                    category.getIdWorkflow( ), category.getId( ) );
+            WorkflowService.getInstance(  )
+                           .getState( announce.getId(  ), Announce.RESOURCE_TYPE, category.getIdWorkflow(  ),
+                category.getId(  ) );
+            WorkflowService.getInstance(  )
+                           .executeActionAutomatic( announce.getId(  ), Announce.RESOURCE_TYPE,
+                category.getIdWorkflow(  ), category.getId(  ) );
         }
 
         // send mail notification only if announce is not published
-        if ( !announce.getPublished( ) )
+        if ( !announce.getPublished(  ) )
         {
             sendAnnounceNotification( request, announce );
         }
 
-        AnnounceAsynchronousUploadHandler.getHandler( ).removeSessionFiles( request.getSession( ).getId( ) );
+        AnnounceAsynchronousUploadHandler.getHandler(  ).removeSessionFiles( request.getSession(  ).getId(  ) );
+
         return null;
     }
 
@@ -1056,23 +1106,23 @@ public class AnnounceApp extends MVCApplication
      * @throws SiteMessageException If a site message needs to be displayed
      */
     private List<GenericAttributeError> doModifyAnnounce( HttpServletRequest request, Announce announce )
-            throws SiteMessageException
+        throws SiteMessageException
     {
-        Category category = CategoryHome.findByPrimaryKey( announce.getCategory( ).getId( ) );
+        Category category = CategoryHome.findByPrimaryKey( announce.getCategory(  ).getId(  ) );
 
         String strTitleAnnounce = request.getParameter( PARAMETER_TITLE_ANNOUNCE );
         String strDescriptionAnnounce = request.getParameter( PARAMETER_DESCRIPTION_ANNOUNCE );
         String strContactInformation = request.getParameter( PARAMETER_CONTACT_INFORMATION );
         String strPriceAnnounce = ( request.getParameter( PARAMETER_PRICE_ANNOUNCE ) == null ) ? StringUtils.EMPTY
-                : request.getParameter( PARAMETER_PRICE_ANNOUNCE );
+                                                                                               : request.getParameter( PARAMETER_PRICE_ANNOUNCE );
 
-        if ( StringUtils.isEmpty( strTitleAnnounce )
-                || StringUtils.isEmpty( strDescriptionAnnounce )
-                || StringUtils.isEmpty( strContactInformation )
-                || ( category.getDisplayPrice( ) && category.getPriceMandatory( ) && StringUtils
-                        .isBlank( strPriceAnnounce ) ) )
+        if ( StringUtils.isEmpty( strTitleAnnounce ) || StringUtils.isEmpty( strDescriptionAnnounce ) ||
+                StringUtils.isEmpty( strContactInformation ) ||
+                ( category.getDisplayPrice(  ) && category.getPriceMandatory(  ) &&
+                StringUtils.isBlank( strPriceAnnounce ) ) )
         {
             SiteMessageService.setMessage( request, Messages.MANDATORY_FIELDS, SiteMessage.TYPE_STOP );
+
             return null;
         }
 
@@ -1081,95 +1131,98 @@ public class AnnounceApp extends MVCApplication
         announce.setContactInformation( strContactInformation );
         announce.setPrice( strPriceAnnounce );
 
-        Sector sector = SectorHome.findByPrimaryKey( category.getIdSector( ) );
+        Sector sector = SectorHome.findByPrimaryKey( category.getIdSector(  ) );
 
         // unpublish announce if category moderation is on
-        switch ( category.getAnnouncesValidation( ) )
+        switch ( category.getAnnouncesValidation(  ) )
         {
-        case PARAMETER_ANNOUNCES_VALIDATION_YES:
-            announce.setPublished( false );
+            case PARAMETER_ANNOUNCES_VALIDATION_YES:
+                announce.setPublished( false );
 
-            break;
+                break;
 
-        case PARAMETER_ANNOUNCES_VALIDATION_NO:
-            announce.setPublished( true );
+            case PARAMETER_ANNOUNCES_VALIDATION_NO:
+                announce.setPublished( true );
 
-            break;
-        case PARAMETER_ANNOUNCES_VALIDATION_GLOBAL_PARAMETERS:
-        default:
-            announce.setPublished( !sector.getAnnouncesValidation( ) );
+                break;
+
+            case PARAMETER_ANNOUNCES_VALIDATION_GLOBAL_PARAMETERS:default:
+                announce.setPublished( !sector.getAnnouncesValidation(  ) );
         }
 
-        EntryFilter filter = new EntryFilter( );
-        filter.setIdResource( category.getId( ) );
+        EntryFilter filter = new EntryFilter(  );
+        filter.setIdResource( category.getId(  ) );
         filter.setResourceType( Category.RESOURCE_TYPE );
         filter.setEntryParentNull( EntryFilter.FILTER_TRUE );
         filter.setFieldDependNull( EntryFilter.FILTER_TRUE );
         filter.setIdIsComment( EntryFilter.FILTER_FALSE );
 
         List<Entry> listEntryFirstLevel = EntryHome.getEntryList( filter );
-        List<GenericAttributeError> listErrors = new ArrayList<GenericAttributeError>( );
+        List<GenericAttributeError> listErrors = new ArrayList<GenericAttributeError>(  );
 
         AnnounceDTO announceDTO = new AnnounceDTO( announce );
 
         for ( Entry entry : listEntryFirstLevel )
         {
-            listErrors.addAll( _announceService.getResponseEntry( request, entry.getIdEntry( ), request.getLocale( ),
+            listErrors.addAll( _announceService.getResponseEntry( request, entry.getIdEntry(  ), request.getLocale(  ),
                     announceDTO ) );
         }
 
-        if ( category.getDisplayCaptcha( ) && _captchaSecurityService.isAvailable( ) )
+        if ( category.getDisplayCaptcha(  ) && _captchaSecurityService.isAvailable(  ) )
         {
             if ( !_captchaSecurityService.validate( request ) )
             {
-                GenericAttributeError genAttError = new GenericAttributeError( );
+                GenericAttributeError genAttError = new GenericAttributeError(  );
                 genAttError.setErrorMessage( I18nService.getLocalizedString( ERROR_MESSAGE_WRONG_CAPTCHA,
-                        request.getLocale( ) ) );
+                        request.getLocale(  ) ) );
                 listErrors.add( genAttError );
             }
         }
 
         // If there is some errors, we redirect the user to the form page
-        if ( listErrors.size( ) > 0 )
+        if ( listErrors.size(  ) > 0 )
         {
             _announceService.convertMapResponseToList( announceDTO );
-            announce.setListResponse( announceDTO.getListResponse( ) );
+            announce.setListResponse( announceDTO.getListResponse(  ) );
+
             return listErrors;
         }
 
         _announceService.convertMapResponseToList( announceDTO );
-        announce.setListResponse( announceDTO.getListResponse( ) );
+        announce.setListResponse( announceDTO.getListResponse(  ) );
 
         announce.setHasPictures( false );
-        for ( Response response : announceDTO.getListResponse( ) )
+
+        for ( Response response : announceDTO.getListResponse(  ) )
         {
-            if ( response.getFile( ) != null && FileUtil.hasImageExtension( response.getFile( ).getTitle( ) ) )
+            if ( ( response.getFile(  ) != null ) && FileUtil.hasImageExtension( response.getFile(  ).getTitle(  ) ) )
             {
                 announce.setHasPictures( true );
+
                 break;
             }
         }
 
         AnnounceHome.update( announce );
 
-        List<Integer> listIdResponse = AnnounceHome.findListIdResponse( announce.getId( ) );
+        List<Integer> listIdResponse = AnnounceHome.findListIdResponse( announce.getId(  ) );
 
         for ( int nIdResponse : listIdResponse )
         {
             ResponseHome.remove( nIdResponse );
         }
 
-        AnnounceHome.removeAnnounceResponse( announce.getId( ) );
+        AnnounceHome.removeAnnounceResponse( announce.getId(  ) );
 
-        for ( Response response : announceDTO.getListResponse( ) )
+        for ( Response response : announceDTO.getListResponse(  ) )
         {
             ResponseHome.create( response );
-            AnnounceHome.insertAnnounceResponse( announce.getId( ), response.getIdResponse( ),
-                    response.getFile( ) != null && FileUtil.hasImageExtension( response.getFile( ).getTitle( ) ) );
+            AnnounceHome.insertAnnounceResponse( announce.getId(  ), response.getIdResponse(  ),
+                ( response.getFile(  ) != null ) && FileUtil.hasImageExtension( response.getFile(  ).getTitle(  ) ) );
         }
 
         // send mail notification only if announce is not published
-        if ( !announce.getPublished( ) )
+        if ( !announce.getPublished(  ) )
         {
             sendAnnounceNotification( request, announce );
         }
@@ -1189,27 +1242,28 @@ public class AnnounceApp extends MVCApplication
      *         or not active
      */
     private XPage getAnnounceFormHtml( HttpServletRequest request, Announce announce, Category category, Locale locale,
-            Map<String, Object> model )
+        Map<String, Object> model )
     {
         if ( category == null )
         {
-            return new XPage( );
+            return new XPage(  );
         }
 
-        Sector sector = SectorHome.findByPrimaryKey( category.getIdSector( ) );
+        Sector sector = SectorHome.findByPrimaryKey( category.getIdSector(  ) );
 
         model.put( MARK_FORM_HTML, _announceService.getHtmlAnnounceForm( announce, category, locale, true, request ) );
         model.put( MARK_CATEGORY, category );
         model.put( MARK_SECTOR, sector );
-        model.put( MARK_LIST_FIELDS, getSectorList( ) );
-        model.put( MARK_LOCALE, request.getLocale( ) );
-        if ( category.getDisplayCaptcha( ) && _captchaSecurityService.isAvailable( ) )
+        model.put( MARK_LIST_FIELDS, getSectorList(  ) );
+        model.put( MARK_LOCALE, request.getLocale(  ) );
+
+        if ( category.getDisplayCaptcha(  ) && _captchaSecurityService.isAvailable(  ) )
         {
-            model.put( MARK_CAPTCHA, _captchaSecurityService.getHtmlCode( ) );
+            model.put( MARK_CAPTCHA, _captchaSecurityService.getHtmlCode(  ) );
         }
 
-        return getXPage( announce == null || announce.getId( ) == 0 ? TEMPLATE_PAGE_CREATE_ANNOUNCE_STEP_FORM
-                : TEMPLATE_MODIFY_ANNOUNCE, locale, model );
+        return getXPage( ( ( announce == null ) || ( announce.getId(  ) == 0 ) )
+            ? TEMPLATE_PAGE_CREATE_ANNOUNCE_STEP_FORM : TEMPLATE_MODIFY_ANNOUNCE, locale, model );
     }
 
     /**
@@ -1222,7 +1276,8 @@ public class AnnounceApp extends MVCApplication
     {
         UrlItem url = new UrlItem( AppPathService.getBaseUrl( request ) + getActionFullUrl( ACTION_VIEW_ANNOUNCE ) );
         url.addParameter( PARAMETER_ANNOUNCE_ID, nIdAnnounce );
-        return url.getUrl( );
+
+        return url.getUrl(  );
     }
 
     /**
@@ -1231,71 +1286,77 @@ public class AnnounceApp extends MVCApplication
      * @return The HTML content to display
      * @throws SiteMessageException If a site message needs to be displayed
      */
-    public static String getManageUserAnnounces( HttpServletRequest request ) throws SiteMessageException
+    public static String getManageUserAnnounces( HttpServletRequest request )
+        throws SiteMessageException
     {
         LuteceUser user = getLuteceUserAuthentication( request );
 
-        String strCurrentPageIndex = Paginator.getPageIndex( request, Paginator.PARAMETER_PAGE_INDEX,
-                DEFAULT_PAGE_INDEX );
+        String strCurrentPageIndex = Paginator.getPageIndex( request, Paginator.PARAMETER_PAGE_INDEX, DEFAULT_PAGE_INDEX );
         int nDefaultItemsPerPage = AppPropertiesService.getPropertyInt( PROPERTY_DEFAULT_FRONT_LIST_ANNOUNCE_PER_PAGE,
                 10 );
 
-        Integer nOldItemsPerPageFromSession = (Integer) request.getSession( ).getAttribute(
-                SESSION_ATTRIBUTE_MY_ANNOUNCES_ITEMS_PER_PAGE );
-        int nOldItemsPerPage = nOldItemsPerPageFromSession != null ? nOldItemsPerPageFromSession : nDefaultItemsPerPage;
+        Integer nOldItemsPerPageFromSession = (Integer) request.getSession(  )
+                                                               .getAttribute( SESSION_ATTRIBUTE_MY_ANNOUNCES_ITEMS_PER_PAGE );
+        int nOldItemsPerPage = ( nOldItemsPerPageFromSession != null ) ? nOldItemsPerPageFromSession
+                                                                       : nDefaultItemsPerPage;
 
         int nItemsPerPage = Paginator.getItemsPerPage( request, Paginator.PARAMETER_ITEMS_PER_PAGE, nOldItemsPerPage,
                 nDefaultItemsPerPage );
 
-        request.getSession( ).setAttribute( SESSION_ATTRIBUTE_MY_ANNOUNCES_ITEMS_PER_PAGE, nItemsPerPage );
+        request.getSession(  ).setAttribute( SESSION_ATTRIBUTE_MY_ANNOUNCES_ITEMS_PER_PAGE, nItemsPerPage );
 
         List<Announce> listAnnounces = AnnounceHome.getAnnouncesForUser( user, AnnounceSort.DEFAULT_SORT );
 
-        UrlItem urlItem = new UrlItem( AppPathService.getPortalUrl( ) );
+        UrlItem urlItem = new UrlItem( AppPathService.getPortalUrl(  ) );
+
         if ( StringUtils.isNotEmpty( request.getParameter( PARAMETER_PAGE ) ) )
         {
             urlItem.addParameter( PARAMETER_PAGE, request.getParameter( PARAMETER_PAGE ) );
         }
+
         if ( StringUtils.isNotEmpty( request.getParameter( MVCUtils.PARAMETER_ACTION ) ) )
         {
             urlItem.addParameter( MVCUtils.PARAMETER_ACTION, request.getParameter( MVCUtils.PARAMETER_ACTION ) );
         }
+
         if ( StringUtils.isNotEmpty( request.getParameter( MVCUtils.PARAMETER_VIEW ) ) )
         {
             urlItem.addParameter( MVCUtils.PARAMETER_VIEW, request.getParameter( MVCUtils.PARAMETER_VIEW ) );
         }
+
         if ( StringUtils.isNotEmpty( request.getParameter( Parameters.PAGE_ID ) ) )
         {
             urlItem.addParameter( Parameters.PAGE_ID, request.getParameter( Parameters.PAGE_ID ) );
         }
 
-        Paginator<Announce> paginator = new Paginator<Announce>( listAnnounces, nItemsPerPage, urlItem.getUrl( ),
+        Paginator<Announce> paginator = new Paginator<Announce>( listAnnounces, nItemsPerPage, urlItem.getUrl(  ),
                 PARAMETER_PAGE_INDEX, strCurrentPageIndex );
 
-        for ( Announce announce : paginator.getPageItems( ) )
+        for ( Announce announce : paginator.getPageItems(  ) )
         {
-            announce.setListIdImageResponse( AnnounceHome.findListIdImageResponse( announce.getId( ) ) );
+            announce.setListIdImageResponse( AnnounceHome.findListIdImageResponse( announce.getId(  ) ) );
         }
 
-        Map<String, Object> model = new HashMap<String, Object>( );
-        model.put( MARK_LIST_FIELDS, getSectorList( ) );
-        model.put( MARK_LOCALE, request.getLocale( ) );
+        Map<String, Object> model = new HashMap<String, Object>(  );
+        model.put( MARK_LIST_FIELDS, getSectorList(  ) );
+        model.put( MARK_LOCALE, request.getLocale(  ) );
         model.put( MARK_NB_ITEMS_PER_PAGE, Integer.toString( nItemsPerPage ) );
         model.put( MARK_PAGINATOR, paginator );
-        model.put( MARK_ANNOUNCES_LIST, paginator.getPageItems( ) );
+        model.put( MARK_ANNOUNCES_LIST, paginator.getPageItems(  ) );
         model.put( MARK_USER, user );
-        HtmlTemplate template = AppTemplateService.getTemplate( TEMPLATE_MY_ANNOUNCES, request.getLocale( ), model );
 
-        return template.getHtml( );
+        HtmlTemplate template = AppTemplateService.getTemplate( TEMPLATE_MY_ANNOUNCES, request.getLocale(  ), model );
+
+        return template.getHtml(  );
     }
 
     /**
      * Get the list of sectors to be displayed in the navigation menu
      * @return The list of sectors
      */
-    public static Collection<Sector> getSectorList( )
+    public static Collection<Sector> getSectorList(  )
     {
-        Collection<Sector> listSectors = SectorHome.findAll( );
+        Collection<Sector> listSectors = SectorHome.findAll(  );
 
         for ( Sector sector : listSectors )
         {
@@ -1310,6 +1371,7 @@ public class AnnounceApp extends MVCApplication
 
             sector.setNumberAnnounces( nNumberAnnounces );
         }
+
         return listSectors;
     }
 
@@ -1323,17 +1385,20 @@ public class AnnounceApp extends MVCApplication
     {
         if ( request == null )
         {
-            return new AnnounceSearchFilter( );
+            return new AnnounceSearchFilter(  );
         }
 
         String strIdFilter = request.getParameter( PARAMETER_ID_FILTER );
+
         if ( StringUtils.isNotEmpty( strIdFilter ) && StringUtils.isNumeric( strIdFilter ) )
         {
             int nIdFilter = Integer.parseInt( strIdFilter );
             AnnounceSearchFilter filter = AnnounceSearchFilterHome.findByPrimaryKey( nIdFilter );
-            request.getSession( ).setAttribute( SESSION_KEY_ANNOUNCE_FILTER, filter );
+            request.getSession(  ).setAttribute( SESSION_KEY_ANNOUNCE_FILTER, filter );
+
             return filter;
         }
+
         if ( Boolean.parseBoolean( request.getParameter( PARAMETER_HAS_FILTER ) ) )
         {
             String strKeywords = request.getParameter( PARAMETER_KEYWORDS );
@@ -1347,13 +1412,13 @@ public class AnnounceApp extends MVCApplication
             Date formatedDateMin = null;
             Date formatedDateMax = null;
 
-            DateFormat dateFormat = AnnounceService.getDateFormat( );
+            DateFormat dateFormat = AnnounceService.getDateFormat(  );
 
             if ( StringUtils.isNotEmpty( strDateMin ) )
             {
                 try
                 {
-                    formatedDateMin = dateFormat.parse( strDateMin.trim( ) );
+                    formatedDateMin = dateFormat.parse( strDateMin.trim(  ) );
                 }
                 catch ( ParseException e )
                 {
@@ -1365,7 +1430,7 @@ public class AnnounceApp extends MVCApplication
             {
                 try
                 {
-                    formatedDateMax = dateFormat.parse( strDateMax.trim( ) );
+                    formatedDateMax = dateFormat.parse( strDateMax.trim(  ) );
                 }
                 catch ( ParseException e )
                 {
@@ -1373,58 +1438,70 @@ public class AnnounceApp extends MVCApplication
                 }
             }
 
-            AnnounceSearchFilter filter = new AnnounceSearchFilter( );
+            AnnounceSearchFilter filter = new AnnounceSearchFilter(  );
             filter.setKeywords( strKeywords );
+
             if ( StringUtils.isNotEmpty( strIdCategory ) && StringUtils.isNumeric( strIdCategory ) )
             {
                 filter.setIdCategory( Integer.parseInt( strIdCategory ) );
             }
+
             filter.setDateMin( formatedDateMin );
             filter.setDateMax( formatedDateMax );
 
             if ( StringUtils.isNotEmpty( strPriceMin ) )
             {
-                strPriceMin = strPriceMin.replaceAll( CONSTANT_BLANK_SPACE, StringUtils.EMPTY ).trim( );
+                strPriceMin = strPriceMin.replaceAll( CONSTANT_BLANK_SPACE, StringUtils.EMPTY ).trim(  );
+
                 if ( StringUtils.contains( strPriceMin, CONSTANT_COMA ) )
                 {
                     strPriceMin = strPriceMin.substring( 0, strPriceMin.indexOf( CONSTANT_COMA ) );
                 }
+
                 if ( StringUtils.contains( strPriceMin, CONSTANT_POINT ) )
                 {
                     strPriceMin = strPriceMin.substring( 0, strPriceMin.indexOf( CONSTANT_POINT ) );
                 }
+
                 if ( StringUtils.isNumeric( strPriceMin ) )
                 {
                     filter.setPriceMin( Integer.parseInt( strPriceMin ) );
                 }
             }
+
             if ( StringUtils.isNotEmpty( strPriceMax ) )
             {
-                strPriceMax = strPriceMax.replaceAll( CONSTANT_BLANK_SPACE, StringUtils.EMPTY ).trim( );
+                strPriceMax = strPriceMax.replaceAll( CONSTANT_BLANK_SPACE, StringUtils.EMPTY ).trim(  );
+
                 if ( StringUtils.contains( strPriceMax, CONSTANT_COMA ) )
                 {
                     strPriceMax = strPriceMax.substring( 0, strPriceMax.indexOf( CONSTANT_COMA ) );
                 }
+
                 if ( StringUtils.contains( strPriceMax, CONSTANT_POINT ) )
                 {
                     strPriceMax = strPriceMax.substring( 0, strPriceMax.indexOf( CONSTANT_POINT ) );
                 }
+
                 if ( StringUtils.isNumeric( strPriceMax ) )
                 {
                     filter.setPriceMax( Integer.parseInt( strPriceMax ) );
                 }
             }
 
-            request.getSession( ).setAttribute( SESSION_KEY_ANNOUNCE_FILTER, filter );
+            request.getSession(  ).setAttribute( SESSION_KEY_ANNOUNCE_FILTER, filter );
 
             return filter;
         }
-        AnnounceSearchFilter filter = (AnnounceSearchFilter) request.getSession( ).getAttribute(
-                SESSION_KEY_ANNOUNCE_FILTER );
+
+        AnnounceSearchFilter filter = (AnnounceSearchFilter) request.getSession(  )
+                                                                    .getAttribute( SESSION_KEY_ANNOUNCE_FILTER );
+
         if ( filter == null )
         {
-            filter = new AnnounceSearchFilter( );
+            filter = new AnnounceSearchFilter(  );
         }
+
         return filter;
     }
 
@@ -1447,15 +1524,16 @@ public class AnnounceApp extends MVCApplication
      */
     public static String getUrlSearchAnnounce( HttpServletRequest request, int nIdFilter )
     {
-        UrlItem urlItem = new UrlItem( AppPathService.getBaseUrl( request ) + AppPathService.getPortalUrl( ) );
+        UrlItem urlItem = new UrlItem( AppPathService.getBaseUrl( request ) + AppPathService.getPortalUrl(  ) );
         urlItem.addParameter( PARAMETER_PAGE, AnnounceUtils.PARAMETER_PAGE_ANNOUNCE );
         urlItem.addParameter( MVCUtils.PARAMETER_ACTION, ACTION_SEARCH );
+
         if ( nIdFilter > 0 )
         {
             urlItem.addParameter( PARAMETER_ID_FILTER, nIdFilter );
         }
 
-        return urlItem.getUrl( );
+        return urlItem.getUrl(  );
     }
 
     /**
@@ -1465,11 +1543,12 @@ public class AnnounceApp extends MVCApplication
      */
     public static String getRelativeUrlViewAnnounce( int nIdAnnounce )
     {
-        UrlItem urlItem = new UrlItem( AppPathService.getPortalUrl( ) );
+        UrlItem urlItem = new UrlItem( AppPathService.getPortalUrl(  ) );
         urlItem.addParameter( PARAMETER_PAGE, AnnounceUtils.PARAMETER_PAGE_ANNOUNCE );
         urlItem.addParameter( MVCUtils.PARAMETER_ACTION, ACTION_VIEW_ANNOUNCE );
         urlItem.addParameter( PARAMETER_ANNOUNCE_ID, nIdAnnounce );
-        return urlItem.getUrl( );
+
+        return urlItem.getUrl(  );
     }
 
     /**
@@ -1480,12 +1559,13 @@ public class AnnounceApp extends MVCApplication
      */
     public static String getUrlViewCategory( HttpServletRequest request, int nIdCategory )
     {
-        UrlItem urlItem = new UrlItem( AppPathService.getBaseUrl( request ) + AppPathService.getPortalUrl( ) );
+        UrlItem urlItem = new UrlItem( AppPathService.getBaseUrl( request ) + AppPathService.getPortalUrl(  ) );
         urlItem.addParameter( PARAMETER_PAGE, AnnounceUtils.PARAMETER_PAGE_ANNOUNCE );
         urlItem.addParameter( MVCUtils.PARAMETER_ACTION, ACTION_SEARCH );
         urlItem.addParameter( PARAMETER_CATEGORY_ID, nIdCategory );
-        urlItem.addParameter( PARAMETER_HAS_FILTER, Boolean.TRUE.toString( ) );
-        return urlItem.getUrl( );
+        urlItem.addParameter( PARAMETER_HAS_FILTER, Boolean.TRUE.toString(  ) );
+
+        return urlItem.getUrl(  );
     }
 
     /**
@@ -1496,10 +1576,11 @@ public class AnnounceApp extends MVCApplication
      */
     public static String getUrlViewUserAnnounces( HttpServletRequest request, String strUserName )
     {
-        UrlItem urlItem = new UrlItem( AppPathService.getBaseUrl( request ) + AppPathService.getPortalUrl( ) );
+        UrlItem urlItem = new UrlItem( AppPathService.getBaseUrl( request ) + AppPathService.getPortalUrl(  ) );
         urlItem.addParameter( PARAMETER_PAGE, AnnounceUtils.PARAMETER_PAGE_ANNOUNCE );
         urlItem.addParameter( MVCUtils.PARAMETER_ACTION, ACTION_VIEW_ANNOUNCES );
         urlItem.addParameter( PARAMETER_USERNAME, strUserName );
-        return urlItem.getUrl( );
+
+        return urlItem.getUrl(  );
     }
 }

@@ -41,7 +41,9 @@ import fr.paris.lutece.portal.service.resource.IExtendableResource;
 import fr.paris.lutece.portal.service.util.AppLogService;
 
 import java.io.Serializable;
+
 import java.sql.Timestamp;
+
 import java.util.Collection;
 import java.util.List;
 
@@ -55,7 +57,6 @@ public class Announce implements Serializable, IExtendableResource, RBACResource
      * Announce resource type
      */
     public static final String RESOURCE_TYPE = "announce";
-
     private static final long serialVersionUID = 4717207701123679302L;
 
     // Variables declarations
@@ -82,7 +83,7 @@ public class Announce implements Serializable, IExtendableResource, RBACResource
      * Get the list of responses of this announce
      * @return The list of responses of this announce
      */
-    public List<Response> getListResponse( )
+    public List<Response> getListResponse(  )
     {
         return _listResponse;
     }
@@ -100,7 +101,7 @@ public class Announce implements Serializable, IExtendableResource, RBACResource
      * Returns the IdAnnounce
      * @return The IdAnnounce
      */
-    public int getId( )
+    public int getId(  )
     {
         return _nIdAnnounce;
     }
@@ -118,7 +119,7 @@ public class Announce implements Serializable, IExtendableResource, RBACResource
      * Returns the Published state
      * @return The Published state
      */
-    public boolean getPublished( )
+    public boolean getPublished(  )
     {
         return _bPublished;
     }
@@ -136,7 +137,7 @@ public class Announce implements Serializable, IExtendableResource, RBACResource
      * gets the suspended state
      * @return the suspended state of announce
      */
-    public boolean getSuspended( )
+    public boolean getSuspended(  )
     {
         return _bSuspended;
     }
@@ -154,7 +155,7 @@ public class Announce implements Serializable, IExtendableResource, RBACResource
      * gets the title
      * @return the title of announce
      */
-    public String getTitle( )
+    public String getTitle(  )
     {
         return _strTitle;
     }
@@ -163,7 +164,7 @@ public class Announce implements Serializable, IExtendableResource, RBACResource
      * gets the description
      * @return the description of announce
      */
-    public String getDescription( )
+    public String getDescription(  )
     {
         return _strDescription;
     }
@@ -190,7 +191,7 @@ public class Announce implements Serializable, IExtendableResource, RBACResource
      * gets the category
      * @return the announce category
      */
-    public Category getCategory( )
+    public Category getCategory(  )
     {
         return _category;
     }
@@ -208,7 +209,7 @@ public class Announce implements Serializable, IExtendableResource, RBACResource
      * gets the user name
      * @return the username
      */
-    public String getUserName( )
+    public String getUserName(  )
     {
         return _strUserName;
     }
@@ -226,7 +227,7 @@ public class Announce implements Serializable, IExtendableResource, RBACResource
      * weather or not the announce has pictures in slideshow
      * @return weather or not the announce has pictures in slideshow
      */
-    public boolean getHasPictures( )
+    public boolean getHasPictures(  )
     {
         return _bHasPictures;
     }
@@ -244,7 +245,7 @@ public class Announce implements Serializable, IExtendableResource, RBACResource
      * Gets the list of ids of images responses of this announce
      * @return The list of ids of images responses of this announce
      */
-    public List<Integer> getListIdImageResponse( )
+    public List<Integer> getListIdImageResponse(  )
     {
         return _listIdImageResponse;
     }
@@ -263,7 +264,7 @@ public class Announce implements Serializable, IExtendableResource, RBACResource
      * gets the creation date
      * @return the creation date
      */
-    public Timestamp getDateCreation( )
+    public Timestamp getDateCreation(  )
     {
         return _dateCreation;
     }
@@ -281,7 +282,7 @@ public class Announce implements Serializable, IExtendableResource, RBACResource
      * Get the modification date
      * @return The modification date
      */
-    public Timestamp getDateModification( )
+    public Timestamp getDateModification(  )
     {
         return _dateModification;
     }
@@ -299,7 +300,7 @@ public class Announce implements Serializable, IExtendableResource, RBACResource
      * gets the publication time
      * @return the publication time
      */
-    public long getTimePublication( )
+    public long getTimePublication(  )
     {
         return _lTimePublication;
     }
@@ -317,7 +318,7 @@ public class Announce implements Serializable, IExtendableResource, RBACResource
      * gets the contact information
      * @return the contact information
      */
-    public String getContactInformation( )
+    public String getContactInformation(  )
     {
         return _strContactInformation;
     }
@@ -335,7 +336,7 @@ public class Announce implements Serializable, IExtendableResource, RBACResource
      * gets the price of the announce
      * @return the price of announce
      */
-    public String getPrice( )
+    public String getPrice(  )
     {
         return _strPrice;
     }
@@ -354,7 +355,7 @@ public class Announce implements Serializable, IExtendableResource, RBACResource
      * @return True if the announce was suspended by the user or not, false
      *         otherwise
      */
-    public boolean getSuspendedByUser( )
+    public boolean getSuspendedByUser(  )
     {
         return _bSuspendedByUser;
     }
@@ -373,7 +374,7 @@ public class Announce implements Serializable, IExtendableResource, RBACResource
      * gets the tags of announce
      * @return gets the tags of announce
      */
-    public String getTags( )
+    public String getTags(  )
     {
         return _strTags;
     }
@@ -391,16 +392,16 @@ public class Announce implements Serializable, IExtendableResource, RBACResource
      * {@inheritDoc}
      */
     @Override
-    public String getIdExtendableResource( )
+    public String getIdExtendableResource(  )
     {
-        return Integer.toString( getId( ) );
+        return Integer.toString( getId(  ) );
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public String getExtendableResourceType( )
+    public String getExtendableResourceType(  )
     {
         return RESOURCE_TYPE;
     }
@@ -409,30 +410,31 @@ public class Announce implements Serializable, IExtendableResource, RBACResource
      * {@inheritDoc}
      */
     @Override
-    public String getExtendableResourceName( )
+    public String getExtendableResourceName(  )
     {
-        return getTitle( );
+        return getTitle(  );
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public String getExtendableResourceDescription( )
+    public String getExtendableResourceDescription(  )
     {
-        return getDescription( );
+        return getDescription(  );
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public String getExtendableResourceImageUrl( )
+    public String getExtendableResourceImageUrl(  )
     {
-        if ( getHasPictures( ) && getListIdImageResponse( ) != null && getListIdImageResponse( ).size( ) > 0 )
+        if ( getHasPictures(  ) && ( getListIdImageResponse(  ) != null ) && ( getListIdImageResponse(  ).size(  ) > 0 ) )
         {
-            return ResponseImageResourceProvider.getUrlDownloadImageResponse( getListIdImageResponse( ).get( 0 ) );
+            return ResponseImageResourceProvider.getUrlDownloadImageResponse( getListIdImageResponse(  ).get( 0 ) );
         }
+
         return null;
     }
 
@@ -440,7 +442,7 @@ public class Announce implements Serializable, IExtendableResource, RBACResource
      * Get the list of workflow actions of this announce
      * @return The list of workflow announce of this announce
      */
-    public Collection<Action> getListWorkflowActions( )
+    public Collection<Action> getListWorkflowActions(  )
     {
         return _listActions;
     }
@@ -458,34 +460,35 @@ public class Announce implements Serializable, IExtendableResource, RBACResource
      * {@inheritDoc}
      */
     @Override
-    public String getResourceTypeCode( )
+    public String getResourceTypeCode(  )
     {
-        return getExtendableResourceType( );
+        return getExtendableResourceType(  );
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public String getResourceId( )
+    public String getResourceId(  )
     {
-        return getIdExtendableResource( );
+        return getIdExtendableResource(  );
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public Object clone( )
+    public Object clone(  )
     {
         try
         {
-            return super.clone( );
+            return super.clone(  );
         }
         catch ( CloneNotSupportedException e )
         {
-            AppLogService.error( e.getMessage( ), e );
+            AppLogService.error( e.getMessage(  ), e );
         }
+
         return this;
     }
 }

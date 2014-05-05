@@ -67,17 +67,20 @@ public class AnnounceExtendableResourceService implements IExtendableResourceSer
     @Override
     public IExtendableResource getResource( String strIdResource, String strResourceType )
     {
-        if ( isInvoked( strResourceType ) && StringUtils.isNotEmpty( strIdResource )
-                && StringUtils.isNumeric( strIdResource ) )
+        if ( isInvoked( strResourceType ) && StringUtils.isNotEmpty( strIdResource ) &&
+                StringUtils.isNumeric( strIdResource ) )
         {
             int nIdResource = Integer.parseInt( strIdResource );
             Announce announce = AnnounceHome.findByPrimaryKey( nIdResource );
+
             if ( announce != null )
             {
                 announce.setListIdImageResponse( AnnounceHome.findListIdImageResponse( nIdResource ) );
+
                 return announce;
             }
         }
+
         return null;
     }
 
@@ -85,7 +88,7 @@ public class AnnounceExtendableResourceService implements IExtendableResourceSer
      * {@inheritDoc}
      */
     @Override
-    public String getResourceType( )
+    public String getResourceType(  )
     {
         return Announce.RESOURCE_TYPE;
     }
@@ -111,7 +114,7 @@ public class AnnounceExtendableResourceService implements IExtendableResourceSer
 
             return AnnounceApp.getRelativeUrlViewAnnounce( nIdAnnounce );
         }
+
         return null;
     }
-
 }

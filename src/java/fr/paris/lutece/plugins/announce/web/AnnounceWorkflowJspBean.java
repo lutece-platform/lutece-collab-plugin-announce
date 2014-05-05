@@ -57,6 +57,7 @@ import javax.servlet.http.HttpServletRequest;
 public class AnnounceWorkflowJspBean extends MVCAdminJspBean
 {
     private static final long serialVersionUID = -173284996603895865L;
+
     // Parameters
     private static final String PARAMETER_ID_ACTION = "id_action";
     private static final String PARAMETER_ID_ANNOUNCE = "id_announce";
@@ -91,18 +92,19 @@ public class AnnounceWorkflowJspBean extends MVCAdminJspBean
         String strIdAction = request.getParameter( PARAMETER_ID_ACTION );
         String strIdAnnounce = request.getParameter( PARAMETER_ID_ANNOUNCE );
 
-        if ( StringUtils.isNotEmpty( strIdAction ) && StringUtils.isNumeric( strIdAction )
-                && StringUtils.isNotEmpty( strIdAnnounce ) && StringUtils.isNumeric( strIdAnnounce ) )
+        if ( StringUtils.isNotEmpty( strIdAction ) && StringUtils.isNumeric( strIdAction ) &&
+                StringUtils.isNotEmpty( strIdAnnounce ) && StringUtils.isNumeric( strIdAnnounce ) )
         {
             int nIdAction = Integer.parseInt( strIdAction );
             int nIdAnnounce = Integer.parseInt( strIdAnnounce );
 
-            if ( WorkflowService.getInstance( ).isDisplayTasksForm( nIdAction, getLocale( ) ) )
+            if ( WorkflowService.getInstance(  ).isDisplayTasksForm( nIdAction, getLocale(  ) ) )
             {
-                String strHtmlTasksForm = WorkflowService.getInstance( ).getDisplayTasksForm( nIdAnnounce,
-                        Announce.RESOURCE_TYPE, nIdAction, request, getLocale( ) );
+                String strHtmlTasksForm = WorkflowService.getInstance(  )
+                                                         .getDisplayTasksForm( nIdAnnounce, Announce.RESOURCE_TYPE,
+                        nIdAction, request, getLocale(  ) );
 
-                Map<String, Object> model = new HashMap<String, Object>( );
+                Map<String, Object> model = new HashMap<String, Object>(  );
 
                 model.put( MARK_TASKS_FORM, strHtmlTasksForm );
                 model.put( PARAMETER_ID_ACTION, nIdAction );
@@ -115,7 +117,7 @@ public class AnnounceWorkflowJspBean extends MVCAdminJspBean
         }
 
         return redirect( request,
-                AppPathService.getBaseUrl( request ) + AnnounceJspBean.getURLManageAnnounces( request ) );
+            AppPathService.getBaseUrl( request ) + AnnounceJspBean.getURLManageAnnounces( request ) );
     }
 
     /**
@@ -129,8 +131,8 @@ public class AnnounceWorkflowJspBean extends MVCAdminJspBean
         String strIdAction = request.getParameter( PARAMETER_ID_ACTION );
         String strIdAnnounce = request.getParameter( PARAMETER_ID_ANNOUNCE );
 
-        if ( StringUtils.isNotEmpty( strIdAction ) && StringUtils.isNumeric( strIdAction )
-                && StringUtils.isNotEmpty( strIdAnnounce ) && StringUtils.isNumeric( strIdAnnounce ) )
+        if ( StringUtils.isNotEmpty( strIdAction ) && StringUtils.isNumeric( strIdAction ) &&
+                StringUtils.isNotEmpty( strIdAnnounce ) && StringUtils.isNumeric( strIdAnnounce ) )
         {
             int nIdAction = Integer.parseInt( strIdAction );
             int nIdAnnounce = Integer.parseInt( strIdAnnounce );
@@ -139,11 +141,11 @@ public class AnnounceWorkflowJspBean extends MVCAdminJspBean
 
             if ( request.getParameter( PARAMETER_BACK ) == null )
             {
-
-                if ( WorkflowService.getInstance( ).isDisplayTasksForm( nIdAction, getLocale( ) ) )
+                if ( WorkflowService.getInstance(  ).isDisplayTasksForm( nIdAction, getLocale(  ) ) )
                 {
-                    String strError = WorkflowService.getInstance( ).doSaveTasksForm( nIdAnnounce,
-                            Announce.RESOURCE_TYPE, nIdAction, announce.getCategory( ).getId( ), request, getLocale( ) );
+                    String strError = WorkflowService.getInstance(  )
+                                                     .doSaveTasksForm( nIdAnnounce, Announce.RESOURCE_TYPE, nIdAction,
+                            announce.getCategory(  ).getId(  ), request, getLocale(  ) );
 
                     if ( strError != null )
                     {
@@ -151,10 +153,12 @@ public class AnnounceWorkflowJspBean extends MVCAdminJspBean
                     }
                 }
 
-                WorkflowService.getInstance( ).doProcessAction( nIdAnnounce, Announce.RESOURCE_TYPE, nIdAction,
-                        announce.getCategory( ).getId( ), request, getLocale( ), false );
+                WorkflowService.getInstance(  )
+                               .doProcessAction( nIdAnnounce, Announce.RESOURCE_TYPE, nIdAction,
+                    announce.getCategory(  ).getId(  ), request, getLocale(  ), false );
             }
         }
+
         return redirect( request, AnnounceJspBean.getURLManageAnnounces( request ) );
     }
 }

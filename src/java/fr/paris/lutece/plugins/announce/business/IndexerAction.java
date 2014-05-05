@@ -33,10 +33,11 @@
  */
 package fr.paris.lutece.plugins.announce.business;
 
+
 /**
- * 
+ *
  * IndexerAction
- * 
+ *
  */
 public class IndexerAction
 {
@@ -62,7 +63,7 @@ public class IndexerAction
      * gets the action id
      * @return the action id
      */
-    public int getIdAction( )
+    public int getIdAction(  )
     {
         return _nIdAction;
     }
@@ -80,7 +81,7 @@ public class IndexerAction
      * gets announce id
      * @return the record Id
      */
-    public int getIdAnnounce( )
+    public int getIdAnnounce(  )
     {
         return _nIdAnnounce;
     }
@@ -98,7 +99,7 @@ public class IndexerAction
      * get the task id
      * @return the task id
      */
-    public int getIdTask( )
+    public int getIdTask(  )
     {
         return _nIdTask;
     }

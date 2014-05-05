@@ -54,14 +54,14 @@ public class MyAnnouncesPortlet extends PortletHtmlContent
     /**
      * Sets the identifier of the portlet type to value specified
      */
-    public MyAnnouncesPortlet( )
+    public MyAnnouncesPortlet(  )
     {
-        setPortletTypeId( MyAnnouncesPortletHome.getInstance( ).getPortletTypeId( ) );
+        setPortletTypeId( MyAnnouncesPortletHome.getInstance(  ).getPortletTypeId(  ) );
     }
 
     /**
      * Returns the HTML code of the MyAnnouncePortlet portlet with XML heading
-     * 
+     *
      * @param request The HTTP servlet request
      * @return the HTML code of the MyAnnouncePortlet portlet
      */
@@ -77,34 +77,35 @@ public class MyAnnouncesPortlet extends PortletHtmlContent
             catch ( SiteMessageException e )
             {
                 // We catch site messages since they tell the user to log in if he has not logged in
-                AppLogService.error( e.getMessage( ), e );
+                AppLogService.error( e.getMessage(  ), e );
             }
         }
+
         return StringUtils.EMPTY;
     }
 
     /**
      * Updates the current instance of the MyAnnouncePortlet object
      */
-    public void update( )
+    public void update(  )
     {
-        MyAnnouncesPortletHome.getInstance( ).update( this );
+        MyAnnouncesPortletHome.getInstance(  ).update( this );
     }
 
     /**
      * Removes the current instance of the MyAnnouncePortlet object
      */
     @Override
-    public void remove( )
+    public void remove(  )
     {
-        MyAnnouncesPortletHome.getInstance( ).remove( this );
+        MyAnnouncesPortletHome.getInstance(  ).remove( this );
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public boolean canBeCachedForConnectedUsers( )
+    public boolean canBeCachedForConnectedUsers(  )
     {
         return false;
     }

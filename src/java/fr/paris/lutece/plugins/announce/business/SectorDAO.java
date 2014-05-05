@@ -99,12 +99,12 @@ public final class SectorDAO implements ISectorDAO
     {
         DAOUtil daoUtil = new DAOUtil( SQL_QUERY_INSERT, plugin );
         sector.setId( newPrimaryKey( plugin ) );
-        daoUtil.setInt( 1, sector.getId( ) );
-        daoUtil.setString( 2, sector.getLabel( ) );
-        daoUtil.setString( 3, sector.getDescription( ) );
-        daoUtil.setBoolean( 4, sector.getAnnouncesValidation( ) );
+        daoUtil.setInt( 1, sector.getId(  ) );
+        daoUtil.setString( 2, sector.getLabel(  ) );
+        daoUtil.setString( 3, sector.getDescription(  ) );
+        daoUtil.setBoolean( 4, sector.getAnnouncesValidation(  ) );
         daoUtil.setInt( 5, selectMaxOrder( plugin ) + 1 );
-        daoUtil.setString( 6, sector.getTags( ) );
+        daoUtil.setString( 6, sector.getTags(  ) );
 
         daoUtil.executeUpdate(  );
         daoUtil.free(  );
@@ -124,7 +124,7 @@ public final class SectorDAO implements ISectorDAO
 
         if ( daoUtil.next(  ) )
         {
-            sector = new Sector( );
+            sector = new Sector(  );
             sector.setId( daoUtil.getInt( 1 ) );
             sector.setLabel( daoUtil.getString( 2 ) );
             sector.setDescription( daoUtil.getString( 3 ) );
@@ -146,7 +146,7 @@ public final class SectorDAO implements ISectorDAO
     public void delete( Sector sector, Plugin plugin )
     {
         DAOUtil daoUtil = new DAOUtil( SQL_QUERY_DELETE, plugin );
-        daoUtil.setInt( 1, sector.getId( ) );
+        daoUtil.setInt( 1, sector.getId(  ) );
         daoUtil.executeUpdate(  );
         daoUtil.free(  );
     }
@@ -159,12 +159,12 @@ public final class SectorDAO implements ISectorDAO
     {
         DAOUtil daoUtil = new DAOUtil( SQL_QUERY_UPDATE, plugin );
 
-        daoUtil.setString( 1, sector.getLabel( ) );
-        daoUtil.setString( 2, sector.getDescription( ) );
-        daoUtil.setBoolean( 3, sector.getAnnouncesValidation( ) );
-        daoUtil.setString( 4, sector.getTags( ) );
+        daoUtil.setString( 1, sector.getLabel(  ) );
+        daoUtil.setString( 2, sector.getDescription(  ) );
+        daoUtil.setBoolean( 3, sector.getAnnouncesValidation(  ) );
+        daoUtil.setString( 4, sector.getTags(  ) );
 
-        daoUtil.setInt( 5, sector.getId( ) );
+        daoUtil.setInt( 5, sector.getId(  ) );
 
         daoUtil.executeUpdate(  );
         daoUtil.free(  );
@@ -176,13 +176,13 @@ public final class SectorDAO implements ISectorDAO
     @Override
     public Collection<Sector> selectAll( Plugin plugin )
     {
-        Collection<Sector> listSectors = new ArrayList<Sector>( );
+        Collection<Sector> listSectors = new ArrayList<Sector>(  );
         DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECTALL, plugin );
         daoUtil.executeQuery(  );
 
         while ( daoUtil.next(  ) )
         {
-            Sector sector = new Sector( );
+            Sector sector = new Sector(  );
             sector.setId( daoUtil.getInt( 1 ) );
             sector.setLabel( daoUtil.getString( 2 ) );
             sector.setDescription( daoUtil.getString( 3 ) );
@@ -205,7 +205,7 @@ public final class SectorDAO implements ISectorDAO
     @Override
     public ReferenceList selectReferenceList( Plugin plugin )
     {
-        ReferenceList listSectors = new ReferenceList( );
+        ReferenceList listSectors = new ReferenceList(  );
 
         DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECTALL, plugin );
         daoUtil.executeQuery(  );
@@ -230,9 +230,8 @@ public final class SectorDAO implements ISectorDAO
     @Override
     public ReferenceList selectLocaleReferenceList( Plugin plugin, Locale locale )
     {
-        ReferenceList frontListSectors = new ReferenceList( );
-        frontListSectors
-                .addItem( "0", I18nService.getLocalizedString( PROPERTY_FIELD_REFERENCE_LIST_TOP_LABEL, locale ) );
+        ReferenceList frontListSectors = new ReferenceList(  );
+        frontListSectors.addItem( "0", I18nService.getLocalizedString( PROPERTY_FIELD_REFERENCE_LIST_TOP_LABEL, locale ) );
 
         ReferenceList listSectors = selectReferenceList( plugin );
         frontListSectors.addAll( listSectors );
@@ -242,7 +241,7 @@ public final class SectorDAO implements ISectorDAO
 
     /**
      * Counts the number of categories for a specified sector
-     * 
+     *
      * @param plugin The plugin
      * @param sector The specified sector
      * @return The Number of categories
@@ -252,7 +251,7 @@ public final class SectorDAO implements ISectorDAO
         int nNumberCategories = 0;
         DAOUtil daoUtil = new DAOUtil( SQL_QUERY_COUNT_CATEGORIES_FOR_FIELD, plugin );
 
-        daoUtil.setInt( 1, sector.getId( ) );
+        daoUtil.setInt( 1, sector.getId(  ) );
         daoUtil.executeQuery(  );
 
         if ( daoUtil.next(  ) )

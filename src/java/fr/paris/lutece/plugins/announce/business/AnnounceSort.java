@@ -45,14 +45,17 @@ public class AnnounceSort
      * Sort by creation date
      */
     public static final String SORT_DATE_CREATION = "date_creation";
+
     /**
      * Sort by modification date
      */
     public static final String SORT_DATE_MODIFICATION = "date_modification";
+
     /**
      * Sort by title
      */
     public static final String SORT_TITLE = "title_announce";
+
     /**
      * Sort by description
      */
@@ -62,10 +65,14 @@ public class AnnounceSort
      * Default sort to use
      */
     public static final AnnounceSort DEFAULT_SORT = new AnnounceSort( SORT_DATE_CREATION, false );
-
     private final String _strSortColumn;
     private final boolean _bSortAsc;
 
+    /**
+     * Private constructor
+     * @param strSortColumn The name of the database column to use to sort
+     * @param bSortAsc True to sort ascending, false otherwise
+     */
     private AnnounceSort( String strSortColumn, boolean bSortAsc )
     {
         this._strSortColumn = strSortColumn;
@@ -76,7 +83,7 @@ public class AnnounceSort
      * Get the name of the sorted column
      * @return The name of the sorted column
      */
-    public String getSortColumn( )
+    public String getSortColumn(  )
     {
         return _strSortColumn;
     }
@@ -85,7 +92,7 @@ public class AnnounceSort
      * Get the name of the sorted column
      * @return The name of the sorted column
      */
-    public boolean getSortAsc( )
+    public boolean getSortAsc(  )
     {
         return _bSortAsc;
     }
@@ -99,8 +106,9 @@ public class AnnounceSort
      */
     public static AnnounceSort getAnnounceSort( String strSort, boolean bSortAsc )
     {
-        if ( StringUtils.equals( SORT_DATE_CREATION, strSort ) || StringUtils.equals( SORT_DATE_MODIFICATION, strSort )
-                || StringUtils.equals( SORT_TITLE, strSort ) || StringUtils.equals( SORT_DESCRIPTION, strSort ) )
+        if ( StringUtils.equals( SORT_DATE_CREATION, strSort ) ||
+                StringUtils.equals( SORT_DATE_MODIFICATION, strSort ) || StringUtils.equals( SORT_TITLE, strSort ) ||
+                StringUtils.equals( SORT_DESCRIPTION, strSort ) )
         {
             return new AnnounceSort( strSort, bSortAsc );
         }

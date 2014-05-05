@@ -128,7 +128,7 @@ public class CategoryEntryJspBean extends MVCAdminJspBean
     private static final String MARK_ENTRY_TYPE_SERVICE = "entryTypeService";
 
     // Local variables
-    private EntryService _entryService = EntryService.getService( );
+    private EntryService _entryService = EntryService.getService(  );
 
     /**
      * Get the HTML code to create an entry
@@ -155,7 +155,7 @@ public class CategoryEntryJspBean extends MVCAdminJspBean
         int nIdCategory = Integer.parseInt( strIdCategory );
         int nIdType = Integer.parseInt( strIdType );
 
-        Entry entry = new Entry( );
+        Entry entry = new Entry(  );
         entry.setEntryType( EntryTypeHome.findByPrimaryKey( nIdType ) );
 
         String strIdField = request.getParameter( PARAMETER_ID_FIELD );
@@ -165,7 +165,7 @@ public class CategoryEntryJspBean extends MVCAdminJspBean
         {
             nIdField = Integer.parseInt( strIdField );
 
-            Field field = new Field( );
+            Field field = new Field(  );
             field.setIdField( nIdField );
             entry.setFieldDepend( field );
         }
@@ -176,11 +176,11 @@ public class CategoryEntryJspBean extends MVCAdminJspBean
         Category category = CategoryHome.findByPrimaryKey( nIdCategory );
 
         // Default Values
-        Map<String, Object> model = new HashMap<String, Object>( );
+        Map<String, Object> model = new HashMap<String, Object>(  );
         model.put( MARK_ENTRY, entry );
         model.put( MARK_CATEGORY, category );
         model.put( MARK_WEBAPP_URL, AppPathService.getBaseUrl( request ) );
-        model.put( MARK_LOCALE, AdminUserService.getLocale( request ).getLanguage( ) );
+        model.put( MARK_LOCALE, AdminUserService.getLocale( request ).getLanguage(  ) );
         model.put( MARK_ENTRY_TYPE_SERVICE, EntryTypeServiceManager.getEntryTypeService( entry ) );
 
         String strTemplate = EntryTypeServiceManager.getEntryTypeService( entry ).getTemplateCreate( entry, false );
@@ -213,15 +213,15 @@ public class CategoryEntryJspBean extends MVCAdminJspBean
         int nIdCategory = Integer.parseInt( strIdCategory );
         Field fieldDepend = null;
 
-        if ( ( request.getParameter( PARAMETER_CANCEL ) == null ) && StringUtils.isNotEmpty( strIdType )
-                && StringUtils.isNumeric( strIdType ) )
+        if ( ( request.getParameter( PARAMETER_CANCEL ) == null ) && StringUtils.isNotEmpty( strIdType ) &&
+                StringUtils.isNumeric( strIdType ) )
         {
             int nIdType = Integer.parseInt( strIdType );
-            EntryType entryType = new EntryType( );
+            EntryType entryType = new EntryType(  );
             entryType.setIdType( nIdType );
 
-            Entry entry = new Entry( );
-            entry.setEntryType( EntryTypeService.getInstance( ).getEntryType( nIdType ) );
+            Entry entry = new Entry(  );
+            entry.setEntryType( EntryTypeService.getInstance(  ).getEntryType( nIdType ) );
 
             String strIdField = request.getParameter( PARAMETER_ID_FIELD );
             int nIdField = -1;
@@ -230,13 +230,13 @@ public class CategoryEntryJspBean extends MVCAdminJspBean
             {
                 nIdField = Integer.parseInt( strIdField );
 
-                fieldDepend = new Field( );
+                fieldDepend = new Field(  );
                 fieldDepend.setIdField( nIdField );
                 entry.setFieldDepend( fieldDepend );
             }
 
-            String strError = EntryTypeServiceManager.getEntryTypeService( entry ).getRequestData( entry, request,
-                    getLocale( ) );
+            String strError = EntryTypeServiceManager.getEntryTypeService( entry )
+                                                     .getRequestData( entry, request, getLocale(  ) );
 
             if ( strError != null )
             {
@@ -247,9 +247,9 @@ public class CategoryEntryJspBean extends MVCAdminJspBean
             entry.setResourceType( Category.RESOURCE_TYPE );
             entry.setIdEntry( EntryHome.create( entry ) );
 
-            if ( entry.getFields( ) != null )
+            if ( entry.getFields(  ) != null )
             {
-                for ( Field field : entry.getFields( ) )
+                for ( Field field : entry.getFields(  ) )
                 {
                     field.setParentEntry( entry );
                     FieldHome.create( field );
@@ -258,13 +258,13 @@ public class CategoryEntryJspBean extends MVCAdminJspBean
 
             if ( request.getParameter( PARAMETER_APPLY ) != null )
             {
-                return redirect( request, VIEW_GET_MODIFY_ENTRY, PARAMETER_ID_ENTRY, entry.getIdEntry( ) );
+                return redirect( request, VIEW_GET_MODIFY_ENTRY, PARAMETER_ID_ENTRY, entry.getIdEntry(  ) );
             }
         }
 
         if ( fieldDepend != null )
         {
-            return redirect( request, CategoryFieldJspBean.getUrlModifyField( request, fieldDepend.getIdField( ) ) );
+            return redirect( request, CategoryFieldJspBean.getUrlModifyField( request, fieldDepend.getIdField(  ) ) );
         }
 
         return redirect( request, CategoryJspBean.getUrlModifyCategory( request, nIdCategory ) );
@@ -278,7 +278,7 @@ public class CategoryEntryJspBean extends MVCAdminJspBean
     @View( VIEW_GET_MODIFY_ENTRY )
     public String getModifyEntry( HttpServletRequest request )
     {
-        Plugin plugin = getPlugin( );
+        Plugin plugin = getPlugin(  );
         String strIdEntry = request.getParameter( PARAMETER_ID_ENTRY );
 
         if ( StringUtils.isNotEmpty( strIdEntry ) && StringUtils.isNumeric( strIdEntry ) )
@@ -292,11 +292,11 @@ public class CategoryEntryJspBean extends MVCAdminJspBean
 
             Entry entry = EntryHome.findByPrimaryKey( nIdEntry );
 
-            List<Field> listField = new ArrayList<Field>( entry.getFields( ).size( ) );
+            List<Field> listField = new ArrayList<Field>( entry.getFields(  ).size(  ) );
 
-            for ( Field field : entry.getFields( ) )
+            for ( Field field : entry.getFields(  ) )
             {
-                field = FieldHome.findByPrimaryKey( field.getIdField( ) );
+                field = FieldHome.findByPrimaryKey( field.getIdField(  ) );
                 listField.add( field );
             }
 
@@ -304,14 +304,14 @@ public class CategoryEntryJspBean extends MVCAdminJspBean
 
             IEntryTypeService entryTypeService = EntryTypeServiceManager.getEntryTypeService( entry );
 
-            Map<String, Object> model = new HashMap<String, Object>( );
+            Map<String, Object> model = new HashMap<String, Object>(  );
             model.put( MARK_ENTRY, entry );
-            model.put( MARK_CATEGORY, CategoryHome.findByPrimaryKey( entry.getIdResource( ) ) );
+            model.put( MARK_CATEGORY, CategoryHome.findByPrimaryKey( entry.getIdResource(  ) ) );
 
             UrlItem urlItem = new UrlItem( AppPathService.getBaseUrl( request ) + getViewUrl( VIEW_GET_MODIFY_ENTRY ) );
             urlItem.addParameter( PARAMETER_ID_ENTRY, strIdEntry );
 
-            model.put( MARK_LIST, entry.getFields( ) );
+            model.put( MARK_LIST, entry.getFields(  ) );
 
             ReferenceList refListRegularExpression = entryTypeService.getReferenceListRegularExpression( entry, plugin );
 
@@ -321,7 +321,7 @@ public class CategoryEntryJspBean extends MVCAdminJspBean
             }
 
             model.put( MARK_WEBAPP_URL, AppPathService.getBaseUrl( request ) );
-            model.put( MARK_LOCALE, AdminUserService.getLocale( request ).getLanguage( ) );
+            model.put( MARK_LOCALE, AdminUserService.getLocale( request ).getLanguage(  ) );
             model.put( MARK_ENTRY_TYPE_SERVICE, EntryTypeServiceManager.getEntryTypeService( entry ) );
 
             return getPage( PROPERTY_MODIFY_QUESTION_TITLE, entryTypeService.getTemplateModify( entry, false ), model );
@@ -353,8 +353,8 @@ public class CategoryEntryJspBean extends MVCAdminJspBean
 
             if ( request.getParameter( PARAMETER_CANCEL ) == null )
             {
-                String strError = EntryTypeServiceManager.getEntryTypeService( entry ).getRequestData( entry, request,
-                        getLocale( ) );
+                String strError = EntryTypeServiceManager.getEntryTypeService( entry )
+                                                         .getRequestData( entry, request, getLocale(  ) );
 
                 if ( strError != null )
                 {
@@ -363,12 +363,12 @@ public class CategoryEntryJspBean extends MVCAdminJspBean
 
                 EntryHome.update( entry );
 
-                if ( entry.getFields( ) != null )
+                if ( entry.getFields(  ) != null )
                 {
-                    for ( Field field : entry.getFields( ) )
+                    for ( Field field : entry.getFields(  ) )
                     {
                         // Check if the field already exists in the database
-                        Field fieldStored = FieldHome.findByPrimaryKey( field.getIdField( ) );
+                        Field fieldStored = FieldHome.findByPrimaryKey( field.getIdField(  ) );
 
                         if ( fieldStored != null )
                         {
@@ -391,13 +391,13 @@ public class CategoryEntryJspBean extends MVCAdminJspBean
 
             String strUrl;
 
-            if ( entry.getFieldDepend( ) != null )
+            if ( entry.getFieldDepend(  ) != null )
             {
-                strUrl = CategoryFieldJspBean.getUrlModifyField( request, entry.getFieldDepend( ).getIdField( ) );
+                strUrl = CategoryFieldJspBean.getUrlModifyField( request, entry.getFieldDepend(  ).getIdField(  ) );
             }
             else
             {
-                strUrl = CategoryJspBean.getUrlModifyCategory( request, entry.getIdResource( ) );
+                strUrl = CategoryJspBean.getUrlModifyCategory( request, entry.getIdResource(  ) );
             }
 
             return redirect( request, strUrl );
@@ -418,8 +418,9 @@ public class CategoryEntryJspBean extends MVCAdminJspBean
         UrlItem url = new UrlItem( getActionUrl( ACTION_DO_REMOVE_ENTRY ) );
         url.addParameter( PARAMETER_ID_ENTRY, strIdEntry );
 
-        return redirect( request, AdminMessageService.getMessageUrl( request, MESSAGE_CONFIRM_REMOVE_ENTRY,
-                url.getUrl( ), AdminMessage.TYPE_CONFIRMATION ) );
+        return redirect( request,
+            AdminMessageService.getMessageUrl( request, MESSAGE_CONFIRM_REMOVE_ENTRY, url.getUrl(  ),
+                AdminMessage.TYPE_CONFIRMATION ) );
     }
 
     /**
@@ -443,45 +444,45 @@ public class CategoryEntryJspBean extends MVCAdminJspBean
 
             Entry entry = EntryHome.findByPrimaryKey( nIdEntry );
 
-            List<String> listErrors = new ArrayList<String>( );
+            List<String> listErrors = new ArrayList<String>(  );
 
-            if ( !_entryService.checkForRemoval( strIdEntry, listErrors, getLocale( ) ) )
+            if ( !_entryService.checkForRemoval( strIdEntry, listErrors, getLocale(  ) ) )
             {
-                String strCause = AdminMessageService.getFormattedList( listErrors, getLocale( ) );
+                String strCause = AdminMessageService.getFormattedList( listErrors, getLocale(  ) );
                 Object[] args = { strCause };
 
                 return AdminMessageService.getMessageUrl( request, MESSAGE_CANT_REMOVE_ENTRY, args,
-                        AdminMessage.TYPE_STOP );
+                    AdminMessage.TYPE_STOP );
             }
 
             // Update order
             List<Entry> listEntry;
-            EntryFilter filter = new EntryFilter( );
-            filter.setIdResource( entry.getIdResource( ) );
+            EntryFilter filter = new EntryFilter(  );
+            filter.setIdResource( entry.getIdResource(  ) );
             filter.setResourceType( Category.RESOURCE_TYPE );
             listEntry = EntryHome.getEntryList( filter );
 
-            if ( entry.getFieldDepend( ) == null )
+            if ( entry.getFieldDepend(  ) == null )
             {
-                _entryService.moveDownEntryOrder( listEntry.size( ), entry );
+                _entryService.moveDownEntryOrder( listEntry.size(  ), entry );
             }
             else
             {
                 //conditional questions
-                EntryHome.decrementOrderByOne( entry.getPosition( ), entry.getFieldDepend( ).getIdField( ),
-                        entry.getIdResource( ), entry.getResourceType( ) );
+                EntryHome.decrementOrderByOne( entry.getPosition(  ), entry.getFieldDepend(  ).getIdField(  ),
+                    entry.getIdResource(  ), entry.getResourceType(  ) );
             }
 
             // Remove entry
             EntryHome.remove( nIdEntry );
 
-            if ( entry.getFieldDepend( ) != null )
+            if ( entry.getFieldDepend(  ) != null )
             {
                 return redirect( request,
-                        CategoryFieldJspBean.getUrlModifyField( request, entry.getFieldDepend( ).getIdField( ) ) );
+                    CategoryFieldJspBean.getUrlModifyField( request, entry.getFieldDepend(  ).getIdField(  ) ) );
             }
 
-            return redirect( request, CategoryJspBean.getUrlModifyCategory( request, entry.getIdResource( ) ) );
+            return redirect( request, CategoryJspBean.getUrlModifyCategory( request, entry.getIdResource(  ) ) );
         }
 
         return redirect( request, CategoryJspBean.getUrlManageCategories( request ) );
@@ -523,16 +524,16 @@ public class CategoryEntryJspBean extends MVCAdminJspBean
         {
             int nIdEntry = Integer.parseInt( strIdEntry );
             Entry entry = EntryHome.findByPrimaryKey( nIdEntry );
-            int nNewPosition = bMoveUp ? ( entry.getPosition( ) - 1 ) : ( entry.getPosition( ) + 1 );
+            int nNewPosition = bMoveUp ? ( entry.getPosition(  ) - 1 ) : ( entry.getPosition(  ) + 1 );
 
             if ( nNewPosition > 0 )
             {
-                Entry entryToMove = EntryHome.findByOrderAndIdFieldAndIdResource( nNewPosition, entry.getFieldDepend( )
-                        .getIdField( ), entry.getIdResource( ), entry.getResourceType( ) );
+                Entry entryToMove = EntryHome.findByOrderAndIdFieldAndIdResource( nNewPosition,
+                        entry.getFieldDepend(  ).getIdField(  ), entry.getIdResource(  ), entry.getResourceType(  ) );
 
                 if ( entryToMove != null )
                 {
-                    entryToMove.setPosition( entry.getPosition( ) );
+                    entryToMove.setPosition( entry.getPosition(  ) );
                     EntryHome.update( entryToMove );
                     entry.setPosition( nNewPosition );
                     EntryHome.update( entry );
@@ -540,7 +541,7 @@ public class CategoryEntryJspBean extends MVCAdminJspBean
             }
 
             return redirect( request,
-                    CategoryFieldJspBean.getUrlModifyField( request, entry.getFieldDepend( ).getIdField( ) ) );
+                CategoryFieldJspBean.getUrlModifyField( request, entry.getFieldDepend(  ).getIdField(  ) ) );
         }
 
         return redirect( request, CategoryJspBean.getUrlManageCategories( request ) );
@@ -567,9 +568,9 @@ public class CategoryEntryJspBean extends MVCAdminJspBean
 
             Entry entry = EntryHome.findByPrimaryKey( nIdEntry );
 
-            Object[] tabEntryTileCopy = { entry.getTitle( ) };
+            Object[] tabEntryTileCopy = { entry.getTitle(  ) };
             String strTitleCopyEntry = I18nService.getLocalizedString( PROPERTY_COPY_ENTRY_TITLE, tabEntryTileCopy,
-                    getLocale( ) );
+                    getLocale(  ) );
 
             if ( strTitleCopyEntry != null )
             {
@@ -579,23 +580,24 @@ public class CategoryEntryJspBean extends MVCAdminJspBean
             EntryHome.copy( entry );
 
             // If the entry has a parent
-            if ( entry.getParent( ) != null )
+            if ( entry.getParent(  ) != null )
             {
                 // We reload the entry to get the copy and not he original entry
                 // The id of the entry is the id of the copy. It has been set by the create method of EntryDAO 
-                entry = EntryHome.findByPrimaryKey( entry.getIdEntry( ) );
+                entry = EntryHome.findByPrimaryKey( entry.getIdEntry(  ) );
 
-                Entry entryParent = EntryHome.findByPrimaryKey( entry.getParent( ).getIdEntry( ) );
-                _entryService.moveUpEntryOrder( entryParent.getPosition( ) + entryParent.getChildren( ).size( ), entry );
+                Entry entryParent = EntryHome.findByPrimaryKey( entry.getParent(  ).getIdEntry(  ) );
+                _entryService.moveUpEntryOrder( entryParent.getPosition(  ) + entryParent.getChildren(  ).size(  ),
+                    entry );
             }
 
-            if ( entry.getFieldDepend( ) != null )
+            if ( entry.getFieldDepend(  ) != null )
             {
                 return redirect( request,
-                        CategoryFieldJspBean.getUrlModifyField( request, entry.getFieldDepend( ).getIdField( ) ) );
+                    CategoryFieldJspBean.getUrlModifyField( request, entry.getFieldDepend(  ).getIdField(  ) ) );
             }
 
-            return redirect( request, CategoryJspBean.getUrlModifyCategory( request, entry.getIdResource( ) ) );
+            return redirect( request, CategoryJspBean.getUrlModifyCategory( request, entry.getIdResource(  ) ) );
         }
 
         return redirect( request, CategoryJspBean.getUrlManageCategories( request ) );
@@ -640,17 +642,17 @@ public class CategoryEntryJspBean extends MVCAdminJspBean
         else
         {
             Integer nEntryId = Integer.parseInt( request.getParameter( PARAMETER_ID_ENTRY ) );
-            Integer nOrderToSet = Integer.parseInt( request.getParameter( PARAMETER_ORDER_ID
-                    + request.getParameter( PARAMETER_ID_ENTRY ) ) );
+            Integer nOrderToSet = Integer.parseInt( request.getParameter( PARAMETER_ORDER_ID +
+                        request.getParameter( PARAMETER_ID_ENTRY ) ) );
 
             Entry entryToChangeOrder = EntryHome.findByPrimaryKey( nEntryId );
-            int nActualOrder = entryToChangeOrder.getPosition( );
+            int nActualOrder = entryToChangeOrder.getPosition(  );
 
             // does nothing if the order to set is equal to the actual order
             if ( nOrderToSet != nActualOrder )
             {
                 // entry goes up in the list 
-                if ( nOrderToSet < entryToChangeOrder.getPosition( ) )
+                if ( nOrderToSet < entryToChangeOrder.getPosition(  ) )
                 {
                     _entryService.moveUpEntryOrder( nOrderToSet, entryToChangeOrder );
                 }
@@ -681,12 +683,12 @@ public class CategoryEntryJspBean extends MVCAdminJspBean
             int nIdEntry = Integer.parseInt( strIdEntry );
             Entry entry = EntryHome.findByPrimaryKey( nIdEntry );
 
-            if ( entry.getParent( ) != null )
+            if ( entry.getParent(  ) != null )
             {
                 _entryService.moveOutEntryFromGroup( entry );
             }
 
-            return redirect( request, CategoryJspBean.getUrlModifyCategory( request, entry.getIdResource( ) ) );
+            return redirect( request, CategoryJspBean.getUrlModifyCategory( request, entry.getIdResource(  ) ) );
         }
 
         return redirect( request, CategoryJspBean.getUrlManageCategories( request ) );
@@ -703,8 +705,8 @@ public class CategoryEntryJspBean extends MVCAdminJspBean
         String strIdExpression = request.getParameter( PARAMETER_ID_EXPRESSION );
         String strIdField = request.getParameter( PARAMETER_ID_FIELD );
 
-        if ( StringUtils.isNotEmpty( strIdExpression ) && StringUtils.isNotEmpty( strIdField )
-                && StringUtils.isNumeric( strIdExpression ) && StringUtils.isNumeric( strIdField ) )
+        if ( StringUtils.isNotEmpty( strIdExpression ) && StringUtils.isNotEmpty( strIdField ) &&
+                StringUtils.isNumeric( strIdExpression ) && StringUtils.isNumeric( strIdField ) )
         {
             int nIdField = Integer.parseInt( strIdField );
             int nIdExpression = Integer.parseInt( strIdExpression );
@@ -712,7 +714,7 @@ public class CategoryEntryJspBean extends MVCAdminJspBean
 
             Field field = FieldHome.findByPrimaryKey( nIdField );
 
-            return redirect( request, VIEW_GET_MODIFY_ENTRY, PARAMETER_ID_ENTRY, field.getParentEntry( ).getIdEntry( ) );
+            return redirect( request, VIEW_GET_MODIFY_ENTRY, PARAMETER_ID_ENTRY, field.getParentEntry(  ).getIdEntry(  ) );
         }
 
         return redirect( request, CategoryJspBean.getUrlManageCategories( request ) );
@@ -729,8 +731,8 @@ public class CategoryEntryJspBean extends MVCAdminJspBean
         String strIdExpression = request.getParameter( PARAMETER_ID_EXPRESSION );
         String strIdField = request.getParameter( PARAMETER_ID_FIELD );
 
-        if ( StringUtils.isNotEmpty( strIdExpression ) && StringUtils.isNotEmpty( strIdField )
-                && StringUtils.isNumeric( strIdExpression ) && StringUtils.isNumeric( strIdField ) )
+        if ( StringUtils.isNotEmpty( strIdExpression ) && StringUtils.isNotEmpty( strIdField ) &&
+                StringUtils.isNumeric( strIdExpression ) && StringUtils.isNumeric( strIdField ) )
         {
             int nIdField = Integer.parseInt( strIdField );
             int nIdExpression = Integer.parseInt( strIdExpression );
@@ -739,7 +741,7 @@ public class CategoryEntryJspBean extends MVCAdminJspBean
 
             Field field = FieldHome.findByPrimaryKey( nIdField );
 
-            return redirect( request, VIEW_GET_MODIFY_ENTRY, PARAMETER_ID_ENTRY, field.getParentEntry( ).getIdEntry( ) );
+            return redirect( request, VIEW_GET_MODIFY_ENTRY, PARAMETER_ID_ENTRY, field.getParentEntry(  ).getIdEntry(  ) );
         }
 
         return redirect( request, CategoryJspBean.getUrlManageCategories( request ) );
@@ -757,6 +759,6 @@ public class CategoryEntryJspBean extends MVCAdminJspBean
         urlItem.addParameter( MVCUtils.PARAMETER_VIEW, VIEW_GET_MODIFY_ENTRY );
         urlItem.addParameter( PARAMETER_ID_ENTRY, nIdEntry );
 
-        return urlItem.getUrl( );
+        return urlItem.getUrl(  );
     }
 }

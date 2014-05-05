@@ -61,7 +61,7 @@ public class AnnouncePlugin extends PluginDefaultImplementation
      * Get the announce plugin
      * @return The announce plugin
      */
-    public static Plugin getPlugin( )
+    public static Plugin getPlugin(  )
     {
         return PluginService.getPlugin( PLUGIN_NAME );
     }

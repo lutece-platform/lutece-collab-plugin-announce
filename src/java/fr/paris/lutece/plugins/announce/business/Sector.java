@@ -173,7 +173,7 @@ public class Sector implements RBACResource
     @Override
     public String getResourceId(  )
     {
-        return Integer.toString( getId( ) );
+        return Integer.toString( getId(  ) );
     }
 
     /**
@@ -184,7 +184,6 @@ public class Sector implements RBACResource
     {
         return RESOURCE_TYPE;
     }
-
 
     /**
      * Get the order of the announce

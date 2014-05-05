@@ -48,7 +48,7 @@ public interface ISectorDAO
 {
     /**
      * Delete a record from the table
-     * 
+     *
      * @param sector The sector object
      * @param plugin The plugin
      */
@@ -71,8 +71,8 @@ public interface ISectorDAO
 
     /**
      * Load the list of sectors
-     * 
-     * 
+     *
+     *
      * @param plugin The plugin
      * @return The Collection of the Sectors
      */
@@ -94,7 +94,7 @@ public interface ISectorDAO
 
     /**
      * selects the reference list with the i18n string at the top (for front)
-     * 
+     *
      * @param plugin The plugin
      * @param locale The locale
      * @return A referenceList of sectors

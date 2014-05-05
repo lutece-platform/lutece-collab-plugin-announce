@@ -150,7 +150,8 @@ public final class IndexerActionDAO implements IIndexerActionDAO
         {
             listStrFilter.add( SQL_FILTER_ID_TASK );
         }
-        if ( filter.containsIdAnnounce( ) )
+
+        if ( filter.containsIdAnnounce(  ) )
         {
             listStrFilter.add( SQL_FILTER_ID_ANNOUNCE );
         }
@@ -166,9 +167,10 @@ public final class IndexerActionDAO implements IIndexerActionDAO
             daoUtil.setInt( nIndex, filter.getIdTask(  ) );
             nIndex++;
         }
-        if ( filter.containsIdAnnounce( ) )
+
+        if ( filter.containsIdAnnounce(  ) )
         {
-            daoUtil.setInt( nIndex, filter.getIdAnnounce( ) );
+            daoUtil.setInt( nIndex, filter.getIdAnnounce(  ) );
         }
 
         daoUtil.executeQuery(  );

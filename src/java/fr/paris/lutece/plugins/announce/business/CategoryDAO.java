@@ -91,16 +91,17 @@ public final class CategoryDAO implements ICategoryDAO
     {
         DAOUtil daoUtil = new DAOUtil( SQL_QUERY_INSERT, plugin );
         category.setId( newPrimaryKey( plugin ) );
+
         int nIndex = 1;
-        daoUtil.setInt( nIndex++, category.getId( ) );
-        daoUtil.setInt( nIndex++, category.getIdSector( ) );
-        daoUtil.setString( nIndex++, category.getLabel( ) );
-        daoUtil.setBoolean( nIndex++, category.getDisplayPrice( ) );
-        daoUtil.setBoolean( nIndex++, category.getPriceMandatory( ) );
-        daoUtil.setInt( nIndex++, category.getAnnouncesValidation( ) );
-        daoUtil.setInt( nIndex++, category.getIdMailingList( ) );
-        daoUtil.setBoolean( nIndex++, category.getDisplayCaptcha( ) );
-        daoUtil.setInt( nIndex, category.getIdWorkflow( ) );
+        daoUtil.setInt( nIndex++, category.getId(  ) );
+        daoUtil.setInt( nIndex++, category.getIdSector(  ) );
+        daoUtil.setString( nIndex++, category.getLabel(  ) );
+        daoUtil.setBoolean( nIndex++, category.getDisplayPrice(  ) );
+        daoUtil.setBoolean( nIndex++, category.getPriceMandatory(  ) );
+        daoUtil.setInt( nIndex++, category.getAnnouncesValidation(  ) );
+        daoUtil.setInt( nIndex++, category.getIdMailingList(  ) );
+        daoUtil.setBoolean( nIndex++, category.getDisplayCaptcha(  ) );
+        daoUtil.setInt( nIndex, category.getIdWorkflow(  ) );
         daoUtil.executeUpdate(  );
         daoUtil.free(  );
     }
@@ -120,6 +121,7 @@ public final class CategoryDAO implements ICategoryDAO
         if ( daoUtil.next(  ) )
         {
             category = new Category(  );
+
             int nIndex = 1;
             category.setId( daoUtil.getInt( nIndex++ ) );
             category.setIdSector( daoUtil.getInt( nIndex++ ) );
@@ -158,15 +160,15 @@ public final class CategoryDAO implements ICategoryDAO
     {
         DAOUtil daoUtil = new DAOUtil( SQL_QUERY_UPDATE, plugin );
         int nIndex = 1;
-        daoUtil.setInt( nIndex++, category.getIdSector( ) );
-        daoUtil.setString( nIndex++, category.getLabel( ) );
-        daoUtil.setBoolean( nIndex++, category.getDisplayPrice( ) );
-        daoUtil.setBoolean( nIndex++, category.getPriceMandatory( ) );
-        daoUtil.setInt( nIndex++, category.getAnnouncesValidation( ) );
-        daoUtil.setInt( nIndex++, category.getIdMailingList( ) );
-        daoUtil.setInt( nIndex++, category.getIdWorkflow( ) );
-        daoUtil.setBoolean( nIndex++, category.getDisplayCaptcha( ) );
-        daoUtil.setInt( nIndex, category.getId( ) );
+        daoUtil.setInt( nIndex++, category.getIdSector(  ) );
+        daoUtil.setString( nIndex++, category.getLabel(  ) );
+        daoUtil.setBoolean( nIndex++, category.getDisplayPrice(  ) );
+        daoUtil.setBoolean( nIndex++, category.getPriceMandatory(  ) );
+        daoUtil.setInt( nIndex++, category.getAnnouncesValidation(  ) );
+        daoUtil.setInt( nIndex++, category.getIdMailingList(  ) );
+        daoUtil.setInt( nIndex++, category.getIdWorkflow(  ) );
+        daoUtil.setBoolean( nIndex++, category.getDisplayCaptcha(  ) );
+        daoUtil.setInt( nIndex, category.getId(  ) );
         daoUtil.executeUpdate(  );
         daoUtil.free(  );
     }

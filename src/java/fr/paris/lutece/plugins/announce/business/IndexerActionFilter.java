@@ -33,10 +33,11 @@
  */
 package fr.paris.lutece.plugins.announce.business;
 
+
 /**
- * 
+ *
  * class IndexerActionFilter
- * 
+ *
  */
 public class IndexerActionFilter
 {
@@ -51,7 +52,7 @@ public class IndexerActionFilter
      * gets the id of task
      * @return the task id insert in the filter
      */
-    public int getIdTask( )
+    public int getIdTask(  )
     {
         return _nIdTask;
     }
@@ -69,7 +70,7 @@ public class IndexerActionFilter
      * weather or not it contains the task
      * @return true if the filter contain a task id
      */
-    public boolean containsIdTask( )
+    public boolean containsIdTask(  )
     {
         return ( _nIdTask != ALL_INT );
     }
@@ -78,7 +79,7 @@ public class IndexerActionFilter
      * Get the id of the announce
      * @return The id of the announce
      */
-    public int getIdAnnounce( )
+    public int getIdAnnounce(  )
     {
         return _nIdAnnounce;
     }
@@ -96,7 +97,7 @@ public class IndexerActionFilter
      * Check if this filter contains an announce id
      * @return True if this filter contains an announce id, false otherwise
      */
-    public boolean containsIdAnnounce( )
+    public boolean containsIdAnnounce(  )
     {
         return ( _nIdAnnounce != ALL_INT );
     }

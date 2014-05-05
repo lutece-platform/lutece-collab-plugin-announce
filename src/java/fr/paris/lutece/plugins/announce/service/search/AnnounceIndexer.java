@@ -43,6 +43,7 @@ import fr.paris.lutece.portal.service.util.AppPropertiesService;
 import org.apache.lucene.document.Document;
 
 import java.io.IOException;
+
 import java.util.ArrayList;
 import java.util.List;
 

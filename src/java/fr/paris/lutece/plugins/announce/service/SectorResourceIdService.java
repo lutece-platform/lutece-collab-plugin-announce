@@ -111,7 +111,7 @@ public class SectorResourceIdService extends ResourceIdService
     @Override
     public ReferenceList getResourceIdList( Locale locale )
     {
-        return SectorHome.findReferenceList( );
+        return SectorHome.findReferenceList(  );
     }
 
     /**

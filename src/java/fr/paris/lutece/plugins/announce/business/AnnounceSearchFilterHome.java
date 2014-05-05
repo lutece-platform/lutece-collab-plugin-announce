@@ -99,7 +99,7 @@ public class AnnounceSearchFilterHome
      * Get the list of every filters
      * @return the list of every filters
      */
-    public List<AnnounceSearchFilter> findAll( )
+    public List<AnnounceSearchFilter> findAll(  )
     {
         return _dao.findAll( _plugin );
     }

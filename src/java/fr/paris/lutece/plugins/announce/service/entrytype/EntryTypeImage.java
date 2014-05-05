@@ -52,19 +52,22 @@ import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.lang.StringUtils;
 
 import java.awt.image.BufferedImage;
+
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+
 import java.util.List;
 import java.util.Locale;
 
 import javax.imageio.ImageIO;
+
 import javax.servlet.http.HttpServletRequest;
 
 
 /**
- * 
+ *
  * class EntryTypeImage
- * 
+ *
  */
 public class EntryTypeImage extends AbstractEntryTypeUpload
 {
@@ -110,7 +113,7 @@ public class EntryTypeImage extends AbstractEntryTypeUpload
      */
     @Override
     public GenericAttributeError getResponseData( Entry entry, HttpServletRequest request, List<Response> listResponse,
-            Locale locale )
+        Locale locale )
     {
         List<FileItem> listFilesSource = null;
 
@@ -125,14 +128,14 @@ public class EntryTypeImage extends AbstractEntryTypeUpload
 
             GenericAttributeError formError = null;
 
-            if ( ( listFilesSource != null ) && !listFilesSource.isEmpty( ) )
+            if ( ( listFilesSource != null ) && !listFilesSource.isEmpty(  ) )
             {
                 formError = checkResponseData( entry, listFilesSource, locale, request );
 
                 if ( formError != null )
                 {
                     // Add the response to the list in order to have the error message in the page
-                    Response response = new Response( );
+                    Response response = new Response(  );
                     response.setEntry( entry );
                     listResponse.add( response );
                 }
@@ -140,34 +143,35 @@ public class EntryTypeImage extends AbstractEntryTypeUpload
                 for ( FileItem fileItem : listFilesSource )
                 {
                     String strFilename = ( fileItem != null ) ? FileUploadService.getFileNameOnly( fileItem )
-                            : StringUtils.EMPTY;
+                                                              : StringUtils.EMPTY;
 
                     //Add the image to the response list
-                    Response response = new Response( );
+                    Response response = new Response(  );
                     response.setEntry( entry );
 
-                    if ( ( fileItem != null ) && ( fileItem.getSize( ) < Integer.MAX_VALUE ) )
+                    if ( ( fileItem != null ) && ( fileItem.getSize(  ) < Integer.MAX_VALUE ) )
                     {
-                        PhysicalFile physicalFile = new PhysicalFile( );
-                        physicalFile.setValue( fileItem.get( ) );
+                        PhysicalFile physicalFile = new PhysicalFile(  );
+                        physicalFile.setValue( fileItem.get(  ) );
 
-                        File file = new File( );
+                        File file = new File(  );
                         file.setPhysicalFile( physicalFile );
                         file.setTitle( strFilename );
-                        file.setSize( (int) fileItem.getSize( ) );
+                        file.setSize( (int) fileItem.getSize(  ) );
                         file.setMimeType( FileSystemUtil.getMIMEType( strFilename ) );
 
                         response.setFile( file );
                     }
 
                     listResponse.add( response );
+
                     BufferedImage image = null;
 
                     try
                     {
-                        if ( ( fileItem != null ) && ( fileItem.get( ) != null ) )
+                        if ( ( fileItem != null ) && ( fileItem.get(  ) != null ) )
                         {
-                            image = ImageIO.read( new ByteArrayInputStream( fileItem.get( ) ) );
+                            image = ImageIO.read( new ByteArrayInputStream( fileItem.get(  ) ) );
                         }
                     }
                     catch ( IOException e )
@@ -177,23 +181,24 @@ public class EntryTypeImage extends AbstractEntryTypeUpload
 
                     if ( ( image == null ) && StringUtils.isNotBlank( strFilename ) )
                     {
-                        formError = new GenericAttributeError( );
+                        formError = new GenericAttributeError(  );
                         formError.setMandatoryError( false );
-                        Object[] args = { fileItem != null ? fileItem.getName( ) : StringUtils.EMPTY };
+
+                        Object[] args = { ( fileItem != null ) ? fileItem.getName(  ) : StringUtils.EMPTY };
                         formError.setErrorMessage( I18nService.getLocalizedString( MESSAGE_ERROR_NOT_AN_IMAGE, args,
-                                request.getLocale( ) ) );
-                        formError.setTitleQuestion( entry.getTitle( ) );
+                                request.getLocale(  ) ) );
+                        formError.setTitleQuestion( entry.getTitle(  ) );
                     }
                 }
 
                 return formError;
             }
 
-            if ( entry.isMandatory( ) && ( ( listFilesSource == null ) || listFilesSource.isEmpty( ) ) )
+            if ( entry.isMandatory(  ) && ( ( listFilesSource == null ) || listFilesSource.isEmpty(  ) ) )
             {
                 formError = new MandatoryError( entry, locale );
 
-                Response response = new Response( );
+                Response response = new Response(  );
                 response.setEntry( entry );
                 listResponse.add( response );
             }
@@ -208,9 +213,9 @@ public class EntryTypeImage extends AbstractEntryTypeUpload
      * {@inheritDoc}
      */
     @Override
-    public IGAAsyncUploadHandler getAsynchronousUploadHandler( )
+    public IGAAsyncUploadHandler getAsynchronousUploadHandler(  )
     {
-        return AnnounceAsynchronousUploadHandler.getHandler( );
+        return AnnounceAsynchronousUploadHandler.getHandler(  );
     }
 
     /**

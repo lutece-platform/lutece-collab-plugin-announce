@@ -53,7 +53,7 @@ public class AnnounceSearchFilter
      * Get the id of the filter
      * @return The id of the filter
      */
-    public int getIdFilter( )
+    public int getIdFilter(  )
     {
         return _nIdFilter;
     }
@@ -71,7 +71,7 @@ public class AnnounceSearchFilter
      * Get the keywords of the filter
      * @return The keywords of the filter
      */
-    public String getKeywords( )
+    public String getKeywords(  )
     {
         return _strKeywords;
     }
@@ -89,7 +89,7 @@ public class AnnounceSearchFilter
      * Get the id of the category of the filter
      * @return The id of the category of the filter
      */
-    public int getIdCategory( )
+    public int getIdCategory(  )
     {
         return _nIdCategory;
     }
@@ -107,7 +107,7 @@ public class AnnounceSearchFilter
      * Get the minimum publication date of the filter
      * @return The minimum publication date of the filter
      */
-    public Date getDateMin( )
+    public Date getDateMin(  )
     {
         return _dateMin;
     }
@@ -125,7 +125,7 @@ public class AnnounceSearchFilter
      * Get the maximum publication date of the filter
      * @return The maximum publication date of the filter
      */
-    public Date getDateMax( )
+    public Date getDateMax(  )
     {
         return _dateMax;
     }
@@ -143,7 +143,7 @@ public class AnnounceSearchFilter
      * Get the minimum price of the filter
      * @return The minimum price of the filter
      */
-    public int getPriceMin( )
+    public int getPriceMin(  )
     {
         return _nPriceMin;
     }
@@ -161,7 +161,7 @@ public class AnnounceSearchFilter
      * Get the maximum price of the filter
      * @return The maximum price of the filter
      */
-    public int getPriceMax( )
+    public int getPriceMax(  )
     {
         return _nPriceMax;
     }

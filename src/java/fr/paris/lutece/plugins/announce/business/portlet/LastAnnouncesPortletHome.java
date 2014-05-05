@@ -53,7 +53,7 @@ public class LastAnnouncesPortletHome extends PortletHome
     /**
      * Constructor
      */
-    public LastAnnouncesPortletHome( )
+    public LastAnnouncesPortletHome(  )
     {
         if ( _singleton == null )
         {
@@ -66,9 +66,9 @@ public class LastAnnouncesPortletHome extends PortletHome
      * @return the portlet type identifier
      */
     @Override
-    public String getPortletTypeId( )
+    public String getPortletTypeId(  )
     {
-        String strCurrentClassName = this.getClass( ).getName( );
+        String strCurrentClassName = this.getClass(  ).getName(  );
         String strPortletTypeId = PortletTypeHome.getPortletTypeId( strCurrentClassName );
 
         return strPortletTypeId;
@@ -78,11 +78,11 @@ public class LastAnnouncesPortletHome extends PortletHome
      * Returns the instance of AppointmentPortlet Portlet
      * @return the AppointmentPortlet Portlet instance
      */
-    public static PortletHome getInstance( )
+    public static PortletHome getInstance(  )
     {
         if ( _singleton == null )
         {
-            _singleton = new LastAnnouncesPortletHome( );
+            _singleton = new LastAnnouncesPortletHome(  );
         }
 
         return _singleton;
@@ -93,7 +93,7 @@ public class LastAnnouncesPortletHome extends PortletHome
      * @return the instance of the DAO singleton
      */
     @Override
-    public IPortletInterfaceDAO getDAO( )
+    public IPortletInterfaceDAO getDAO(  )
     {
         return _dao;
     }

@@ -65,10 +65,12 @@ public class AnnounceSubscriptionProvider implements ISubscriptionProviderServic
      * Subscription key to subscribe to announces published by users
      */
     public static final String SUBSCRIPTION_USER = "announce_user";
+
     /**
      * Subscription key to subscribe to announces of a given category
      */
     public static final String SUBSCRIPTION_CATEGORY = "announce_category";
+
     /**
      * Subscription key to subscribe to announces matching a filter
      */
@@ -79,7 +81,6 @@ public class AnnounceSubscriptionProvider implements ISubscriptionProviderServic
     private static final String MARK_CATEGORY = "category";
     private static final String MARK_USER_NAME = "user_name";
     private static final String MARK_USER = "user";
-
     private static final String PROVIDER_NAME = "announce.announceSubscriptionProvider";
     private static final String BEAN_NAME = "announce.announceSubscriptionProvider";
 
@@ -87,14 +88,13 @@ public class AnnounceSubscriptionProvider implements ISubscriptionProviderServic
     private static final String TEMPLATE_FILTER_SUBSCRIPTION_DESCRIPTION = "skin/plugins/announce/subscription/filter_subscriction_description.html";
     private static final String TEMPLATE_USER_SUBSCRIPTION_DESCRIPTION = "skin/plugins/announce/subscription/user_subscriction_description.html";
     private static final String TEMPLATE_CATEGORY_SUBSCRIPTION_DESCRIPTION = "skin/plugins/announce/subscription/category_subscriction_description.html";
-
     private static volatile AnnounceSubscriptionProvider _instance;
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public String getProviderName( )
+    public String getProviderName(  )
     {
         return PROVIDER_NAME;
     }
@@ -103,12 +103,13 @@ public class AnnounceSubscriptionProvider implements ISubscriptionProviderServic
      * Get the instance of the service
      * @return The instance of the service
      */
-    public static AnnounceSubscriptionProvider getService( )
+    public static AnnounceSubscriptionProvider getService(  )
     {
         if ( _instance == null )
         {
             _instance = SpringContextService.getBean( BEAN_NAME );
         }
+
         return _instance;
     }
 
@@ -117,43 +118,50 @@ public class AnnounceSubscriptionProvider implements ISubscriptionProviderServic
      */
     @Override
     public String getSubscriptionHtmlDescription( LuteceUser user, String strSubscriptionKey,
-            String strIdSubscribedResource, Locale locale )
+        String strIdSubscribedResource, Locale locale )
     {
         if ( StringUtils.equals( SUBSCRIPTION_USER, strSubscriptionKey ) )
         {
-            Map<String, Object> model = new HashMap<String, Object>( );
+            Map<String, Object> model = new HashMap<String, Object>(  );
             LuteceUser subscribedUser = LuteceUserService.getLuteceUserFromName( strIdSubscribedResource );
 
             model.put( MARK_USER_NAME, strIdSubscribedResource );
             model.put( MARK_USER, subscribedUser );
+
             HtmlTemplate template = AppTemplateService.getTemplate( TEMPLATE_USER_SUBSCRIPTION_DESCRIPTION, locale,
                     model );
-            return template.getHtml( );
+
+            return template.getHtml(  );
         }
         else if ( StringUtils.equals( SUBSCRIPTION_CATEGORY, strSubscriptionKey ) )
         {
-            Map<String, Object> model = new HashMap<String, Object>( );
+            Map<String, Object> model = new HashMap<String, Object>(  );
 
             int nIdCategory = Integer.parseInt( strIdSubscribedResource );
 
             model.put( MARK_CATEGORY, CategoryHome.findByPrimaryKey( nIdCategory ) );
+
             HtmlTemplate template = AppTemplateService.getTemplate( TEMPLATE_CATEGORY_SUBSCRIPTION_DESCRIPTION, locale,
                     model );
-            return template.getHtml( );
+
+            return template.getHtml(  );
         }
         else if ( StringUtils.equals( SUBSCRIPTION_FILTER, strSubscriptionKey ) )
         {
-            AnnounceSearchFilter filter = AnnounceSearchFilterHome.findByPrimaryKey( Integer
-                    .parseInt( strIdSubscribedResource ) );
-            Map<String, Object> model = new HashMap<String, Object>( );
+            AnnounceSearchFilter filter = AnnounceSearchFilterHome.findByPrimaryKey( Integer.parseInt( 
+                        strIdSubscribedResource ) );
+            Map<String, Object> model = new HashMap<String, Object>(  );
             model.put( MARK_FILTER, filter );
-            if ( filter.getIdCategory( ) > 0 )
+
+            if ( filter.getIdCategory(  ) > 0 )
             {
-                model.put( MARK_CATEGORY, CategoryHome.findByPrimaryKey( filter.getIdCategory( ) ) );
+                model.put( MARK_CATEGORY, CategoryHome.findByPrimaryKey( filter.getIdCategory(  ) ) );
             }
+
             HtmlTemplate template = AppTemplateService.getTemplate( TEMPLATE_FILTER_SUBSCRIPTION_DESCRIPTION, locale,
                     model );
-            return template.getHtml( );
+
+            return template.getHtml(  );
         }
 
         return StringUtils.EMPTY;
@@ -177,23 +185,26 @@ public class AnnounceSubscriptionProvider implements ISubscriptionProviderServic
     {
         if ( StringUtils.equals( SUBSCRIPTION_FILTER, strSubscriptionKey ) )
         {
-            int nIdFilter = ( StringUtils.isNotEmpty( strIdSubscribedResource ) && StringUtils
-                    .isNumeric( strIdSubscribedResource ) ) ? Integer.parseInt( strIdSubscribedResource ) : 0;
+            int nIdFilter = ( StringUtils.isNotEmpty( strIdSubscribedResource ) &&
+                StringUtils.isNumeric( strIdSubscribedResource ) ) ? Integer.parseInt( strIdSubscribedResource ) : 0;
+
             if ( nIdFilter > 0 )
             {
-                return AnnounceApp.getUrlSearchAnnounce( LocalVariables.getRequest( ), nIdFilter );
+                return AnnounceApp.getUrlSearchAnnounce( LocalVariables.getRequest(  ), nIdFilter );
             }
         }
         else if ( StringUtils.equals( SUBSCRIPTION_USER, strSubscriptionKey ) )
         {
-            return AnnounceApp.getUrlViewUserAnnounces( LocalVariables.getRequest( ), strIdSubscribedResource );
+            return AnnounceApp.getUrlViewUserAnnounces( LocalVariables.getRequest(  ), strIdSubscribedResource );
         }
         else if ( StringUtils.equals( SUBSCRIPTION_CATEGORY, strSubscriptionKey ) )
         {
-            int nIdCategory = ( StringUtils.isNotEmpty( strIdSubscribedResource ) && StringUtils
-                    .isNumeric( strIdSubscribedResource ) ) ? Integer.parseInt( strIdSubscribedResource ) : 0;
-            return AnnounceApp.getUrlViewCategory( LocalVariables.getRequest( ), nIdCategory );
+            int nIdCategory = ( StringUtils.isNotEmpty( strIdSubscribedResource ) &&
+                StringUtils.isNumeric( strIdSubscribedResource ) ) ? Integer.parseInt( strIdSubscribedResource ) : 0;
+
+            return AnnounceApp.getUrlViewCategory( LocalVariables.getRequest(  ), nIdCategory );
         }
+
         return null;
     }
 
@@ -203,13 +214,14 @@ public class AnnounceSubscriptionProvider implements ISubscriptionProviderServic
     @Override
     public void notifySubscriptionRemoval( Subscription subscription )
     {
-        if ( StringUtils.equals( subscription.getSubscriptionKey( ), SUBSCRIPTION_FILTER )
-                && StringUtils.isNotEmpty( subscription.getIdSubscribedResource( ) )
-                && StringUtils.isNumeric( subscription.getIdSubscribedResource( ) ) )
+        if ( StringUtils.equals( subscription.getSubscriptionKey(  ), SUBSCRIPTION_FILTER ) &&
+                StringUtils.isNotEmpty( subscription.getIdSubscribedResource(  ) ) &&
+                StringUtils.isNumeric( subscription.getIdSubscribedResource(  ) ) )
         {
-            int nIdFilter = Integer.parseInt( subscription.getIdSubscribedResource( ) );
+            int nIdFilter = Integer.parseInt( subscription.getIdSubscribedResource(  ) );
             AnnounceSearchFilterHome.delete( nIdFilter );
         }
+
         // We do nothing for users and category subscriptions
     }
 
@@ -281,13 +293,13 @@ public class AnnounceSubscriptionProvider implements ISubscriptionProviderServic
      */
     private void createSubscription( LuteceUser user, String strIdResource, String strSubscriptionKey )
     {
-        Subscription subscription = new Subscription( );
+        Subscription subscription = new Subscription(  );
         subscription.setIdSubscribedResource( strIdResource );
         subscription.setSubscriptionKey( strSubscriptionKey );
-        subscription.setSubscriptionProvider( getProviderName( ) );
-        subscription.setUserId( user.getName( ) );
+        subscription.setSubscriptionProvider( getProviderName(  ) );
+        subscription.setUserId( user.getName(  ) );
 
-        SubscriptionService.getInstance( ).createSubscription( subscription, user );
+        SubscriptionService.getInstance(  ).createSubscription( subscription, user );
     }
 
     /**
@@ -299,12 +311,13 @@ public class AnnounceSubscriptionProvider implements ISubscriptionProviderServic
      */
     private void removeSubscription( LuteceUser user, String strIdResource, String strSubscriptionKey )
     {
-        SubscriptionFilter filter = new SubscriptionFilter( user.getName( ), getProviderName( ), strSubscriptionKey,
+        SubscriptionFilter filter = new SubscriptionFilter( user.getName(  ), getProviderName(  ), strSubscriptionKey,
                 strIdResource );
-        List<Subscription> listSubscriptions = SubscriptionService.getInstance( ).findByFilter( filter );
+        List<Subscription> listSubscriptions = SubscriptionService.getInstance(  ).findByFilter( filter );
+
         for ( Subscription subscription : listSubscriptions )
         {
-            SubscriptionService.getInstance( ).removeSubscription( subscription, false );
+            SubscriptionService.getInstance(  ).removeSubscription( subscription, false );
         }
     }
 
@@ -331,6 +344,7 @@ public class AnnounceSubscriptionProvider implements ISubscriptionProviderServic
         {
             return false;
         }
+
         return hasSubscribedtoResource( user, Integer.toString( nIdCategory ), SUBSCRIPTION_CATEGORY );
     }
 
@@ -344,17 +358,18 @@ public class AnnounceSubscriptionProvider implements ISubscriptionProviderServic
      */
     private boolean hasSubscribedtoResource( LuteceUser user, String strIdResource, String strSubscriptionKey )
     {
-        SubscriptionFilter filter = new SubscriptionFilter( user.getName( ), getProviderName( ), strSubscriptionKey,
+        SubscriptionFilter filter = new SubscriptionFilter( user.getName(  ), getProviderName(  ), strSubscriptionKey,
                 strIdResource );
-        List<Subscription> listSubscription = SubscriptionService.getInstance( ).findByFilter( filter );
-        return listSubscription != null && listSubscription.size( ) > 0;
+        List<Subscription> listSubscription = SubscriptionService.getInstance(  ).findByFilter( filter );
+
+        return ( listSubscription != null ) && ( listSubscription.size(  ) > 0 );
     }
 
     /**
      * Get the list of subscriptions to users
      * @return The list of subscriptions to users
      */
-    public List<Subscription> getSubscriptionsToUsers( )
+    public List<Subscription> getSubscriptionsToUsers(  )
     {
         return getSubscriptionsToResource( SUBSCRIPTION_USER );
     }
@@ -363,7 +378,7 @@ public class AnnounceSubscriptionProvider implements ISubscriptionProviderServic
      * Get the list of subscriptions to categories
      * @return The list of subscriptions to categories
      */
-    public List<Subscription> getsubscriptionsToCategories( )
+    public List<Subscription> getsubscriptionsToCategories(  )
     {
         return getSubscriptionsToResource( SUBSCRIPTION_CATEGORY );
     }
@@ -372,7 +387,7 @@ public class AnnounceSubscriptionProvider implements ISubscriptionProviderServic
      * Get the list of subscriptions to filters
      * @return The list of subscriptions to filters
      */
-    public List<Subscription> getSubscriptionsToFilters( )
+    public List<Subscription> getSubscriptionsToFilters(  )
     {
         return getSubscriptionsToResource( SUBSCRIPTION_FILTER );
     }
@@ -384,10 +399,10 @@ public class AnnounceSubscriptionProvider implements ISubscriptionProviderServic
      */
     private List<Subscription> getSubscriptionsToResource( String strSubscriptionKey )
     {
-        SubscriptionFilter filter = new SubscriptionFilter( );
+        SubscriptionFilter filter = new SubscriptionFilter(  );
         filter.setSubscriptionKey( strSubscriptionKey );
-        filter.setSubscriptionProvider( getProviderName( ) );
-        return SubscriptionService.getInstance( ).findByFilter( filter );
-    }
+        filter.setSubscriptionProvider( getProviderName(  ) );
 
+        return SubscriptionService.getInstance(  ).findByFilter( filter );
+    }
 }

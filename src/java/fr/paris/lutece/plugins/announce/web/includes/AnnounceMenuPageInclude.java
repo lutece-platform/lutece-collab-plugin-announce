@@ -54,7 +54,6 @@ import javax.servlet.http.HttpServletRequest;
 public class AnnounceMenuPageInclude implements PageInclude
 {
     private static final String TEMPLATE_ANNOUNCE_NAVIGATION_MENU = "skin/plugins/announce/navigation_menu.html";
-
     private static final String MARK_LIST_SECTORS = "list_sectors";
     private static final String MARK_LOCALE = "locale";
     private static final String MARK_USER = "user";
@@ -66,18 +65,20 @@ public class AnnounceMenuPageInclude implements PageInclude
     @Override
     public void fillTemplate( Map<String, Object> rootModel, PageData data, int nMode, HttpServletRequest request )
     {
-        Map<String, Object> model = new HashMap<String, Object>( );
-        model.put( MARK_LIST_SECTORS, AnnounceApp.getSectorList( ) );
-        Locale locale = request == null ? Locale.getDefault( ) : request.getLocale( );
+        Map<String, Object> model = new HashMap<String, Object>(  );
+        model.put( MARK_LIST_SECTORS, AnnounceApp.getSectorList(  ) );
+
+        Locale locale = ( request == null ) ? Locale.getDefault(  ) : request.getLocale(  );
         model.put( MARK_LOCALE, locale );
+
         if ( request != null )
         {
-            LuteceUser user = SecurityService.getInstance( ).getRegisteredUser( request );
+            LuteceUser user = SecurityService.getInstance(  ).getRegisteredUser( request );
             model.put( MARK_USER, user );
         }
+
         HtmlTemplate template = AppTemplateService.getTemplate( TEMPLATE_ANNOUNCE_NAVIGATION_MENU, locale, model );
 
-        rootModel.put( MARK_ANNOUNCE_INCLUDE, template.getHtml( ) );
+        rootModel.put( MARK_ANNOUNCE_INCLUDE, template.getHtml(  ) );
     }
-
 }

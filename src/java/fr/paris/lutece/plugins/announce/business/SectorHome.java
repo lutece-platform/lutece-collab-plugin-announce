@@ -53,13 +53,13 @@ public final class SectorHome
     private static Plugin _plugin = PluginService.getPlugin( AnnouncePlugin.PLUGIN_NAME );
 
     /** Creates a new instance of SectorHome */
-    private SectorHome( )
+    private SectorHome(  )
     {
     }
 
     /**
      * Creation of an instance of sector
-     * 
+     *
      * @param sector The instance of the sector which contains the informations
      *            to store
      * @param plugin The Plugin object
@@ -75,7 +75,7 @@ public final class SectorHome
 
     /**
      * Update of the sector which is specified in parameter
-     * 
+     *
      * @param sector The instance of the sector which contains the informations
      *            to store
      * @param plugin The Plugin object
@@ -90,7 +90,7 @@ public final class SectorHome
 
     /**
      * Remove the Sector whose identifier is specified in parameter
-     * 
+     *
      * @param sector The Sector object to remove
      * @param plugin The Plugin object
      */
@@ -106,7 +106,7 @@ public final class SectorHome
     /**
      * Returns an instance of a sector whose identifier is specified in
      * parameter
-     * 
+     *
      * @param nKey The Primary key of the sector
      * @return An instance of sector
      */
@@ -119,7 +119,7 @@ public final class SectorHome
      * Returns a collection of sectors objects
      * @return A collection of sectors
      */
-    public static Collection<Sector> findAll( )
+    public static Collection<Sector> findAll(  )
     {
         return _dao.selectAll( _plugin );
     }
@@ -128,7 +128,7 @@ public final class SectorHome
      * Returns a referenceList of sectors
      * @return A referenceList of sectors
      */
-    public static ReferenceList findReferenceList( )
+    public static ReferenceList findReferenceList(  )
     {
         return _dao.selectReferenceList( _plugin );
     }
@@ -167,7 +167,7 @@ public final class SectorHome
      * Get the maximum order of sectors
      * @return The maximum order of sectors
      */
-    public static int getMaxOrderSector( )
+    public static int getMaxOrderSector(  )
     {
         return _dao.selectMaxOrder( _plugin );
     }

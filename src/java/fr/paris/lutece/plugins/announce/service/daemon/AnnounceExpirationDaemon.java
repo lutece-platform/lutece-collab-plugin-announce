@@ -38,6 +38,7 @@ import fr.paris.lutece.portal.service.daemon.Daemon;
 import fr.paris.lutece.portal.service.util.AppPropertiesService;
 
 import java.sql.Timestamp;
+
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.List;
@@ -55,22 +56,22 @@ public class AnnounceExpirationDaemon extends Daemon
      * {@inheritDoc}
      */
     @Override
-    public void run( )
+    public void run(  )
     {
-        Calendar calendar = new GregorianCalendar( );
-        int nNbDaysBeforeAnnouncesRemoval = AppPropertiesService.getPropertyInt(
-                PROPERTY_NB_DAYS_BEFORE_ANNOUNCES_REMOVAL, DEFAULT_NB_DAYS_BEFORE_ANNOUNCES_REMOVAL );
+        Calendar calendar = new GregorianCalendar(  );
+        int nNbDaysBeforeAnnouncesRemoval = AppPropertiesService.getPropertyInt( PROPERTY_NB_DAYS_BEFORE_ANNOUNCES_REMOVAL,
+                DEFAULT_NB_DAYS_BEFORE_ANNOUNCES_REMOVAL );
         calendar.add( Calendar.DATE, -1 * nNbDaysBeforeAnnouncesRemoval );
 
-        Timestamp timestamp = new Timestamp( calendar.getTimeInMillis( ) );
+        Timestamp timestamp = new Timestamp( calendar.getTimeInMillis(  ) );
 
         List<Integer> listIdExpiredAnnounces = AnnounceHome.findIdAnnouncesByDateCreation( timestamp );
+
         for ( Integer nIdExpiredAnnounce : listIdExpiredAnnounces )
         {
             AnnounceHome.remove( nIdExpiredAnnounce );
         }
 
-        setLastRunLogs( listIdExpiredAnnounces.size( ) + " expired announces have been removed" );
+        setLastRunLogs( listIdExpiredAnnounces.size(  ) + " expired announces have been removed" );
     }
-
 }

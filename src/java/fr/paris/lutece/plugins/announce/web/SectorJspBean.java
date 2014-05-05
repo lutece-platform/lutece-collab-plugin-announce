@@ -150,11 +150,11 @@ public class SectorJspBean extends PluginAdminPageJspBean
         _nItemsPerPage = Paginator.getItemsPerPage( request, Paginator.PARAMETER_ITEMS_PER_PAGE, _nItemsPerPage,
                 _nDefaultItemsPerPage );
 
-        Collection<Sector> listSectors = SectorHome.findAll( );
+        Collection<Sector> listSectors = SectorHome.findAll(  );
 
         //listSectors = AdminWorkgroupService.getAuthorizedCollection( listSectors, getUser(  ) );
-        Paginator<Sector> paginator = new Paginator<Sector>( (List<Sector>) listSectors, _nItemsPerPage, getUrlPage(  ),
-                PARAMETER_PAGE_INDEX, _strCurrentPageIndex );
+        Paginator<Sector> paginator = new Paginator<Sector>( (List<Sector>) listSectors, _nItemsPerPage,
+                getUrlPage(  ), PARAMETER_PAGE_INDEX, _strCurrentPageIndex );
 
         Map<String, Object> model = new HashMap<String, Object>(  );
 
@@ -186,7 +186,7 @@ public class SectorJspBean extends PluginAdminPageJspBean
 
         setPageTitleProperty( PROPERTY_PAGE_TITLE_CREATE_FIELD );
 
-        Collection<Sector> listSectors = SectorHome.findAll( );
+        Collection<Sector> listSectors = SectorHome.findAll(  );
 
         HashMap<String, Object> model = new HashMap<String, Object>(  );
         model.put( MARK_LIST_FIELDS, listSectors );
@@ -347,7 +347,7 @@ public class SectorJspBean extends PluginAdminPageJspBean
 
         Sector sector = getAuthorizedSector( request, SectorResourceIdService.PERMISSION_DELETE );
         int nOrder = SectorHome.getOrderById( nIdSector );
-        int nNewOrder = SectorHome.getMaxOrderSector( );
+        int nNewOrder = SectorHome.getMaxOrderSector(  );
         modifySectorOrder( nOrder, nNewOrder, nIdSector );
         SectorHome.remove( sector, getPlugin(  ) );
 
@@ -378,7 +378,7 @@ public class SectorJspBean extends PluginAdminPageJspBean
      */
     private ReferenceList getSectorOrderList(  )
     {
-        int nMax = SectorHome.getMaxOrderSector( );
+        int nMax = SectorHome.getMaxOrderSector(  );
         ReferenceList list = new ReferenceList(  );
 
         for ( int i = 1; i < ( nMax + 1 ); i++ )
@@ -432,7 +432,7 @@ public class SectorJspBean extends PluginAdminPageJspBean
 
     /**
      * Get the authorized Sector
-     * 
+     *
      * @param request The {@link HttpServletRequest}
      * @param strPermissionType The type of permission (see
      *            {@link SectorResourceIdService} class)

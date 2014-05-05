@@ -68,7 +68,7 @@ import javax.servlet.http.HttpSession;
 
 /**
  * Provides json utility methods for forms
- * 
+ *
  */
 public final class JSONUtils
 {
@@ -76,11 +76,11 @@ public final class JSONUtils
      * JSON key for field name
      */
     public static final String JSON_KEY_FIELD_NAME = "field_name";
+
     /**
      * JSON key to describe a success
      */
     public static final String JSON_KEY_SUCCESS = "success";
-
     private static final String JSON_KEY_ID_FORM = "id_form";
     private static final String JSON_KEY_RESPONSE = "response";
     private static final String JSON_KEY_ID_ENTRY = "id_entry";
@@ -103,7 +103,7 @@ public final class JSONUtils
     /**
      * Empty constructor
      */
-    private JSONUtils( )
+    private JSONUtils(  )
     {
         // nothing
     }
@@ -117,9 +117,9 @@ public final class JSONUtils
      */
     public static String buildJson( Map<Integer, List<Response>> mapResponse, int nIdForm, String strSessionId )
     {
-        JSONObject jsonResponses = new JSONObject( );
+        JSONObject jsonResponses = new JSONObject(  );
 
-        for ( List<Response> listResponse : mapResponse.values( ) )
+        for ( List<Response> listResponse : mapResponse.values(  ) )
         {
             for ( Response response : listResponse )
             {
@@ -129,7 +129,7 @@ public final class JSONUtils
 
         jsonResponses.element( JSON_KEY_ID_FORM, nIdForm );
 
-        return jsonResponses.toString( );
+        return jsonResponses.toString(  );
     }
 
     /**
@@ -141,7 +141,7 @@ public final class JSONUtils
      */
     private static Response buildResponse( JSONObject json, Locale locale, HttpSession session )
     {
-        Response response = new Response( );
+        Response response = new Response(  );
         response.setIdResponse( json.getInt( JSON_KEY_ID_RESPONSE ) );
 
         Entry entry = EntryHome.findByPrimaryKey( json.getInt( JSON_KEY_ID_ENTRY ) );
@@ -149,7 +149,7 @@ public final class JSONUtils
 
         if ( json.containsKey( JSON_KEY_FORM_ERROR ) )
         {
-            response.getEntry( ).setError( buildFormError( json.getString( JSON_KEY_FORM_ERROR ) ) );
+            response.getEntry(  ).setError( buildFormError( json.getString( JSON_KEY_FORM_ERROR ) ) );
         }
 
         if ( json.containsKey( JSON_KEY_VALUE_RESPONSE ) && !json.containsKey( JSON_KEY_FILE_NAME ) )
@@ -172,20 +172,20 @@ public final class JSONUtils
 
             try
             {
-                file = new File( );
+                file = new File(  );
                 file.setTitle( json.getString( JSON_KEY_FILE_NAME ) );
                 file.setMimeType( json.getString( JSON_KEY_MIME_TYPE ) );
             }
             catch ( JSONException e )
             {
-                AppLogService.error( e.getMessage( ), e );
+                AppLogService.error( e.getMessage(  ), e );
             }
 
             response.setFile( file );
             bIsFile = true;
         }
 
-        if ( !bIsFile && ( response.getResponseValue( ) != null ) )
+        if ( !bIsFile && ( response.getResponseValue(  ) != null ) )
         {
             // if the entry is not a file, we can set the string value
             // data entry as specific behavior
@@ -214,23 +214,23 @@ public final class JSONUtils
         {
             JSON jsonResponses = (JSON) jsonObject.get( JSON_KEY_RESPONSE );
 
-            if ( ( jsonResponses != null ) && !jsonResponses.isEmpty( ) )
+            if ( ( jsonResponses != null ) && !jsonResponses.isEmpty(  ) )
             {
                 // there is at least one result
-                mapResponses = new HashMap<Integer, List<Response>>( );
+                mapResponses = new HashMap<Integer, List<Response>>(  );
 
-                if ( jsonResponses.isArray( ) )
+                if ( jsonResponses.isArray(  ) )
                 {
                     // array
                     for ( JSONObject jsonResponse : ( (Collection<JSONObject>) ( (JSONArray) jsonResponses ) ) )
                     {
                         Response response = buildResponse( jsonResponse, locale, session );
-                        List<Response> listResponses = mapResponses.get( response.getEntry( ).getIdEntry( ) );
+                        List<Response> listResponses = mapResponses.get( response.getEntry(  ).getIdEntry(  ) );
 
                         if ( listResponses == null )
                         {
-                            listResponses = new ArrayList<Response>( );
-                            mapResponses.put( response.getEntry( ).getIdEntry( ), listResponses );
+                            listResponses = new ArrayList<Response>(  );
+                            mapResponses.put( response.getEntry(  ).getIdEntry(  ), listResponses );
                         }
 
                         listResponses.add( response );
@@ -243,9 +243,9 @@ public final class JSONUtils
 
                     Response response = buildResponse( jsonResponse, locale, session );
 
-                    List<Response> listResponses = new ArrayList<Response>( );
+                    List<Response> listResponses = new ArrayList<Response>(  );
                     listResponses.add( response );
-                    mapResponses.put( response.getEntry( ).getIdEntry( ), listResponses );
+                    mapResponses.put( response.getEntry(  ).getIdEntry(  ), listResponses );
                 }
             }
             else
@@ -271,41 +271,42 @@ public final class JSONUtils
      */
     public static JSONObject buildJson( Response response, String strSessionId )
     {
-        JSONObject jsonResponse = new JSONObject( );
-        jsonResponse.element( JSON_KEY_ID_ENTRY, response.getEntry( ).getIdEntry( ) );
-        jsonResponse.element( JSON_KEY_ID_RESPONSE, response.getIdResponse( ) );
+        JSONObject jsonResponse = new JSONObject(  );
+        jsonResponse.element( JSON_KEY_ID_ENTRY, response.getEntry(  ).getIdEntry(  ) );
+        jsonResponse.element( JSON_KEY_ID_RESPONSE, response.getIdResponse(  ) );
 
-        if ( response.getField( ) != null )
+        if ( response.getField(  ) != null )
         {
-            jsonResponse.element( JSON_KEY_ID_FIELD, response.getField( ).getIdField( ) );
+            jsonResponse.element( JSON_KEY_ID_FIELD, response.getField(  ).getIdField(  ) );
         }
 
-        if ( ( response.getResponseValue( ) != null ) && ( response.getFile( ) != null ) )
+        if ( ( response.getResponseValue(  ) != null ) && ( response.getFile(  ) != null ) )
         {
-            jsonResponse.element( JSON_KEY_VALUE_RESPONSE, response.getResponseValue( ) );
+            jsonResponse.element( JSON_KEY_VALUE_RESPONSE, response.getResponseValue(  ) );
         }
         else
         {
             // file specific data
-            if ( ( response.getFile( ) != null ) && StringUtils.isNotBlank( response.getFile( ).getTitle( ) ) )
+            if ( ( response.getFile(  ) != null ) && StringUtils.isNotBlank( response.getFile(  ).getTitle(  ) ) )
             {
-                jsonResponse.element( JSON_KEY_FILE_NAME, response.getFile( ).getTitle( ) );
+                jsonResponse.element( JSON_KEY_FILE_NAME, response.getFile(  ).getTitle(  ) );
                 jsonResponse.element( JSON_KEY_FILE_EXTENSION,
-                        FilenameUtils.getExtension( response.getFile( ).getTitle( ) ) );
-                jsonResponse.element( JSON_KEY_MIME_TYPE, response.getFile( ).getMimeType( ) );
+                    FilenameUtils.getExtension( response.getFile(  ).getTitle(  ) ) );
+                jsonResponse.element( JSON_KEY_MIME_TYPE, response.getFile(  ).getMimeType(  ) );
 
-                List<FileItem> listFileItems = AnnounceAsynchronousUploadHandler.getHandler( ).getFileItems(
-                        Integer.toString( response.getEntry( ).getIdEntry( ) ), strSessionId );
+                List<FileItem> listFileItems = AnnounceAsynchronousUploadHandler.getHandler(  )
+                                                                                .getFileItems( Integer.toString( 
+                            response.getEntry(  ).getIdEntry(  ) ), strSessionId );
 
-                if ( ( listFileItems != null ) && !listFileItems.isEmpty( ) )
+                if ( ( listFileItems != null ) && !listFileItems.isEmpty(  ) )
                 {
                     for ( FileItem fileItem : listFileItems )
                     {
-                        if ( fileItem instanceof BlobStoreFileItem
-                                && fileItem.getName( ).equals( response.getFile( ).getTitle( ) ) )
+                        if ( fileItem instanceof BlobStoreFileItem &&
+                                fileItem.getName(  ).equals( response.getFile(  ).getTitle(  ) ) )
                         {
                             jsonResponse.accumulate( BlobStoreFileItem.JSON_KEY_FILE_METADATA_BLOB_ID,
-                                    ( (BlobStoreFileItem) fileItem ).getBlobId( ) );
+                                ( (BlobStoreFileItem) fileItem ).getBlobId(  ) );
 
                             break;
                         }
@@ -315,9 +316,9 @@ public final class JSONUtils
         }
 
         // form error
-        if ( response.getEntry( ).getError( ) != null )
+        if ( response.getEntry(  ).getError(  ) != null )
         {
-            jsonResponse.element( JSON_KEY_FORM_ERROR, buildJson( response.getEntry( ).getError( ) ) );
+            jsonResponse.element( JSON_KEY_FORM_ERROR, buildJson( response.getEntry(  ).getError(  ) ) );
         }
 
         return jsonResponse;
@@ -330,15 +331,14 @@ public final class JSONUtils
      */
     public static String buildJson( GenericAttributeError formError )
     {
-        JSONObject jsonError = new JSONObject( );
+        JSONObject jsonError = new JSONObject(  );
 
         jsonError.element( JSON_KEY_ERROR_MESSAGE,
-                StringUtils.isNotBlank( formError.getErrorMessage( ) ) ? formError.getErrorMessage( )
-                        : StringUtils.EMPTY );
-        jsonError.element( JSON_KEY_MANDATORY_ERROR, formError.isMandatoryError( ) );
-        jsonError.element( JSON_KEY_TITLE_QUESTION, formError.getTitleQuestion( ) );
+            StringUtils.isNotBlank( formError.getErrorMessage(  ) ) ? formError.getErrorMessage(  ) : StringUtils.EMPTY );
+        jsonError.element( JSON_KEY_MANDATORY_ERROR, formError.isMandatoryError(  ) );
+        jsonError.element( JSON_KEY_TITLE_QUESTION, formError.getTitleQuestion(  ) );
 
-        return jsonError.toString( );
+        return jsonError.toString(  );
     }
 
     /**
@@ -349,7 +349,7 @@ public final class JSONUtils
     public static GenericAttributeError buildFormError( String strJson )
     {
         JSONObject jsonObject = JSONObject.fromObject( strJson );
-        GenericAttributeError formError = new GenericAttributeError( );
+        GenericAttributeError formError = new GenericAttributeError(  );
         formError.setErrorMessage( jsonObject.getString( JSON_KEY_ERROR_MESSAGE ) );
         formError.setMandatoryError( jsonObject.getBoolean( JSON_KEY_MANDATORY_ERROR ) );
         formError.setTitleQuestion( jsonObject.getString( JSON_KEY_TITLE_QUESTION ) );
@@ -366,16 +366,16 @@ public final class JSONUtils
      */
     public static JSONObject getUploadedFileJSON( List<FileItem> listFileItem )
     {
-        JSONObject json = new JSONObject( );
+        JSONObject json = new JSONObject(  );
 
         if ( listFileItem != null )
         {
             for ( FileItem fileItem : listFileItem )
             {
-                json.accumulate( JSON_KEY_UPLOADED_FILES, fileItem.getName( ) );
+                json.accumulate( JSON_KEY_UPLOADED_FILES, fileItem.getName(  ) );
             }
 
-            json.element( JSON_KEY_FILE_COUNT, listFileItem.size( ) );
+            json.element( JSON_KEY_FILE_COUNT, listFileItem.size(  ) );
         }
         else
         {
@@ -393,10 +393,10 @@ public final class JSONUtils
      */
     public static JSONObject buildJsonErrorRemovingFile( HttpServletRequest request )
     {
-        JSONObject json = new JSONObject( );
+        JSONObject json = new JSONObject(  );
 
         json.element( JSONUtils.JSON_KEY_FORM_ERROR,
-                I18nService.getLocalizedString( PROPERTY_MESSAGE_ERROR_REMOVING_FILE, request.getLocale( ) ) );
+            I18nService.getLocalizedString( PROPERTY_MESSAGE_ERROR_REMOVING_FILE, request.getLocale(  ) ) );
 
         return json;
     }

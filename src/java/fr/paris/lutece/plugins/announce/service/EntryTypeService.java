@@ -42,9 +42,9 @@ import java.util.Map;
 
 
 /**
- * 
+ *
  * EntryTypeService
- * 
+ *
  */
 public final class EntryTypeService
 {
@@ -54,20 +54,20 @@ public final class EntryTypeService
     /**
      * Private constructor
      */
-    private EntryTypeService( )
+    private EntryTypeService(  )
     {
-        initMapEntryTypes( );
+        initMapEntryTypes(  );
     }
 
     /**
      * Get the instance of the service
      * @return The instance of the service
      */
-    public static EntryTypeService getInstance( )
+    public static EntryTypeService getInstance(  )
     {
         if ( _instance == null )
         {
-            _instance = new EntryTypeService( );
+            _instance = new EntryTypeService(  );
         }
 
         return _instance;
@@ -77,7 +77,7 @@ public final class EntryTypeService
      * Get the map of entry types
      * @return the map of entry types
      */
-    public Map<Integer, EntryType> getMapEntryTypes( )
+    public Map<Integer, EntryType> getMapEntryTypes(  )
     {
         return new HashMap<Integer, EntryType>( _mapEntryTypes );
     }
@@ -95,13 +95,13 @@ public final class EntryTypeService
     /**
      * Init the map of entry types
      */
-    private void initMapEntryTypes( )
+    private void initMapEntryTypes(  )
     {
-        _mapEntryTypes = new HashMap<Integer, EntryType>( );
+        _mapEntryTypes = new HashMap<Integer, EntryType>(  );
 
         for ( EntryType entryType : EntryTypeHome.getList( AnnouncePlugin.PLUGIN_NAME ) )
         {
-            _mapEntryTypes.put( entryType.getIdType( ), entryType );
+            _mapEntryTypes.put( entryType.getIdType(  ), entryType );
         }
     }
 
@@ -109,13 +109,13 @@ public final class EntryTypeService
      * Get a reference list containing entry types
      * @return A reference list containing entry types
      */
-    public ReferenceList getEntryTypeReferenceList( )
+    public ReferenceList getEntryTypeReferenceList(  )
     {
-        ReferenceList refListEntryType = new ReferenceList( );
+        ReferenceList refListEntryType = new ReferenceList(  );
 
-        for ( EntryType entryType : _mapEntryTypes.values( ) )
+        for ( EntryType entryType : _mapEntryTypes.values(  ) )
         {
-            refListEntryType.addItem( entryType.getIdType( ), entryType.getTitle( ) );
+            refListEntryType.addItem( entryType.getIdType(  ), entryType.getTitle(  ) );
         }
 
         return refListEntryType;

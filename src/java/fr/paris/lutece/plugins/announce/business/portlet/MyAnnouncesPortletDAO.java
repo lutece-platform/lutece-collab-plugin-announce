@@ -43,7 +43,7 @@ public final class MyAnnouncesPortletDAO implements IMyAnnouncesPortletDAO
 {
     /**
      * Insert a new record in the table.
-     * 
+     *
      * @param portlet The Instance of the Portlet
      */
     @Override
@@ -80,8 +80,9 @@ public final class MyAnnouncesPortletDAO implements IMyAnnouncesPortletDAO
     @Override
     public Portlet load( int nIdPortlet )
     {
-        MyAnnouncesPortlet portlet = new MyAnnouncesPortlet( );
+        MyAnnouncesPortlet portlet = new MyAnnouncesPortlet(  );
         portlet.setId( nIdPortlet );
+
         return portlet;
     }
 }

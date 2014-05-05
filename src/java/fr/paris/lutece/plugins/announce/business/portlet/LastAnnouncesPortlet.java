@@ -56,26 +56,24 @@ public class LastAnnouncesPortlet extends PortletHtmlContent
 {
     /////////////////////////////////////////////////////////////////////////////////
     // Constants
-
     private static final String TEMPLATE_PORTLET_CONTENT = "skin/plugins/announce/portletlastannounces_content.html";
     private static final String MARK_PORTLET = "portlet";
     private static final String MARK_CONTENT = "content";
-
     private int _nNbAnnouncesToDisplay;
 
     /**
      * Sets the identifier of the portlet type to value specified
      */
-    public LastAnnouncesPortlet( )
+    public LastAnnouncesPortlet(  )
     {
-        setPortletTypeId( MyAnnouncesPortletHome.getInstance( ).getPortletTypeId( ) );
+        setPortletTypeId( MyAnnouncesPortletHome.getInstance(  ).getPortletTypeId(  ) );
     }
 
     /**
      * Get the number of announces to display
      * @return The number of announces to display
      */
-    public int getNbAnnouncesToDisplay( )
+    public int getNbAnnouncesToDisplay(  )
     {
         return _nNbAnnouncesToDisplay;
     }
@@ -101,34 +99,37 @@ public class LastAnnouncesPortlet extends PortletHtmlContent
             List<Integer> listAllIdAnnounces = AnnounceHome.findAllPublishedId( announceSort );
 
             String strContent = AnnounceApp.getAnnounceListById( request,
-                    ( getNbAnnouncesToDisplay( ) > listAllIdAnnounces.size( ) ) ? listAllIdAnnounces
-                            : listAllIdAnnounces.subList( 0, getNbAnnouncesToDisplay( ) ), announceSort );
+                    ( getNbAnnouncesToDisplay(  ) > listAllIdAnnounces.size(  ) ) ? listAllIdAnnounces
+                                                                                  : listAllIdAnnounces.subList( 0,
+                        getNbAnnouncesToDisplay(  ) ), announceSort );
 
-            Map<String, Object> model = new HashMap<String, Object>( );
+            Map<String, Object> model = new HashMap<String, Object>(  );
             model.put( MARK_PORTLET, this );
             model.put( MARK_CONTENT, strContent );
 
-            HtmlTemplate template = AppTemplateService.getTemplate( TEMPLATE_PORTLET_CONTENT, request.getLocale( ),
+            HtmlTemplate template = AppTemplateService.getTemplate( TEMPLATE_PORTLET_CONTENT, request.getLocale(  ),
                     model );
-            return template.getHtml( );
+
+            return template.getHtml(  );
         }
+
         return StringUtils.EMPTY;
     }
 
     /**
      * Updates the current instance of the MyAnnouncePortlet object
      */
-    public void update( )
+    public void update(  )
     {
-        LastAnnouncesPortletHome.getInstance( ).update( this );
+        LastAnnouncesPortletHome.getInstance(  ).update( this );
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public void remove( )
+    public void remove(  )
     {
-        LastAnnouncesPortletHome.getInstance( ).remove( this );
+        LastAnnouncesPortletHome.getInstance(  ).remove( this );
     }
 }

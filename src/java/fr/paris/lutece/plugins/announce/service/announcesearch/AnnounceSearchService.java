@@ -48,6 +48,7 @@ import fr.paris.lutece.portal.service.util.AppPathService;
 import fr.paris.lutece.portal.service.util.AppPropertiesService;
 
 import org.apache.commons.lang.StringUtils;
+
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
@@ -58,8 +59,10 @@ import org.apache.lucene.store.NIOFSDirectory;
 
 import java.io.File;
 import java.io.IOException;
+
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -92,7 +95,6 @@ public final class AnnounceSearchService
     private static volatile AnnounceSearchService _singleton;
     private static int _nSkipedIndexations;
     private static String _strPriceFormat;
-
     private volatile String _strIndex;
     private Analyzer _analyzer;
     private IAnnounceSearchIndexer _indexer;
@@ -102,10 +104,10 @@ public final class AnnounceSearchService
     /**
      * Creates a new instance of DirectorySearchService
      */
-    private AnnounceSearchService( )
+    private AnnounceSearchService(  )
     {
         // Read configuration properties
-        String strIndex = getIndex( );
+        String strIndex = getIndex(  );
 
         if ( StringUtils.isEmpty( strIndex ) )
         {
@@ -128,7 +130,7 @@ public final class AnnounceSearchService
 
         try
         {
-            _analyzer = (Analyzer) Class.forName( strAnalyserClassName ).newInstance( );
+            _analyzer = (Analyzer) Class.forName( strAnalyserClassName ).newInstance(  );
         }
         catch ( Exception e )
         {
@@ -140,11 +142,11 @@ public final class AnnounceSearchService
      * Get the HelpdeskSearchService instance
      * @return The {@link AnnounceSearchService}
      */
-    public static AnnounceSearchService getInstance( )
+    public static AnnounceSearchService getInstance(  )
     {
         if ( _singleton == null )
         {
-            _singleton = new AnnounceSearchService( );
+            _singleton = new AnnounceSearchService(  );
         }
 
         return _singleton;
@@ -159,29 +161,30 @@ public final class AnnounceSearchService
      * @return The total number of items found
      */
     public int getSearchResults( AnnounceSearchFilter filter, int nPageNumber, int nItemsPerPage,
-            List<Integer> listIdAnnounces )
+        List<Integer> listIdAnnounces )
     {
         int nNbItems = 0;
+
         try
         {
             IAnnounceSearchEngine engine = SpringContextService.getBean( BEAN_SEARCH_ENGINE );
-            List<SearchResult> listResults = new ArrayList<SearchResult>( );
+            List<SearchResult> listResults = new ArrayList<SearchResult>(  );
             nNbItems = engine.getSearchResults( filter, PluginService.getPlugin( AnnouncePlugin.PLUGIN_NAME ),
                     listResults, nPageNumber, nItemsPerPage );
 
             for ( SearchResult searchResult : listResults )
             {
-                if ( searchResult.getId( ) != null )
+                if ( searchResult.getId(  ) != null )
                 {
-                    listIdAnnounces.add( Integer.parseInt( searchResult.getId( ) ) );
+                    listIdAnnounces.add( Integer.parseInt( searchResult.getId(  ) ) );
                 }
             }
         }
         catch ( Exception e )
         {
-            AppLogService.error( e.getMessage( ), e );
+            AppLogService.error( e.getMessage(  ), e );
             // If an error occurred clean result list
-            listIdAnnounces.clear( );
+            listIdAnnounces.clear(  );
         }
 
         return nNbItems;
@@ -191,27 +194,29 @@ public final class AnnounceSearchService
      * return searcher
      * @return searcher
      */
-    public Searcher getSearcher( )
+    public Searcher getSearcher(  )
     {
         Directory dir = null;
         Searcher searcher = null;
+
         try
         {
-            dir = NIOFSDirectory.open( new File( getIndex( ) ) );
+            dir = NIOFSDirectory.open( new File( getIndex(  ) ) );
             searcher = new IndexSearcher( dir, true );
         }
         catch ( IOException e )
         {
-            AppLogService.error( e.getMessage( ), e );
+            AppLogService.error( e.getMessage(  ), e );
+
             if ( dir != null )
             {
                 try
                 {
-                    dir.close( );
+                    dir.close(  );
                 }
                 catch ( IOException e1 )
                 {
-                    AppLogService.error( e1.getMessage( ), e );
+                    AppLogService.error( e1.getMessage(  ), e );
                 }
             }
         }
@@ -227,7 +232,7 @@ public final class AnnounceSearchService
      */
     public String processIndexing( boolean bCreate )
     {
-        StringBuffer sbLogs = new StringBuffer( );
+        StringBuffer sbLogs = new StringBuffer(  );
         IndexWriter writer = null;
         boolean bCreateIndex = bCreate;
 
@@ -235,7 +240,7 @@ public final class AnnounceSearchService
         {
             sbLogs.append( "\r\nIndexing all contents ...\r\n" );
 
-            Directory dir = NIOFSDirectory.open( new File( getIndex( ) ) );
+            Directory dir = NIOFSDirectory.open( new File( getIndex(  ) ) );
 
             if ( !IndexReader.indexExists( dir ) )
             { //init index
@@ -248,9 +253,9 @@ public final class AnnounceSearchService
             {
                 _nSkipedIndexations++;
 
-                if ( bCreate
-                        || _nSkipedIndexations >= AppPropertiesService.getPropertyInt( PROPERTY_MAX_SKIPPED_INDEXATION,
-                                10 ) )
+                if ( bCreate ||
+                        ( _nSkipedIndexations >= AppPropertiesService.getPropertyInt( PROPERTY_MAX_SKIPPED_INDEXATION,
+                            10 ) ) )
                 {
                     IndexWriter.unlock( dir );
                     bIsLocked = false;
@@ -264,37 +269,36 @@ public final class AnnounceSearchService
 
             if ( !bIsLocked )
             {
-
                 writer = new IndexWriter( dir, _analyzer, bCreateIndex, IndexWriter.MaxFieldLength.UNLIMITED );
                 writer.setMergeFactor( _nWriterMergeFactor );
                 writer.setMaxFieldLength( _nWriterMaxSectorLength );
 
-                Date start = new Date( );
+                Date start = new Date(  );
 
                 sbLogs.append( "\r\n<strong>Indexer : " );
-                sbLogs.append( _indexer.getName( ) );
+                sbLogs.append( _indexer.getName(  ) );
                 sbLogs.append( " - " );
-                sbLogs.append( _indexer.getDescription( ) );
+                sbLogs.append( _indexer.getDescription(  ) );
                 sbLogs.append( "</strong>\r\n" );
                 _indexer.processIndexing( writer, bCreateIndex, sbLogs );
 
-                Date end = new Date( );
+                Date end = new Date(  );
 
                 sbLogs.append( "Duration of the treatment : " );
-                sbLogs.append( end.getTime( ) - start.getTime( ) );
+                sbLogs.append( end.getTime(  ) - start.getTime(  ) );
                 sbLogs.append( " milliseconds\r\n" );
 
-                writer.optimize( );
+                writer.optimize(  );
             }
         }
         catch ( Exception e )
         {
             sbLogs.append( " caught a " );
-            sbLogs.append( e.getClass( ) );
+            sbLogs.append( e.getClass(  ) );
             sbLogs.append( "\n with message: " );
-            sbLogs.append( e.getMessage( ) );
+            sbLogs.append( e.getMessage(  ) );
             sbLogs.append( "\r\n" );
-            AppLogService.error( "Indexing error : " + e.getMessage( ), e );
+            AppLogService.error( "Indexing error : " + e.getMessage(  ), e );
         }
         finally
         {
@@ -302,16 +306,16 @@ public final class AnnounceSearchService
             {
                 if ( writer != null )
                 {
-                    writer.close( );
+                    writer.close(  );
                 }
             }
             catch ( IOException e )
             {
-                AppLogService.error( e.getMessage( ), e );
+                AppLogService.error( e.getMessage(  ), e );
             }
         }
 
-        return sbLogs.toString( );
+        return sbLogs.toString(  );
     }
 
     /**
@@ -322,7 +326,7 @@ public final class AnnounceSearchService
      */
     public void addIndexerAction( int nIdAnnounce, int nIdTask, Plugin plugin )
     {
-        IndexerAction indexerAction = new IndexerAction( );
+        IndexerAction indexerAction = new IndexerAction(  );
         indexerAction.setIdAnnounce( nIdAnnounce );
         indexerAction.setIdTask( nIdTask );
         IndexerActionHome.create( indexerAction );
@@ -346,7 +350,7 @@ public final class AnnounceSearchService
      */
     public List<IndexerAction> getAllIndexerActionByTask( int nIdTask, Plugin plugin )
     {
-        IndexerActionFilter filter = new IndexerActionFilter( );
+        IndexerActionFilter filter = new IndexerActionFilter(  );
         filter.setIdTask( nIdTask );
 
         return IndexerActionHome.getList( filter );
@@ -356,12 +360,13 @@ public final class AnnounceSearchService
      * Get the path to the index of the search service
      * @return The path to the index of the search service
      */
-    private String getIndex( )
+    private String getIndex(  )
     {
         if ( _strIndex == null )
         {
             _strIndex = AppPathService.getPath( PATH_INDEX );
         }
+
         return _strIndex;
     }
 
@@ -369,7 +374,7 @@ public final class AnnounceSearchService
      * Get the analyzed of this search service
      * @return The analyzer of this search service
      */
-    public Analyzer getAnalyzer( )
+    public Analyzer getAnalyzer(  )
     {
         return _analyzer;
     }
@@ -381,7 +386,8 @@ public final class AnnounceSearchService
      */
     public static String formatPriceForIndexer( double dPrice )
     {
-        NumberFormat formatter = new DecimalFormat( getPriceFormat( ) );
+        NumberFormat formatter = new DecimalFormat( getPriceFormat(  ) );
+
         return formatter.format( dPrice );
     }
 
@@ -393,7 +399,7 @@ public final class AnnounceSearchService
     public static String getFormatedPriceString( String strPrice )
     {
         return strPrice.replaceAll( CONSTANT_BLANK_SPACE, StringUtils.EMPTY ).replace( CONSTANT_COMA, CONSTANT_POINT )
-                .replaceAll( CONSTANT_EURO, StringUtils.EMPTY ).trim( );
+                       .replaceAll( CONSTANT_EURO, StringUtils.EMPTY ).trim(  );
     }
 
     /**
@@ -403,7 +409,8 @@ public final class AnnounceSearchService
      */
     public static String formatPriceForIndexer( int nPrice )
     {
-        NumberFormat formatter = new DecimalFormat( getPriceFormat( ) );
+        NumberFormat formatter = new DecimalFormat( getPriceFormat(  ) );
+
         return formatter.format( nPrice );
     }
 
@@ -411,12 +418,13 @@ public final class AnnounceSearchService
      * Get the price format to use
      * @return the price format to use
      */
-    private static String getPriceFormat( )
+    private static String getPriceFormat(  )
     {
         if ( _strPriceFormat == null )
         {
             _strPriceFormat = AppPropertiesService.getProperty( PROPERTY_INDEXER_PRICE_FORMAT, "#0000000000.00" );
         }
+
         return _strPriceFormat;
     }
 }

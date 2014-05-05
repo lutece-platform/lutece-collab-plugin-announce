@@ -85,7 +85,7 @@ public class MyAnnouncesPortletJspBean extends PortletJspBean
     @Override
     public String doCreate( HttpServletRequest request )
     {
-        MyAnnouncesPortlet portlet = new MyAnnouncesPortlet( );
+        MyAnnouncesPortlet portlet = new MyAnnouncesPortlet(  );
 
         // recovers portlet specific attributes
         String strPageId = request.getParameter( PARAMETER_PAGE_ID );
@@ -102,7 +102,7 @@ public class MyAnnouncesPortletJspBean extends PortletJspBean
         portlet.setPageId( nPageId );
 
         // Creates the portlet
-        MyAnnouncesPortletHome.getInstance( ).create( portlet );
+        MyAnnouncesPortletHome.getInstance(  ).create( portlet );
 
         //Displays the page with the new Portlet
         return "../" + getPageUrl( nPageId );
@@ -131,6 +131,6 @@ public class MyAnnouncesPortletJspBean extends PortletJspBean
         portlet.update(  );
 
         // displays the page with the updated portlet
-        return "../" + getPageUrl( portlet.getPageId( ) );
+        return "../" + getPageUrl( portlet.getPageId(  ) );
     }
 }

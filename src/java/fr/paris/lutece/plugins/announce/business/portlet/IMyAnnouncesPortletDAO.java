@@ -37,7 +37,7 @@ import fr.paris.lutece.portal.business.portlet.IPortletInterfaceDAO;
 
 
 /**
- * 
+ *
  * Interface for DAO of MyAnnounces portlet
  */
 public interface IMyAnnouncesPortletDAO extends IPortletInterfaceDAO

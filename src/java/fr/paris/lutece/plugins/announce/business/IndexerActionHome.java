@@ -54,7 +54,7 @@ public final class IndexerActionHome
     /**
      * Private constructor - this class need not be instantiated
      */
-    private IndexerActionHome( )
+    private IndexerActionHome(  )
     {
     }
 
@@ -66,11 +66,12 @@ public final class IndexerActionHome
     public static synchronized void create( IndexerAction indexerAction )
     {
         int nOppositeTask = 0;
-        if ( indexerAction.getIdTask( ) == IndexerAction.TASK_CREATE )
+
+        if ( indexerAction.getIdTask(  ) == IndexerAction.TASK_CREATE )
         {
             nOppositeTask = IndexerAction.TASK_DELETE;
         }
-        else if ( indexerAction.getIdTask( ) == IndexerAction.TASK_DELETE )
+        else if ( indexerAction.getIdTask(  ) == IndexerAction.TASK_DELETE )
         {
             nOppositeTask = IndexerAction.TASK_CREATE;
         }
@@ -79,20 +80,22 @@ public final class IndexerActionHome
 
         if ( nOppositeTask > 0 )
         {
-            IndexerActionFilter filter = new IndexerActionFilter( );
+            IndexerActionFilter filter = new IndexerActionFilter(  );
             filter.setIdTask( nOppositeTask );
+
             List<IndexerAction> listIndexerActions = getList( filter );
+
             for ( IndexerAction action : listIndexerActions )
             {
-                if ( action.getIdTask( ) == nOppositeTask )
+                if ( action.getIdTask(  ) == nOppositeTask )
                 {
-                    remove( action.getIdAction( ) );
+                    remove( action.getIdAction(  ) );
                 }
-                else if ( action.getIdTask( ) == indexerAction.getIdTask( ) )
+                else if ( action.getIdTask(  ) == indexerAction.getIdTask(  ) )
                 {
                     if ( bAlreadyFound )
                     {
-                        remove( action.getIdAction( ) );
+                        remove( action.getIdAction(  ) );
                     }
                     else
                     {

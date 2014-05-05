@@ -68,7 +68,7 @@ public class AnnounceFileItem implements FileItem
      * {@inheritDoc}
      */
     @Override
-    public void delete( )
+    public void delete(  )
     {
         _bValue = null;
     }
@@ -77,7 +77,7 @@ public class AnnounceFileItem implements FileItem
      * {@inheritDoc}
      */
     @Override
-    public byte[] get( )
+    public byte[] get(  )
     {
         return _bValue;
     }
@@ -86,7 +86,7 @@ public class AnnounceFileItem implements FileItem
      * {@inheritDoc}
      */
     @Override
-    public String getContentType( )
+    public String getContentType(  )
     {
         return FileSystemUtil.getMIMEType( _strFileName );
     }
@@ -95,7 +95,7 @@ public class AnnounceFileItem implements FileItem
      * {@inheritDoc}
      */
     @Override
-    public String getFieldName( )
+    public String getFieldName(  )
     {
         return null;
     }
@@ -104,7 +104,7 @@ public class AnnounceFileItem implements FileItem
      * {@inheritDoc}
      */
     @Override
-    public InputStream getInputStream( ) throws IOException
+    public InputStream getInputStream(  ) throws IOException
     {
         return new ByteArrayInputStream( _bValue );
     }
@@ -113,7 +113,7 @@ public class AnnounceFileItem implements FileItem
      * {@inheritDoc}
      */
     @Override
-    public String getName( )
+    public String getName(  )
     {
         return _strFileName;
     }
@@ -122,7 +122,7 @@ public class AnnounceFileItem implements FileItem
      * {@inheritDoc}
      */
     @Override
-    public OutputStream getOutputStream( ) throws IOException
+    public OutputStream getOutputStream(  ) throws IOException
     {
         return null;
     }
@@ -131,7 +131,7 @@ public class AnnounceFileItem implements FileItem
      * {@inheritDoc}
      */
     @Override
-    public long getSize( )
+    public long getSize(  )
     {
         return _bValue.length;
     }
@@ -140,7 +140,7 @@ public class AnnounceFileItem implements FileItem
      * {@inheritDoc}
      */
     @Override
-    public String getString( )
+    public String getString(  )
     {
         return new String( _bValue );
     }
@@ -158,7 +158,7 @@ public class AnnounceFileItem implements FileItem
      * {@inheritDoc}
      */
     @Override
-    public boolean isFormField( )
+    public boolean isFormField(  )
     {
         return false;
     }
@@ -167,7 +167,7 @@ public class AnnounceFileItem implements FileItem
      * {@inheritDoc}
      */
     @Override
-    public boolean isInMemory( )
+    public boolean isInMemory(  )
     {
         return true;
     }

@@ -111,7 +111,7 @@ public class CategoryResourceIdService extends ResourceIdService
     @Override
     public ReferenceList getResourceIdList( Locale locale )
     {
-        return CategoryHome.findCategoriesReferenceList( );
+        return CategoryHome.findCategoriesReferenceList(  );
     }
 
     /**

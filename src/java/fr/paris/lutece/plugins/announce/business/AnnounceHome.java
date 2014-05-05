@@ -47,6 +47,7 @@ import fr.paris.lutece.portal.service.spring.SpringContextService;
 import fr.paris.lutece.portal.service.workflow.WorkflowService;
 
 import java.sql.Timestamp;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -59,13 +60,12 @@ public final class AnnounceHome
 {
     // Static variable pointed at the DAO instance
     private static IAnnounceDAO _dao = SpringContextService.getBean( "announce.announceDAO" );
-
     private static Plugin _plugin = PluginService.getPlugin( AnnouncePlugin.PLUGIN_NAME );
 
     /**
      * Private constructor - this class need not be instantiated
      */
-    private AnnounceHome( )
+    private AnnounceHome(  )
     {
     }
 
@@ -78,15 +78,15 @@ public final class AnnounceHome
      */
     public static Announce create( Announce announce )
     {
-        announce.setDateModification( new Timestamp( System.currentTimeMillis( ) ) );
+        announce.setDateModification( new Timestamp( System.currentTimeMillis(  ) ) );
         updateAnnouncePublicationTime( announce );
         _dao.insert( announce, _plugin );
 
-        if ( announce.getPublished( ) && !announce.getSuspended( ) && !announce.getSuspendedByUser( ) )
+        if ( announce.getPublished(  ) && !announce.getSuspended(  ) && !announce.getSuspendedByUser(  ) )
         {
-            AnnounceSearchService.getInstance( ).addIndexerAction( announce.getId( ), IndexerAction.TASK_CREATE,
-                    _plugin );
-            AnnounceCacheService.getService( ).removeKey( AnnounceCacheService.getListIdPublishedAnnouncesCacheKey( ) );
+            AnnounceSearchService.getInstance(  )
+                                 .addIndexerAction( announce.getId(  ), IndexerAction.TASK_CREATE, _plugin );
+            AnnounceCacheService.getService(  ).removeKey( AnnounceCacheService.getListIdPublishedAnnouncesCacheKey(  ) );
         }
 
         return announce;
@@ -100,22 +100,23 @@ public final class AnnounceHome
      */
     public static Announce update( Announce announce )
     {
-        announce.setDateModification( new Timestamp( System.currentTimeMillis( ) ) );
+        announce.setDateModification( new Timestamp( System.currentTimeMillis(  ) ) );
         _dao.store( announce, _plugin );
 
-        if ( announce.getPublished( ) && !announce.getSuspended( ) && !announce.getSuspendedByUser( ) )
+        if ( announce.getPublished(  ) && !announce.getSuspended(  ) && !announce.getSuspendedByUser(  ) )
         {
-            AnnounceSearchService.getInstance( ).addIndexerAction( announce.getId( ), IndexerAction.TASK_MODIFY,
-                    _plugin );
+            AnnounceSearchService.getInstance(  )
+                                 .addIndexerAction( announce.getId(  ), IndexerAction.TASK_MODIFY, _plugin );
         }
         else
         {
-            AnnounceSearchService.getInstance( ).addIndexerAction( announce.getId( ), IndexerAction.TASK_DELETE,
-                    _plugin );
+            AnnounceSearchService.getInstance(  )
+                                 .addIndexerAction( announce.getId(  ), IndexerAction.TASK_DELETE, _plugin );
         }
-        AnnounceCacheService.getService( ).removeKey( AnnounceCacheService.getListIdPublishedAnnouncesCacheKey( ) );
-        AnnounceCacheService.getService( ).putInCache( AnnounceCacheService.getAnnounceCacheKey( announce.getId( ) ),
-                announce );
+
+        AnnounceCacheService.getService(  ).removeKey( AnnounceCacheService.getListIdPublishedAnnouncesCacheKey(  ) );
+        AnnounceCacheService.getService(  )
+                            .putInCache( AnnounceCacheService.getAnnounceCacheKey( announce.getId(  ) ), announce );
 
         return announce;
     }
@@ -127,25 +128,28 @@ public final class AnnounceHome
      */
     public static void remove( int nAnnounceId )
     {
-        AnnounceSearchService.getInstance( ).addIndexerAction( nAnnounceId, IndexerAction.TASK_DELETE, _plugin );
+        AnnounceSearchService.getInstance(  ).addIndexerAction( nAnnounceId, IndexerAction.TASK_DELETE, _plugin );
+
         List<Integer> listIdResponse = findListIdResponse( nAnnounceId );
+
         for ( int nIdResponse : listIdResponse )
         {
             ResponseHome.remove( nIdResponse );
         }
+
         removeAnnounceResponse( nAnnounceId );
 
         ExtendableResourceRemovalListenerService.doRemoveResourceExtentions( Announce.RESOURCE_TYPE,
-                Integer.toString( nAnnounceId ) );
+            Integer.toString( nAnnounceId ) );
 
-        if ( WorkflowService.getInstance( ).isAvailable( ) )
+        if ( WorkflowService.getInstance(  ).isAvailable(  ) )
         {
-            WorkflowService.getInstance( ).doRemoveWorkFlowResource( nAnnounceId, Announce.RESOURCE_TYPE );
+            WorkflowService.getInstance(  ).doRemoveWorkFlowResource( nAnnounceId, Announce.RESOURCE_TYPE );
         }
 
         _dao.delete( nAnnounceId, _plugin );
-        AnnounceCacheService.getService( ).removeKey( AnnounceCacheService.getListIdPublishedAnnouncesCacheKey( ) );
-        AnnounceCacheService.getService( ).removeKey( AnnounceCacheService.getAnnounceCacheKey( nAnnounceId ) );
+        AnnounceCacheService.getService(  ).removeKey( AnnounceCacheService.getListIdPublishedAnnouncesCacheKey(  ) );
+        AnnounceCacheService.getService(  ).removeKey( AnnounceCacheService.getAnnounceCacheKey( nAnnounceId ) );
     }
 
     ///////////////////////////////////////////////////////////////////////////
@@ -159,15 +163,19 @@ public final class AnnounceHome
      */
     public static Announce findByPrimaryKey( int nKey )
     {
-        Announce announce = (Announce) AnnounceCacheService.getService( ).getFromCache(
-                AnnounceCacheService.getAnnounceCacheKey( nKey ) );
+        Announce announce = (Announce) AnnounceCacheService.getService(  )
+                                                           .getFromCache( AnnounceCacheService.getAnnounceCacheKey( 
+                    nKey ) );
+
         if ( announce == null )
         {
             announce = _dao.load( nKey, _plugin );
+
             if ( announce != null )
             {
-                AnnounceCacheService.getService( ).putInCache(
-                        AnnounceCacheService.getAnnounceCacheKey( announce.getId( ) ), announce );
+                AnnounceCacheService.getService(  )
+                                    .putInCache( AnnounceCacheService.getAnnounceCacheKey( announce.getId(  ) ),
+                    announce );
             }
         }
 
@@ -193,16 +201,17 @@ public final class AnnounceHome
      */
     public static List<Integer> findAllPublishedId( AnnounceSort announceSort )
     {
-        List<Integer> listIds = (List<Integer>) AnnounceCacheService.getService( ).getFromCache(
-                AnnounceCacheService.getListIdPublishedAnnouncesCacheKey( ) );
+        List<Integer> listIds = (List<Integer>) AnnounceCacheService.getService(  )
+                                                                    .getFromCache( AnnounceCacheService.getListIdPublishedAnnouncesCacheKey(  ) );
+
         if ( listIds == null )
         {
             listIds = _dao.selectAllPublishedId( announceSort, _plugin );
-            AnnounceCacheService.getService( ).putInCache( AnnounceCacheService.getListIdPublishedAnnouncesCacheKey( ),
-                    listIds );
+            AnnounceCacheService.getService(  )
+                                .putInCache( AnnounceCacheService.getListIdPublishedAnnouncesCacheKey(  ), listIds );
         }
-        return _dao.selectAllPublishedId( announceSort, _plugin );
 
+        return _dao.selectAllPublishedId( announceSort, _plugin );
     }
 
     /**
@@ -235,7 +244,7 @@ public final class AnnounceHome
      */
     public static List<Announce> getAnnouncesForUser( LuteceUser user, AnnounceSort announceSort )
     {
-        return _dao.selectAllForUser( user.getName( ), announceSort, _plugin );
+        return _dao.selectAllForUser( user.getName(  ), announceSort, _plugin );
     }
 
     /**
@@ -268,18 +277,20 @@ public final class AnnounceHome
     {
         updateAnnouncePublicationTime( announce );
         _dao.setPublished( announce, _plugin );
-        if ( announce.getPublished( ) && !announce.getSuspended( ) && !announce.getSuspendedByUser( ) )
+
+        if ( announce.getPublished(  ) && !announce.getSuspended(  ) && !announce.getSuspendedByUser(  ) )
         {
-            AnnounceSearchService.getInstance( ).addIndexerAction( announce.getId( ), IndexerAction.TASK_CREATE,
-                    _plugin );
+            AnnounceSearchService.getInstance(  )
+                                 .addIndexerAction( announce.getId(  ), IndexerAction.TASK_CREATE, _plugin );
         }
         else
         {
-            AnnounceSearchService.getInstance( ).addIndexerAction( announce.getId( ), IndexerAction.TASK_DELETE,
-                    _plugin );
+            AnnounceSearchService.getInstance(  )
+                                 .addIndexerAction( announce.getId(  ), IndexerAction.TASK_DELETE, _plugin );
         }
-        AnnounceCacheService.getService( ).removeKey( AnnounceCacheService.getListIdPublishedAnnouncesCacheKey( ) );
-        AnnounceCacheService.getService( ).removeKey( AnnounceCacheService.getAnnounceCacheKey( announce.getId( ) ) );
+
+        AnnounceCacheService.getService(  ).removeKey( AnnounceCacheService.getListIdPublishedAnnouncesCacheKey(  ) );
+        AnnounceCacheService.getService(  ).removeKey( AnnounceCacheService.getAnnounceCacheKey( announce.getId(  ) ) );
     }
 
     /**
@@ -291,18 +302,19 @@ public final class AnnounceHome
         updateAnnouncePublicationTime( announce );
         _dao.setSuspended( announce, _plugin );
 
-        if ( announce.getPublished( ) && !announce.getSuspended( ) && !announce.getSuspendedByUser( ) )
+        if ( announce.getPublished(  ) && !announce.getSuspended(  ) && !announce.getSuspendedByUser(  ) )
         {
-            AnnounceSearchService.getInstance( ).addIndexerAction( announce.getId( ), IndexerAction.TASK_CREATE,
-                    _plugin );
+            AnnounceSearchService.getInstance(  )
+                                 .addIndexerAction( announce.getId(  ), IndexerAction.TASK_CREATE, _plugin );
         }
         else
         {
-            AnnounceSearchService.getInstance( ).addIndexerAction( announce.getId( ), IndexerAction.TASK_DELETE,
-                    _plugin );
+            AnnounceSearchService.getInstance(  )
+                                 .addIndexerAction( announce.getId(  ), IndexerAction.TASK_DELETE, _plugin );
         }
-        AnnounceCacheService.getService( ).removeKey( AnnounceCacheService.getListIdPublishedAnnouncesCacheKey( ) );
-        AnnounceCacheService.getService( ).removeKey( AnnounceCacheService.getAnnounceCacheKey( announce.getId( ) ) );
+
+        AnnounceCacheService.getService(  ).removeKey( AnnounceCacheService.getListIdPublishedAnnouncesCacheKey(  ) );
+        AnnounceCacheService.getService(  ).removeKey( AnnounceCacheService.getAnnounceCacheKey( announce.getId(  ) ) );
     }
 
     /**
@@ -314,18 +326,19 @@ public final class AnnounceHome
         updateAnnouncePublicationTime( announce );
         _dao.setSuspendedByUser( announce, _plugin );
 
-        if ( announce.getPublished( ) && !announce.getSuspended( ) && !announce.getSuspendedByUser( ) )
+        if ( announce.getPublished(  ) && !announce.getSuspended(  ) && !announce.getSuspendedByUser(  ) )
         {
-            AnnounceSearchService.getInstance( ).addIndexerAction( announce.getId( ), IndexerAction.TASK_CREATE,
-                    _plugin );
+            AnnounceSearchService.getInstance(  )
+                                 .addIndexerAction( announce.getId(  ), IndexerAction.TASK_CREATE, _plugin );
         }
         else
         {
-            AnnounceSearchService.getInstance( ).addIndexerAction( announce.getId( ), IndexerAction.TASK_DELETE,
-                    _plugin );
+            AnnounceSearchService.getInstance(  )
+                                 .addIndexerAction( announce.getId(  ), IndexerAction.TASK_DELETE, _plugin );
         }
-        AnnounceCacheService.getService( ).removeKey( AnnounceCacheService.getListIdPublishedAnnouncesCacheKey( ) );
-        AnnounceCacheService.getService( ).removeKey( AnnounceCacheService.getAnnounceCacheKey( announce.getId( ) ) );
+
+        AnnounceCacheService.getService(  ).removeKey( AnnounceCacheService.getListIdPublishedAnnouncesCacheKey(  ) );
+        AnnounceCacheService.getService(  ).removeKey( AnnounceCacheService.getAnnounceCacheKey( announce.getId(  ) ) );
     }
 
     /**
@@ -394,15 +407,17 @@ public final class AnnounceHome
     public static List<Response> findListResponse( int nIdAnnounce, boolean bLoadFiles )
     {
         List<Integer> listIdResponse = findListIdResponse( nIdAnnounce );
-        List<Response> listResponse = new ArrayList<Response>( listIdResponse.size( ) );
+        List<Response> listResponse = new ArrayList<Response>( listIdResponse.size(  ) );
 
         for ( Integer nIdResponse : listIdResponse )
         {
             Response response = ResponseHome.findByPrimaryKey( nIdResponse );
-            if ( bLoadFiles && response.getFile( ) != null )
+
+            if ( bLoadFiles && ( response.getFile(  ) != null ) )
             {
-                response.setFile( FileHome.findByPrimaryKey( response.getFile( ).getIdFile( ) ) );
+                response.setFile( FileHome.findByPrimaryKey( response.getFile(  ).getIdFile(  ) ) );
             }
+
             listResponse.add( response );
         }
 
@@ -426,9 +441,9 @@ public final class AnnounceHome
      */
     private static void updateAnnouncePublicationTime( Announce announce )
     {
-        if ( announce.getPublished( ) && !announce.getSuspended( ) && !announce.getSuspendedByUser( ) )
+        if ( announce.getPublished(  ) && !announce.getSuspended(  ) && !announce.getSuspendedByUser(  ) )
         {
-            announce.setTimePublication( System.currentTimeMillis( ) );
+            announce.setTimePublication( System.currentTimeMillis(  ) );
         }
     }
 }

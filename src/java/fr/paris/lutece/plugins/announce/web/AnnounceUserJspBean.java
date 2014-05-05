@@ -98,13 +98,13 @@ public class AnnounceUserJspBean extends PluginAdminPageJspBean
      * {@inheritDoc}
      */
     @Override
-    public Plugin getPlugin( )
+    public Plugin getPlugin(  )
     {
-        Plugin plugin = super.getPlugin( );
+        Plugin plugin = super.getPlugin(  );
 
         if ( plugin == null )
         {
-            plugin = AnnounceUtils.getPlugin( );
+            plugin = AnnounceUtils.getPlugin(  );
         }
 
         return plugin;
@@ -116,26 +116,27 @@ public class AnnounceUserJspBean extends PluginAdminPageJspBean
      * @param request The http request
      * @throws AccessDeniedException Message displayed if an exception occures
      */
-    public String getList( HttpServletRequest request ) throws AccessDeniedException
+    public String getList( HttpServletRequest request )
+        throws AccessDeniedException
     {
         Boolean nameFound = false;
         Boolean noUsers = false;
 
-        HashMap<String, Object> model = new HashMap<String, Object>( );
+        HashMap<String, Object> model = new HashMap<String, Object>(  );
 
         setPageTitleProperty( PROPERTY_PAGE_TITLE_LIST_USERS );
         _strCurrentPageIndex = Paginator.getPageIndex( request, Paginator.PARAMETER_PAGE_INDEX, _strCurrentPageIndex );
         _nItemsPerPage = Paginator.getItemsPerPage( request, Paginator.PARAMETER_ITEMS_PER_PAGE, _nItemsPerPage,
                 _nDefaultItemsPerPage );
 
-        List<LuteceUser> listUsers = (List<LuteceUser>) SecurityService.getInstance( ).getUsers( );
+        List<LuteceUser> listUsers = (List<LuteceUser>) SecurityService.getInstance(  ).getUsers(  );
 
         if ( listUsers != null )
         {
             for ( LuteceUser user : listUsers )
             {
-                if ( StringUtils.isNotEmpty( user.getUserInfo( LuteceUser.NAME_GIVEN ) )
-                        || StringUtils.isNotEmpty( user.getUserInfo( LuteceUser.NAME_FAMILY ) ) )
+                if ( StringUtils.isNotEmpty( user.getUserInfo( LuteceUser.NAME_GIVEN ) ) ||
+                        StringUtils.isNotEmpty( user.getUserInfo( LuteceUser.NAME_FAMILY ) ) )
                 {
                     nameFound = true;
 
@@ -149,10 +150,11 @@ public class AnnounceUserJspBean extends PluginAdminPageJspBean
         }
 
         String strSort = request.getParameter( Parameters.SORTED_ATTRIBUTE_NAME );
+
         if ( StringUtils.isNotEmpty( strSort ) )
         {
-            _attributeComparator = new AttributeComparator( strSort, Boolean.parseBoolean( request
-                    .getParameter( Parameters.SORTED_ASC ) ) );
+            _attributeComparator = new AttributeComparator( strSort,
+                    Boolean.parseBoolean( request.getParameter( Parameters.SORTED_ASC ) ) );
         }
 
         if ( _attributeComparator != null )
@@ -160,29 +162,29 @@ public class AnnounceUserJspBean extends PluginAdminPageJspBean
             Collections.sort( listUsers, _attributeComparator );
         }
 
-        Paginator<LuteceUser> paginator = new Paginator<LuteceUser>( listUsers, _nItemsPerPage, getUrlPage( ),
+        Paginator<LuteceUser> paginator = new Paginator<LuteceUser>( listUsers, _nItemsPerPage, getUrlPage(  ),
                 PARAMETER_PAGE_INDEX, _strCurrentPageIndex );
 
         model.put( MARK_NAME_FOUND, nameFound );
         model.put( MARK_NO_USERS, noUsers );
         model.put( MARK_NB_ITEMS_PER_PAGE, "" + _nItemsPerPage );
         model.put( MARK_PAGINATOR, paginator );
-        model.put( MARK_USERS_LIST, paginator.getPageItems( ) );
-        model.put( MARK_LOCALE, getLocale( ) );
+        model.put( MARK_USERS_LIST, paginator.getPageItems(  ) );
+        model.put( MARK_LOCALE, getLocale(  ) );
 
-        HtmlTemplate templateList = AppTemplateService.getTemplate( TEMPLATE_ANNOUNCE_LIST_USERS, getLocale( ), model );
+        HtmlTemplate templateList = AppTemplateService.getTemplate( TEMPLATE_ANNOUNCE_LIST_USERS, getLocale(  ), model );
 
-        return getAdminPage( templateList.getHtml( ) );
+        return getAdminPage( templateList.getHtml(  ) );
     }
 
     /**
      * Return UrlPage Url
      * @return url
      */
-    private String getUrlPage( )
+    private String getUrlPage(  )
     {
         UrlItem url = new UrlItem( JSP_URL_MANAGE_USERS );
 
-        return url.getUrl( );
+        return url.getUrl(  );
     }
 }

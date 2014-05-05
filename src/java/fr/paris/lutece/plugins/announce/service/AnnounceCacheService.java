@@ -47,22 +47,21 @@ public final class AnnounceCacheService extends AbstractCacheableService
     private static final String ANNOUNCE_KEY_PREFIXE = "announce.announce.";
     private static final String CATEGORY_KEY_PREFIXE = "announce.category.";
     private static final String PUBLISHED_ANNOUNCES_ID_LIST_KEY_PREFIXE = "announce.announce.allPublishedId";
-
-    private static AnnounceCacheService _instance = new AnnounceCacheService( );
+    private static AnnounceCacheService _instance = new AnnounceCacheService(  );
 
     /**
      * Private constructor
      */
-    private AnnounceCacheService( )
+    private AnnounceCacheService(  )
     {
-        initCache( );
+        initCache(  );
     }
 
     /**
      * Get the instance of this service
      * @return the instance of this service
      */
-    public static AnnounceCacheService getService( )
+    public static AnnounceCacheService getService(  )
     {
         return _instance;
     }
@@ -91,7 +90,7 @@ public final class AnnounceCacheService extends AbstractCacheableService
      * Get the cache key of the list of published announces
      * @return The cache key of the list of published announces
      */
-    public static String getListIdPublishedAnnouncesCacheKey( )
+    public static String getListIdPublishedAnnouncesCacheKey(  )
     {
         return PUBLISHED_ANNOUNCES_ID_LIST_KEY_PREFIXE;
     }
@@ -100,7 +99,7 @@ public final class AnnounceCacheService extends AbstractCacheableService
      * {@inheritDoc}
      */
     @Override
-    public String getName( )
+    public String getName(  )
     {
         return CACHE_SERVICE_NAME;
     }
@@ -112,17 +111,20 @@ public final class AnnounceCacheService extends AbstractCacheableService
     public Object getFromCache( String strKey )
     {
         Object object = super.getFromCache( strKey );
+
         if ( object != null )
         {
             if ( object instanceof Announce )
             {
-                return ( (Announce) object ).clone( );
+                return ( (Announce) object ).clone(  );
             }
+
             if ( object instanceof Category )
             {
-                return ( (Category) object ).clone( );
+                return ( (Category) object ).clone(  );
             }
         }
+
         return object;
     }
 
@@ -133,15 +135,17 @@ public final class AnnounceCacheService extends AbstractCacheableService
     public void putInCache( String strKey, Object object )
     {
         Object clonedObject = object;
+
         if ( object instanceof Announce )
         {
-            clonedObject = ( (Announce) object ).clone( );
+            clonedObject = ( (Announce) object ).clone(  );
         }
+
         if ( object instanceof Category )
         {
-            clonedObject = ( (Category) object ).clone( );
+            clonedObject = ( (Category) object ).clone(  );
         }
+
         super.putInCache( strKey, clonedObject );
     }
-
 }

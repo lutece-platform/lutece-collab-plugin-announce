@@ -41,6 +41,7 @@ import fr.paris.lutece.portal.service.spring.SpringContextService;
 import fr.paris.lutece.portal.service.util.RemovalListenerService;
 
 import java.io.Serializable;
+
 import java.util.ArrayList;
 import java.util.List;
 

@@ -37,6 +37,7 @@ import fr.paris.lutece.portal.service.plugin.Plugin;
 import fr.paris.lutece.util.sql.DAOUtil;
 
 import java.sql.Timestamp;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -52,8 +53,8 @@ public final class AnnounceDAO implements IAnnounceDAO
 
     // Select id
     private static final String SQL_QUERY_SELECT_ID = "SELECT a.id_announce FROM announce_announce a, announce_category b WHERE a.id_category = b.id_category";
-    private static final String SQL_QUERY_SELECTALL_ID_PUBLISHED = SQL_QUERY_SELECT_ID
-            + " AND a.published = 1 AND a.suspended = 0 AND a.suspended_by_user = 0 ";
+    private static final String SQL_QUERY_SELECTALL_ID_PUBLISHED = SQL_QUERY_SELECT_ID +
+        " AND a.published = 1 AND a.suspended = 0 AND a.suspended_by_user = 0 ";
     private static final String SQL_QUERY_SELECTALL = SQL_QUERY_SELECT_ID;
     private static final String SQL_QUERY_SELECTALL_PUBLISHED_FOR_CATEGORY = "SELECT a.id_announce FROM announce_announce a WHERE a.id_category = ? AND a.published = 1 AND a.suspended = 0 AND a.suspended_by_user = 0 ";
     private static final String SQL_QUERY_SELECT_ID_BY_DATE_CREATION = "SELECT id_announce FROM announce_announce WHERE date_creation < ?";
@@ -64,14 +65,14 @@ public final class AnnounceDAO implements IAnnounceDAO
 
     // Select
     private static final String SQL_QUERY_SELECT_FIELD_LIST_WITH_CATEGORY = "SELECT a.id_announce, a.title_announce, a.description_announce, a.price_announce, a.date_creation, a.date_modification, a.user_name, a.contact_information, a.published, a.suspended, a.suspended_by_user, a.tags, a.has_pictures, a.publication_time, a.id_category, b.label_category, b.display_price FROM announce_announce a, announce_category b WHERE a.id_category = b.id_category ";
-    private static final String SQL_QUERY_SELECT = SQL_QUERY_SELECT_FIELD_LIST_WITH_CATEGORY
-            + " AND a.id_announce = ? ";
-    private static final String SQL_QUERY_SELECTALL_PUBLISHED = SQL_QUERY_SELECT_FIELD_LIST_WITH_CATEGORY
-            + "AND a.published = 1 AND a.suspended = 0 AND a.suspended_by_user = 0 ";
-    private static final String SQL_QEURY_SELECT_BY_LIST_ID = SQL_QUERY_SELECT_FIELD_LIST_WITH_CATEGORY
-            + " AND a.id_announce IN (";
-    private static final String SQL_QUERY_SELECTALL_ANNOUNCES_FOR_USER = SQL_QUERY_SELECT_FIELD_LIST_WITH_CATEGORY
-            + " AND a.user_name = ? ";
+    private static final String SQL_QUERY_SELECT = SQL_QUERY_SELECT_FIELD_LIST_WITH_CATEGORY +
+        " AND a.id_announce = ? ";
+    private static final String SQL_QUERY_SELECTALL_PUBLISHED = SQL_QUERY_SELECT_FIELD_LIST_WITH_CATEGORY +
+        "AND a.published = 1 AND a.suspended = 0 AND a.suspended_by_user = 0 ";
+    private static final String SQL_QEURY_SELECT_BY_LIST_ID = SQL_QUERY_SELECT_FIELD_LIST_WITH_CATEGORY +
+        " AND a.id_announce IN (";
+    private static final String SQL_QUERY_SELECTALL_ANNOUNCES_FOR_USER = SQL_QUERY_SELECT_FIELD_LIST_WITH_CATEGORY +
+        " AND a.user_name = ? ";
 
     // insert, delete
     private static final String SQL_QUERY_INSERT = "INSERT INTO announce_announce ( id_announce, user_name, contact_information, id_category, title_announce, description_announce, price_announce, date_creation, date_modification, published, tags, has_pictures, publication_time ) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?) ";
@@ -86,8 +87,8 @@ public final class AnnounceDAO implements IAnnounceDAO
     // SQL commands to manage announce responses
     private static final String SQL_QUERY_INSERT_ANNOUNCE_RESPONSE = "INSERT INTO announce_announce_response (id_announce, id_response, is_image) VALUES (?,?,?)";
     private static final String SQL_QUERY_SELECT_ANNOUNCE_RESPONSE_LIST = "SELECT id_response FROM announce_announce_response WHERE id_announce = ?";
-    private static final String SQL_QUERY_SELECT_ANNOUNCE_IMAGE_RESPONSE_LIST = SQL_QUERY_SELECT_ANNOUNCE_RESPONSE_LIST
-            + " AND is_image = ?";
+    private static final String SQL_QUERY_SELECT_ANNOUNCE_IMAGE_RESPONSE_LIST = SQL_QUERY_SELECT_ANNOUNCE_RESPONSE_LIST +
+        " AND is_image = ?";
     private static final String SQL_QUERY_DELETE_ANNOUNCE_RESPONSE = "DELETE FROM announce_announce_response WHERE id_announce = ?";
 
     // Constants
@@ -103,18 +104,18 @@ public final class AnnounceDAO implements IAnnounceDAO
     public int newPrimaryKey( Plugin plugin )
     {
         DAOUtil daoUtil = new DAOUtil( SQL_QUERY_NEW_PK, plugin );
-        daoUtil.executeQuery( );
+        daoUtil.executeQuery(  );
 
         int nKey;
 
-        if ( !daoUtil.next( ) )
+        if ( !daoUtil.next(  ) )
         {
             // if the table is empty
             nKey = 1;
         }
 
         nKey = daoUtil.getInt( 1 ) + 1;
-        daoUtil.free( );
+        daoUtil.free(  );
 
         return nKey;
     }
@@ -131,22 +132,22 @@ public final class AnnounceDAO implements IAnnounceDAO
 
         DAOUtil daoUtil = new DAOUtil( SQL_QUERY_INSERT, plugin );
         /* Creation of Announce */
-        daoUtil.setInt( nIndex++, announce.getId( ) );
-        daoUtil.setString( nIndex++, announce.getUserName( ) );
-        daoUtil.setString( nIndex++, announce.getContactInformation( ) );
-        daoUtil.setInt( nIndex++, announce.getCategory( ).getId( ) );
-        daoUtil.setString( nIndex++, announce.getTitle( ) );
-        daoUtil.setString( nIndex++, announce.getDescription( ) );
-        daoUtil.setString( nIndex++, announce.getPrice( ) );
-        daoUtil.setTimestamp( nIndex++, announce.getDateCreation( ) );
-        daoUtil.setTimestamp( nIndex++, announce.getDateModification( ) );
-        daoUtil.setBoolean( nIndex++, announce.getPublished( ) );
-        daoUtil.setString( nIndex++, announce.getTags( ) );
-        daoUtil.setBoolean( nIndex++, announce.getHasPictures( ) );
-        daoUtil.setLong( nIndex, announce.getTimePublication( ) );
+        daoUtil.setInt( nIndex++, announce.getId(  ) );
+        daoUtil.setString( nIndex++, announce.getUserName(  ) );
+        daoUtil.setString( nIndex++, announce.getContactInformation(  ) );
+        daoUtil.setInt( nIndex++, announce.getCategory(  ).getId(  ) );
+        daoUtil.setString( nIndex++, announce.getTitle(  ) );
+        daoUtil.setString( nIndex++, announce.getDescription(  ) );
+        daoUtil.setString( nIndex++, announce.getPrice(  ) );
+        daoUtil.setTimestamp( nIndex++, announce.getDateCreation(  ) );
+        daoUtil.setTimestamp( nIndex++, announce.getDateModification(  ) );
+        daoUtil.setBoolean( nIndex++, announce.getPublished(  ) );
+        daoUtil.setString( nIndex++, announce.getTags(  ) );
+        daoUtil.setBoolean( nIndex++, announce.getHasPictures(  ) );
+        daoUtil.setLong( nIndex, announce.getTimePublication(  ) );
 
-        daoUtil.executeUpdate( );
-        daoUtil.free( );
+        daoUtil.executeUpdate(  );
+        daoUtil.free(  );
     }
 
     /**
@@ -157,16 +158,16 @@ public final class AnnounceDAO implements IAnnounceDAO
     {
         DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECT, plugin );
         daoUtil.setInt( 1, nId );
-        daoUtil.executeQuery( );
+        daoUtil.executeQuery(  );
 
         Announce announce = null;
 
-        if ( daoUtil.next( ) )
+        if ( daoUtil.next(  ) )
         {
             announce = getAnnounceWithCategory( daoUtil );
         }
 
-        daoUtil.free( );
+        daoUtil.free(  );
 
         return announce;
     }
@@ -179,8 +180,8 @@ public final class AnnounceDAO implements IAnnounceDAO
     {
         DAOUtil daoUtil = new DAOUtil( SQL_QUERY_DELETE, plugin );
         daoUtil.setInt( 1, nAnnounceId );
-        daoUtil.executeUpdate( );
-        daoUtil.free( );
+        daoUtil.executeUpdate(  );
+        daoUtil.free(  );
     }
 
     /**
@@ -192,18 +193,18 @@ public final class AnnounceDAO implements IAnnounceDAO
         int nIndex = 1;
         DAOUtil daoUtil = new DAOUtil( SQL_QUERY_UPDATE, plugin );
 
-        daoUtil.setString( nIndex++, announce.getTitle( ) );
-        daoUtil.setString( nIndex++, announce.getDescription( ) );
-        daoUtil.setString( nIndex++, announce.getPrice( ) );
-        daoUtil.setString( nIndex++, announce.getContactInformation( ) );
-        daoUtil.setBoolean( nIndex++, announce.getPublished( ) );
-        daoUtil.setString( nIndex++, announce.getTags( ) );
-        daoUtil.setBoolean( nIndex++, announce.getHasPictures( ) );
-        daoUtil.setTimestamp( nIndex++, announce.getDateModification( ) );
-        daoUtil.setInt( nIndex, announce.getId( ) );
+        daoUtil.setString( nIndex++, announce.getTitle(  ) );
+        daoUtil.setString( nIndex++, announce.getDescription(  ) );
+        daoUtil.setString( nIndex++, announce.getPrice(  ) );
+        daoUtil.setString( nIndex++, announce.getContactInformation(  ) );
+        daoUtil.setBoolean( nIndex++, announce.getPublished(  ) );
+        daoUtil.setString( nIndex++, announce.getTags(  ) );
+        daoUtil.setBoolean( nIndex++, announce.getHasPictures(  ) );
+        daoUtil.setTimestamp( nIndex++, announce.getDateModification(  ) );
+        daoUtil.setInt( nIndex, announce.getId(  ) );
 
-        daoUtil.executeUpdate( );
-        daoUtil.free( );
+        daoUtil.executeUpdate(  );
+        daoUtil.free(  );
     }
 
     /**
@@ -212,16 +213,16 @@ public final class AnnounceDAO implements IAnnounceDAO
     @Override
     public List<Integer> selectAll( AnnounceSort announceSort, Plugin plugin )
     {
-        List<Integer> announceList = new ArrayList<Integer>( );
+        List<Integer> announceList = new ArrayList<Integer>(  );
         DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECTALL + getOrderBy( announceSort ), plugin );
-        daoUtil.executeQuery( );
+        daoUtil.executeQuery(  );
 
-        while ( daoUtil.next( ) )
+        while ( daoUtil.next(  ) )
         {
             announceList.add( daoUtil.getInt( 1 ) );
         }
 
-        daoUtil.free( );
+        daoUtil.free(  );
 
         return announceList;
     }
@@ -232,16 +233,16 @@ public final class AnnounceDAO implements IAnnounceDAO
     @Override
     public List<Integer> selectAllPublishedId( AnnounceSort announceSort, Plugin plugin )
     {
-        List<Integer> listIdAnnounce = new ArrayList<Integer>( );
+        List<Integer> listIdAnnounce = new ArrayList<Integer>(  );
         DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECTALL_ID_PUBLISHED + getOrderBy( announceSort ), plugin );
-        daoUtil.executeQuery( );
+        daoUtil.executeQuery(  );
 
-        while ( daoUtil.next( ) )
+        while ( daoUtil.next(  ) )
         {
             listIdAnnounce.add( daoUtil.getInt( 1 ) );
         }
 
-        daoUtil.free( );
+        daoUtil.free(  );
 
         return listIdAnnounce;
     }
@@ -252,16 +253,16 @@ public final class AnnounceDAO implements IAnnounceDAO
     @Override
     public List<Announce> selectAllPublished( AnnounceSort announceSort, Plugin plugin )
     {
-        List<Announce> announceList = new ArrayList<Announce>( );
+        List<Announce> announceList = new ArrayList<Announce>(  );
         DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECTALL_PUBLISHED + getOrderBy( announceSort ), plugin );
-        daoUtil.executeQuery( );
+        daoUtil.executeQuery(  );
 
-        while ( daoUtil.next( ) )
+        while ( daoUtil.next(  ) )
         {
             announceList.add( getAnnounceWithCategory( daoUtil ) );
         }
 
-        daoUtil.free( );
+        daoUtil.free(  );
 
         return announceList;
     }
@@ -272,14 +273,16 @@ public final class AnnounceDAO implements IAnnounceDAO
     @Override
     public List<Announce> findByListId( List<Integer> listIdAnnounces, AnnounceSort announceSort, Plugin plugin )
     {
-        List<Announce> announceList = new ArrayList<Announce>( );
-        if ( listIdAnnounces == null || listIdAnnounces.size( ) == 0 )
+        List<Announce> announceList = new ArrayList<Announce>(  );
+
+        if ( ( listIdAnnounces == null ) || ( listIdAnnounces.size(  ) == 0 ) )
         {
             return announceList;
         }
 
         StringBuilder sbSql = new StringBuilder( SQL_QEURY_SELECT_BY_LIST_ID );
         boolean bIsFirst = true;
+
         for ( Integer nId : listIdAnnounces )
         {
             if ( !bIsFirst )
@@ -290,19 +293,22 @@ public final class AnnounceDAO implements IAnnounceDAO
             {
                 bIsFirst = false;
             }
+
             sbSql.append( nId );
         }
+
         sbSql.append( CONSTANT_CLOSE_PARENTHESIS );
         sbSql.append( getOrderBy( announceSort ) );
-        DAOUtil daoUtil = new DAOUtil( sbSql.toString( ), plugin );
-        daoUtil.executeQuery( );
 
-        while ( daoUtil.next( ) )
+        DAOUtil daoUtil = new DAOUtil( sbSql.toString(  ), plugin );
+        daoUtil.executeQuery(  );
+
+        while ( daoUtil.next(  ) )
         {
             announceList.add( getAnnounceWithCategory( daoUtil ) );
         }
 
-        daoUtil.free( );
+        daoUtil.free(  );
 
         return announceList;
     }
@@ -313,17 +319,17 @@ public final class AnnounceDAO implements IAnnounceDAO
     @Override
     public List<Integer> selectAllPublishedForCategory( Category category, AnnounceSort announceSort, Plugin plugin )
     {
-        List<Integer> announceList = new ArrayList<Integer>( );
+        List<Integer> announceList = new ArrayList<Integer>(  );
         DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECTALL_PUBLISHED_FOR_CATEGORY + getOrderBy( announceSort ), plugin );
-        daoUtil.setInt( 1, category.getId( ) );
-        daoUtil.executeQuery( );
+        daoUtil.setInt( 1, category.getId(  ) );
+        daoUtil.executeQuery(  );
 
-        while ( daoUtil.next( ) )
+        while ( daoUtil.next(  ) )
         {
             announceList.add( daoUtil.getInt( 1 ) );
         }
 
-        daoUtil.free( );
+        daoUtil.free(  );
 
         return announceList;
     }
@@ -334,17 +340,17 @@ public final class AnnounceDAO implements IAnnounceDAO
     @Override
     public List<Announce> selectAllForUser( String strUsername, AnnounceSort announceSort, Plugin plugin )
     {
-        List<Announce> announceList = new ArrayList<Announce>( );
+        List<Announce> announceList = new ArrayList<Announce>(  );
         DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECTALL_ANNOUNCES_FOR_USER + getOrderBy( announceSort ), plugin );
         daoUtil.setString( 1, strUsername );
-        daoUtil.executeQuery( );
+        daoUtil.executeQuery(  );
 
-        while ( daoUtil.next( ) )
+        while ( daoUtil.next(  ) )
         {
             announceList.add( getAnnounceWithCategory( daoUtil ) );
         }
 
-        daoUtil.free( );
+        daoUtil.free(  );
 
         return announceList;
     }
@@ -357,11 +363,11 @@ public final class AnnounceDAO implements IAnnounceDAO
     {
         int nParam = 1;
         DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SET_PUBLISHED, plugin );
-        daoUtil.setBoolean( nParam++, announce.getPublished( ) );
-        daoUtil.setLong( nParam++, announce.getTimePublication( ) );
-        daoUtil.setInt( nParam, announce.getId( ) );
-        daoUtil.executeUpdate( );
-        daoUtil.free( );
+        daoUtil.setBoolean( nParam++, announce.getPublished(  ) );
+        daoUtil.setLong( nParam++, announce.getTimePublication(  ) );
+        daoUtil.setInt( nParam, announce.getId(  ) );
+        daoUtil.executeUpdate(  );
+        daoUtil.free(  );
     }
 
     /**
@@ -372,11 +378,11 @@ public final class AnnounceDAO implements IAnnounceDAO
     {
         int nParam = 1;
         DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SET_SUSPENDED, plugin );
-        daoUtil.setBoolean( nParam++, announce.getSuspended( ) );
-        daoUtil.setLong( nParam++, announce.getTimePublication( ) );
-        daoUtil.setInt( nParam, announce.getId( ) );
-        daoUtil.executeUpdate( );
-        daoUtil.free( );
+        daoUtil.setBoolean( nParam++, announce.getSuspended(  ) );
+        daoUtil.setLong( nParam++, announce.getTimePublication(  ) );
+        daoUtil.setInt( nParam, announce.getId(  ) );
+        daoUtil.executeUpdate(  );
+        daoUtil.free(  );
     }
 
     /**
@@ -387,11 +393,11 @@ public final class AnnounceDAO implements IAnnounceDAO
     {
         int nParam = 1;
         DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SET_SUSPENDED_BY_USER, plugin );
-        daoUtil.setBoolean( nParam++, announce.getSuspendedByUser( ) );
-        daoUtil.setLong( nParam++, announce.getTimePublication( ) );
-        daoUtil.setInt( nParam, announce.getId( ) );
-        daoUtil.executeUpdate( );
-        daoUtil.free( );
+        daoUtil.setBoolean( nParam++, announce.getSuspendedByUser(  ) );
+        daoUtil.setLong( nParam++, announce.getTimePublication(  ) );
+        daoUtil.setInt( nParam, announce.getId(  ) );
+        daoUtil.executeUpdate(  );
+        daoUtil.free(  );
     }
 
     /**
@@ -400,17 +406,17 @@ public final class AnnounceDAO implements IAnnounceDAO
     @Override
     public List<Integer> findIdAnnouncesByDateCreation( Timestamp timestamp, Plugin plugin )
     {
-        List<Integer> announceIdList = new ArrayList<Integer>( );
+        List<Integer> announceIdList = new ArrayList<Integer>(  );
         DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECT_ID_BY_DATE_CREATION, plugin );
         daoUtil.setTimestamp( 1, timestamp );
-        daoUtil.executeQuery( );
+        daoUtil.executeQuery(  );
 
-        while ( daoUtil.next( ) )
+        while ( daoUtil.next(  ) )
         {
             announceIdList.add( daoUtil.getInt( 1 ) );
         }
 
-        daoUtil.free( );
+        daoUtil.free(  );
 
         return announceIdList;
     }
@@ -421,17 +427,17 @@ public final class AnnounceDAO implements IAnnounceDAO
     @Override
     public List<Integer> findIdAnnouncesByDatePublication( long lMinPublicationTime, Plugin plugin )
     {
-        List<Integer> announceIdList = new ArrayList<Integer>( );
+        List<Integer> announceIdList = new ArrayList<Integer>(  );
         DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECT_ID_BY_TIME_PUBLICATION, plugin );
         daoUtil.setLong( 1, lMinPublicationTime );
-        daoUtil.executeQuery( );
+        daoUtil.executeQuery(  );
 
-        while ( daoUtil.next( ) )
+        while ( daoUtil.next(  ) )
         {
             announceIdList.add( daoUtil.getInt( 1 ) );
         }
 
-        daoUtil.free( );
+        daoUtil.free(  );
 
         return announceIdList;
     }
@@ -450,8 +456,8 @@ public final class AnnounceDAO implements IAnnounceDAO
         daoUtil.setInt( 1, nIdAnnounce );
         daoUtil.setInt( 2, nIdResponse );
         daoUtil.setBoolean( 3, bIsImage );
-        daoUtil.executeUpdate( );
-        daoUtil.free( );
+        daoUtil.executeUpdate(  );
+        daoUtil.free(  );
     }
 
     /**
@@ -462,16 +468,16 @@ public final class AnnounceDAO implements IAnnounceDAO
     {
         DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECT_ANNOUNCE_RESPONSE_LIST, plugin );
         daoUtil.setInt( 1, nIdAnnounce );
-        daoUtil.executeQuery( );
+        daoUtil.executeQuery(  );
 
-        List<Integer> listIdResponse = new ArrayList<Integer>( );
+        List<Integer> listIdResponse = new ArrayList<Integer>(  );
 
-        while ( daoUtil.next( ) )
+        while ( daoUtil.next(  ) )
         {
             listIdResponse.add( daoUtil.getInt( 1 ) );
         }
 
-        daoUtil.free( );
+        daoUtil.free(  );
 
         return listIdResponse;
     }
@@ -485,16 +491,16 @@ public final class AnnounceDAO implements IAnnounceDAO
         DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECT_ANNOUNCE_IMAGE_RESPONSE_LIST, plugin );
         daoUtil.setInt( 1, nIdAnnounce );
         daoUtil.setBoolean( 2, Boolean.TRUE );
-        daoUtil.executeQuery( );
+        daoUtil.executeQuery(  );
 
-        List<Integer> listIdResponse = new ArrayList<Integer>( );
+        List<Integer> listIdResponse = new ArrayList<Integer>(  );
 
-        while ( daoUtil.next( ) )
+        while ( daoUtil.next(  ) )
         {
             listIdResponse.add( daoUtil.getInt( 1 ) );
         }
 
-        daoUtil.free( );
+        daoUtil.free(  );
 
         return listIdResponse;
     }
@@ -507,8 +513,8 @@ public final class AnnounceDAO implements IAnnounceDAO
     {
         DAOUtil daoUtil = new DAOUtil( SQL_QUERY_DELETE_ANNOUNCE_RESPONSE, plugin );
         daoUtil.setInt( 1, nIdAnnounce );
-        daoUtil.executeUpdate( );
-        daoUtil.free( );
+        daoUtil.executeUpdate(  );
+        daoUtil.free(  );
     }
 
     /**
@@ -521,8 +527,8 @@ public final class AnnounceDAO implements IAnnounceDAO
      */
     private Announce getAnnounceWithCategory( DAOUtil daoUtil )
     {
-        Announce announce = new Announce( );
-        Category category = new Category( );
+        Announce announce = new Announce(  );
+        Category category = new Category(  );
 
         int nIndex = 1;
         announce.setId( daoUtil.getInt( nIndex++ ) );
@@ -545,6 +551,7 @@ public final class AnnounceDAO implements IAnnounceDAO
         category.setDisplayPrice( daoUtil.getBoolean( nIndex ) );
 
         announce.setCategory( category );
+
         return announce;
     }
 
@@ -555,7 +562,7 @@ public final class AnnounceDAO implements IAnnounceDAO
      */
     private String getOrderBy( AnnounceSort announceSort )
     {
-        return ORDER_BY + announceSort.getSortColumn( ) + CONSTANT_SPACE
-                + ( announceSort.getSortAsc( ) ? ORDER_BY_ASCENDING : ORDER_BY_DESCENDING );
+        return ORDER_BY + announceSort.getSortColumn(  ) + CONSTANT_SPACE +
+        ( announceSort.getSortAsc(  ) ? ORDER_BY_ASCENDING : ORDER_BY_DESCENDING );
     }
 }

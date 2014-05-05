@@ -56,7 +56,6 @@ import javax.servlet.http.HttpServletRequest;
  */
 public class LastAnnouncesPortletJspBean extends PortletJspBean
 {
-
     /**
      * Serial version UID
      */
@@ -80,13 +79,13 @@ public class LastAnnouncesPortletJspBean extends PortletJspBean
     {
         String strPageId = request.getParameter( PARAMETER_PAGE_ID );
         String strPortletTypeId = request.getParameter( PARAMETER_PORTLET_TYPE_ID );
-        Map<String, Object> model = new HashMap<String, Object>( );
+        Map<String, Object> model = new HashMap<String, Object>(  );
         model.put( MARK_DEFAULT_NB_ANNOUNCES_TO_DISPLAY,
-                AppPropertiesService.getProperty( PROPERTY_DEFAULT_NB_ANNOUNCES_TO_DISPLAY ) );
+            AppPropertiesService.getProperty( PROPERTY_DEFAULT_NB_ANNOUNCES_TO_DISPLAY ) );
 
         HtmlTemplate template = getCreateTemplate( strPageId, strPortletTypeId, model );
 
-        return template.getHtml( );
+        return template.getHtml(  );
     }
 
     /**
@@ -99,12 +98,12 @@ public class LastAnnouncesPortletJspBean extends PortletJspBean
         int nPortletId = Integer.parseInt( strPortletId );
         LastAnnouncesPortlet portlet = (LastAnnouncesPortlet) PortletHome.findByPrimaryKey( nPortletId );
 
-        Map<String, Object> model = new HashMap<String, Object>( );
+        Map<String, Object> model = new HashMap<String, Object>(  );
         model.put( MARK_PORTLET, portlet );
 
         HtmlTemplate template = getModifyTemplate( portlet, model );
 
-        return template.getHtml( );
+        return template.getHtml(  );
     }
 
     /**
@@ -113,7 +112,7 @@ public class LastAnnouncesPortletJspBean extends PortletJspBean
     @Override
     public String doCreate( HttpServletRequest request )
     {
-        LastAnnouncesPortlet portlet = new LastAnnouncesPortlet( );
+        LastAnnouncesPortlet portlet = new LastAnnouncesPortlet(  );
 
         // recovers portlet specific attributes
         String strPageId = request.getParameter( PARAMETER_PAGE_ID );
@@ -128,6 +127,7 @@ public class LastAnnouncesPortletJspBean extends PortletJspBean
         }
 
         String strNbItemsToDisplay = request.getParameter( PARAMETER_NB_ANNOUNCES_TO_DISPLAY );
+
         if ( StringUtils.isEmpty( strNbItemsToDisplay ) || !StringUtils.isNumeric( strNbItemsToDisplay ) )
         {
             return AdminMessageService.getMessageUrl( request, Messages.MANDATORY_FIELDS, AdminMessage.TYPE_STOP );
@@ -139,7 +139,7 @@ public class LastAnnouncesPortletJspBean extends PortletJspBean
         portlet.setNbAnnouncesToDisplay( nNbAnnouncesToDisplay );
 
         // Creates the portlet
-        LastAnnouncesPortletHome.getInstance( ).create( portlet );
+        LastAnnouncesPortletHome.getInstance(  ).create( portlet );
 
         //Displays the page with the new Portlet
         return "../" + getPageUrl( nPageId );
@@ -165,6 +165,7 @@ public class LastAnnouncesPortletJspBean extends PortletJspBean
         }
 
         String strNbItemsToDisplay = request.getParameter( PARAMETER_NB_ANNOUNCES_TO_DISPLAY );
+
         if ( StringUtils.isEmpty( strNbItemsToDisplay ) || !StringUtils.isNumeric( strNbItemsToDisplay ) )
         {
             return AdminMessageService.getMessageUrl( request, Messages.MANDATORY_FIELDS, AdminMessage.TYPE_STOP );
@@ -175,9 +176,9 @@ public class LastAnnouncesPortletJspBean extends PortletJspBean
         portlet.setNbAnnouncesToDisplay( nNbAnnouncesToDisplay );
 
         // updates the portlet
-        portlet.update( );
+        portlet.update(  );
 
         // displays the page with the updated portlet
-        return "../" + getPageUrl( portlet.getPageId( ) );
+        return "../" + getPageUrl( portlet.getPageId(  ) );
     }
 }
