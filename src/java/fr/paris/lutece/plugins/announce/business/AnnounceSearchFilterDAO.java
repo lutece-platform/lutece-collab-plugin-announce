@@ -115,10 +115,10 @@ public class AnnounceSearchFilterDAO implements IAnnounceSearchFilterDAO
         daoUtil.setInt( nIndex++, filter.getIdFilter(  ) );
         daoUtil.setInt( nIndex++, filter.getIdCategory(  ) );
         daoUtil.setString( nIndex++, filter.getKeywords(  ) );
-        daoUtil.setDate( nIndex++, ( filter.getDateMin(  ) == null ) ? null
-                                                                     : new Date( filter.getDateMin(  ).getTime(  ) ) );
-        daoUtil.setDate( nIndex++, ( filter.getDateMax(  ) == null ) ? null
-                                                                     : new Date( filter.getDateMax(  ).getTime(  ) ) );
+        daoUtil.setDate( nIndex++,
+            ( filter.getDateMin(  ) == null ) ? null : new Date( filter.getDateMin(  ).getTime(  ) ) );
+        daoUtil.setDate( nIndex++,
+            ( filter.getDateMax(  ) == null ) ? null : new Date( filter.getDateMax(  ).getTime(  ) ) );
         daoUtil.setInt( nIndex++, filter.getPriceMin(  ) );
         daoUtil.setInt( nIndex, filter.getPriceMax(  ) );
         daoUtil.executeUpdate(  );
