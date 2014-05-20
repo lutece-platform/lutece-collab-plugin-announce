@@ -77,9 +77,9 @@ import javax.servlet.http.HttpSession;
  */
 public class AnnounceAsynchronousUploadHandler implements IGAAsyncUploadHandler
 {
-    private static final String UPLOAD_SUBMIT_PREFIX = "_announce_upload_submit_form_";
-    private static final String UPLOAD_DELETE_PREFIX = "_announce_upload_delete_form_";
-    private static final String UPLOAD_CHECKBOX_PREFIX = "_announce_upload_checkbox_form_";
+    private static final String UPLOAD_SUBMIT_PREFIX = "_announce_upload_submit_attribute_";
+    private static final String UPLOAD_DELETE_PREFIX = "_announce_upload_delete_attribute_";
+    private static final String UPLOAD_CHECKBOX_PREFIX = "_announce_upload_checkbox_attribute_";
     private static final String PREFIX_ENTRY_ID = IEntryTypeService.PREFIX_ATTRIBUTE + "_";
     private static final String PARAMETER_PAGE = "page";
     private static final String PARAMETER_FIELD_NAME = "fieldname";
@@ -257,7 +257,7 @@ public class AnnounceAsynchronousUploadHandler implements IGAAsyncUploadHandler
 
             if ( ( fileItem != null ) && ( fileItem.getSize(  ) > 0 ) )
             {
-                addFileItemToUploadedFile( fileItem, strIdEntry, request.getSession(  ) );
+                addFileItemToUploadedFile( fileItem, strIdEntry, request.getSession(  ).getId(  ) );
             }
         }
         else if ( strUploadAction.startsWith( UPLOAD_DELETE_PREFIX ) )
@@ -297,19 +297,17 @@ public class AnnounceAsynchronousUploadHandler implements IGAAsyncUploadHandler
     }
 
     /**
-     * Add file item to the list of uploaded files
-     * @param fileItem the file item
-     * @param strIdEntry the id entry
-     * @param session the session
+     * {@inheritDoc}
      */
-    public void addFileItemToUploadedFile( FileItem fileItem, String strIdEntry, HttpSession session )
+    @Override
+    public void addFileItemToUploadedFile( FileItem fileItem, String strIdEntry, String strSessionId )
     {
         // This is the name that will be displayed in the form. We keep
         // the original name, but clean it to make it cross-platform.
         String strFileName = UploadUtil.cleanFileName( FileUploadService.getFileNameOnly( fileItem ) );
 
         // Check if this file has not already been uploaded
-        List<FileItem> uploadedFiles = getFileItems( strIdEntry, session.getId(  ) );
+        List<FileItem> uploadedFiles = getFileItems( strIdEntry, strSessionId );
 
         if ( uploadedFiles != null )
         {
@@ -329,14 +327,6 @@ public class AnnounceAsynchronousUploadHandler implements IGAAsyncUploadHandler
                     bNew = !( strUploadedFileName.equals( strFileName ) &&
                         ( uploadedFile.getSize(  ) == fileItem.getSize(  ) ) );
                 }
-
-                //            if ( !bNew )
-                //            {
-                // Delete the temporary file
-                // file.delete(  );
-
-                // TODO : Raise an error
-                //            }
             }
 
             uploadedFiles.add( fileItem );
@@ -433,5 +423,23 @@ public class AnnounceAsynchronousUploadHandler implements IGAAsyncUploadHandler
             listFileItems = new ArrayList<FileItem>(  );
             mapFileItemsSession.put( strFieldName, listFileItems );
         }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean hasRemoveFlag( HttpServletRequest request, String strIdEntry )
+    {
+        return StringUtils.isNotEmpty( request.getParameter( UPLOAD_DELETE_PREFIX + strIdEntry ) );
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void doRemoveFile( HttpServletRequest request, String strIdEntry )
+    {
+        // TODO : implement me !
     }
 }

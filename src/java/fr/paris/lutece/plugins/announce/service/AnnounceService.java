@@ -35,7 +35,6 @@ package fr.paris.lutece.plugins.announce.service;
 
 import fr.paris.lutece.plugins.announce.business.Announce;
 import fr.paris.lutece.plugins.announce.business.AnnounceDTO;
-import fr.paris.lutece.plugins.announce.business.AnnounceFileItem;
 import fr.paris.lutece.plugins.announce.business.AnnounceHome;
 import fr.paris.lutece.plugins.announce.business.Category;
 import fr.paris.lutece.plugins.announce.business.Sector;
@@ -46,6 +45,7 @@ import fr.paris.lutece.plugins.genericattributes.business.EntryFilter;
 import fr.paris.lutece.plugins.genericattributes.business.EntryHome;
 import fr.paris.lutece.plugins.genericattributes.business.Field;
 import fr.paris.lutece.plugins.genericattributes.business.FieldHome;
+import fr.paris.lutece.plugins.genericattributes.business.GenAttFileItem;
 import fr.paris.lutece.plugins.genericattributes.business.GenericAttributeError;
 import fr.paris.lutece.plugins.genericattributes.business.Response;
 import fr.paris.lutece.plugins.genericattributes.service.entrytype.EntryTypeServiceManager;
@@ -66,10 +66,8 @@ import fr.paris.lutece.util.url.UrlItem;
 import org.apache.commons.fileupload.FileItem;
 
 import java.io.Serializable;
-
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -157,10 +155,10 @@ public class AnnounceService implements Serializable
                         File file = FileHome.findByPrimaryKey( response.getFile(  ).getIdFile(  ) );
                         PhysicalFile physicalFile = PhysicalFileHome.findByPrimaryKey( file.getPhysicalFile(  )
                                                                                            .getIdPhysicalFile(  ) );
-                        FileItem fileItem = new AnnounceFileItem( physicalFile.getValue(  ), file.getTitle(  ) );
+                        FileItem fileItem = new GenAttFileItem( physicalFile.getValue( ), file.getTitle( ) );
                         AnnounceAsynchronousUploadHandler.getHandler(  )
                                                          .addFileItemToUploadedFile( fileItem,
-                            Integer.toString( response.getEntry(  ).getIdEntry(  ) ), request.getSession(  ) );
+                            Integer.toString( response.getEntry(  ).getIdEntry(  ) ), request.getSession(  ).getId(  ) );
                     }
                 }
 
