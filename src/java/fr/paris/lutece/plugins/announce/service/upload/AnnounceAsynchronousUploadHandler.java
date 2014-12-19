@@ -39,7 +39,7 @@ import fr.paris.lutece.plugins.genericattributes.business.EntryHome;
 import fr.paris.lutece.plugins.genericattributes.business.GenericAttributeError;
 import fr.paris.lutece.plugins.genericattributes.service.entrytype.EntryTypeServiceManager;
 import fr.paris.lutece.plugins.genericattributes.service.entrytype.IEntryTypeService;
-import fr.paris.lutece.plugins.genericattributes.service.upload.IGAAsyncUploadHandler;
+import fr.paris.lutece.plugins.genericattributes.service.upload.AbstractGenAttUploadHandler;
 import fr.paris.lutece.plugins.genericattributes.util.JSONUtils;
 import fr.paris.lutece.portal.service.fileupload.FileUploadService;
 import fr.paris.lutece.portal.service.i18n.I18nService;
@@ -48,7 +48,6 @@ import fr.paris.lutece.portal.service.util.AppException;
 import fr.paris.lutece.portal.service.util.AppLogService;
 import fr.paris.lutece.portal.web.upload.MultipartHttpServletRequest;
 import fr.paris.lutece.util.filesystem.UploadUtil;
-
 import net.sf.json.JSONObject;
 
 import org.apache.commons.fileupload.FileItem;
@@ -75,7 +74,7 @@ import javax.servlet.http.HttpSession;
  * @see #removeFileItem(String, String, int)
  *
  */
-public class AnnounceAsynchronousUploadHandler implements IGAAsyncUploadHandler
+public class AnnounceAsynchronousUploadHandler extends AbstractGenAttUploadHandler
 {
     private static final String UPLOAD_SUBMIT_PREFIX = "_announce_upload_submit_attribute_";
     private static final String UPLOAD_DELETE_PREFIX = "_announce_upload_delete_attribute_";
@@ -164,10 +163,7 @@ public class AnnounceAsynchronousUploadHandler implements IGAAsyncUploadHandler
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
+   
     public List<FileItem> getFileItems( String strIdEntry, String strSessionId )
     {
         initMap( strSessionId, buildFieldName( strIdEntry ) );
@@ -183,10 +179,7 @@ public class AnnounceAsynchronousUploadHandler implements IGAAsyncUploadHandler
         return mapFileItemsSession.get( buildFieldName( strIdEntry ) );
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
+ 
     public synchronized void removeFileItem( String strIdEntry, String strSessionId, int nIndex )
     {
         // Remove the file (this will also delete the file physically)
@@ -296,10 +289,7 @@ public class AnnounceAsynchronousUploadHandler implements IGAAsyncUploadHandler
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
+    
     public void addFileItemToUploadedFile( FileItem fileItem, String strIdEntry, String strSessionId )
     {
         // This is the name that will be displayed in the form. We keep
@@ -440,6 +430,12 @@ public class AnnounceAsynchronousUploadHandler implements IGAAsyncUploadHandler
     @Override
     public void doRemoveFile( HttpServletRequest request, String strIdEntry )
     {
-        // TODO : implement me !
+       
     }
+
+	@Override
+	public String getHandlerName() {
+		
+		return null;
+	}
 }

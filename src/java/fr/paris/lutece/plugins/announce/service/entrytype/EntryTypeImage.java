@@ -38,8 +38,8 @@ import fr.paris.lutece.plugins.genericattributes.business.Entry;
 import fr.paris.lutece.plugins.genericattributes.business.GenericAttributeError;
 import fr.paris.lutece.plugins.genericattributes.business.MandatoryError;
 import fr.paris.lutece.plugins.genericattributes.business.Response;
-import fr.paris.lutece.plugins.genericattributes.service.entrytype.AbstractEntryTypeUpload;
-import fr.paris.lutece.plugins.genericattributes.service.upload.IGAAsyncUploadHandler;
+import fr.paris.lutece.plugins.genericattributes.service.entrytype.AbstractEntryTypeFile;
+import fr.paris.lutece.plugins.genericattributes.service.upload.AbstractGenAttUploadHandler;
 import fr.paris.lutece.portal.business.file.File;
 import fr.paris.lutece.portal.business.physicalfile.PhysicalFile;
 import fr.paris.lutece.portal.service.fileupload.FileUploadService;
@@ -52,15 +52,12 @@ import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.lang.StringUtils;
 
 import java.awt.image.BufferedImage;
-
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-
 import java.util.List;
 import java.util.Locale;
 
 import javax.imageio.ImageIO;
-
 import javax.servlet.http.HttpServletRequest;
 
 
@@ -69,7 +66,7 @@ import javax.servlet.http.HttpServletRequest;
  * class EntryTypeImage
  *
  */
-public class EntryTypeImage extends AbstractEntryTypeUpload
+public class EntryTypeImage extends AbstractEntryTypeFile
 {
     /**
      * Name of the bean of this service
@@ -213,7 +210,7 @@ public class EntryTypeImage extends AbstractEntryTypeUpload
      * {@inheritDoc}
      */
     @Override
-    public IGAAsyncUploadHandler getAsynchronousUploadHandler(  )
+    public AbstractGenAttUploadHandler getAsynchronousUploadHandler(  )
     {
         return AnnounceAsynchronousUploadHandler.getHandler(  );
     }
@@ -226,4 +223,10 @@ public class EntryTypeImage extends AbstractEntryTypeUpload
     {
         return getUrlDownloadImage( nResponseId, strBaseUrl );
     }
+
+	@Override
+	protected boolean checkForImages() {
+		
+		return true;
+	}
 }
