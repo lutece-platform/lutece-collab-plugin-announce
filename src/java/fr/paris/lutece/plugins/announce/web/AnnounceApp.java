@@ -1018,6 +1018,7 @@ public class AnnounceApp extends MVCApplication
         announce.setContactInformation( strContactInformation );
         announce.setUserName( user.getName(  ) );
         announce.setTags( strTags );
+        
 
         EntryFilter filter = new EntryFilter(  );
         filter.setIdResource( category.getId(  ) );
