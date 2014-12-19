@@ -48,21 +48,25 @@ import fr.paris.lutece.portal.service.util.AppPathService;
 import fr.paris.lutece.portal.service.util.AppPropertiesService;
 
 import org.apache.commons.lang.StringUtils;
-
 import org.apache.lucene.analysis.Analyzer;
+import org.apache.lucene.analysis.miscellaneous.LimitTokenCountAnalyzer;
+import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
+import org.apache.lucene.index.IndexWriterConfig;
+import org.apache.lucene.index.IndexWriterConfig.OpenMode;
+import org.apache.lucene.index.LogDocMergePolicy;
+import org.apache.lucene.index.LogMergePolicy;
 import org.apache.lucene.search.IndexSearcher;
-import org.apache.lucene.search.Searcher;
+//import org.apache.lucene.search.Searcher;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.NIOFSDirectory;
+import org.apache.lucene.util.Version;
 
 import java.io.File;
 import java.io.IOException;
-
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
-
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -194,7 +198,7 @@ public final class AnnounceSearchService
      * return searcher
      * @return searcher
      */
-    public Searcher getSearcher(  )
+  /*  public Searcher getSearcher(  )
     {
         Directory dir = null;
         Searcher searcher = null;
@@ -222,7 +226,42 @@ public final class AnnounceSearchService
         }
 
         return searcher;
+    }*/
+    
+    /**
+     * return searcher
+     * @return searcher
+     */
+    public IndexSearcher getSearcher(  )
+    {
+        IndexReader dir = null;
+        IndexSearcher searcher = null;
+
+        try
+        {
+        	IndexReader ir = DirectoryReader.open( NIOFSDirectory.open( new File( getIndex(  )  ) ) );
+            searcher = new IndexSearcher( ir);
+        }
+        catch ( IOException e )
+        {
+            AppLogService.error( e.getMessage(  ), e );
+
+            if ( dir != null )
+            {
+                try
+                {
+                    dir.close(  );
+                }
+                catch ( IOException e1 )
+                {
+                    AppLogService.error( e1.getMessage(  ), e );
+                }
+            }
+        }
+
+        return searcher;
     }
+
 
     /**
      * Process indexing
@@ -241,8 +280,8 @@ public final class AnnounceSearchService
             sbLogs.append( "\r\nIndexing all contents ...\r\n" );
 
             Directory dir = NIOFSDirectory.open( new File( getIndex(  ) ) );
-
-            if ( !IndexReader.indexExists( dir ) )
+            //Nouveau
+            if ( !DirectoryReader.indexExists( dir ) )
             { //init index
                 bCreateIndex = true;
             }
@@ -269,7 +308,7 @@ public final class AnnounceSearchService
 
             if ( !bIsLocked )
             {
-                writer = new IndexWriter( dir, _analyzer, bCreateIndex, IndexWriter.MaxFieldLength.UNLIMITED );
+              /*  writer = new IndexWriter( dir, _analyzer, bCreateIndex, IndexWriter.MaxFieldLength.UNLIMITED );
                 writer.setMergeFactor( _nWriterMergeFactor );
                 writer.setMaxFieldLength( _nWriterMaxSectorLength );
 
@@ -288,7 +327,43 @@ public final class AnnounceSearchService
                 sbLogs.append( end.getTime(  ) - start.getTime(  ) );
                 sbLogs.append( " milliseconds\r\n" );
 
-                writer.optimize(  );
+                writer.optimize(  );*/
+            	
+            	Date start = new Date(  );
+            	
+                IndexWriterConfig conf = new IndexWriterConfig( Version.LUCENE_46, new LimitTokenCountAnalyzer(_analyzer,_nWriterMaxSectorLength) );
+                LogMergePolicy mergePolicy=new LogDocMergePolicy();
+                mergePolicy.setMergeFactor(_nWriterMergeFactor);
+                
+                conf.setMergePolicy(mergePolicy);
+
+                if ( bCreateIndex )
+                {
+                    conf.setOpenMode( OpenMode.CREATE );
+                }
+                else
+                {
+                    conf.setOpenMode( OpenMode.APPEND );
+                }
+
+                writer = new IndexWriter( dir, conf );               
+              
+
+                 start = new Date(  );
+
+                sbLogs.append( "\r\n<strong>Indexer : " );
+                sbLogs.append( _indexer.getName(  ) );
+                sbLogs.append( " - " );
+                sbLogs.append( _indexer.getDescription(  ) );
+                sbLogs.append( "</strong>\r\n" );
+                _indexer.processIndexing( writer, bCreateIndex, sbLogs );
+
+                Date end = new Date(  );
+
+                sbLogs.append( "Duration of the treatment : " );
+                sbLogs.append( end.getTime(  ) - start.getTime(  ) );
+                sbLogs.append( " milliseconds\r\n" );
+
             }
         }
         catch ( Exception e )

@@ -43,6 +43,7 @@ import fr.paris.lutece.portal.service.content.XPageAppService;
 import fr.paris.lutece.portal.service.message.SiteMessageException;
 import fr.paris.lutece.portal.service.plugin.Plugin;
 import fr.paris.lutece.portal.service.plugin.PluginService;
+import fr.paris.lutece.portal.service.util.AppException;
 import fr.paris.lutece.portal.service.util.AppLogService;
 import fr.paris.lutece.portal.service.util.AppPathService;
 import fr.paris.lutece.portal.service.util.AppPropertiesService;
@@ -50,18 +51,25 @@ import fr.paris.lutece.util.url.UrlItem;
 
 import org.apache.commons.lang.StringUtils;
 
-import org.apache.lucene.demo.html.HTMLParser;
+//import org.apache.lucene.demo.html.HTMLParser;
 import org.apache.lucene.document.DateTools;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.index.CorruptIndexException;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.Term;
+import org.apache.tika.exception.TikaException;
+import org.apache.tika.metadata.Metadata;
+import org.apache.tika.parser.ParseContext;
+import org.apache.tika.parser.html.HtmlParser;
+import org.apache.tika.sax.BodyContentHandler;
+import org.xml.sax.ContentHandler;
+import org.xml.sax.SAXException;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
-
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
@@ -286,7 +294,7 @@ public class DefaultAnnounceIndexer implements IAnnounceSearchIndexer
         }
 
         String strContentToIndex = getContentToIndex( announce, plugin );
-        StringReader readerPage = new StringReader( strContentToIndex );
+    /*    StringReader readerPage = new StringReader( strContentToIndex );
         HTMLParser parser = new HTMLParser( readerPage );
 
         //the content of the question/answer is recovered in the parser because this one
@@ -300,11 +308,33 @@ public class DefaultAnnounceIndexer implements IAnnounceSearchIndexer
             sb.append( String.valueOf( (char) c ) );
         }
 
-        reader.close(  );
+        reader.close(  );*/
+        
+        //NOUVEAU
+        ContentHandler handler = new BodyContentHandler(  );
+        Metadata metadata = new Metadata(  );
+        
+        try
+        {
+            new HtmlParser(  ).parse( new ByteArrayInputStream( strContentToIndex.getBytes(  ) ), handler, metadata,
+                new ParseContext(  ) );
+        }
+        catch ( SAXException e )
+        {
+            throw new AppException( "Error during announce parsing." );
+        }
+        catch ( TikaException e )
+        {
+            throw new AppException( "Error during announce parsing." );
+        }
+        
+        String strContent = handler.toString(  );
+
+        
 
         // Add the tag-stripped contents as a Reader-valued Text field so it will
         // get tokenized and indexed.
-        doc.add( new Field( AnnounceSearchItem.FIELD_CONTENTS, sb.toString(  ), Field.Store.NO, Field.Index.ANALYZED ) );
+        doc.add( new Field( AnnounceSearchItem.FIELD_CONTENTS, strContent, Field.Store.NO, Field.Index.ANALYZED ) );
 
         // Add the subject name as a separate Text field, so that it can be searched
         // separately.
