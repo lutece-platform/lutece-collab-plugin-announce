@@ -56,7 +56,6 @@ import fr.paris.lutece.plugins.genericattributes.business.Response;
 import fr.paris.lutece.plugins.genericattributes.business.ResponseHome;
 import fr.paris.lutece.plugins.genericattributes.service.entrytype.EntryTypeServiceManager;
 import fr.paris.lutece.plugins.genericattributes.service.entrytype.IEntryTypeService;
-import fr.paris.lutece.plugins.genericattributes.util.JSONUtils;
 import fr.paris.lutece.plugins.subscribe.web.SubscribeApp;
 import fr.paris.lutece.portal.business.mailinglist.Recipient;
 import fr.paris.lutece.portal.service.captcha.CaptchaSecurityService;
@@ -92,21 +91,12 @@ import fr.paris.lutece.util.html.HtmlTemplate;
 import fr.paris.lutece.util.html.Paginator;
 import fr.paris.lutece.util.url.UrlItem;
 
-import net.sf.json.JSON;
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
-import net.sf.json.JSONSerializer;
-
-import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 
 import java.io.IOException;
-
 import java.text.DateFormat;
 import java.text.ParseException;
-
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
@@ -157,8 +147,6 @@ public class AnnounceApp extends MVCApplication
     private static final String PARAMETER_PRICE_MAX = "price_max";
     private static final String PARAMETER_PAGE_INDEX = "page_index";
     private static final String PARAMETER_TAGS = "tags";
-    private static final String PARAMETER_ID_ENTRY = "id_entry";
-    private static final String PARAMETER_FIELD_INDEX = "field_index";
     private static final String PARAMETER_HAS_FILTER = "hasFilter";
     private static final String PARAMETER_ID_FILTER = "id_filter";
 
@@ -411,13 +399,13 @@ public class AnnounceApp extends MVCApplication
             Category category = CategoryHome.findByPrimaryKey( Integer.parseInt( strCategoryId ) );
             Sector sector = SectorHome.findByPrimaryKey( category.getIdSector(  ) );
             Announce announce = null;
-
+            
             /* FORM */
             if ( strFormSend != null )
             {
                 announce = new Announce(  );
                 model.put( MARK_CATEGORY, category );
-
+                
                 List<GenericAttributeError> listErrors = doCreateAnnounce( request, sector, category, announce, user );
 
                 if ( ( listErrors == null ) || ( listErrors.size(  ) == 0 ) )
@@ -816,65 +804,6 @@ public class AnnounceApp extends MVCApplication
     }
 
     /**
-     * Removes the uploaded fileItem
-     * @param request the request
-     * @return The JSON result
-     */
-    public String doRemoveAsynchronousUploadedFile( HttpServletRequest request )
-    {
-        String strIdEntry = request.getParameter( PARAMETER_ID_ENTRY );
-        String strFieldIndex = request.getParameter( PARAMETER_FIELD_INDEX );
-
-        if ( StringUtils.isBlank( strIdEntry ) || StringUtils.isBlank( strFieldIndex ) )
-        {
-            return JSONUtils.buildJsonErrorRemovingFile( request ).toString(  );
-        }
-
-        // parse json
-        JSON jsonFieldIndexes = JSONSerializer.toJSON( strFieldIndex );
-
-        if ( !jsonFieldIndexes.isArray(  ) )
-        {
-            return JSONUtils.buildJsonErrorRemovingFile( request ).toString(  );
-        }
-
-        JSONArray jsonArrayFieldIndexers = (JSONArray) jsonFieldIndexes;
-        int[] tabFieldIndex = new int[jsonArrayFieldIndexers.size(  )];
-
-        for ( int nIndex = 0; nIndex < jsonArrayFieldIndexers.size(  ); nIndex++ )
-        {
-            try
-            {
-                tabFieldIndex[nIndex] = Integer.parseInt( jsonArrayFieldIndexers.getString( nIndex ) );
-            }
-            catch ( NumberFormatException nfe )
-            {
-                return JSONUtils.buildJsonErrorRemovingFile( request ).toString(  );
-            }
-        }
-
-        // inverse order (removing using index - remove greater first to keep order)
-        Arrays.sort( tabFieldIndex );
-        ArrayUtils.reverse( tabFieldIndex );
-
-        AnnounceAsynchronousUploadHandler handler = AnnounceAsynchronousUploadHandler.getHandler(  );
-
-        for ( int nFieldIndex : tabFieldIndex )
-        {
-            handler.removeFileItem( strIdEntry, request.getSession(  ).getId(  ), nFieldIndex );
-        }
-
-        JSONObject json = new JSONObject(  );
-        // operation successful
-        json.element( JSONUtils.JSON_KEY_SUCCESS, JSONUtils.JSON_KEY_SUCCESS );
-        json.accumulateAll( JSONUtils.getUploadedFileJSON( handler.getFileItems( strIdEntry,
-                    request.getSession(  ).getId(  ) ) ) );
-        json.element( JSONUtils.JSON_KEY_FIELD_NAME, handler.buildFieldName( strIdEntry ) );
-
-        return json.toString(  );
-    }
-
-    /**
      * Get the current LuteceUser, and throw an exception if the user was not
      * found
      * @param request The request
@@ -1093,7 +1022,7 @@ public class AnnounceApp extends MVCApplication
         {
             sendAnnounceNotification( request, announce );
         }
-
+        
         AnnounceAsynchronousUploadHandler.getHandler(  ).removeSessionFiles( request.getSession(  ).getId(  ) );
 
         return null;
@@ -1346,6 +1275,7 @@ public class AnnounceApp extends MVCApplication
         model.put( MARK_ANNOUNCES_LIST, paginator.getPageItems(  ) );
         model.put( MARK_USER, user );
 
+        
         HtmlTemplate template = AppTemplateService.getTemplate( TEMPLATE_MY_ANNOUNCES, request.getLocale(  ), model );
 
         return template.getHtml(  );

@@ -48,7 +48,9 @@ import fr.paris.lutece.plugins.genericattributes.business.FieldHome;
 import fr.paris.lutece.plugins.genericattributes.business.GenAttFileItem;
 import fr.paris.lutece.plugins.genericattributes.business.GenericAttributeError;
 import fr.paris.lutece.plugins.genericattributes.business.Response;
+import fr.paris.lutece.plugins.genericattributes.service.entrytype.AbstractEntryTypeUpload;
 import fr.paris.lutece.plugins.genericattributes.service.entrytype.EntryTypeServiceManager;
+import fr.paris.lutece.plugins.genericattributes.service.entrytype.IEntryTypeService;
 import fr.paris.lutece.portal.business.file.File;
 import fr.paris.lutece.portal.business.file.FileHome;
 import fr.paris.lutece.portal.business.physicalfile.PhysicalFile;
@@ -106,6 +108,7 @@ public class AnnounceService implements Serializable
     private static final String MARK_STR_ENTRY = "str_entry";
     private static final String MARK_USER = "user";
     private static final String MARK_LIST_RESPONSES = "list_responses";
+    private static final String MARK_UPLOAD_HANDLER = "uploadHandler";
 
     // Templates
     private static final String TEMPLATE_DIV_CONDITIONAL_ENTRY = "skin/plugins/announce/html_code_div_conditional_entry.html";
@@ -156,9 +159,9 @@ public class AnnounceService implements Serializable
                         PhysicalFile physicalFile = PhysicalFileHome.findByPrimaryKey( file.getPhysicalFile(  )
                                                                                            .getIdPhysicalFile(  ) );
                         FileItem fileItem = new GenAttFileItem( physicalFile.getValue( ), file.getTitle( ) );
-                        AnnounceAsynchronousUploadHandler.getHandler(  )
-                                                         .addFileItemToUploadedFile( fileItem,
-                            Integer.toString( response.getEntry(  ).getIdEntry(  ) ), request.getSession(  ).getId(  ) );
+                        AnnounceAsynchronousUploadHandler.getHandler(  ).addFileItemToUploadedFilesList(fileItem,
+                        		 IEntryTypeService.PREFIX_ATTRIBUTE + Integer.toString( response.getEntry(  ).getIdEntry(  ) ), request);
+                   
                     }
                 }
 
@@ -294,7 +297,14 @@ public class AnnounceService implements Serializable
             List<Response> listResponses = announce.getMapResponsesByIdEntry(  ).get( entry.getIdEntry(  ) );
             model.put( MARK_LIST_RESPONSES, listResponses );
         }
+        IEntryTypeService entryTypeService = EntryTypeServiceManager.getEntryTypeService( entry );
 
+        // If the entry type is a file, we add the 
+        if ( entryTypeService instanceof AbstractEntryTypeUpload )
+        {
+            model.put( MARK_UPLOAD_HANDLER,
+                ( (AbstractEntryTypeUpload) entryTypeService ).getAsynchronousUploadHandler(  ) );
+        }
         template = AppTemplateService.getTemplate( EntryTypeServiceManager.getEntryTypeService( entry )
                                                                           .getTemplateHtmlForm( entry, bDisplayFront ),
                 locale, model );
