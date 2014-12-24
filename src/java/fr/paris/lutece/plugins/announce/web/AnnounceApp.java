@@ -1043,6 +1043,7 @@ public class AnnounceApp extends MVCApplication
         String strTitleAnnounce = request.getParameter( PARAMETER_TITLE_ANNOUNCE );
         String strDescriptionAnnounce = request.getParameter( PARAMETER_DESCRIPTION_ANNOUNCE );
         String strContactInformation = request.getParameter( PARAMETER_CONTACT_INFORMATION );
+        String strTags = request.getParameter( PARAMETER_TAGS );
         String strPriceAnnounce = ( request.getParameter( PARAMETER_PRICE_ANNOUNCE ) == null ) ? StringUtils.EMPTY
                                                                                                : request.getParameter( PARAMETER_PRICE_ANNOUNCE );
 
@@ -1059,6 +1060,7 @@ public class AnnounceApp extends MVCApplication
         announce.setTitle( strTitleAnnounce );
         announce.setDescription( strDescriptionAnnounce );
         announce.setContactInformation( strContactInformation );
+        announce.setTags( strTags );
         announce.setPrice( strPriceAnnounce );
 
         Sector sector = SectorHome.findByPrimaryKey( category.getIdSector(  ) );
