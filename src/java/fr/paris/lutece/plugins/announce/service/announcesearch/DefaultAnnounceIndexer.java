@@ -146,8 +146,11 @@ public class DefaultAnnounceIndexer implements IAnnounceSearchIndexer
                     plugin ) )
             {
                 sbLogAnnounce( sbLogs, action.getIdAnnounce(  ), IndexerAction.TASK_DELETE );
-                indexWriter.deleteDocuments( new Term( AnnounceSearchItem.FIELD_ID_ANNOUNCE,
-                        Integer.toString( action.getIdAnnounce(  ) ) ) );
+                Term term= new Term( AnnounceSearchItem.FIELD_ID_ANNOUNCE,
+                        Integer.toString( action.getIdAnnounce(  ) ) );
+                Term[] terms={term};
+                
+                indexWriter.deleteDocuments( terms );
                 AnnounceSearchService.getInstance(  ).removeIndexerAction( action.getIdAction(  ), plugin );
             }
 
@@ -157,9 +160,11 @@ public class DefaultAnnounceIndexer implements IAnnounceSearchIndexer
                     plugin ) )
             {
                 sbLogAnnounce( sbLogs, action.getIdAnnounce(  ), IndexerAction.TASK_MODIFY );
-
-                indexWriter.deleteDocuments( new Term( AnnounceSearchItem.FIELD_ID_ANNOUNCE,
-                        Integer.toString( action.getIdAnnounce(  ) ) ) );
+                Term term= new Term( AnnounceSearchItem.FIELD_ID_ANNOUNCE,
+                        Integer.toString( action.getIdAnnounce(  ) ) );
+                Term[] terms={term};
+                
+                indexWriter.deleteDocuments( terms );
 
                 listIdAnnounce.add( action.getIdAnnounce(  ) );
 
