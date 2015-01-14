@@ -1,64 +1,76 @@
-    <div id="content" class="portlet -lutece-border-radius append-bottom">
-		<#if list_errors??>
-			<@messages errors=list_errors />
-		</#if>
-		<form class="edit_announce form-horizontal" method="post" enctype="multipart/form-data" action="jsp/site/Portal.jsp">
-            <div class="control-group">
-            	<label class="control-label">#i18n{announce.create_announce_step_form.labelTitle} *</label>
-            	<div class="controls">
-            		<input type="text" name="title_announce" value="${announce.title!}"/>
-            	</div>
-           	</div>
-            <div class="control-group">
-            	<label class="control-label" for="description_announce">#i18n{announce.create_announce_step_form.labelDescription} *</label>
-            	<div class="controls">
-            		<textarea name="description_announce">${announce.description!}</textarea>
-            	</div>
-            </div>
-            
-            <#if !announce?? && moderated?? && moderated>
-	            <div class="notice">
-	                #i18n{announce.messages.announceWillBeModerated}<br/>
-	                <a href="jsp/site/Portal.jsp?page=announce&action=my_announces">#i18n{announce.messages.announceWillBeModerated.cancel}</a>
-	            </div>
-	        </#if>
-          
-  				${form_html}
-  				
-  			<div class="control-group">
-            	<label class="control-label" for="contact_information">#i18n{announce.create_announce_step_form.contactInformation} *</label>
-            	<div class="controls">
-            		<input value="${announce.contactInformation!''}" type="text" name="contact_information"/>
-            	</div>
-            </div>
-            <#if category.displayPrice>
-                <div class="control-group">
-            		<label class="control-label" for="price_announce">#i18n{announce.create_announce_step_form.labelPrice}  <#if category.priceMandatory>*</#if></label>
-                	<div class="controls">
-            			<input type="text" name="price_announce" value="${(announce.price)!''}"/>
-            		</div>
-                </div>
-            </#if>
-            <div class="control-group">
-            	<label class="control-label" for="tags">#i18n{announce.create_announce_step_form.tags}</label>
-            	<div class="controls">
-            		<input value="${announce.tags!''}" type="text" name="tags"/>
-            		<span class="help-block">#i18n{announce.create_announce_step_form.tags.helper}</span>
-            	</div>
-            </div>
-            <#if captcha?? && captcha != "">
-				<div class="control-group">
-					${captcha}
-				</div>
+ <div class="row">
+	<div class="col-sm-3">
+		<#include "navigation_menu.html">
+	</div>
+	<div class="col-sm-9">    
+	    <div id="content" class="portlet -lutece-border-radius append-bottom">
+			<#if list_errors??>
+				<@messages errors=list_errors />
 			</#if>
-			<div class="form-actions">
-	            <input type="hidden" name="category_id" value="${category.id}" />
-	            <input type="hidden" name="form_send" value="1" />
-	            <input type="hidden" name="page" value="announce" />
-	            <input type="hidden" name="action" value="modify_announce" />
-	            <input type="hidden" name="announce_id" value="${announce.id}" />
-	            <input type="submit" value="#i18n{announce.create_announce_step_form.labelButtonValidate}"/>
-           	</div>
-        </form>
-        	<script type="text/javascript" src="jsp/site/plugins/asynchronousupload/GetMainUploadJs.jsp?handler=announceAsynchronousUploadHandler" ></script>
-    </div>
+			<form class="form-horizontal" method="post" enctype="multipart/form-data" action="jsp/site/Portal.jsp">
+	            <div class="form-group">
+	            	<label class="col-sm-2 control-label">#i18n{announce.create_announce_step_form.labelTitle} *</label>
+	            	<div class="col-sm-10">
+	            		<input type="text" name="title_announce" value="${announce.title!}"/>
+	            	</div>
+	           	</div>
+	            <div class="form-group">
+	            	<label class="col-sm-2 control-label" for="description_announce">#i18n{announce.create_announce_step_form.labelDescription} *</label>
+	            	<div class="col-sm-10">
+	            		<textarea name="description_announce">${announce.description!}</textarea>
+	            	</div>
+	            </div>
+	            
+	            <#if !announce?? && moderated?? && moderated>
+		            <div class="notice">
+		                #i18n{announce.messages.announceWillBeModerated}<br/>
+		                <a href="jsp/site/Portal.jsp?page=announce&action=my_announces">#i18n{announce.messages.announceWillBeModerated.cancel}</a>
+		            </div>
+		        </#if>
+	          
+	  				${form_html}
+	  				
+	  			<div class="form-group">
+	            	<label class="col-sm-2 control-label" for="contact_information">#i18n{announce.create_announce_step_form.contactInformation} *</label>
+	            	<div class="col-sm-10">
+	            		<input value="${announce.contactInformation!''}" type="text" name="contact_information"/>
+	            	</div>
+	            </div>
+	            <#if category.displayPrice>
+	                <div class="form-group">
+	            		<label class="col-sm-2 control-label" for="price_announce">#i18n{announce.create_announce_step_form.labelPrice}  <#if category.priceMandatory>*</#if></label>
+	                	<div class="col-sm-10">
+	            			<input type="text" name="price_announce" value="${(announce.price)!''}"/>
+	            		</div>
+	                </div>
+	            </#if>
+	            <div class="form-group">
+	            	<label class="col-sm-2 control-label" for="tags">#i18n{announce.create_announce_step_form.tags}</label>
+	            	<div class="col-sm-10">
+	            		<input value="${announce.tags!''}" type="text" name="tags"/>
+	            		<span class="help-block">#i18n{announce.create_announce_step_form.tags.helper}</span>
+	            	</div>
+	            </div>
+	            <#if captcha?? && captcha != "">
+					<div class="form-group">
+						${captcha}
+					</div>
+				</#if>
+				<div class="form-actions">
+		            <input type="hidden" name="category_id" value="${category.id}" />
+		            <input type="hidden" name="form_send" value="1" />
+		            <input type="hidden" name="page" value="announce" />
+		            <input type="hidden" name="action" value="modify_announce" />
+		            <input type="hidden" name="announce_id" value="${announce.id}" />
+		            <div class="col-xs-12 col-sm-12 col-md-offset-3 col-lg-offset-3">
+						<button class="btn btn-primary btn-small" type="submit" value="validate" name="validate" >
+								<i class="glyphicon glyphicon-ok"></i>&nbsp;#i18n{announce.create_announce_step_form.labelButtonValidate}
+						</button>
+					</div>
+		            
+	           	</div>
+	        </form>
+	        	<script type="text/javascript" src="jsp/site/plugins/asynchronousupload/GetMainUploadJs.jsp?handler=announceAsynchronousUploadHandler" ></script>
+	    </div>
+  </div>
+</div>

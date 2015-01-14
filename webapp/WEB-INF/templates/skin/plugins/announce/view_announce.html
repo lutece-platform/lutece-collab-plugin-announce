@@ -1,101 +1,150 @@
-<#if isExtendInstalled?? && isExtendInstalled && announce.published && !announce.suspended && !announce.suspendedByUser>
-	@ExtenderParameter[${announce.id},announce,opengraph]@
-</#if>
-<#if allow_access>
-	<div class="portlet-background append-bottom">
-		<div class="portlet-background-header -lutece-border-radius-top">
-			${announce.title}
-		</div>
-		<div class="portlet-background-content -lutece-border-radius-bottom">
-			<#if user_is_author>
-				<!-- user controls on his announce -->
-				<div class="possible-actions">
-					#i18n{announce.view_announce.actions.title}: 
-					<a href="jsp/site/Portal.jsp?page=announce&action=modify_announce&announce_id=${announce.id}">
-						<img src="images/local/skin/plugins/announce/actions/modify.png" alt="#i18n{announce.my_announces.actionTitleModify}" title="#i18n{announce.my_announces.actionTitleModify}"/>
-					</a>
-					<a href="jsp/site/Portal.jsp?page=announce&action=delete_announce&announce_id=${announce.id}">
-						<img src="images/local/skin/plugins/announce/actions/delete.png" alt="#i18n{announce.my_announces.actionTitleDelete}" title="#i18n{announce.my_announces.actionTitleDelete}"/>
-					</a>
+<div class="row">
+	<div class="col-sm-3">
+		<#include "navigation_menu.html">
+	</div>
+	<div class="col-sm-9">  	
+		<div class="well">
+
+		<#if isExtendInstalled?? && isExtendInstalled && announce.published && !announce.suspended && !announce.suspendedByUser>
+			@ExtenderParameter[${announce.id},announce,opengraph]@
+		</#if>
+		<#if allow_access>
+			<div class="portlet-background append-bottom">
+				<legend>
+					${announce.title}
+				</legend>
+				<div class="">
+					<#if user_is_author>
+						<!-- user controls on his announce -->
+						<div class="possible-actions">
+							#i18n{announce.view_announce.actions.title}: 
+							<a href="jsp/site/Portal.jsp?page=announce&action=modify_announce&announce_id=${announce.id}">
+								<img src="images/local/skin/plugins/announce/actions/modify.png" alt="#i18n{announce.my_announces.actionTitleModify}" title="#i18n{announce.my_announces.actionTitleModify}"/>
+							</a>
+							<a href="jsp/site/Portal.jsp?page=announce&action=delete_announce&announce_id=${announce.id}">
+								<img src="images/local/skin/plugins/announce/actions/delete.png" alt="#i18n{announce.my_announces.actionTitleDelete}" title="#i18n{announce.my_announces.actionTitleDelete}"/>
+							</a>
+							
+							<#if !announce.suspendedByUser>
+								<a href="jsp/site/Portal.jsp?page=announce&action=suspend_by_user&announce_id=${announce.id}">
+									<img src="images/local/skin/plugins/announce/actions/suspend_by_user.png" alt="#i18n{announce.my_announces.actionTitleSuspend}" title="#i18n{announce.my_announces.actionTitleSuspend}"/>
+								</a>
+							<#else>
+								<a href="jsp/site/Portal.jsp?page=announce&action=enable_by_user&announce_id=${announce.id}">
+									<img src="images/local/skin/plugins/announce/actions/enable_by_user.png" alt="#i18n{announce.my_announces.actionTitleEnable}" title="#i18n{announce.my_announces.actionTitleEnable}"/>
+								</a>
+							</#if>
+						</div>
+					</#if>
 					
-					<#if !announce.suspendedByUser>
-						<a href="jsp/site/Portal.jsp?page=announce&action=suspend_by_user&announce_id=${announce.id}">
-							<img src="images/local/skin/plugins/announce/actions/suspend_by_user.png" alt="#i18n{announce.my_announces.actionTitleSuspend}" title="#i18n{announce.my_announces.actionTitleSuspend}"/>
-						</a>
-					<#else>
-						<a href="jsp/site/Portal.jsp?page=announce&action=enable_by_user&announce_id=${announce.id}">
-							<img src="images/local/skin/plugins/announce/actions/enable_by_user.png" alt="#i18n{announce.my_announces.actionTitleEnable}" title="#i18n{announce.my_announces.actionTitleEnable}"/>
-						</a>
-					</#if>
-				</div>
-			</#if>
-			
-			<#if user?exists && user.name == announce.userName>
-				<!-- Eventual messages -->
-				<#if !announce.published && !announce.suspended>
-					<div class="portlet-background-content -lutece-border-radius-bottom">
-						<div class="notice">#i18n{announce.view_announce.message.notPublishedYet}</div>
-					</div>
-				<#else>
-					<#if announce.suspendedByUser>
-						<div class="portlet-background-content -lutece-border-radius-bottom">
-							<div class="notice">#i18n{announce.view_announce.message.suspendedByUser}</div>
-						</div>
-					<#elseif announce.suspended>
-						<div class="portlet-background-content -lutece-border-radius-bottom">
-							<div class="error">#i18n{announce.view_announce.message.suspended}</div>
-						</div>
-					</#if>
-				</#if>
-			</#if>
-			<#if isExtendInstalled?? && isExtendInstalled && announce.published && !announce.suspended && !announce.suspendedByUser>
-				<div class="row-fluid">
-					<div class="span3 offset9">
-						<div class="pull-right">
-							@Extender[${announce.id},announce,opengraph,{footer:false, header:false}]@
-							@Extender[${announce.id},announce,hit,{show:true}]@
-							@Extender[${announce.id},announce,rating,{show:"all"}]@
-						</div>
-					</div>
-				</div>
-			</#if>
-			<table class="entry-value-table">
-				<#if announce.category.displayPrice>
-					<tr><th>#i18n{announce.view_announce.price}</th><td>${announce.price}</td></tr>
-				</#if>
-				<tr><th>#i18n{announce.view_announce.contactInformation}</th><td>${announce.contactInformation}</td></tr>
-				<tr><th>#i18n{announce.view_announce.description.title}</th><td>${announce.description}</td></tr>
-				<#list list_responses as response>
-					<#if response.toStringValueResponse?has_content>
-						<#if entrySave?exists && entrySave.idEntry!=response.entry.idEntry>
-								</td>
-							</tr>
-						</#if>
-						<#if !entrySave?exists || entrySave.idEntry!=response.entry.idEntry>
-							<#assign entrySave=response.entry>
-							<tr>
-							<th>${response.entry.title}</th>
-							<td>${response.toStringValueResponse}
+					<#if user?exists && user.name == announce.userName>
+						<!-- Eventual messages -->
+						<#if !announce.published && !announce.suspended>
+							<div >
+								<div class="notice">#i18n{announce.view_announce.message.notPublishedYet}</div>
+							</div>
 						<#else>
-						<br />${response.toStringValueResponse}
+							<#if announce.suspendedByUser>
+								<div class="portlet-background-content -lutece-border-radius-bottom">
+									<div class="notice">#i18n{announce.view_announce.message.suspendedByUser}</div>
+								</div>
+							<#elseif announce.suspended>
+								<div class="portlet-background-content -lutece-border-radius-bottom">
+									<div class="error">#i18n{announce.view_announce.message.suspended}</div>
+								</div>
+							</#if>
 						</#if>
-				</#if>
-				</#list>
-					</td>
-				</tr>
-			</table>
-			<#if isExtendInstalled?? && isExtendInstalled && announce.published && !announce.suspended && !announce.suspendedByUser >
-				@Extender[${announce.id},announce,comment]@
-				@Extender[${announce.id},announce,feedback]@
-				@Extender[${announce.id},announce,opengraph,{footer:true}]@
-			</#if>
+					</#if>
+					<#if isExtendInstalled?? && isExtendInstalled && announce.published && !announce.suspended && !announce.suspendedByUser>
+						<div class="row-fluid">
+							<div class="span3 offset9">
+								<div class="pull-right">
+									@Extender[${announce.id},announce,opengraph,{footer:false, header:false}]@
+									@Extender[${announce.id},announce,hit,{show:true}]@
+									@Extender[${announce.id},announce,rating,{show:"all"}]@
+								</div>
+							</div>
+						</div>
+					</#if>
+					
+					<div class="form-horizontal well">
+					<#if announce.category.displayPrice>
+						<div class="form-group">
+							<label class="col-sm-2 control-label" for='price'>#i18n{announce.view_announce.price}</label>
+							<div class="col-sm-10" id="price">
+								${announce.price}
+							</div>
+						</div>
+					</#if>
+					<div class="form-group">
+						<label class="col-sm-2 control-label" for="contact">#i18n{announce.view_announce.contactInformation}</label>
+						<div class="col-sm-10" id="contact">
+							${announce.contactInformation}
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-sm-2 control-label" for="description">#i18n{announce.view_announce.description.title}</label>
+						<div class="col-sm-10" id="description">
+							${announce.description}
+						</div>
+					</div>
+					<#list list_responses as response>
+		            	<#if response.toStringValueResponse?has_content || response.file??>
+		                	<#if entrySave?exists && entrySave.idEntry!=response.entry.idEntry>
+		                  		</div>
+		                  	</div>
+		                  	<#if isImage?? && isImage>
+		                  		</ul>
+		                  		<#assign isImage = false>
+		                  	</#if>
+		      			</#if>
+		       			<#if !entrySave?exists || entrySave.idEntry!=response.entry.idEntry>
+		                  	<#assign entrySave=response.entry>
+		                		<div class="form-group">
+		                    	    <label class="col-sm-2 control-label" for="response">${response.entry.title}</label>
+		                            <div class="col-sm-10" id="response">
+		                            <#if response.file?? && response.file.idFile &gt; 0>
+		                            	<#assign isImage = true>
+		                            	<ul id="slideshow">
+											<li>
+												<a class="pirobox_gall" title="#i18n{announce.view_announce.imagesCaption}" href="image?resource_type=GENERICATTRIBUTES_RESPONSE&id=${response.idResponse}">
+													<img height="80px" src="image?resource_type=GENERICATTRIBUTES_RESPONSE&id=${response.idResponse}" />
+												</a>
+											</li>
+		                            <#else>
+		                            	${response.toStringValueResponse}
+		                            </#if>
+		                  		<#else>
+			                    	<#if isImage?? && isImage>
+			                    		<li>
+											<a class="pirobox_gall" title="#i18n{announce.view_announce.imagesCaption}" href="image?resource_type=GENERICATTRIBUTES_RESPONSE&id=${response.idResponse}">
+												<img height="80px" src="image?resource_type=GENERICATTRIBUTES_RESPONSE&id=${response.idResponse}" />
+											</a>
+										</li>
+			                    	<#else>
+			                    		<br />${response.toStringValueResponse}
+			                    	</#if>
+			                 	</#if>
+							</#if>
+						</#list>
+						</div>
+					</div>
+					<#if isExtendInstalled?? && isExtendInstalled && announce.published && !announce.suspended && !announce.suspendedByUser >
+						@Extender[${announce.id},announce,comment]@
+						@Extender[${announce.id},announce,feedback]@
+						@Extender[${announce.id},announce,opengraph,{footer:true}]@
+					</#if>
+				</div>
+			</div>
 		</div>
+		<#else>
+			<div class="well">
+				<legend>#i18n{announce.view_announce.unvailableTitle}</legend>
+				<div>
+					<div class="notice">#i18n{announce.view_announce.message.unvailable}</div>
+				</div>
+			</div>
+		</#if>
 	</div>
-<#else>
-	<div class="portlet-background append-bottom">
-		<div class="portlet-background-header -lutece-border-radius-top">#i18n{announce.view_announce.unvailableTitle}</div>
-		<div class="portlet-background-content -lutece-border-radius-bottom">
-			<div class="notice">#i18n{announce.view_announce.message.unvailable}</div>
-		</div>
 	</div>
-</#if>
+</div>

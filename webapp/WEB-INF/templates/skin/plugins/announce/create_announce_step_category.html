@@ -1,19 +1,26 @@
-    <div id="content" class="portlet -lutece-border-radius append-bottom">
-                
-        <form class="edit_announce" method="post" action="jsp/site/Portal.jsp?page=announce&action=addnew">
-            <label>#i18n{announce.create_announce_step_category.labelChooseCategory}</label>
-            
-            <select name="category_id">
-                <option value="0">#i18n{announce.search_form.defaultCategoryLabel}</option>
-                <#list list_sectors as sector>
-                <optgroup label="${sector.label}">
-                    <#list sector.listCategories as category>
-                    <option value="${category.id}">${category.label}</option>
-                    </#list>
-                </optgroup>
-                </#list>
-            </select>
-            <input value="#i18n{announce.create_announce_step_category.buttonSubmit}" type="submit"/>
-        </form>
-        
+<div class="row">
+	<div class="col-sm-3">
+		<#include "navigation_menu.html">
+	</div>
+	<div class="col-sm-9">   
+	   
+	    <div id="content" class="portlet -lutece-border-radius append-bottom">
+	                
+	        <form class="edit_announce" method="post" action="jsp/site/Portal.jsp?page=announce&action=addnew">
+	            <label>#i18n{announce.create_announce_step_category.labelChooseCategory}</label>
+	            
+	            <select name="category_id">
+	                <option value="0">#i18n{announce.search_form.defaultCategoryLabel}</option>
+	                <#list list_sectors as sector>
+	                <optgroup label="${sector.label}">
+	                    <#list sector.listCategories as category>
+	                    <option value="${category.id}">${category.label}</option>
+	                    </#list>
+	                </optgroup>
+	                </#list>
+	            </select>
+	            <input value="#i18n{announce.create_announce_step_category.buttonSubmit}" type="submit"/>
+	        </form>
+	      </div> 
     </div>
+</div>

@@ -1,54 +1,62 @@
-<div class="portlet-background append-bottom">
-	<div class="portlet-background-header -lutece-border-radius-top">
-		#i18n{announce.view_announces.page.title} ${owner}
+
+<div class="row">
+	<div class="col-sm-3">
+		<#include "navigation_menu.html">
 	</div>
-	<div class="portlet-background-content -lutece-border-radius-bottom">
-		<#if user?? && !hasSubscribedToUser >
-			<div class="pull-right">
-			    <a class="btn btn-primary" href="jsp/site/Portal.jsp?page=announce-subscribe&action=doCreateUserSubscription&username=${owner_name}" title="#i18n{announce.labelCreateUsertSubscriptionTitle}">
-			    	#i18n{announce.labelCreateUserSubscription}
-			    </a>
-		    </div>
-		</#if>
-		<div class="announce-result clearfix">
-			<table class="table table-striped table-condensed">
-				<#list announces_list as announce>
-					<tr>
-						<td>
-							<div class="announce-result clearfix">
-								<#if announce.hasPictures>
-									<#list announce.listIdImageResponse as idImageResponse>
-										<#if idImageResponse_index == 0>
-											<a href="jsp/site/Portal.jsp?page=announce&action=view_announce&announce_id=${announce.id}">
-												<img class="thumbnail" width="80" height="80" src="image?resource_type=GENERICATTRIBUTES_RESPONSE&id=${idImageResponse}" />
+	<div class="col-sm-9">  	
+		<div class="well">
+			<legend>
+				#i18n{announce.view_announces.page.title} ${owner}
+			</legend>
+			<div>
+				<#if user?? && !hasSubscribedToUser >
+					<div class="pull-right">
+					    <a class="btn btn-primary" href="jsp/site/Portal.jsp?page=announce-subscribe&action=doCreateUserSubscription&username=${owner_name}" title="#i18n{announce.labelCreateUsertSubscriptionTitle}">
+					    	#i18n{announce.labelCreateUserSubscription}
+					    </a>
+				    </div>
+				</#if>
+				<div class="announce-result clearfix">
+					<table class="table table-striped table-condensed">
+						<#list announces_list as announce>
+							<tr>
+								<td>
+									<div class="announce-result clearfix">
+										<#if announce.hasPictures>
+											<#list announce.listIdImageResponse as idImageResponse>
+												<#if idImageResponse_index == 0>
+													<a href="jsp/site/Portal.jsp?page=announce&action=view_announce&announce_id=${announce.id}">
+														<img class="thumbnail" width="80" height="80" src="image?resource_type=GENERICATTRIBUTES_RESPONSE&id=${idImageResponse}" />
+													</a>
+												</#if>
+											</#list>
+										<#else>
+											<a title="${announce.title}" href="jsp/site/Portal.jsp?page=announce&action=view_announce&announce_id=${announce.id}">
+												<img class="thumbnail" width="80" height="80" src="./images/local/skin/plugins/announce/no_picture.png" />
 											</a>
 										</#if>
-									</#list>
-								<#else>
-									<a title="${announce.title}" href="jsp/site/Portal.jsp?page=announce&action=view_announce&announce_id=${announce.id}">
-										<img class="thumbnail" width="80" height="80" src="./images/local/skin/plugins/announce/no_picture.png" />
-									</a>
-								</#if>
-								<#if announce.category.displayPrice && announce.price?has_content>
-									<div class="price">
-										${announce.price}
+										<#if announce.category.displayPrice && announce.price?has_content>
+											<div class="price">
+												${announce.price}
+											</div>
+										</#if>
+										<div class="title">
+											<a href="jsp/site/Portal.jsp?page=announce&action=view_announce&announce_id=${announce.id}">
+												${announce.title} - <span class="category">${announce.category.label}</span>
+											</a>
+										</div>
+										<span class="info">${announce.dateCreation}</span><br/>
+										${announce.description}<br />
+										<a href="jsp/site/Portal.jsp?page=announce&action=view_announces&username=${announce.userName}">
+											#i18n{announce.list_announces.otherAnnounces}
+										</a>
 									</div>
-								</#if>
-								<div class="title">
-									<a href="jsp/site/Portal.jsp?page=announce&action=view_announce&announce_id=${announce.id}">
-										${announce.title} - <span class="category">${announce.category.label}</span>
-									</a>
-								</div>
-								<span class="info">${announce.dateCreation}</span><br/>
-								${announce.description}<br />
-								<a href="jsp/site/Portal.jsp?page=announce&action=view_announces&username=${announce.userName}">
-									#i18n{announce.list_announces.otherAnnounces}
-								</a>
-							</div>
-						</td>
-					</tr>
-				</#list>
-			</table>
-		</div> 
-	</div> 
+								</td>
+							</tr>
+						</#list>
+					</table>
+				</div> 
+			</div> 
+		</div>
+  </div>
 </div>
