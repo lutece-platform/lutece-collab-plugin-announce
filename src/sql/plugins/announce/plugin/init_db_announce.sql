@@ -1,0 +1,2 @@
+INSERT INTO `announce_announce` VALUES (3,'administrateur','admin.admin@lutece.fr',2,'Demo Announce','Tester une announce de la categories: catégories','','2015-01-13 18:11:59','2015-01-13 18:11:59',1,0,0,'clef',0,1421172719735);
+INSERT INTO `announce_category` VALUES (2,2,'catégorie',0,0,0,-1,0,-1);

@@ -130,11 +130,12 @@
 	        <portlet-modify-specific-form-template/> 
 		</portlet>
 	</portlets>
-	
+	<!-- 
 	<page-include-services>
         <page-include-service>
             <page-include-service-id>announce.include.announceMenu.name</page-include-service-id>
             <page-include-service-class>fr.paris.lutece.plugins.announce.web.includes.AnnounceMenuPageInclude</page-include-service-class>
         </page-include-service>
     </page-include-services>
+     -->
 </plug-in>
