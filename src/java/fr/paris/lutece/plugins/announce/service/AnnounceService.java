@@ -68,8 +68,10 @@ import fr.paris.lutece.util.url.UrlItem;
 import org.apache.commons.fileupload.FileItem;
 
 import java.io.Serializable;
+
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -158,10 +160,11 @@ public class AnnounceService implements Serializable
                         File file = FileHome.findByPrimaryKey( response.getFile(  ).getIdFile(  ) );
                         PhysicalFile physicalFile = PhysicalFileHome.findByPrimaryKey( file.getPhysicalFile(  )
                                                                                            .getIdPhysicalFile(  ) );
-                        FileItem fileItem = new GenAttFileItem( physicalFile.getValue( ), file.getTitle( ) );
-                        AnnounceAsynchronousUploadHandler.getHandler(  ).addFileItemToUploadedFilesList(fileItem,
-                        		 IEntryTypeService.PREFIX_ATTRIBUTE + Integer.toString( response.getEntry(  ).getIdEntry(  ) ), request);
-                   
+                        FileItem fileItem = new GenAttFileItem( physicalFile.getValue(  ), file.getTitle(  ) );
+                        AnnounceAsynchronousUploadHandler.getHandler(  )
+                                                         .addFileItemToUploadedFilesList( fileItem,
+                            IEntryTypeService.PREFIX_ATTRIBUTE +
+                            Integer.toString( response.getEntry(  ).getIdEntry(  ) ), request );
                     }
                 }
 
@@ -295,8 +298,22 @@ public class AnnounceService implements Serializable
         if ( ( announce != null ) && ( announce.getMapResponsesByIdEntry(  ) != null ) )
         {
             List<Response> listResponses = announce.getMapResponsesByIdEntry(  ).get( entry.getIdEntry(  ) );
+           if( listResponses != null ){
+        	   
+	            for ( Response response : listResponses ){
+	            
+	            	for ( Field filed: entry.getFields( ) ){
+	            	
+	            		if( response.getField( ) != null && filed.getIdField ( ) == response.getField( ).getIdField( ) )
+	            		
+	            			response.setField( filed );
+	            	}
+	            }
+           }
+            
             model.put( MARK_LIST_RESPONSES, listResponses );
         }
+
         IEntryTypeService entryTypeService = EntryTypeServiceManager.getEntryTypeService( entry );
 
         // If the entry type is a file, we add the 
@@ -305,6 +322,7 @@ public class AnnounceService implements Serializable
             model.put( MARK_UPLOAD_HANDLER,
                 ( (AbstractEntryTypeUpload) entryTypeService ).getAsynchronousUploadHandler(  ) );
         }
+
         template = AppTemplateService.getTemplate( EntryTypeServiceManager.getEntryTypeService( entry )
                                                                           .getTemplateHtmlForm( entry, bDisplayFront ),
                 locale, model );

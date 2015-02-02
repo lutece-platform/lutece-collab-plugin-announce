@@ -43,6 +43,7 @@ import fr.paris.lutece.portal.service.content.XPageAppService;
 import fr.paris.lutece.portal.service.message.SiteMessageException;
 import fr.paris.lutece.portal.service.plugin.Plugin;
 import fr.paris.lutece.portal.service.plugin.PluginService;
+import fr.paris.lutece.portal.service.search.IndexationService;
 import fr.paris.lutece.portal.service.util.AppException;
 import fr.paris.lutece.portal.service.util.AppLogService;
 import fr.paris.lutece.portal.service.util.AppPathService;
@@ -146,10 +147,10 @@ public class DefaultAnnounceIndexer implements IAnnounceSearchIndexer
                     plugin ) )
             {
                 sbLogAnnounce( sbLogs, action.getIdAnnounce(  ), IndexerAction.TASK_DELETE );
-                Term term= new Term( AnnounceSearchItem.FIELD_ID_ANNOUNCE,
-                        Integer.toString( action.getIdAnnounce(  ) ) );
-                Term[] terms={term};
-                
+
+                Term term = new Term( AnnounceSearchItem.FIELD_ID_ANNOUNCE, Integer.toString( action.getIdAnnounce(  ) ) );
+                Term[] terms = { term };
+
                 indexWriter.deleteDocuments( terms );
                 AnnounceSearchService.getInstance(  ).removeIndexerAction( action.getIdAction(  ), plugin );
             }
@@ -160,10 +161,10 @@ public class DefaultAnnounceIndexer implements IAnnounceSearchIndexer
                     plugin ) )
             {
                 sbLogAnnounce( sbLogs, action.getIdAnnounce(  ), IndexerAction.TASK_MODIFY );
-                Term term= new Term( AnnounceSearchItem.FIELD_ID_ANNOUNCE,
-                        Integer.toString( action.getIdAnnounce(  ) ) );
-                Term[] terms={term};
-                
+
+                Term term = new Term( AnnounceSearchItem.FIELD_ID_ANNOUNCE, Integer.toString( action.getIdAnnounce(  ) ) );
+                Term[] terms = { term };
+
                 indexWriter.deleteDocuments( terms );
 
                 listIdAnnounce.add( action.getIdAnnounce(  ) );
@@ -235,6 +236,10 @@ public class DefaultAnnounceIndexer implements IAnnounceSearchIndexer
 
                 org.apache.lucene.document.Document docAnnounce = getDocument( announce, urlAnnounce.getUrl(  ), plugin );
                 listDocs.add( docAnnounce );
+                if (docAnnounce != null)
+                {
+                    IndexationService.write(docAnnounce);
+                }
             }
         }
 
@@ -299,26 +304,27 @@ public class DefaultAnnounceIndexer implements IAnnounceSearchIndexer
         }
 
         String strContentToIndex = getContentToIndex( announce, plugin );
-    /*    StringReader readerPage = new StringReader( strContentToIndex );
-        HTMLParser parser = new HTMLParser( readerPage );
 
-        //the content of the question/answer is recovered in the parser because this one
-        //had replaced the encoded characters (as &eacute;) by the corresponding special character (as ?)
-        Reader reader = parser.getReader(  );
-        int c;
-        StringBuffer sb = new StringBuffer(  );
+        /*    StringReader readerPage = new StringReader( strContentToIndex );
+            HTMLParser parser = new HTMLParser( readerPage );
 
-        while ( ( c = reader.read(  ) ) != -1 )
-        {
-            sb.append( String.valueOf( (char) c ) );
-        }
+            //the content of the question/answer is recovered in the parser because this one
+            //had replaced the encoded characters (as &eacute;) by the corresponding special character (as ?)
+            Reader reader = parser.getReader(  );
+            int c;
+            StringBuffer sb = new StringBuffer(  );
 
-        reader.close(  );*/
-        
+            while ( ( c = reader.read(  ) ) != -1 )
+            {
+                sb.append( String.valueOf( (char) c ) );
+            }
+
+            reader.close(  );*/
+
         //NOUVEAU
         ContentHandler handler = new BodyContentHandler(  );
         Metadata metadata = new Metadata(  );
-        
+
         try
         {
             new HtmlParser(  ).parse( new ByteArrayInputStream( strContentToIndex.getBytes(  ) ), handler, metadata,
@@ -332,10 +338,8 @@ public class DefaultAnnounceIndexer implements IAnnounceSearchIndexer
         {
             throw new AppException( "Error during announce parsing." );
         }
-        
-        String strContent = handler.toString(  );
 
-        
+        String strContent = handler.toString(  );
 
         // Add the tag-stripped contents as a Reader-valued Text field so it will
         // get tokenized and indexed.

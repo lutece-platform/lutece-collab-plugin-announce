@@ -76,6 +76,7 @@ public class AnnounceIndexer implements SearchIndexer
     public void indexDocuments(  ) throws IOException, InterruptedException, SiteMessageException
     {
         AnnounceSearchService.getInstance(  ).processIndexing( true );
+        DefaultAnnounceIndexer.getDocuments("");
     }
 
     /**
