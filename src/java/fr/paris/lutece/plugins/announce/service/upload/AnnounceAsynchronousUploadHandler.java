@@ -37,7 +37,6 @@ import fr.paris.lutece.plugins.genericattributes.service.upload.AbstractGenAttUp
 import fr.paris.lutece.portal.service.spring.SpringContextService;
 
 
-
 /**
  *
  * FormAsynchronousUploadHandler.
@@ -52,8 +51,7 @@ public class AnnounceAsynchronousUploadHandler extends AbstractGenAttUploadHandl
     private static final String UPLOAD_CHECKBOX_PREFIX = "_announce_upload_checkbox_";
     private static final String BEAN_ANNOUNCE_ASYNCHRONOUS_UPLOAD_HANDLER = "announce.announceAsynchronousUploadHandler";
     private static final String HANDLER_NAME = "announceAsynchronousUploadHandler";
-	
-    
+
     /**
      * Get the handler
      * @return the handler
@@ -98,6 +96,4 @@ public class AnnounceAsynchronousUploadHandler extends AbstractGenAttUploadHandl
     {
         return HANDLER_NAME;
     }
-
-   
 }

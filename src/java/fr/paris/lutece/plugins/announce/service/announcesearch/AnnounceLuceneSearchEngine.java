@@ -42,11 +42,13 @@ import fr.paris.lutece.portal.service.search.SearchResult;
 import fr.paris.lutece.portal.service.util.AppLogService;
 
 import org.apache.commons.lang.StringUtils;
+
 import org.apache.lucene.document.DateTools;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.Term;
+
 //import org.apache.lucene.queryParser.MultiFieldQueryParser;
 import org.apache.lucene.queryparser.classic.MultiFieldQueryParser;
 import org.apache.lucene.queryparser.surround.parser.QueryParser;
@@ -55,6 +57,7 @@ import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.PhraseQuery;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.ScoreDoc;
+
 //import org.apache.lucene.search.Searcher;//
 import org.apache.lucene.search.TermQuery;
 import org.apache.lucene.search.TermRangeQuery;
@@ -64,8 +67,10 @@ import org.apache.lucene.util.BytesRef;
 import org.apache.lucene.util.Version;
 
 import java.io.IOException;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -90,7 +95,8 @@ public class AnnounceLuceneSearchEngine implements IAnnounceSearchEngine
     {
         ArrayList<SearchItem> listResults = new ArrayList<SearchItem>(  );
         IndexSearcher searcher;
-       // Searcher searcher = null;
+
+        // Searcher searcher = null;
         Date dateMinToSearch;
         Date dateMaxToSearch;
         int nNbResults = 0;
@@ -98,9 +104,6 @@ public class AnnounceLuceneSearchEngine implements IAnnounceSearchEngine
         try
         {
             searcher = AnnounceSearchService.getInstance(  ).getSearcher(  );
-            
-            
-
 
             Collection<String> queries = new ArrayList<String>(  );
             Collection<String> sectors = new ArrayList<String>(  );
@@ -157,8 +160,8 @@ public class AnnounceLuceneSearchEngine implements IAnnounceSearchEngine
                 //String stringDateMin = DateUtil.
                 String strLowerTerm = DAY_FORMAT.format( dateMinToSearch );
                 String strUpperTerm = DAY_FORMAT.format( dateMaxToSearch );
-                 BytesRef bRLowerTerm= new BytesRef(strLowerTerm);
-                 BytesRef bRUpperTerm= new BytesRef(strLowerTerm);
+                BytesRef bRLowerTerm = new BytesRef( strLowerTerm );
+                BytesRef bRUpperTerm = new BytesRef( strUpperTerm );
                 Query queryRangeDate = new TermRangeQuery( AnnounceSearchItem.FIELD_DATE, bRLowerTerm, bRUpperTerm,
                         true, true );
                 queries.add( queryRangeDate.toString(  ) );
@@ -172,14 +175,12 @@ public class AnnounceLuceneSearchEngine implements IAnnounceSearchEngine
                 int nPriceMin = ( filter.getPriceMin(  ) > 0 ) ? filter.getPriceMin(  ) : 0;
                 int nPriceMax = ( filter.getPriceMax(  ) > 0 ) ? filter.getPriceMax(  ) : Integer.MAX_VALUE;
                 Query queryRangePrice = new TermRangeQuery( AnnounceSearchItem.FIELD_PRICE,
-                       new BytesRef(AnnounceSearchService.formatPriceForIndexer( nPriceMin )),
-                       new BytesRef (AnnounceSearchService.formatPriceForIndexer( nPriceMax )), true, true );
+                        new BytesRef( AnnounceSearchService.formatPriceForIndexer( nPriceMin ) ),
+                        new BytesRef( AnnounceSearchService.formatPriceForIndexer( nPriceMax ) ), true, true );
                 queries.add( queryRangePrice.toString(  ) );
                 sectors.add( AnnounceSearchItem.FIELD_PRICE );
                 flags.add( BooleanClause.Occur.MUST );
             }
-            
-            
 
             Query queryMulti = MultiFieldQueryParser.parse( IndexationService.LUCENE_INDEX_VERSION,
                     queries.toArray( new String[queries.size(  )] ), sectors.toArray( new String[sectors.size(  )] ),
@@ -217,6 +218,7 @@ public class AnnounceLuceneSearchEngine implements IAnnounceSearchEngine
         {
             AppLogService.error( e.getMessage(  ), e );
         }
+
         /*
         finally
         {
@@ -233,13 +235,6 @@ public class AnnounceLuceneSearchEngine implements IAnnounceSearchEngine
             }
         }
         */
-        
-        
-        
-        
-       
-      
-
         convertList( listResults, listSearchResult );
 
         return nNbResults;

@@ -94,8 +94,10 @@ import fr.paris.lutece.util.url.UrlItem;
 import org.apache.commons.lang.StringUtils;
 
 import java.io.IOException;
+
 import java.text.DateFormat;
 import java.text.ParseException;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -399,13 +401,13 @@ public class AnnounceApp extends MVCApplication
             Category category = CategoryHome.findByPrimaryKey( Integer.parseInt( strCategoryId ) );
             Sector sector = SectorHome.findByPrimaryKey( category.getIdSector(  ) );
             Announce announce = null;
-            
+
             /* FORM */
             if ( strFormSend != null )
             {
                 announce = new Announce(  );
                 model.put( MARK_CATEGORY, category );
-                
+
                 List<GenericAttributeError> listErrors = doCreateAnnounce( request, sector, category, announce, user );
 
                 if ( ( listErrors == null ) || ( listErrors.size(  ) == 0 ) )
@@ -947,7 +949,6 @@ public class AnnounceApp extends MVCApplication
         announce.setContactInformation( strContactInformation );
         announce.setUserName( user.getName(  ) );
         announce.setTags( strTags );
-        
 
         EntryFilter filter = new EntryFilter(  );
         filter.setIdResource( category.getId(  ) );
@@ -1022,7 +1023,7 @@ public class AnnounceApp extends MVCApplication
         {
             sendAnnounceNotification( request, announce );
         }
-        
+
         AnnounceAsynchronousUploadHandler.getHandler(  ).removeSessionFiles( request.getSession(  ).getId(  ) );
 
         return null;
@@ -1277,7 +1278,6 @@ public class AnnounceApp extends MVCApplication
         model.put( MARK_ANNOUNCES_LIST, paginator.getPageItems(  ) );
         model.put( MARK_USER, user );
 
-        
         HtmlTemplate template = AppTemplateService.getTemplate( TEMPLATE_MY_ANNOUNCES, request.getLocale(  ), model );
 
         return template.getHtml(  );
