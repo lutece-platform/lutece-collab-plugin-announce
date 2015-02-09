@@ -29,7 +29,9 @@
 					</#if>
 				</#if>
 				>
-					${field.title}
+					<#if !field.noDisplayTitle>
+						${field.title}
+					</#if>
 			</option>	
 		</#list>
 	</select>

@@ -277,7 +277,7 @@ public class CategoryFieldJspBean extends MVCAdminJspBean
 
         field = FieldHome.findByPrimaryKey( nIdField );
 
-        if ( request.getParameter( PARAMETER_CANCEL ) != null )
+        if ( request.getParameter( PARAMETER_CANCEL ) == null )
         {
             String strError = getFieldData( request, field );
 

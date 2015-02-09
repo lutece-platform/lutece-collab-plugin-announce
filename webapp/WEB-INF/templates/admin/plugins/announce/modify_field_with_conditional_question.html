@@ -17,25 +17,11 @@
 						<input type="text" name="value" id="value" size="80" class="input-xlarge" value="${field.value}"/>
 					</div>
 				</div>
-				<div class="control-group">
-					<label class="control-label" for="value">#i18n{announce.createField.labelComment} : </label>
-			    	<div class="controls">
-						<textarea name="comment" id="comment" >${field.comment!}</textarea>
-					</div>
-				</div>
 			    <div class="control-group">
 					<label class="control-label" for="default_value">#i18n{announce.createField.labelDefaultValue}</label>
 			    	<div class="controls">
 						<label class="checkbox" for="default_value">
 							<input name="default_value" value="1" type="checkbox" <#if field.defaultValue>checked="checked"</#if>>
-						</label>
-					</div>
-				</div>
-				<div class="control-group">
-					<label class="control-label" for="no_display_title">#i18n{announce.createField.labelNoDisplayTitle}</label>
-			    		<div class="controls">
-						<label class="checkbox" for="no_display_title">
-							<input name="no_display_title" value="1" type="checkbox" <#if field.noDisplayTitle>checked="checked"</#if>>
 						</label>
 					</div>
 				</div>
