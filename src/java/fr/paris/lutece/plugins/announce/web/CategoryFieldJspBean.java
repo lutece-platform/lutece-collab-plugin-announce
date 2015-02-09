@@ -403,7 +403,7 @@ public class CategoryFieldJspBean extends MVCAdminJspBean
 
         int nIndexField = getIndexFieldInFieldList( nIdField, listField );
 
-        if ( nIndexField != ( listField.size(  ) - 1 ) )
+        if ( nIndexField != ( listField.size(  )) )
         {
             int nNewPosition;
             Field fieldToInversePosition;
