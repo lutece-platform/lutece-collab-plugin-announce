@@ -1,13 +1,18 @@
-<#include "/admin/plugins/announce/commons.html" />
+<#include "/admin/plugins/form/commons.html" />
 <#include "/skin/plugins/asynchronousupload/upload_commons.html" />
-
 <div class="form-group">
 	<label class="col-sm-2 control-label" for="attribute${entry.idEntry}" id="label${entry.idEntry}">${entry.title}<#if entry.mandatory>	*</#if></label>
 	<div class="col-sm-10">
 		<#assign fieldName='attribute'+entry.idEntry >
 		<#assign cssClass=entry.CSSClass!'' >
-		
-		
+		<#if list_responses??>
+			<#list list_responses as response>
+				<#if response.entry.idEntry == entry.idEntry && response.entry.error?? && response.entry.error.isDisplayableError>
+					<#assign cssClass='error' >
+					<#break>
+				</#if>
+			</#list>
+		</#if>
 		<@addFileInput fieldName=fieldName handler=uploadHandler cssClass=cssClass multiple=true />
 		<#if entry.helpMessage?exists&&entry.helpMessage!=''>
 			<span class="help-block">${entry.helpMessage}</span>
@@ -28,5 +33,58 @@
 	</div>
 </div>
 
-
-<@addUploadedFilesBox fieldName=fieldName handler=uploadHandler listFiles='' />
+<#if list_responses?? && list_responses?has_content>
+	<#list list_responses as response>
+		<#if response.file?? && response.file.title?? && response.file.title != ''>
+			<#if listFiles??>
+				<#assign listFiles = listFiles + [response.file] >
+			<#else>
+				<#assign listFiles = [response.file] >
+			</#if>
+		</#if>
+	</#list>
+<#else>
+	<#assign listFiles = ''>
+</#if>
+<#-- file removing -->
+	<#assign has_files = false>
+	<#if listFiles?? && listFiles?has_content>
+		<#assign has_files = true>
+	</#if>
+	
+	<div id="_file_error_box_${fieldName}" >
+	</div>
+	
+	<div class="control-group well" <#if !has_files>style="display:none;"</#if> id="_file_deletion_label_${fieldName}">
+		<label class="control-label">#i18n{asynchronousupload.file.uploadedFile}</label>
+		<div id="_file_deletion_${fieldName}">
+		
+			<#assign file_index = 0>
+			<#if has_files>
+				<#assign index = 0 />
+				<#list listFiles as file>
+					<#assign filename = ''>
+					<#if file.name?? && file.name != ''>
+						<#assign filename = file.name >
+					<#else>
+						<#if file.title?? && file.title != ''>
+							<#assign filename = file.title >
+						</#if>
+					</#if>
+					<#if filename != '' >
+						<div class="controls" id="_file_uploaded_${fieldName}${file_index}">
+							<label class="checkbox" for="${uploadHandler.uploadCheckboxPrefix}${fieldName}${file_index}">
+							<input type="checkbox" name="${uploadHandler.uploadCheckboxPrefix}${fieldName}${file_index}" value="1" />${filename}</label>
+							<img height="80px" src="image?resource_type=GENERICATTRIBUTES_RESPONSE&id=${list_responses[file_index].idResponse}" />
+							<#assign file_index = file_index + 1>
+								
+						</div>
+					</#if>
+				</#list>
+			</#if>
+		</div>
+		<br />
+		<div class="controls">
+			<button class="btn btn-danger btn-small" name="${uploadHandler.uploadDeletePrefix}${fieldName}" value="${uploadHandler.uploadDeletePrefix}${fieldName}" type="submit" >#i18n{asynchronousupload.action.delete.name}</button>
+		</div>
+	</div>
