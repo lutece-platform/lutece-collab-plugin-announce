@@ -40,6 +40,9 @@ import fr.paris.lutece.plugins.announce.business.Category;
 import fr.paris.lutece.plugins.announce.business.CategoryHome;
 import fr.paris.lutece.plugins.announce.service.AnnounceResourceIdService;
 import fr.paris.lutece.plugins.announce.utils.AnnounceUtils;
+import fr.paris.lutece.plugins.genericattributes.business.Entry;
+import fr.paris.lutece.plugins.genericattributes.business.EntryHome;
+import fr.paris.lutece.plugins.genericattributes.business.Field;
 import fr.paris.lutece.plugins.genericattributes.business.Response;
 import fr.paris.lutece.portal.business.rbac.RBAC;
 import fr.paris.lutece.portal.business.user.AdminUser;
@@ -63,7 +66,7 @@ import fr.paris.lutece.util.url.UrlItem;
 import org.apache.commons.lang.StringUtils;
 
 import java.sql.Timestamp;
-
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
@@ -117,6 +120,7 @@ public class AnnounceJspBean extends PluginAdminPageJspBean
     private static final String MARK_RIGHT_PUBLISH = "right_publish_announce";
     private static final String MARK_RIGHT_SUSPEND = "right_suspend_announce";
     private static final String MARK_RIGHT_WORKFLOW_ACTION = "right_execute_workflow_action";
+    private static final String MARK_ENTRY_LIST_GEOLOCATION = "admList_entryTypeGeolocation";
 
     /* Variables */
     private int _nDefaultItemsPerPage;
@@ -242,10 +246,41 @@ public class AnnounceJspBean extends PluginAdminPageJspBean
 
         int nIdAnnounce = Integer.parseInt( request.getParameter( PARAMETER_ANNOUNCE_ID ) );
         Announce announce = AnnounceHome.findByPrimaryKey( nIdAnnounce );
-
+        Collection<Entry> listGeolocalisation= new ArrayList<Entry>();
+        
         Collection<Response> listResponses = AnnounceHome.findListResponse( announce.getId(  ), false );
+        for ( Response response : listResponses )
+        {
+           // IEntryTypeService entryTypeService = EntryTypeServiceManager.getEntryTypeService( response.getEntry(  ) );
+           // response.setToStringValueResponse( entryTypeService.getResponseValueForRecap( response.getEntry(  ),
+           //         request, response, request.getLocale(  ) ) );
+            
+            if(response.getEntry()!= null && response.getEntry().getEntryType() != null 
+            		&& "announce.entryTypeGeolocation".equals(response.getEntry().getEntryType().getBeanName())){
+            	Entry entry = EntryHome.findByPrimaryKey( response.getEntry().getIdEntry()); 
+     	        for ( Field filed: entry.getFields( ) ){
+     	            	
+     	            if( response.getField( ) != null && filed.getIdField ( ) == response.getField( ).getIdField( ) )
+     	            		
+     	            	response.setField( filed );
+     	        }
+     	        
+     	        boolean bool = true;
+ 	      
+     	        for ( Entry ent:listGeolocalisation ){
+     	        	if( ent.getIdEntry( ) == (entry.getIdEntry( )) ){
+         	        	bool= false;
+         	        }
+     	        }
+     	        if( bool ){
+     	        		listGeolocalisation.add(entry);
+     	        }
+            }
+            
+        }
 
         HashMap<String, Object> model = new HashMap<String, Object>(  );
+        model.put( MARK_ENTRY_LIST_GEOLOCATION , listGeolocalisation);
         model.put( MARK_LIST_RESPONSES, listResponses );
         model.put( MARK_ANNOUNCE, announce );
 

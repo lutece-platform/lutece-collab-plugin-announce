@@ -51,11 +51,10 @@ import fr.paris.lutece.plugins.announce.utils.AnnounceUtils;
 import fr.paris.lutece.plugins.genericattributes.business.Entry;
 import fr.paris.lutece.plugins.genericattributes.business.EntryFilter;
 import fr.paris.lutece.plugins.genericattributes.business.EntryHome;
+import fr.paris.lutece.plugins.genericattributes.business.Field;
 import fr.paris.lutece.plugins.genericattributes.business.GenericAttributeError;
 import fr.paris.lutece.plugins.genericattributes.business.Response;
 import fr.paris.lutece.plugins.genericattributes.business.ResponseHome;
-import fr.paris.lutece.plugins.genericattributes.service.entrytype.EntryTypeServiceManager;
-import fr.paris.lutece.plugins.genericattributes.service.entrytype.IEntryTypeService;
 import fr.paris.lutece.plugins.subscribe.web.SubscribeApp;
 import fr.paris.lutece.portal.business.mailinglist.Recipient;
 import fr.paris.lutece.portal.service.captcha.CaptchaSecurityService;
@@ -94,10 +93,8 @@ import fr.paris.lutece.util.url.UrlItem;
 import org.apache.commons.lang.StringUtils;
 
 import java.io.IOException;
-
 import java.text.DateFormat;
 import java.text.ParseException;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -232,7 +229,7 @@ public class AnnounceApp extends MVCApplication
     private static final String MARK_IS_EXTEND_INSTALLED = "isExtendInstalled";
     private static final String MARK_CAPTCHA = "captcha";
     private static final String MARK_LIST_SECTORS = "list_sectors";
-
+    private static final String MARK_ENTRY_LIST_GEOLOCATION = "list_entryTypeGeolocation";
     // Messages
     private static final String ERROR_MESSAGE_WRONG_CAPTCHA = "portal.admin.message.wrongCaptcha";
 
@@ -661,14 +658,39 @@ public class AnnounceApp extends MVCApplication
         if ( bAllowAccess )
         {
             Collection<Response> listResponses = AnnounceHome.findListResponse( announce.getId(  ), false );
-
+            Collection<Entry> listGeolocalisation= new ArrayList<Entry>();
+            
             for ( Response response : listResponses )
             {
-                IEntryTypeService entryTypeService = EntryTypeServiceManager.getEntryTypeService( response.getEntry(  ) );
-                response.setToStringValueResponse( entryTypeService.getResponseValueForRecap( response.getEntry(  ),
-                        request, response, request.getLocale(  ) ) );
+               // IEntryTypeService entryTypeService = EntryTypeServiceManager.getEntryTypeService( response.getEntry(  ) );
+               // response.setToStringValueResponse( entryTypeService.getResponseValueForRecap( response.getEntry(  ),
+               //         request, response, request.getLocale(  ) ) );
+                
+                if(response.getEntry()!= null && response.getEntry().getEntryType() != null 
+                		&& "announce.entryTypeGeolocation".equals(response.getEntry().getEntryType().getBeanName())){
+                	Entry entry = EntryHome.findByPrimaryKey( response.getEntry().getIdEntry()); 
+         	        for ( Field filed: entry.getFields( ) ){
+         	            	
+         	            if( response.getField( ) != null && filed.getIdField ( ) == response.getField( ).getIdField( ) )
+         	            		
+         	            	response.setField( filed );
+         	        }
+         	        
+         	        boolean bool = true;
+     	      
+         	        for ( Entry ent:listGeolocalisation ){
+         	        	if( ent.getIdEntry( ) == (entry.getIdEntry( )) ){
+             	        	bool= false;
+             	        }
+         	        }
+         	        if( bool ){
+         	        		listGeolocalisation.add(entry);
+         	        }
+                }
+                
             }
-
+            
+            model.put( MARK_ENTRY_LIST_GEOLOCATION , listGeolocalisation);
             model.put( MARK_USER_IS_AUTHOR, bUserIsAuthor );
             model.put( MARK_ANNOUNCE, announce );
             model.put( MARK_LIST_RESPONSES, listResponses );

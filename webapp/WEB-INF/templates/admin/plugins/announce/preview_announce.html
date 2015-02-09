@@ -57,7 +57,29 @@
                   		<#assign isImage = false>
                   	</#if>
       			</#if>
-       			<#if !entrySave?exists || entrySave.idEntry!=response.entry.idEntry>
+      			<#if response.field?? && response.field.title??>
+							<#if response.field.title == "X">
+								<#assign lat = response.toStringValueResponse>
+							<#elseif response.field.title == "Y">
+								<#assign lon = response.toStringValueResponse>
+							<#elseif response.field.title == "idAddress">				
+							<#elseif response.field.title == "address">
+								<#assign addressAnnounce = response.toStringValueResponse>
+								<div class="control-group">
+									<label class=" control-label" for="response">${response.entry.title}</label>
+									<div class="controls">
+										<#list admList_entryTypeGeolocation as entry>
+								
+											<#if entry.mapProvider?has_content && entry.idEntry == response.entry.idEntry >
+												${addressAnnounce}
+												<#include entry.mapProvider.htmlRecapCode />
+											</#if>	
+									
+										</#list>
+									</div>
+								</div>			
+							</#if>
+       			<#elseif !entrySave?exists || entrySave.idEntry!=response.entry.idEntry>
                   	<#assign entrySave=response.entry>
                 		<div class="control-group">
                     	    <label class="control-label">${response.entry.title}</label>
