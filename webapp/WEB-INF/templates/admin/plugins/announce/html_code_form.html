@@ -1,52 +1,65 @@
-<div class="row-fluid">
-	<div class="span12">
-		<form class="form-horizontal" id="form-validate" action="jsp/admin/plugins/announce/ManageAppointments.jsp" method="post" enctype="multipart/form-data">
-			<input name="id_category" value="${category.id}" type="hidden" />
-			<input name="session" value="session" type="hidden" />
-			<fieldset>
-				<legend>
-					#i18n{announce.view_form_example.pageTitle} - ${category.label}
-				</legend>
-				<div class="control-group">
-					<label class="control-label">#i18n{announce.create_announce_step_form.labelTitle} *</label>
-					<div class="controls">
-						<input type="text" name="title_announce"/>
+<div class="row">
+	<div class="col-xs-12 col-sm-12 col-md-12">
+		<div class="box box-primary">
+			<div class="box-header">
+				<h3 class="box-title">#i18n{announce.view_form_example.pageTitle} - ${category.label}</h3>
+			</div>
+			<div class="box-body">
+				<form class="form-horizontal" id="form-validate" action="jsp/admin/plugins/announce/ManageAppointments.jsp" method="post" enctype="multipart/form-data">
+					<input name="id_category" value="${category.id}" type="hidden">
+					<input name="session" value="session" type="hidden">
+					<div class="form-group">
+						<label class="control-label col-xs-12 col-sm-12 col-md-3" for="title_announce">#i18n{announce.create_announce_step_form.labelTitle} *</label>
+						<div class="col-xs-12 col-sm-12 col-md-9">
+							<input type="text" name="title_announce" class="form-control">
+						</div>
 					</div>
-				</div>
-	            <div class="control-group">
-	            	<label class="control-label">#i18n{announce.create_announce_step_form.labelDescription}</label>
-	            	<div class="controls">
-	            		<textarea name="description_announce"></textarea>
-	            	</div>
-	            </div>	            
-	            ${str_entry}
-	  			<div class="control-group">
-	  				<label class="control-label">#i18n{announce.create_announce_step_form.contactInformation}</label>
-	  				<div class="controls">
-	            		<input value="${contact_information!}" type="text" name="contact_information"/>
-	            	</div>
-			  	</div>
-	            <#if category.displayPrice>
-	                <div class="control-group">
-	                	<label class="control-label">#i18n{announce.create_announce_step_form.labelPrice}</label>
-	                	<div class="controls">
-	                		<input type="text" name="price_announce"/>
-	                	</div>
-	                </div>
-	            </#if>
-	            <div class="control-group">
-	            	<label class="control-label">#i18n{announce.create_announce_step_form.tags}</label>
-	            	<div class="controls">
-	            		<input value="${sector.tags!}" type="text" name="tags"/>
-	            		<span class="help-block">#i18n{announce.create_announce_step_form.tags.helper}</span>
-	            	</div>
-	            </div>
-				<div class="form-actions">
-					<a class="btn btn-small" href="jsp/admin/plugins/announce/ManageCategories.jsp" title="#i18n{portal.util.labelBack}">
-						<i class="icon-remove-circle">&nbsp;</i>&nbsp;#i18n{portal.util.labelBack}
-					</a>
-				</div>
-			</fieldset>
-		</form>
+					<div class="form-group">
+						<label class="control-label col-xs-12 col-sm-12 col-md-3" for="description_announce">#i18n{announce.create_announce_step_form.labelDescription}</label>
+						<div class="col-xs-12 col-sm-12 col-md-9">
+							<textarea name="description_announce" class="form-control"></textarea>
+						</div>
+					</div>	            
+					${str_entry}
+					<div class="form-group">
+						<label class="control-label col-xs-12 col-sm-12 col-md-3" for="contact_information">#i18n{announce.create_announce_step_form.contactInformation}</label>
+						<div class="col-xs-12 col-sm-12 col-md-9">
+							<input value="${contact_information!}" type="text" name="contact_information" class="form-control">
+						</div>
+					</div>
+					<#if category.displayPrice>
+						<div class="form-group">
+							<label class="control-label col-xs-12 col-sm-12 col-md-3" for="price_announce">#i18n{announce.create_announce_step_form.labelPrice}</label>
+							<div class="col-xs-12 col-sm-12 col-md-9">
+								<input type="text" name="price_announce" class="form-control">
+							</div>
+						</div>
+					</#if>
+					<div class="form-group">
+						<label class="control-label col-xs-12 col-sm-12 col-md-3" for="tags">#i18n{announce.create_announce_step_form.tags}</label>
+						<div class="col-xs-12 col-sm-12 col-md-9">
+							<input value="${sector.tags!}" type="text" name="tags" id="tags" class="form-control">
+							<span class="help-block">#i18n{announce.create_announce_step_form.tags.helper}</span>
+						</div>
+					</div>
+					<div class="form-group">
+						<div class="col-xs-12 col-sm-12 col-md-6 col-md-offset-3">
+							<a class="btn btn-default btn-flat" href="jsp/admin/plugins/announce/ManageCategories.jsp" title="#i18n{portal.util.labelBack}">
+								<i class="fa fa-remove">&nbsp;</i>&nbsp;#i18n{portal.util.labelBack}
+							</a>
+						</div>
+					</div>
+				</form>
+			</div>
+		</div>
 	</div>
 </div>
+<link rel="stylesheet" type="text/css" href="js/jquery/plugins/ui/css/custom-theme/jquery-ui-1.10.3.custom.css">
+<link rel="stylesheet" type="text/css" href="js/jquery/plugins/tagit/jquery.tagit.css">
+<script src="js/jquery/plugins/ui/jquery-ui-1.9.2.custom.min.js" type="text/javascript"></script>
+<script src="js/jquery/plugins/tagit/tag-it.js" type="text/javascript"></script>
+<script type="text/javascript">
+$(function(){
+	$('#tags').tagit();
+}); 
+</script>

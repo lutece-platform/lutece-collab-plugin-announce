@@ -1,36 +1,44 @@
-<div class="row-fluid">
-	<div class="span12">
-		<form class="form-horizontal" action="jsp/admin/plugins/announce/ManageCategoryEntries.jsp" method="post" name="" id=""  >
-			<fieldset>
-				<legend>#i18n{announce.createEntry.titleComment} : '${category.label}'</legend>
-				<input name="id_category" value="${category.id}" type="hidden" />
-				<input name="action" value="doCreateEntry" type="hidden" />
-				<input name="id_type" value="${entry.entryType.idType}" type="hidden" />
+<div class="row">
+	<div class="col-xs-12 col-sm-12 col-md-12">
+		<div class="box box-primary">
+			<div class="box-header">
+				<h3 class="box-title">#i18n{announce.createEntry.titleComment} - ${category.label}</h3>
+			</div>
+			<div class="box-body">
+				<form class="form-horizontal" action="jsp/admin/plugins/announce/ManageCategoryEntries.jsp" method="post" name="" id="">
+				<input name="id_category" value="${category.id}" type="hidden">
+				<input name="action" value="doCreateEntry" type="hidden">
+				<input name="id_type" value="${entry.entryType.idType}" type="hidden">
 				<#if entry.fieldDepend?exists>
-					<input name="id_field" value="${entry.fieldDepend.idField}" type="hidden" />
+					<input name="id_field" value="${entry.fieldDepend.idField}" type="hidden">
 				</#if>
-				<div class="control-group">
-					<label class="control-label" for="comment"> #i18n{announce.createEntry.labelComment} * : </label>
-					<div class="controls">
+				<div class="form-group">
+					<label class="control-label col-xs-12 col-sm-12 col-md-3" for="comment"> #i18n{announce.createEntry.labelComment} * </label>
+					<div class="col-xs-12 col-sm-12 col-md-6">
 						<textarea name="comment" id="comment" rows="5" class="richtext"></textarea>
 					</div>
 				</div>
-				<div class="control-group">
-					<label class="control-label" for="css_class">#i18n{announce.createEntry.labelCSSClass} : </label>
-					<div class="controls">
-						<input type="text" name="css_class" value="" maxlength="255"class="input-large"/>
+				<div class="form-group">
+					<label class="control-label col-xs-12 col-sm-12 col-md-3" for="css_class">#i18n{announce.createEntry.labelCSSClass} </label>
+					<div class="col-xs-12 col-sm-12 col-md-6">
+						<input type="text" name="css_class" value="" maxlength="255" class="form-control">
 						<span class="help-block">#i18n{announce.createEntry.labelCSSClassComment}</span>
 					</div>
 				</div>
-				<div class="form-actions">
-					<button class="btn btn-primary btn-small" type="submit" ><i class="icon-ok icon-white"></i>&nbsp;#i18n{announce.createEntry.buttonSave}</button>
-					<button class="btn btn-primary btn-small" type="button" onclick="javascript:window.history.back();" ><i class="icon-remove-circle icon-white"></i>&nbsp;#i18n{announce.createEntry.buttonCancel}</button>
+				<div class="form-group">
+					<div class="col-xs-12 col-sm-12 col-md-6 col-md-offset-3">
+						<button class="btn btn-primary btn-flat" type="submit">
+							<i class="fa fa-check"></i>&nbsp;#i18n{announce.createEntry.buttonSave}
+						</button>
+						<button class="btn btn-default btn-flat" type="submit" name="cancel" value="cancel" >
+							<i class="fa fa-remove"></i>&nbsp;#i18n{announce.createEntry.buttonCancel}
+						</button>
+					</div>
 				</div>
-			</fieldset>
-		</form>
+			</form>
+			</div>
+		</div>
 	</div>
 </div>
 <#include "/admin/util/editor/editor.html" />
 <@initEditor />
-
- 

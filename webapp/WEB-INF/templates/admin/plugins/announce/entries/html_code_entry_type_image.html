@@ -1,7 +1,7 @@
 <#include "/admin/plugins/announce/commons.html" />
-<div class="control-group">
-	<label class="control-label" for="attribute_${entry.idEntry}" id="form${entry.idEntry}">${entry.title}<#if entry.mandatory>	*</#if></label>
-	<div class="controls">
+<div class="form-group">
+	<label class="control-label col-xs-12 col-sm-12 col-md-3" for="attribute_${entry.idEntry}" id="form${entry.idEntry}">${entry.title}<#if entry.mandatory>	*</#if></label>
+	<div class="col-xs-12 col-sm-12 col-md-9">
 		<#if list_responses?? && list_responses?has_content>
 			<#if list_responses?size &gt; 1 >
 				<#assign class = "pirobox_gall">
@@ -40,12 +40,12 @@
 							class="error"
 						</#if>
 					</#list>
-					class="${entry.CSSClass!}"
+					class="form-control ${entry.CSSClass!}"
 				</#if>
 				/>
 			</#if>
 		</#list>
-		<input type="hidden" name="_announce_upload_maxLength_attribute_${entry.idEntry}" id="_announce_upload_maxLength_attribute_${entry.idEntry}" value="${getFileMaxSize( entry )}" />
+		<input type="hidden" name="_announce_upload_maxLength_attribute_${entry.idEntry}" id="_announce_upload_maxLength_attribute_${entry.idEntry}" value="${getFileMaxSize( entry )}">
 		<#if entry.helpMessage?exists&&entry.helpMessage!=''>
 			<span class="help-block">${entry.helpMessage}</span>
 		</#if>
@@ -62,7 +62,7 @@
 				</div>
 			</#if>
 		</#if>
-		<button class="btn btn-primary btn-small" type="submit"  id="_announce_upload_submit_attribute_${entry.idEntry}" name="_announce_upload_submit_attribute_${entry.idEntry}" >#i18n{announce.action.send.name}</button>
+		<button class="btn btn-primary btn-xs btn-flat" type="submit"  id="_announce_upload_submit_attribute_${entry.idEntry}" name="_announce_upload_submit_attribute_${entry.idEntry}" >#i18n{announce.action.send.name}</button>
 	</div>
 </div>
 
@@ -75,16 +75,17 @@
 	</#if>
 </#if>
 
-<div class="control-group well" <#if !has_files>style="display:none;"</#if> id="_file_deletion_label_attribute_${entry.idEntry}">
-	<label class="control-label" for="delete_${entry.idEntry}">#i18n{announce.file.uploadedFile}</label>
-	<div id="_file_deletion_attribute_${entry.idEntry}">
+<div class="form-group" <#if !has_files>style="display:none;"</#if> id="_file_deletion_label_attribute_${entry.idEntry}">
+	<label class="control-label col-xs-12 col-sm-12 col-md-3" for="delete_${entry.idEntry}">#i18n{announce.file.uploadedFile}</label>
+	<div class="col-xs-12 col-sm-12 col-md-9" id="_file_deletion_attribute_${entry.idEntry}">
 		<#assign file_index = 0>
 		<#if has_files>
 			<#list list_responses as response>
 				<#if response.file?? && response.file.title?? && response.file.title != ''>
-					<div class="controls">
-						<label class="checkbox" for="_announce_upload_checkbox_attribute_${entry.idEntry}${file_index}">
-						<input type="checkbox" name="_announce_upload_checkbox_attribute_${entry.idEntry}${file_index}" value="1" />${response.file.title}</label>
+					<div class="checkbox" >
+						<label for="_announce_upload_checkbox_attribute_${entry.idEntry}${file_index}">
+							<input type="checkbox" name="_announce_upload_checkbox_attribute_${entry.idEntry}${file_index}" value="1" />${response.file.title}
+						</label>
 						<#assign file_index = file_index + 1>
 					</div>
 				</#if>
@@ -92,7 +93,7 @@
 		</#if>
 	</div>
 	<br />
-	<div class="controls">
-		<button class="btn btn-primary btn-small" name="_announce_upload_delete_attribute_${entry.idEntry}" type="submit" >#i18n{announce.action.delete.name}</button>
+	<div class="col-xs-12 col-sm-12 col-md-9">
+		<button class="btn btn-primary btn-xs btn-flat" name="_announce_upload_delete_attribute_${entry.idEntry}" type="submit" >#i18n{announce.action.delete.name}</button>
 	</div>
 </div>

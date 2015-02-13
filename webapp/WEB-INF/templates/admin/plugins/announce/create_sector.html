@@ -1,42 +1,61 @@
-<div class="row-fluid">
-	<div class="span12">
-		<form class="form-horizontal" method="post" action="jsp/admin/plugins/announce/DoCreateSector.jsp">
-			<fieldset>
-				<legend>#i18n{announce.create_sector.pageTitle}</legend>
-				<div class="control-group">
-					<label class="control-label">#i18n{announce.sector.label} * :</label>
-					<div class="controls">
-						<input type="text" name="sector_label"/>
+<div class="row">
+	<div class="col-xs-12 col-sm-12 col-md-12">
+		<div class="box box-primary">
+			<div class="box-header">
+				<h3 class="box-title">#i18n{announce.create_sector.pageTitle}</h3>
+			</div>
+			<div class="box-body">
+			<form class="form-horizontal" method="post" action="jsp/admin/plugins/announce/DoCreateSector.jsp">
+				<div class="form-group">
+					<label class="control-label col-xs-12 col-sm-12 col-md-3">#i18n{announce.sector.label} *</label>
+					<div class="col-xs-12 col-sm-12 col-md-6">
+						<input type="text" name="sector_label" class="form-control">
 					</div>
 				</div>
-				<div class="control-group">
-					<label class="control-label">#i18n{announce.sector.description} * :</label>
-					<div class="controls">
-						<input type="text" name="sector_description"/>
+				<div class="form-group">
+					<label class="control-label col-xs-12 col-sm-12 col-md-3">#i18n{announce.sector.description} *</label>
+					<div class="col-xs-12 col-sm-12 col-md-6">
+						<input type="text" name="sector_description" class="form-control">
 					</div>
 				</div>
-				<div class="control-group">
-					<label class="control-label" for="tags">#i18n{announce.sector.tags} * :</label>
-					<div class="controls">
-						<input name="tags" id="tags" type="text"/>
+				<div class="form-group">
+					<label class="control-label col-xs-12 col-sm-12 col-md-3" for="tags">#i18n{announce.sector.tags} *</label>
+					<div class="col-xs-12 col-sm-12 col-md-6">
+						<input name="tags" id="tags" type="text" class="form-control">
 						<span class="help-block">#i18n{announce.sector.tags.helper}</span>
 					</div>
 				</div>
-				<div class="control-group">
-					<label class="control-label" for="sector_announces_validation">#i18n{announce.sector.announcesValidation}</label>
-					<div class="controls">
-						<input name="sector_announces_validation" id="sector_announces_validation" type="checkbox"/>
+				<div class="form-group">
+					<label class="control-label col-xs-12 col-sm-12 col-md-3" for=""></label>
+					<div class="col-xs-12 col-sm-12 col-md-6">
+						<div class="checkbox">
+							<label for="sector_announces_validation">
+								<input name="sector_announces_validation" id="sector_announces_validation" type="checkbox"> #i18n{announce.sector.announcesValidation}
+							</label>
+						</div>	
 					</div>
 				</div>
-				<div class="form-actions">
-					<button class="btn btn-primary btn-small" name="validate" value="#i18n{announce.create_sector.buttonValidate}">
-						<i class="icon-ok icon-white">&nbsp;</i>&nbsp;#i18n{announce.create_sector.buttonValidate}
-					</button>
-					<button class="btn btn-small" type="button" onclick="javascript:history.go(-1);" name="cancel" value="cancel">
-						<i class="icon-remove-circle">&nbsp;</i>&nbsp;#i18n{portal.util.labelBack}
-					</button>
+				<div class="form-group">
+					<div class="col-xs-12 col-sm-12 col-md-6 col-md-offset-3">
+						<button class="btn btn-primary btn-flat" name="validate" value="#i18n{announce.create_sector.buttonValidate}">
+							<i class="fa fa-check"></i>&nbsp;#i18n{announce.create_sector.buttonValidate}
+						</button>
+						<button class="btn btn-default btn-flat" type="button" onclick="javascript:history.go(-1);" name="cancel" value="cancel">
+							<i class="fa fa-remove"></i>&nbsp;#i18n{portal.util.labelBack}
+						</button>
+					</div>
 				</div>
-			</fieldset>
-		</form>
+			</form>
+			</div>
+		</div>
 	</div>
 </div>
+<link rel="stylesheet" type="text/css" href="js/jquery/plugins/ui/css/custom-theme/jquery-ui-1.10.3.custom.css">
+<link rel="stylesheet" type="text/css" href="js/jquery/plugins/tagit/jquery.tagit.css">
+<script src="js/jquery/plugins/ui/jquery-ui-1.9.2.custom.min.js" type="text/javascript" ></script>
+<script src="js/jquery/plugins/tagit/tag-it.js" type="text/javascript"></script>
+<script type="text/javascript">
+$(function(){
+	$('#tags').tagit();
+}); 
+</script>

@@ -1,55 +1,87 @@
-<#include "/admin/util/editor/editor.html" />
-<fieldset>
-	<legend>#i18n{announce.modifyEntry.titleQuestion} : '${category.label}'</legend>
-	<div class="row-fluid">
-		<div class="span4">
-			<form class="form" action="jsp/admin/plugins/announce/ManageCategoryEntries.jsp" method="post" name="" id="">
-				<input name="id_entry" value="${entry.idEntry}" type="hidden" />
-				<input name="action" value="doModifyEntry" type="hidden" />
-				<label for="title">#i18n{announce.createEntry.labelTitle} * </label>
-				<input type="text" name="title" id="title" class="input-xlarge" value="${entry.title}"  maxlength="255"/>
-				<span class="help-block">#i18n{announce.createEntry.labelTitleComment}</span>
-				<label for="help_message">#i18n{announce.createEntry.labelHelpMessage}</label>
-				<textarea  name="help_message"  id="help_message" rows="2" class="span10">${entry.helpMessage}</textarea>
-				<span class="help-block">#i18n{announce.createEntry.labelHelpMessageComment}</span>
-				<label for="comment"> #i18n{announce.createEntry.labelComment} </label>
-				<textarea  name="comment" class="span10" rows="2">${entry.comment}</textarea>
-				<label for="width">#i18n{announce.createEntry.labelPresentation}</label>
-				<select  id="field_in_line" name="field_in_line">
-					<option value=1 <#if entry.fieldInLine >selected="selected" </#if> >#i18n{announce.createEntry.selectPresentationInLine}</option>
-					<option value=0 <#if !entry.fieldInLine >selected="selected" </#if>>#i18n{announce.createEntry.selectPresentationNotInLine}</option>
-				</select>
-				<p>#i18n{announce.createEntry.labelType} : ${entry.entryType.title} </p>
-				<label class="checkbox" for="mandatory">
-					<input name="mandatory" value="1" type="checkbox" <#if entry.mandatory>checked="checked" </#if>	/>&nbsp;#i18n{announce.createEntry.labelMandatory} 
-				</label>
-				<label for="css_class">#i18n{announce.createEntry.labelCSSClass}</label>
-				<input type="text" name="css_class" value="${entry.CSSClass!}" maxlength="255" class="input-large" />
-				<span class="help-block">#i18n{announce.createEntry.labelCSSClassComment}</span>
-				<div class="form-actions">
-					<button class="btn btn-primary btn-small" type="submit">
-						<i class="icon-ok icon-white"></i>&nbsp;#i18n{announce.modifyEntry.buttonSave}
-					</button>
-					<button class="btn btn-primary btn-small" type="submit" name="apply" value="apply">
-						<i class="icon-ok-circle icon-white"></i>&nbsp;#i18n{announce.modifyEntry.buttonApply}
-					</button>
-					<button class="btn btn-small" type="submit" name="cancel" value="cancel" >
-						<i class="icon-remove-circle"></i>&nbsp;#i18n{announce.createEntry.buttonCancel}
-					</button>
+<div class="row">
+	<div class="col-xs-12 col-sm-4 col-md-4">
+		<div class="box box-primary">
+			<div class="box-header">
+				<h3 class="box-title">'${category.label}'  - #i18n{announce.createEntry.labelType}  ${entry.entryType.title}</h3>
+			</div>
+			<div class="box-body">
+				<form class="form-horizontal" action="jsp/admin/plugins/announce/ManageCategoryEntries.jsp" method="post" name="" id="">
+				<input name="id_entry" value="${entry.idEntry}" type="hidden">
+				<input name="action" value="doModifyEntry" type="hidden">
+				<div class="form-group">
+				<label class="control-label col-xs-12 col-sm-12 col-md-3" for="title">#i18n{announce.createEntry.labelTitle} * </label>
+					<div class="col-xs-12 col-sm-12 col-md-6">
+						<input type="text" name="title" id="title" class="form-control" value="${entry.title}"  maxlength="255"/>
+						<span class="help-block">#i18n{announce.createEntry.labelTitleComment}</span>
+					</div>
 				</div>
-		   </form>
+		    	<div class="form-group">
+					<label class="control-label col-xs-12 col-sm-12 col-md-3" >  #i18n{announce.createEntry.labelHelpMessage} </label>
+					<div class="col-xs-12 col-sm-12 col-md-6">
+						<textarea  name="help_message" id="help_message"  rows="5" class="form-control">${entry.helpMessage}</textarea>
+						<span class="help-block">#i18n{announce.createEntry.labelHelpMessageComment}</span>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="control-label col-xs-12 col-sm-12 col-md-3" for="comment"> #i18n{announce.createEntry.labelComment} </label>
+					<div class="col-xs-12 col-sm-12 col-md-6">
+						<textarea  name="comment" class="form-control" rows="2">${entry.comment}</textarea>
+					</div>
+				</div>
+		        <div class="form-group">
+				<label class="control-label col-xs-12 col-sm-12 col-md-3" for="width">#i18n{announce.createEntry.labelPresentation} </label>
+					<div class="col-xs-12 col-sm-12 col-md-6">
+						<select id="field_in_line" name="field_in_line" class="form-control" >
+							<option value="1" <#if entry.fieldInLine >selected="selected" </#if> >#i18n{announce.createEntry.selectPresentationInLine}</option>
+							<option value="0" <#if !entry.fieldInLine >selected="selected" </#if> >#i18n{announce.createEntry.selectPresentationNotInLine}</option>
+						</select>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="control-label col-xs-12 col-sm-12 col-md-3" for=""></label>
+					<div class="col-xs-12 col-sm-12 col-md-6">
+						<div class="checkbox">
+							<label for="mandatory">
+								<input name="mandatory" id="mandatory" value="1" type="checkbox" <#if entry.mandatory>checked="checked" </#if>	> #i18n{announce.createEntry.labelMandatory} 
+							</label>
+						</div>
+					</div>
+				</div>
+				<div class="form-group">
+				<label class="control-label col-xs-12 col-sm-12 col-md-3" for="css_class">#i18n{announce.createEntry.labelCSSClass} </label>
+					<div class="col-xs-12 col-sm-12 col-md-6">
+						<input type="text" name="css_class" value="${entry.CSSClass!}" maxlength="255" class="form-control" >
+						<span class="help-block">#i18n{announce.createEntry.labelCSSClassComment}</span>
+					</div>
+				</div>
+				<div class="form-group">
+					<div class="col-xs-12 col-sm-12 col-md-6  col-md-offset-3">
+						<button class="btn btn-primary btn-flat" name="save" type="submit"><i class="fa fa-check"></i>&nbsp;#i18n{announce.modifyEntry.buttonSave}</button>
+						<button class="btn btn-primary btn-flat" name="apply" type="submit"><i class="fa fa-floppy-o"></i>&nbsp;#i18n{announce.modifyEntry.buttonApply}</button>
+						<button class="btn btn-default btn-flat" type="button" onclick="javascript:window.history.back();" ><i class="fa fa-remove icon-white"></i>&nbsp;#i18n{announce.createEntry.buttonCancel}</button>
+					</div>
+				</div>
+				</form>
+			</div>
 		</div>
-		<div class="span8">
-			<fieldset>
-				<legend>
-					#i18n{announce.createEntry.manageField.title}
-					<a class="btn btn-primary btn-small pull-right" type="submit" href="jsp/admin/plugins/announce/ManageCategoryFields.jsp?view=getCreateField&id_entry=${entry.idEntry}" ><i class="icon-plus icon-white"></i>&nbsp;#i18n{announce.createEntry.manageField.buttonInsert}</a>
-				</legend>
-				<table class="table table-striped">
+	</div>
+	<div class="col-xs-12 col-sm-8 col-md-8">
+		<div class="box box-primary">
+			<div class="box-header">
+				<h3 class="box-title">#i18n{announce.createEntry.manageField.title}</h3>
+				<div class="box-tools">
+					<a class="btn btn-primary btn-flat btn-xs pull-right" type="submit" href="jsp/admin/plugins/announce/ManageCategoryFields.jsp?view=getCreateField&id_entry=${entry.idEntry}" >
+						<i class="fa fa-plus"></i>&nbsp;#i18n{announce.createEntry.manageField.buttonInsert}
+					</a>
+				</div>
+			</div>
+			<div class="box-body table-responsive">
+				<table class="table table-hover">
 					<tr> 
 						<th>#i18n{announce.createEntry.manageField.rowTitle}</th>
 						<th>#i18n{announce.createEntry.manageField.rowValue}</th>
-						<th><i class="icon-question-sign" title="#i18n{announce.createEntry.manageField.rowConditionalQuestion}"></i>&nbsp;</th>
+						<th></th>
+						<th><i class="fa fa-help" title="#i18n{announce.createEntry.manageField.rowConditionalQuestion}"></i>&nbsp;</th>
 						<th>#i18n{announce.createEntry.manageField.rowActions}</th>
 					</tr>
 					<#assign cpt=0>
@@ -57,7 +89,8 @@
 							<#assign cpt=cpt+1>
 							<tr>
 								<td>${field.title}</td>
-								<td><#if field.defaultValue><span class="label label-success"><i class="icon-ok icon-white" title="#i18n{announce.createEntry.manageField.rowDefaultValue}"></i></span></#if>&nbsp;${field.value}</td>
+								<td>${field.value}</td>
+								<td><#if field.defaultValue><span class="label label-success"><i class="fa fa-check" title="#i18n{announce.createEntry.manageField.rowDefaultValue}"></i></span></#if></td>
 								<td>
 									<#if field.conditionalQuestions?exists>
 										 <#list field.conditionalQuestions as entry>
@@ -70,28 +103,30 @@
 									</#if>     	
 								</td>
 								<td>
-									<a class="btn btn-primary btn-small" href="jsp/admin/plugins/announce/ManageCategoryFields.jsp?view=getModifyFieldCC&id_field=${field.idField}"  title="#i18n{portal.util.labelModify}" >
-										<i class="icon-edit icon-white"></i>
+									<a class="btn btn-primary btn-flat btn-xs" href="jsp/admin/plugins/announce/ManageCategoryFields.jsp?view=getModifyFieldCC&id_field=${field.idField}"  title="#i18n{portal.util.labelModify}" >
+										<i class="fa fa-pencil"></i>
 									</a>
 									<#if cpt!=1 >
-									<a class="btn btn-primary btn-small" href="jsp/admin/plugins/announce/ManageCategoryFields.jsp?action=doMoveFieldUp&id_field=${field.idField}#list"  title="#i18n{announce.createEntry.manageField.titleMoveUp}" >
-										<i class="icon-chevron-up icon-white"></i>
+									<a class="btn btn-primary btn-flat btn-xs" href="jsp/admin/plugins/announce/ManageCategoryFields.jsp?action=doMoveFieldUp&id_field=${field.idField}#list"  title="#i18n{announce.createEntry.manageField.titleMoveUp}" >
+										<i class="fa fa-chevron-up"></i>
 									</a>
 									</#if> 
 									<#if field_has_next >
-									<a class="btn btn-primary btn-small" href="jsp/admin/plugins/announce/ManageCategoryFields.jsp?action=doMoveFieldDown&id_field=${field.idField}#list"  title="#i18n{announce.createEntry.manageField.titleMoveDown}" >
-										<i class="icon-chevron-down icon-white"></i>
+									<a class="btn btn-primary btn-flat btn-xs" href="jsp/admin/plugins/announce/ManageCategoryFields.jsp?action=doMoveFieldDown&id_field=${field.idField}#list"  title="#i18n{announce.createEntry.manageField.titleMoveDown}" >
+										<i class="fa fa-chevron-down"></i>
 									</a>
 									</#if>
-									<a class="btn btn-danger btn-small" href="jsp/admin/plugins/announce/ManageCategoryFields.jsp?view=getConfirmRemoveField&id_field=${field.idField}#list"  title="#i18n{announce.createEntry.manageField.titleDelete}" >
-										<i class="icon-trash icon-white"></i>
+									<a class="btn btn-danger btn-flat btn-xs" href="jsp/admin/plugins/announce/ManageCategoryFields.jsp?view=getConfirmRemoveField&id_field=${field.idField}#list"  title="#i18n{announce.createEntry.manageField.titleDelete}" >
+										<i class="fa fa-trash"></i>
 									</a>
 								</td>
 							</tr>
 						</#list> 
 				</table>
-			</fieldset>
+			</div>
 		</div>
 	</div>
-</fieldset>
-<@initEditor />
+ </div>
+ <#include "/admin/util/editor/editor.html" />
+ <@initEditor />
+ 

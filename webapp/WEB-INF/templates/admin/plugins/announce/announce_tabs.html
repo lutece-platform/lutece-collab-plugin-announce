@@ -1,23 +1,24 @@
 <#macro tabs tab >
-    <div>
-        <ul class="nav nav-tabs">
-            <li <#if tab="announces">class="active"</#if>>
-				<a href="jsp/admin/plugins/announce/ManageAnnounces.jsp" title="#i18n{announce.manage_announces.description}">
+   <div role="tabpanel">
+		<!-- Nav tabs -->
+        <ul class="nav nav-tabs"  role="tablist">
+            <li role="presentation" <#if tab="announces">class="active"</#if>>
+				<a href="jsp/admin/plugins/announce/ManageAnnounces.jsp" title="#i18n{announce.manage_announces.description}" aria-controls="announces" role="tab" ">
 					#i18n{announce.manage_announces.pageTitle}
 				</a>
             </li>
-            <li <#if tab="sectors">class="active"</#if>>
-				<a href="jsp/admin/plugins/announce/ManageSectors.jsp" title="#i18n{announce.manage_sectors.description}">
+            <li role="presentation" <#if tab="sectors">class="active"</#if>>
+				<a href="jsp/admin/plugins/announce/ManageSectors.jsp" title="#i18n{announce.manage_sectors.description}" aria-controls="sectors" role="tab" >
 					#i18n{announce.manage_sectors.pageTitle}
 				</a>
             </li>
-            <li <#if tab="categories">class="active"</#if>>
-				<a href="jsp/admin/plugins/announce/ManageCategories.jsp" title="#i18n{announce.manage_categories.description}">
+            <li role="presentation" <#if tab="categories">class="active"</#if>>
+				<a href="jsp/admin/plugins/announce/ManageCategories.jsp" title="#i18n{announce.manage_categories.description}"aria-controls="categories" role="tab" >
 					#i18n{announce.manage_categories.pageTitle}
 				</a>
             </li>
-            <li <#if tab="users">class="active"</#if>>
-				<a href="jsp/admin/plugins/announce/ShowAnnounceUsers.jsp" title="#i18n{announce.list_users.description}">
+            <li role="presentation" <#if tab="users">class="active"</#if>>
+				<a href="jsp/admin/plugins/announce/ShowAnnounceUsers.jsp" title="#i18n{announce.list_users.description}" aria-controls="users" role="tab" >
 					#i18n{announce.list_users.pageTitle}
 				</a>
             </li>
