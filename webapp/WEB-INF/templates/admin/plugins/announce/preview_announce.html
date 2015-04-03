@@ -4,106 +4,133 @@
 			<div class="box-header">
 				<h3 class="box-title">#i18n{announce.preview_announce.pageTitle}</h3>
 			</div>
-			<div class="box-body">
-				<form class="form-horizontal" method="post" action="jsp/admin/plugins/announce/DoModifySector.jsp">
-				<div class="form-group">
-					<label class="control-label col-xs-12 col-sm-12 col-md-3">#i18n{announce.preview_announce.title}</label>
+		<div  class="box-body">
+		<div class="form-horizontal well">
+			<div class="control-group">
+				<label class="control-label col-xs-12 col-sm-12 col-md-3l">#i18n{announce.preview_announce.title}</label>
+				<div class="col-xs-12 col-sm-12 col-md-6">
+					${announce.title}
+				</div>
+			</div>
+			<#if announce.category.displayPrice>
+				<div class="control-group">
+					<label class="control-label col-xs-12 col-sm-12 col-md-3l">#i18n{announce.preview_announce.price}</label>
 					<div class="col-xs-12 col-sm-12 col-md-6">
-						${announce.title}
+						${announce.price}
 					</div>
 				</div>
-				<#if announce.category.displayPrice>
-					<div class="form-group">
-						<label class="control-label col-xs-12 col-sm-12 col-md-3">#i18n{announce.preview_announce.price}</label>
-						<div class="col-xs-12 col-sm-12 col-md-6">
-							${announce.price}
-						</div>
-					</div>
-				</#if>
-				<div class="form-group">
-					<label class="control-label col-xs-12 col-sm-12 col-md-3">#i18n{announce.preview_announce.contactInformation}</label>
-					<div class="col-xs-12 col-sm-12 col-md-6">
-						${announce.contactInformation}
-					</div>
+			</#if>
+			<div class="control-group">
+				<label class="control-label col-xs-12 col-sm-12 col-md-3l">#i18n{announce.preview_announce.contactInformation}</label>
+				<div class="col-xs-12 col-sm-12 col-md-6">
+					${announce.contactInformation}
 				</div>
-				<div class="form-group">
-					<label class="control-label col-xs-12 col-sm-12 col-md-3">#i18n{announce.preview_announce.description.title}</label>
-					<div class="col-xs-12 col-sm-12 col-md-6">
-						${announce.description}
-					</div>
+			</div>
+			<div class="control-group">
+				<label class="control-label col-xs-12 col-sm-12 col-md-3l">#i18n{announce.preview_announce.description.title}</label>
+				<div class="col-xs-12 col-sm-12 col-md-6">
+					${announce.description}
 				</div>
-				<#list list_responses as response>
-					<#if response.toStringValueResponse?has_content || response.file??>
-						<#if entrySave?exists && entrySave.idEntry!=response.entry.idEntry>
-								</div>
-							</div>
-							<#if isImage?? && isImage>
-								</ul>
-								<#assign isImage = false>
+			</div>
+			<#list list_responses as response>
+            	<#if response.toStringValueResponse?has_content || response.file??>
+                	<#if entrySave?exists && entrySave.idEntry!=response.entry.idEntry>
+                  		
+                  	
+                  	<#if isImage?? && isImage>
+                  		</ul>
+                  		<#assign isImage = false>
+                  	</#if>
+      			</#if>
+      			<#if response.field?? && response.field.title??>
+							<#if response.field.title == "X">
+								<#assign lat = response.toStringValueResponse>
+							<#elseif response.field.title == "Y">
+								<#assign lon = response.toStringValueResponse>
+							<#elseif response.field.title == "idAddress">				
+							<#elseif response.field.title == "address">
+								<#assign addressAnnounce = response.toStringValueResponse>
+								<div class="control-group">
+									<label class="control-label col-xs-12 col-sm-12 col-md-3l" for="response">${response.entry.title}</label>
+									<div class="col-xs-12 col-sm-12 col-md-6">
+										<#list admList_entryTypeGeolocation as entry>
+								
+											<#if entry.mapProvider?has_content && entry.idEntry == response.entry.idEntry >
+												${addressAnnounce}
+												<#include entry.mapProvider.htmlRecapCode />
+											</#if>	
+									
+										</#list>
+									</div>
+								</div>			
 							</#if>
-						</#if>
-						<#if !entrySave?exists || entrySave.idEntry!=response.entry.idEntry>
-							<#assign entrySave=response.entry>
-							<div class="form-group">
-								<label class="control-label col-xs-12 col-sm-12 col-md-3">${response.entry.title}</label>
-								<div class="col-xs-12 col-sm-12 col-md-6">
-								<#if response.file?? && response.file.idFile &gt; 0>
-									<#assign isImage = true>
-									<ul id="slideshow">
-										<li>
-											<a class="pirobox_gall" title="#i18n{announce.view_announce.imagesCaption}" href="image?resource_type=GENERICATTRIBUTES_RESPONSE&id=${response.idResponse}">
-												<img height="80px" src="image?resource_type=GENERICATTRIBUTES_RESPONSE&id=${response.idResponse}" />
-											</a>
-										</li>
-							<#else>
-								${response.toStringValueResponse}
-							</#if>
-						<#else>
-							<#if isImage?? && isImage>
-								<li>
+       			<#elseif !entrySave?exists || entrySave.idEntry!=response.entry.idEntry>
+                  	<#assign entrySave=response.entry>
+                	<div class="control-group">
+                    	    <label class="control-label col-xs-12 col-sm-12 col-md-3l">${response.entry.title}</label>
+                            <div class="col-xs-12 col-sm-12 col-md-6">
+                            <#if response.file?? && response.file.idFile &gt; 0>
+                            	<#assign isImage = true>
+                            	<ul id="slideshow">
+									<li>
+										<a class="pirobox_gall" title="#i18n{announce.view_announce.imagesCaption}" href="image?resource_type=GENERICATTRIBUTES_RESPONSE&id=${response.idResponse}">
+											<img height="80px" src="image?resource_type=GENERICATTRIBUTES_RESPONSE&id=${response.idResponse}" />
+										</a>
+									</li>
+                            <#else>
+                            	${response.toStringValueResponse}
+                            </#if>
+	</div>
+			</div>
+                  		<#else>
+	                    	<#if isImage?? && isImage>
+	                    		<li>
 									<a class="pirobox_gall" title="#i18n{announce.view_announce.imagesCaption}" href="image?resource_type=GENERICATTRIBUTES_RESPONSE&id=${response.idResponse}">
-										<img class="thumbnails" src="image?resource_type=GENERICATTRIBUTES_RESPONSE&id=${response.idResponse}" />
+										<img height="80px" src="image?resource_type=GENERICATTRIBUTES_RESPONSE&id=${response.idResponse}" />
 									</a>
 								</li>
-							<#else>
-								<br />${response.toStringValueResponse}
-							</#if>
-						</#if>
+	                    	<#else>
+	                    		<br />${response.toStringValueResponse}
+	                    	</#if>
+	                 	</#if>
 					</#if>
 				</#list>
-					</div>
 				</div>
-				<#if resource_history?? && resource_history != ''>
-					<div class="well">
-						${resource_history}
-					</div> 
-				</#if>
-				<div class="form-group">
-					<div class="col-xs-12 col-sm-12 col-md-6 col-md-offset-3">
-						<button class="btn btn-flat btn-default" type="button" onclick="javascript:history.go(-1);" title="#i18n{portal.util.labelBack}" >
-							<i class="fa fa-remove">&nbsp;</i>&nbsp;#i18n{portal.util.labelBack}
-						</button>
-						<#if announce.published>
-						<form method="post" class="form-inline" action="jsp/admin/plugins/announce/DoUnPublishAnnounce.jsp">
-							<input type="hidden" name="announce_id" value="${announce.id}">
-							<button class="btn btn-success btn-flat" name="unpublish" value="unpublish" title="#i18n{announce.announce.actions.unpublish}">
-								<i class="fa fa-toggle-off">&nbsp;</i>&nbsp;#i18n{announce.announce.actions.unpublish}
-							</button>
-						</form>
-					<#else>
-						<form method="post" class="form-inline" action="jsp/admin/plugins/announce/DoPublishAnnounce.jsp">
-							<input type="hidden" name="announce_id" value="${announce.id}">
-							<button class="btn btn-danger btn-flat" name="publish" value="publish" title="#i18n{announce.announce.actions.publish}">
-								<i class="fa fa-toggle-on">&nbsp;</i>&nbsp;#i18n{announce.announce.actions.publish}
-							</button>
-						</form>
-					</#if>
-					</div>
-				</div>
-				</form>
 			</div>
+			<#if resource_history?? && resource_history != ''>
+				<div class="well">
+					${resource_history}
+				</div> 
+			</#if>
+			
 		</div>
 	</div>
+	</div>
+<div class="control-group">
+<div class="col-xs-12 col-sm-12 col-md-6 col-md-offset-3">
+				<button class="btn btn-small btn-primary" type="button" onclick="javascript:history.go(-1);" title="#i18n{portal.util.labelBack}" >
+					<i class="icon-remove-circle icon-white">&nbsp;</i>&nbsp;#i18n{portal.util.labelBack}
+				</button>
+				<div class="pull-right">
+				<#if announce.published>
+					<form method="post" action="jsp/admin/plugins/announce/DoUnPublishAnnounce.jsp">
+						<input type="hidden" name="announce_id" value="${announce.id}"/>
+						<button class="btn btn-primary btn-small" name="unpublish" value="unpublish" title="#i18n{announce.announce.actions.unpublish}">
+							<i class="icon-globe icon-white">&nbsp;</i>&nbsp;#i18n{announce.announce.actions.unpublish}
+						</button>
+					</form>
+				<#else>
+					<form method="post" action="jsp/admin/plugins/announce/DoPublishAnnounce.jsp">
+						<input type="hidden" name="announce_id" value="${announce.id}"/>
+						<button class="btn btn-primary btn-small" name="publish" value="publish" title="#i18n{announce.announce.actions.publish}">
+							<i class="icon-eye-close icon-white">&nbsp;</i>&nbsp;#i18n{announce.announce.actions.publish}
+						</button>
+					</form>
+				</#if>
+				</div>
+			</div>
+</div>
+</div>
 </div>
 <link rel="stylesheet" type="text/css" href="css/plugins/announce/pirobox/white/style.css">
 <link rel="stylesheet" type="text/css" href="css/plugins/announce/announce.css">
