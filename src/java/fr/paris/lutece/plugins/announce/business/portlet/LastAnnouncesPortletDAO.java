@@ -101,8 +101,7 @@ public final class LastAnnouncesPortletDAO implements ILastAnnouncesPortletDAO
         DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECT, AnnouncePlugin.getPlugin(  ) );
         daoUtil.setInt( 1, nIdPortlet );
         daoUtil.executeQuery(  );
-        daoUtil.free(  );
-        
+          
         LastAnnouncesPortlet portlet = new LastAnnouncesPortlet(  );
         portlet.setId( nIdPortlet );
 
@@ -110,7 +109,7 @@ public final class LastAnnouncesPortletDAO implements ILastAnnouncesPortletDAO
         {
             portlet.setNbAnnouncesToDisplay( daoUtil.getInt( 1 ) );
         }
-
+        daoUtil.free(  );
         return portlet;
     }
 }

@@ -37,6 +37,8 @@ DROP TABLE IF EXISTS announce_announce;
 CREATE TABLE announce_announce(
 	id_announce int default '0' NOT NULL,
 	user_name varchar(255) NOT NULL,
+	user_lastname varchar(255) default '' NOT NULL,
+	user_secondname varchar(255) default '' NOT NULL,
 	contact_information varchar(255) NOT NULL,
 	id_category int default '0' NOT NULL,
 	title_announce varchar(255) NOT NULL ,

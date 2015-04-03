@@ -64,7 +64,7 @@ public final class AnnounceDAO implements IAnnounceDAO
     private static final String SQL_QUERY_NEW_PK = "SELECT max( id_announce ) FROM announce_announce";
 
     // Select
-    private static final String SQL_QUERY_SELECT_FIELD_LIST_WITH_CATEGORY = "SELECT a.id_announce, a.title_announce, a.description_announce, a.price_announce, a.date_creation, a.date_modification, a.user_name, a.contact_information, a.published, a.suspended, a.suspended_by_user, a.tags, a.has_pictures, a.publication_time, a.id_category, b.label_category, b.display_price FROM announce_announce a, announce_category b WHERE a.id_category = b.id_category ";
+    private static final String SQL_QUERY_SELECT_FIELD_LIST_WITH_CATEGORY = "SELECT a.id_announce, a.title_announce, a.description_announce, a.price_announce, a.date_creation, a.date_modification, a.user_name, a.user_lastname, a.user_secondname, a.contact_information, a.published, a.suspended, a.suspended_by_user, a.tags, a.has_pictures, a.publication_time, a.id_category, b.label_category, b.display_price FROM announce_announce a, announce_category b WHERE a.id_category = b.id_category ";
     private static final String SQL_QUERY_SELECT = SQL_QUERY_SELECT_FIELD_LIST_WITH_CATEGORY +
         " AND a.id_announce = ? ";
     private static final String SQL_QUERY_SELECTALL_PUBLISHED = SQL_QUERY_SELECT_FIELD_LIST_WITH_CATEGORY +
@@ -75,7 +75,7 @@ public final class AnnounceDAO implements IAnnounceDAO
         " AND a.user_name = ? ";
 
     // insert, delete
-    private static final String SQL_QUERY_INSERT = "INSERT INTO announce_announce ( id_announce, user_name, contact_information, id_category, title_announce, description_announce, price_announce, date_creation, date_modification, published, tags, has_pictures, publication_time ) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?) ";
+    private static final String SQL_QUERY_INSERT = "INSERT INTO announce_announce ( id_announce, user_name, user_lastname, user_secondname, contact_information, id_category, title_announce, description_announce, price_announce, date_creation, date_modification, published, tags, has_pictures, publication_time ) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?) ";
     private static final String SQL_QUERY_DELETE = "DELETE FROM announce_announce WHERE id_announce = ? ";
 
     // Update
@@ -134,6 +134,8 @@ public final class AnnounceDAO implements IAnnounceDAO
         /* Creation of Announce */
         daoUtil.setInt( nIndex++, announce.getId(  ) );
         daoUtil.setString( nIndex++, announce.getUserName(  ) );
+        daoUtil.setString( nIndex++, announce.getUserLastName(  ) );
+        daoUtil.setString( nIndex++, announce.getUserSecondName(  ) );
         daoUtil.setString( nIndex++, announce.getContactInformation(  ) );
         daoUtil.setInt( nIndex++, announce.getCategory(  ).getId(  ) );
         daoUtil.setString( nIndex++, announce.getTitle(  ) );
@@ -538,6 +540,8 @@ public final class AnnounceDAO implements IAnnounceDAO
         announce.setDateCreation( daoUtil.getTimestamp( nIndex++ ) );
         announce.setDateModification( daoUtil.getTimestamp( nIndex++ ) );
         announce.setUserName( daoUtil.getString( nIndex++ ) );
+        announce.setUserLastName( daoUtil.getString( nIndex++ ) );
+        announce.setUserSecondName( daoUtil.getString( nIndex++ ) );
         announce.setContactInformation( daoUtil.getString( nIndex++ ) );
         announce.setPublished( daoUtil.getBoolean( nIndex++ ) );
         announce.setSuspended( daoUtil.getBoolean( nIndex++ ) );

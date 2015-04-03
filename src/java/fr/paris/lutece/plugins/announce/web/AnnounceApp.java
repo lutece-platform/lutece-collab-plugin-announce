@@ -719,7 +719,7 @@ public class AnnounceApp extends MVCApplication
         throws SiteMessageException
     {
         String strUserName = request.getParameter( PARAMETER_USERNAME );
-
+        String strUserInfo = "";
         _strCurrentPageIndex = Paginator.getPageIndex( request, Paginator.PARAMETER_PAGE_INDEX, DEFAULT_PAGE_INDEX );
         _nDefaultItemsPerPage = AppPropertiesService.getPropertyInt( PROPERTY_DEFAULT_FRONT_LIST_ANNOUNCE_PER_PAGE, 10 );
         _nItemsPerPage = Paginator.getItemsPerPage( request, Paginator.PARAMETER_ITEMS_PER_PAGE, _nItemsPerPage,
@@ -728,6 +728,10 @@ public class AnnounceApp extends MVCApplication
         int nNbPlublishedAnnounces;
 
         List<Announce> listAnnounces = AnnounceHome.getAnnouncesForUser( strUserName, AnnounceSort.DEFAULT_SORT );
+        
+        if(listAnnounces != null && !listAnnounces.isEmpty()){
+        	strUserInfo = listAnnounces.get(0).getUserLastName() + " " + listAnnounces.get(0).getUserSecondName();
+        }
 
         Paginator<Announce> paginator = new Paginator<Announce>( listAnnounces, _nItemsPerPage,
                 JSP_PORTAL + "?" + PARAMETER_PAGE + "=" + AnnounceUtils.PARAMETER_PAGE_ANNOUNCE + "&" +
@@ -765,15 +769,14 @@ public class AnnounceApp extends MVCApplication
                 model.put( MARK_USER, user );
             }
         }
-
-        LuteceUser owner = LuteceUserService.getLuteceUserFromName( strUserName );
-
+        
+       // LuteceUser owner = LuteceUserService.getLuteceUserFromName( strUserName );
+        
         model.put( MARK_HAS_SUBSCRIBED_TO_USER,
             ( user != null ) ? AnnounceSubscriptionProvider.getService(  ).hasSubscribedToUser( user, strUserName ) : null );
 
-        String strUserRealName = ( owner == null ) ? strUserName
-                                                   : ( owner.getUserInfo( LuteceUser.NAME_GIVEN ) +
-            CONSTANT_BLANK_SPACE + owner.getUserInfo( LuteceUser.NAME_FAMILY ) );
+        String strUserRealName = ( strUserInfo == null ) ? strUserName : strUserInfo;
+            //CONSTANT_BLANK_SPACE + owner.getUserInfo( LuteceUser.NAME_FAMILY ) );
         model.put( MARK_ANNOUNCE_OWNER, StringUtils.isNotBlank( strUserRealName ) ? strUserRealName : strUserName );
         model.put( MARK_ANNOUNCE_OWNER_NAME, strUserName );
         model.put( MARK_ANNOUNCES_PUBLISHED_AMOUNT, nNbPlublishedAnnounces );
@@ -969,6 +972,9 @@ public class AnnounceApp extends MVCApplication
         announce.setDescription( strDescriptionAnnounce );
         announce.setPrice( strPriceAnnounce );
         announce.setContactInformation( strContactInformation );
+        announce.setUserName( user.getName(  ) );
+        announce.setUserLastName( user.getUserInfo( LuteceUser.NAME_GIVEN ));
+        announce.setUserSecondName( user.getUserInfo( LuteceUser.NAME_FAMILY ));
         announce.setUserName( user.getName(  ) );
         announce.setTags( strTags );
 
