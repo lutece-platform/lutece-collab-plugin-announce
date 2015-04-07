@@ -67,7 +67,7 @@
 					<form class="form-inline pull-right" method="post" action="jsp/admin/plugins/announce/ManageCategoryEntries.jsp">
 						<input name="view" value="getCreateEntry" type="hidden">
 						<input name="id_field" value="${field.idField}" type="hidden">
-						<input name="id_form" value="${field.parentEntry.idResource}" type="hidden">
+						<input name="id_category" value="${field.parentEntry.idResource}" type="hidden">
 						<label for="id_type">#i18n{announce.modify_category.create_entry.buttonLabelCreate}</label>
 						<@comboWithParams name="id_type" default_value="-1" additionalParameters="class=\"form-control input-xs\"" items=entry_type_list  />
 						<button class="btn btn-primary btn-flat btn-xs" title="#i18n{announce.modify_category.create_entry.buttonLabelCreate}" type="submit" >
