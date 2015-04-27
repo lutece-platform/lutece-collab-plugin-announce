@@ -54,7 +54,7 @@ public final class CategoryDAO implements ICategoryDAO
     private static final String SQL_QUERY_UPDATE = "UPDATE announce_category SET id_sector = ?, label_category = ?, display_price = ?, price_mandatory = ?, announces_validation = ?, id_mailing_list = ?, id_workflow = ?, display_captcha = ? WHERE id_category = ? ";
     private static final String SQL_QUERY_COUNT_ANNOUNCES_FOR_CATEORY = "SELECT COUNT(*) FROM announce_announce WHERE id_category = ?";
     private static final String SQL_QUERY_COUNT_PUBLISHED_ANNOUNCES_FOR_CATEORY = "SELECT COUNT(*) FROM announce_announce WHERE id_category = ? AND published = 1 AND suspended = 0 AND suspended_by_user = 0 ";
-    private static final String SQL_QUERY_COUNT_ENTRIES_FOR_CATEGORY = "SELECT COUNT(*) FROM announce_entry WHERE id_category = ?";
+    private static final String SQL_QUERY_COUNT_ENTRIES_FOR_CATEGORY = "SELECT COUNT(*) FROM announce_announce WHERE id_category = ?";
     private static final String SQL_QUERY_SELECT_CATEGORIES_FOR_FIELD = "SELECT id_category, id_sector, label_category FROM announce_category WHERE id_sector = ? ORDER BY label_category";
     private static final String SQL_QUERY_SELECT_CATEGORIES_REFERENCELIST = "SELECT id_category, label_category FROM announce_category";
 
