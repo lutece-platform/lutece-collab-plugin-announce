@@ -36,6 +36,7 @@ package fr.paris.lutece.plugins.announce.service.announcesearch;
 import fr.paris.lutece.plugins.announce.business.Announce;
 import fr.paris.lutece.plugins.announce.business.AnnounceHome;
 import fr.paris.lutece.plugins.announce.business.AnnounceSort;
+import fr.paris.lutece.plugins.announce.business.CategoryHome;
 import fr.paris.lutece.plugins.announce.business.IndexerAction;
 import fr.paris.lutece.plugins.announce.service.AnnouncePlugin;
 import fr.paris.lutece.plugins.announce.utils.AnnounceUtils;
@@ -58,6 +59,7 @@ import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.index.CorruptIndexException;
 import org.apache.lucene.index.IndexWriter;
+import org.apache.lucene.index.IndexableField;
 import org.apache.lucene.index.Term;
 import org.apache.tika.exception.TikaException;
 import org.apache.tika.metadata.Metadata;
@@ -261,10 +263,11 @@ public class DefaultAnnounceIndexer implements IAnnounceSearchIndexer
     {
         // make a new, empty document
         org.apache.lucene.document.Document doc = new org.apache.lucene.document.Document(  );
-
+        doc.add( new Field( AnnounceSearchItem.FIELD_SECTOR_ID, String.valueOf( announce.getCategory().getIdSector() ),
+                Field.Store.YES, Field.Index.NOT_ANALYZED ) );
+        
         doc.add( new Field( AnnounceSearchItem.FIELD_CATEGORY_ID, String.valueOf( announce.getCategory(  ).getId(  ) ),
                 Field.Store.YES, Field.Index.NOT_ANALYZED ) );
-
         doc.add( new Field( AnnounceSearchItem.FIELD_ID_ANNOUNCE, Integer.toString( announce.getId(  ) ),
                 Field.Store.YES, Field.Index.NOT_ANALYZED ) );
 

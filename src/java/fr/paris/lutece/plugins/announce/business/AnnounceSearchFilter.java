@@ -43,6 +43,7 @@ public class AnnounceSearchFilter
 {
     private int _nIdFilter;
     private String _strKeywords;
+    private int _nIdSector;
     private int _nIdCategory;
     private Date _dateMin;
     private Date _dateMax;
@@ -83,6 +84,23 @@ public class AnnounceSearchFilter
     public void setKeywords( String strKeywords )
     {
         this._strKeywords = strKeywords;
+    }
+    /**
+     * Get the id of the sector of the filter
+     * @return The id of the sector of the filter
+     */
+    public int getIdSector(  )
+    {
+        return _nIdSector;
+    }
+
+    /**
+     * Set the id of the sector of the filter
+     * @param nIdSector The id of the sector of the filter
+     */
+    public void setIdSector( int nIdSector )
+    {
+        this._nIdSector = nIdSector;
     }
 
     /**

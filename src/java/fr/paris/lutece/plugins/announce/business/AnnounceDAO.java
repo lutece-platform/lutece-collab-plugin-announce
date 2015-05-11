@@ -64,7 +64,7 @@ public final class AnnounceDAO implements IAnnounceDAO
     private static final String SQL_QUERY_NEW_PK = "SELECT max( id_announce ) FROM announce_announce";
 
     // Select
-    private static final String SQL_QUERY_SELECT_FIELD_LIST_WITH_CATEGORY = "SELECT a.id_announce, a.title_announce, a.description_announce, a.price_announce, a.date_creation, a.date_modification, a.user_name, a.user_lastname, a.user_secondname, a.contact_information, a.published, a.suspended, a.suspended_by_user, a.tags, a.has_pictures, a.publication_time, a.id_category, b.label_category, b.display_price FROM announce_announce a, announce_category b WHERE a.id_category = b.id_category ";
+    private static final String SQL_QUERY_SELECT_FIELD_LIST_WITH_CATEGORY = "SELECT a.id_announce, a.title_announce, a.description_announce, a.price_announce, a.date_creation, a.date_modification, a.user_name, a.user_lastname, a.user_secondname, a.contact_information, a.published, a.suspended, a.suspended_by_user, a.tags, a.has_pictures, a.publication_time, a.id_category, b.label_category, b.display_price, b.id_sector FROM announce_announce a, announce_category b WHERE a.id_category = b.id_category ";
     private static final String SQL_QUERY_SELECT = SQL_QUERY_SELECT_FIELD_LIST_WITH_CATEGORY +
         " AND a.id_announce = ? ";
     private static final String SQL_QUERY_SELECTALL_PUBLISHED = SQL_QUERY_SELECT_FIELD_LIST_WITH_CATEGORY +
@@ -552,7 +552,8 @@ public final class AnnounceDAO implements IAnnounceDAO
 
         category.setId( daoUtil.getInt( nIndex++ ) );
         category.setLabel( daoUtil.getString( nIndex++ ) );
-        category.setDisplayPrice( daoUtil.getBoolean( nIndex ) );
+        category.setDisplayPrice( daoUtil.getBoolean( nIndex++ ) );
+        category.setIdSector(daoUtil.getInt(nIndex ));
 
         announce.setCategory( category );
 

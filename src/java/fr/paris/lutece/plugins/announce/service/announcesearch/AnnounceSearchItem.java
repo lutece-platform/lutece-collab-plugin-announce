@@ -47,6 +47,9 @@ public class AnnounceSearchItem extends SearchItem
      * Category id
      */
     public static final String FIELD_CATEGORY_ID = "category_id";
+    
+	
+	public static final String FIELD_SECTOR_ID = "sector_id";
 
     /**
      * Id announce

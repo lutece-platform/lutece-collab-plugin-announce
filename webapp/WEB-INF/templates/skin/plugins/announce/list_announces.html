@@ -10,20 +10,26 @@
 			        	<div class="form-group">
 				            #i18n{announce.search_form.keyWordsLabel}
 				            <input type="text" value="${(filter.keywords)!}" name="keywords"/>
-				            <select name="category_id">
+				            <select name="sector_id" id="idSector">
+				            	<option value="0">#i18n{announce.search_form.defaultSectorLabel}</option>
+				            	<#list list_sectors as sector>
+				            		<#if (filter.idSector)?? && filter.idSector == sector.id>
+				                	<option selected="selected" value="${sector.id}">${sector.label}</option>
+				                	<#else>
+				                	<option  value="${sector.id}">${sector.label}</option>
+				                	</#if>
+				                </#list>
+				            </select>
+				            <select name="category_id" id="idCategory">
 				                <option value="0">#i18n{announce.search_form.defaultCategoryLabel}</option>
-				                <#list list_sectors as sector>
-				                <optgroup label="${sector.label}">
-				                    <#list sector.listCategories as category>
+				                    <#list list_sector_categories as category>
 				                        <#if (filter.idCategory)?? && filter.idCategory == category.id>
 				                            <option selected="selected" value="${category.id}">${category.label}</option>
 				                        <#else>
 				                            <option value="${category.id}">${category.label}</option>
 				                        </#if>
 				                    </#list>
-				                </optgroup>
-				                </#list>
-				            </select>
+				                </select>
 				            <br/>
 			            </div>
 			            <div class="form-group">
@@ -74,8 +80,28 @@
 		</#if>
 		<div class="well">
 			<#if announces_list?has_content>
-				<table class="table">
-					<#list announces_list as announce>
+			<div>
+	 		    <#assign listSortBy = {
+	 		    	"date_creation":"#i18n{announce.sort_announce.by_date_creation}",
+	            	"date_modification":"#i18n{announce.sort_announce.by_date_modification}",
+	            	"title_announce":"#i18n{announce.sort_announce.by_title_announce}",
+	            	"price_announce":"#i18n{announce.sort_announce.by_price_announce}",
+	            	"description_announce":"#i18n{announce.sort_announce.by_description_announce}"
+	             }>
+	             <#assign keys = listSortBy?keys> 
+			     <span>#i18n{announce.sort_announce.title} : </span> 
+			     
+				 <select id="idSort">
+					<#list keys as key>
+						<option <#if (key=="${sortArg}")>selected="selected"</#if>id="id${key}" value="${key}"
+						
+						>${listSortBy[key]}</option>
+					</#list>
+				</select> 
+				<input type="hidden" name="sortBy" value="">
+			</div>
+			<table class="table">
+			<#list announces_list as announce>
 						<tr>
 							<td>
 								<div class="announce-result clearfix">
@@ -119,3 +145,31 @@
 	
 	</div>
 </div>
+<script>
+$('#idSort').on('change', function() {
+	var loc=""+location;
+	var n=loc.indexOf("jsp");
+	var urlbase=loc.substring(0,n);
+	location = urlbase+"jsp/site/Portal.jsp?page=announce&action=sort&sortBy="+this.value;
+	})
+	
+$('#idSector').on('change', function() {
+	$('#idCategory').empty();
+	var newOption0 = $('<option value="0">#i18n{announce.search_form.defaultCategoryLabel}</option>');
+	$('#idCategory').append(newOption0);
+	var listSecCat=[<#list list_sectors as sector>
+						["${sector.id}",<#list sector.listCategories as category>"${category.label}",</#list>],
+					</#list>];
+	var listIdSecCat=[<#list list_sectors as sector>
+	["${sector.id}",<#list sector.listCategories as category>"${category.id}",</#list>],
+</#list>];
+	for(var i=0;i<listSecCat.length;i++){
+		if(idSec==parseInt(listSecCat[i][0])){
+			for(var j=1;j<listSecCat[i].length;j++){
+				var newOption = $('<option value='+listIdSecCat[i][j]+'>'+listSecCat[i][j]+'</option>');
+				$('#idCategory').append(newOption);
+			}
+		}
+	}
+	})
+</script>

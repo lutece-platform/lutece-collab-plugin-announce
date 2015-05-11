@@ -42,7 +42,6 @@ import fr.paris.lutece.portal.service.search.SearchResult;
 import fr.paris.lutece.portal.service.util.AppLogService;
 
 import org.apache.commons.lang.StringUtils;
-
 import org.apache.lucene.document.DateTools;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.DirectoryReader;
@@ -53,6 +52,7 @@ import org.apache.lucene.index.Term;
 import org.apache.lucene.queryparser.classic.MultiFieldQueryParser;
 import org.apache.lucene.queryparser.surround.parser.QueryParser;
 import org.apache.lucene.search.BooleanClause;
+import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.PhraseQuery;
 import org.apache.lucene.search.Query;
@@ -67,10 +67,8 @@ import org.apache.lucene.util.BytesRef;
 import org.apache.lucene.util.Version;
 
 import java.io.IOException;
-
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -84,6 +82,7 @@ import java.util.Locale;
 public class AnnounceLuceneSearchEngine implements IAnnounceSearchEngine
 {
     private static final int NO_CATEGORY = 0;
+    private static final int NO_SECTOR = 0;
     private static final SimpleDateFormat DAY_FORMAT = new SimpleDateFormat( "yyyyMMdd", Locale.US );
 
     /**
@@ -100,7 +99,7 @@ public class AnnounceLuceneSearchEngine implements IAnnounceSearchEngine
         Date dateMinToSearch;
         Date dateMaxToSearch;
         int nNbResults = 0;
-
+       
         try
         {
             searcher = AnnounceSearchService.getInstance(  ).getSearcher(  );
@@ -108,14 +107,24 @@ public class AnnounceLuceneSearchEngine implements IAnnounceSearchEngine
             Collection<String> queries = new ArrayList<String>(  );
             Collection<String> sectors = new ArrayList<String>(  );
             Collection<BooleanClause.Occur> flags = new ArrayList<BooleanClause.Occur>(  );
-
+           
             //Category id
             if ( filter.getIdCategory(  ) != NO_CATEGORY )
             {
-                Query queryCategoryId = new TermQuery( new Term( AnnounceSearchItem.FIELD_CATEGORY_ID,
-                            String.valueOf( filter.getIdCategory(  ) ) ) );
+            	Query queryCategoryId = new TermQuery( new Term( AnnounceSearchItem.FIELD_CATEGORY_ID,
+                        String.valueOf( filter.getIdCategory(  ) ) ) );
                 queries.add( queryCategoryId.toString(  ) );
                 sectors.add( AnnounceSearchItem.FIELD_CATEGORY_ID );
+                flags.add( BooleanClause.Occur.MUST );
+            }
+            
+            //Category id
+            if ( filter.getIdSector(  ) != NO_SECTOR )
+            {
+            	Query querySectorId = new TermQuery( new Term( AnnounceSearchItem.FIELD_SECTOR_ID,
+                        String.valueOf( filter.getIdSector(  ) ) ) );
+                queries.add( querySectorId.toString(  ) );
+                sectors.add( AnnounceSearchItem.FIELD_SECTOR_ID );
                 flags.add( BooleanClause.Occur.MUST );
             }
 
@@ -186,6 +195,7 @@ public class AnnounceLuceneSearchEngine implements IAnnounceSearchEngine
                     queries.toArray( new String[queries.size(  )] ), sectors.toArray( new String[sectors.size(  )] ),
                     flags.toArray( new BooleanClause.Occur[flags.size(  )] ),
                     AnnounceSearchService.getInstance(  ).getAnalyzer(  ) );
+
 
             TopDocs topDocs = searcher.search( queryMulti, 1000000 );
             ScoreDoc[] hits = topDocs.scoreDocs;

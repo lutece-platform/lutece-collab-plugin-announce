@@ -55,6 +55,11 @@ public class AnnounceSort
      * Sort by title
      */
     public static final String SORT_TITLE = "title_announce";
+    
+    /**
+     * Sort by price
+     */
+    public static final String SORT_PRICE = "price_announce";
 
     /**
      * Sort by description
@@ -108,7 +113,7 @@ public class AnnounceSort
     {
         if ( StringUtils.equals( SORT_DATE_CREATION, strSort ) ||
                 StringUtils.equals( SORT_DATE_MODIFICATION, strSort ) || StringUtils.equals( SORT_TITLE, strSort ) ||
-                StringUtils.equals( SORT_DESCRIPTION, strSort ) )
+                StringUtils.equals( SORT_DESCRIPTION, strSort ) || StringUtils.equals( SORT_PRICE, strSort ))
         {
             return new AnnounceSort( strSort, bSortAsc );
         }
