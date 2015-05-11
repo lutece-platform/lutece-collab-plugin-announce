@@ -2,7 +2,7 @@
 	<div class="col-sm-3">
 		<#include "navigation_menu.html">
 	</div>
-	<div class="col-sm-9">  	
+	<div class="col-sm-9">
 		<div class="well">
 
 		<#if isExtendInstalled?? && isExtendInstalled && announce.published && !announce.suspended && !announce.suspendedByUser>
@@ -17,14 +17,14 @@
 					<#if user_is_author>
 						<!-- user controls on his announce -->
 						<div class="possible-actions">
-							#i18n{announce.view_announce.actions.title}: 
+							#i18n{announce.view_announce.actions.title}:
 							<a href="jsp/site/Portal.jsp?page=announce&action=modify_announce&announce_id=${announce.id}">
 								<img src="images/local/skin/plugins/announce/actions/modify.png" alt="#i18n{announce.my_announces.actionTitleModify}" title="#i18n{announce.my_announces.actionTitleModify}"/>
 							</a>
 							<a href="jsp/site/Portal.jsp?page=announce&action=delete_announce&announce_id=${announce.id}">
 								<img src="images/local/skin/plugins/announce/actions/delete.png" alt="#i18n{announce.my_announces.actionTitleDelete}" title="#i18n{announce.my_announces.actionTitleDelete}"/>
 							</a>
-							
+
 							<#if !announce.suspendedByUser>
 								<a href="jsp/site/Portal.jsp?page=announce&action=suspend_by_user&announce_id=${announce.id}">
 									<img src="images/local/skin/plugins/announce/actions/suspend_by_user.png" alt="#i18n{announce.my_announces.actionTitleSuspend}" title="#i18n{announce.my_announces.actionTitleSuspend}"/>
@@ -36,7 +36,7 @@
 							</#if>
 						</div>
 					</#if>
-					
+
 					<#if user?exists && user.name == announce.userName>
 						<!-- Eventual messages -->
 						<#if !announce.published && !announce.suspended>
@@ -66,7 +66,7 @@
 							</div>
 						</div>
 					</#if>
-					
+
 					<div class="form-horizontal well">
 					<#if announce.category.displayPrice>
 						<div class="form-group">
@@ -94,7 +94,7 @@
 		                  		</div>
 		                  	</div>
 		                  	<#if isImage?? && isImage>
-		                  		</ul>
+											</div>
 		                  		<#assign isImage = false>
 		                  	</#if>
 		      			</#if>
@@ -103,24 +103,24 @@
 								<#assign lat = response.toStringValueResponse>
 							<#elseif response.field.title == "Y">
 								<#assign lon = response.toStringValueResponse>
-							<#elseif response.field.title == "idAddress">				
+							<#elseif response.field.title == "idAddress">
 							<#elseif response.field.title == "address">
 								<#assign addressAnnounce = response.toStringValueResponse>
 								<div class="form-group">
 									<label class="col-sm-2 control-label" for="response">${response.entry.title}</label>
 									<div class="col-sm-10" id="response">
 										<#list list_entryTypeGeolocation as entry>
-								
+
 											<#if entry.mapProvider?has_content && entry.idEntry == response.entry.idEntry >
 												${addressAnnounce}
 												<#include entry.mapProvider.htmlRecapCode />
-											</#if>	
-									
+											</#if>
+
 										</#list>
 									</div>
-								</div>			
+								</div>
 							</#if>
-						
+
 		       			<#elseif !entrySave?exists || entrySave.idEntry!=response.entry.idEntry>
 		                  	<#assign entrySave=response.entry>
 		                		<div class="form-group">
@@ -128,29 +128,26 @@
 		                            <div class="col-sm-10" id="response">
 		                            <#if response.file?? && response.file.idFile &gt; 0>
 		                            	<#assign isImage = true>
-		                            	<ul id="slideshow">
-											<li>
-												<a class="pirobox_gall" title="#i18n{announce.view_announce.imagesCaption}" href="image?resource_type=GENERICATTRIBUTES_RESPONSE&id=${response.idResponse}">
-													<img height="80px" src="image?resource_type=GENERICATTRIBUTES_RESPONSE&id=${response.idResponse}" />
-												</a>
-											</li>
+																	<#assign imageIndex = 1>
+																		<div id="gallery">
+																			<a title="#i18n{announce.view_announce.imagesCaption}" href="image?resource_type=GENERICATTRIBUTES_RESPONSE&id=${response.idResponse}">
+																				<img src="image?resource_type=GENERICATTRIBUTES_RESPONSE&id=${response.idResponse}" title="${announce.title} - image ${imageIndex}" alt="#i18n{announce.view_announce.imagesCaption}" />
+																			</a>
 		                            <#else>
-					
+
 		                            	${response.toStringValueResponse}
 		                            </#if>
 		                  	    <#else>
 			                    	<#if isImage?? && isImage>
-			                    		<li>
-											<a class="pirobox_gall" title="#i18n{announce.view_announce.imagesCaption}" href="image?resource_type=GENERICATTRIBUTES_RESPONSE&id=${response.idResponse}">
-												<img height="80px" src="image?resource_type=GENERICATTRIBUTES_RESPONSE&id=${response.idResponse}" />
-											</a>
-										</li>
+															<a title="#i18n{announce.view_announce.imagesCaption}" href="image?resource_type=GENERICATTRIBUTES_RESPONSE&id=${response.idResponse}">
+																<img src="image?resource_type=GENERICATTRIBUTES_RESPONSE&id=${response.idResponse}" title="${announce.title} - image ${imageIndex}" alt="#i18n{announce.view_announce.imagesCaption}" />
+															</a>
 			                    	<#else>
 			                    		<br />${response.toStringValueResponse}
 			                    	</#if>
 			                 	</#if>
-						</#if>
-						
+							</#if>
+							<#assign imageIndex=imageIndex+1>
 						</#list>
 						</div>
 					</div>

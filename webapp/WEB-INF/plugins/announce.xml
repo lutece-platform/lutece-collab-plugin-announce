@@ -19,13 +19,11 @@
     <css-stylesheets>
         <css-stylesheets-scope>portal</css-stylesheets-scope>
         <css-stylesheet>announce/announce.css</css-stylesheet>
-        <css-stylesheet>announce/pirobox/white/style.css</css-stylesheet>
-        <css-stylesheet>jscalendar/calendar-lutece.css</css-stylesheet>
     </css-stylesheets>
     <!-- Specific plugin JAVASCRIPT -->
     <javascript-files>
         <javascript-files-scope>portal</javascript-files-scope>
-        <javascript-file>announce/pirobox/piroBox.1_2_min.js</javascript-file>
+        <javascript-file>announce/jquery.poptrox.min.js</javascript-file>
         <javascript-file>announce/announce.js</javascript-file>
 		<javascript-file>announce/uploadify/jquery.uploadify.v2.1.4.min.js</javascript-file>
 		<javascript-file>announce/uploadify/swfobject.js</javascript-file>
