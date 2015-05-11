@@ -88,15 +88,16 @@
 							${announce.description}
 						</div>
 					</div>
+					<#assign imageIndex = 1>
 					<#list list_responses as response>
-		            		<#if response.toStringValueResponse?has_content || response.file??>
-		                	<#if entrySave?exists && entrySave.idEntry!=response.entry.idEntry>
-		                  		</div>
-		                  	</div>
-		                  	<#if isImage?? && isImage>
-											</div>
-		                  		<#assign isImage = false>
-		                  	</#if>
+		      	<#if response.toStringValueResponse?has_content || response.file??>
+		         	<#if entrySave?exists && entrySave.idEntry!=response.entry.idEntry>
+		          	 		</div>
+		             	</div>
+		             	<#if isImage?? && isImage>
+										</div>
+		            		<#assign isImage = false>
+		             	</#if>
 		      			</#if>
 					<#if response.field?? && response.field.title??>
 							<#if response.field.title == "X">
@@ -110,7 +111,6 @@
 									<label class="col-sm-2 control-label" for="response">${response.entry.title}</label>
 									<div class="col-sm-10" id="response">
 										<#list list_entryTypeGeolocation as entry>
-
 											<#if entry.mapProvider?has_content && entry.idEntry == response.entry.idEntry >
 												${addressAnnounce}
 												<#include entry.mapProvider.htmlRecapCode />
@@ -120,7 +120,6 @@
 									</div>
 								</div>
 							</#if>
-
 		       			<#elseif !entrySave?exists || entrySave.idEntry!=response.entry.idEntry>
 		                  	<#assign entrySave=response.entry>
 		                		<div class="form-group">
@@ -128,7 +127,6 @@
 		                            <div class="col-sm-10" id="response">
 		                            <#if response.file?? && response.file.idFile &gt; 0>
 		                            	<#assign isImage = true>
-																	<#assign imageIndex = 1>
 																		<div id="gallery">
 																			<a title="#i18n{announce.view_announce.imagesCaption}" href="image?resource_type=GENERICATTRIBUTES_RESPONSE&id=${response.idResponse}">
 																				<img src="image?resource_type=GENERICATTRIBUTES_RESPONSE&id=${response.idResponse}" title="${announce.title} - image ${imageIndex}" alt="#i18n{announce.view_announce.imagesCaption}" />
