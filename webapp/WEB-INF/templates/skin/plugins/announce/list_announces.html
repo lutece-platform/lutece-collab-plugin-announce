@@ -78,6 +78,7 @@
 				Pages: <@pagination paginator=paginator />
 			</div>
 		</#if>
+		<input type="hidden" id="idPageIndex" value="${page_index}">
 		<div class="well">
 			<#if announces_list?has_content>
 			<div>
@@ -150,7 +151,7 @@ $('#idSort').on('change', function() {
 	var loc=""+location;
 	var n=loc.indexOf("jsp");
 	var urlbase=loc.substring(0,n);
-	location = urlbase+"jsp/site/Portal.jsp?page=announce&action=sort&sortBy="+this.value;
+	location = urlbase+"jsp/site/Portal.jsp?page=announce&action=sort&sortBy="+this.value+"&page_index="+$("#idPageIndex").val();
 	})
 	
 $('#idSector').on('change', function() {

@@ -209,7 +209,7 @@ public class AnnounceLuceneSearchEngine implements IAnnounceSearchEngine
                 nFrom = 0;
             }
 
-            int nTo = ( nPage * nItemsPerPage ) + 1;
+            int nTo = ( nPage * nItemsPerPage );
 
             if ( ( nTo == 0 ) || ( nTo > nNbResults ) )
             {

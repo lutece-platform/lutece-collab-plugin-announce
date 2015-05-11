@@ -331,7 +331,7 @@ public class AnnounceApp extends MVCApplication
         int nIdSector = (request.getParameter("sector_id") == null ? 0 :Integer.parseInt(request.getParameter("sector_id")));
         model.put( MARK_LIST_CATEGORIES, AnnounceApp.getCategoryList( nIdSector ));
         model.put( "sortArg", AnnounceSort.DEFAULT_SORT.getSortColumn()  );
-       // model.put( "toto", strSector  );
+        model.put( "page_index", _strCurrentPageIndex  );
         if ( SecurityService.isAuthenticationEnable(  ) )
         {
             model.put( MARK_USER, SecurityService.getInstance(  ).getRegisteredUser( request ) );
@@ -428,6 +428,7 @@ public class AnnounceApp extends MVCApplication
         int nIdSector = (request.getParameter("sector_id") == null ? 0 :Integer.parseInt(request.getParameter("sector_id")));
         model.put( MARK_LIST_CATEGORIES, AnnounceApp.getCategoryList( nIdSector ));
         model.put("sortArg", anSort.getSortColumn());
+        model.put( "page_index", _strCurrentPageIndex  );
         if ( SecurityService.isAuthenticationEnable(  ) )
         {
             model.put( MARK_USER, SecurityService.getInstance(  ).getRegisteredUser( request ) );
