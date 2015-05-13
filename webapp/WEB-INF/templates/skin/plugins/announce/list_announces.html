@@ -72,12 +72,12 @@
 	
 		<@getDatePickerBootstrap idField="date_min" language=locale />
 		<@getDatePickerBootstrap idField="date_max" language=locale />
-		
-		<#if (paginator.pagesCount > 1) >
-			<div class="paginator">
-				Pages: <@pagination paginator=paginator />
-			</div>
-		</#if>
+		<div class="paginator">
+			<span style="padding-right: 60px;">#i18n{announce.number.item.result} : <strong>${nbItem}</strong></span>
+			<#if (paginator.pagesCount > 1) >
+				<span>Pages: <@pagination paginator=paginator /></span>
+			</#if>
+		</div>
 		<input type="hidden" id="idPageIndex" value="${page_index}">
 		<div class="well">
 			<#if announces_list?has_content>
@@ -99,7 +99,7 @@
 						>${listSortBy[key]}</option>
 					</#list>
 				</select> 
-				<input type="hidden" name="sortBy" value="">
+				<input type="hidden" name="sortBy">
 			</div>
 			<table class="table">
 			<#list announces_list as announce>
@@ -151,10 +151,12 @@ $('#idSort').on('change', function() {
 	var loc=""+location;
 	var n=loc.indexOf("jsp");
 	var urlbase=loc.substring(0,n);
-	location = urlbase+"jsp/site/Portal.jsp?page=announce&action=sort&sortBy="+this.value+"&page_index="+$("#idPageIndex").val();
+	//location = urlbase+"jsp/site/Portal.jsp?page=announce&action=search&sortBy="+this.value+"&page_index="+$("#idPageIndex").val();
+	location = urlbase+"jsp/site/Portal.jsp?page=announce&action=search&sortBy="+this.value+"&page_index="+$("#idPageIndex").val();
 	})
 	
 $('#idSector').on('change', function() {
+	var idSec=this.value;
 	$('#idCategory').empty();
 	var newOption0 = $('<option value="0">#i18n{announce.search_form.defaultCategoryLabel}</option>');
 	$('#idCategory').append(newOption0);
@@ -172,5 +174,13 @@ $('#idSector').on('change', function() {
 			}
 		}
 	}
+	if(idSec==0){
+		for(var i=0;i<listSecCat.length;i++){
+				for(var j=1;j<listSecCat[i].length;j++){
+					var newOption = $('<option value='+listIdSecCat[i][j]+'>'+listSecCat[i][j]+'</option>');
+					$('#idCategory').append(newOption);
+				}
+		}
+		}
 	})
 </script>

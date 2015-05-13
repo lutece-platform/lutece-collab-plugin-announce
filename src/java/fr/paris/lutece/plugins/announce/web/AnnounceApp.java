@@ -160,7 +160,6 @@ public class AnnounceApp extends MVCApplication
     private static final String ACTION_ENABLE_ANNOUNCE_BY_USER = "enable_by_user";
     private static final String ACTION_VIEW_SUBSCRIPTIONS = "view_subscriptions";
     private static final String ACTION_SEARCH = "search";
-    private static final String ACTION_SORT = "sort";
     private static final String ACTION_ADDNEW = "addnew";
 
     // Views
@@ -291,13 +290,29 @@ public class AnnounceApp extends MVCApplication
             StringUtils.isNumeric( _strCurrentPageIndex ) ) ? Integer.parseInt( _strCurrentPageIndex ) : 1;
         List<Integer> listIdAnnounces = new ArrayList<Integer>(  );
         
-        //String strSector = request.getParameter( "sector_id" );
-        
         int nNbItems = AnnounceSearchService.getInstance(  )
                                             .getSearchResults( filter, nCurrentPageIndex, _nItemsPerPage,
                 listIdAnnounces );
         
-        List<Announce> listAnnounces = AnnounceHome.findByListId( listIdAnnounces, AnnounceSort.DEFAULT_SORT );
+        //-------------------------SORT---------------------------------
+       
+        String strSort = (request.getParameter("sortBy") == null ? "" :request.getParameter("sortBy"));
+        AnnounceSort anSort = AnnounceSort.DEFAULT_SORT;
+
+        if(strSort.compareTo("date_modification") == 0)
+        	anSort = AnnounceSort.getAnnounceSort(AnnounceSort.SORT_DATE_MODIFICATION, false);
+        	        
+        if(strSort.compareTo("title_announce") == 0)
+        	anSort = AnnounceSort.getAnnounceSort(AnnounceSort.SORT_TITLE, true);
+        
+        if(strSort.compareTo("price_announce") == 0)
+        	anSort = AnnounceSort.getAnnounceSort(AnnounceSort.SORT_PRICE, true);
+       if(strSort.compareTo("description_announce") == 0)
+        	anSort = AnnounceSort.getAnnounceSort(AnnounceSort.SORT_DESCRIPTION, true);
+        	
+        List<Announce> listAnnounces = AnnounceHome.findByListId( listIdAnnounces, anSort );
+        
+        //--------------------------END SORT----------------------------------
         
         LocalizedDelegatePaginator<Announce> paginator = new LocalizedDelegatePaginator<Announce>( listAnnounces,
                 _nItemsPerPage, getUrlSearchAnnounce( request ), PARAMETER_PAGE_INDEX, _strCurrentPageIndex, nNbItems,
@@ -330,8 +345,9 @@ public class AnnounceApp extends MVCApplication
         model.put( MARK_LIST_SECTORS, AnnounceApp.getSectorList(  ) );
         int nIdSector = (request.getParameter("sector_id") == null ? 0 :Integer.parseInt(request.getParameter("sector_id")));
         model.put( MARK_LIST_CATEGORIES, AnnounceApp.getCategoryList( nIdSector ));
-        model.put( "sortArg", AnnounceSort.DEFAULT_SORT.getSortColumn()  );
+        model.put( "sortArg", anSort.getSortColumn()  );
         model.put( "page_index", _strCurrentPageIndex  );
+        model.put( "nbItem",nNbItems );
         if ( SecurityService.isAuthenticationEnable(  ) )
         {
             model.put( MARK_USER, SecurityService.getInstance(  ).getRegisteredUser( request ) );
@@ -342,105 +358,7 @@ public class AnnounceApp extends MVCApplication
 
         return page;
     }
-    /**
-     * Get the page to search for sorted announces
-     * @param request The request
-     * @return The HTML content to displayed
-     */
-    @Action( ACTION_SORT )
-    public XPage getSortAnnounces( HttpServletRequest request )
-    {
-                
-        String strSort = request.getParameter( "sortBy" );
-        AnnounceSort tmpb = AnnounceSort.DEFAULT_SORT;
-
-        if(strSort.compareTo("date_modification") == 0){
-        	tmpb = AnnounceSort.getAnnounceSort(AnnounceSort.SORT_DATE_MODIFICATION, true);
-        	//return getSortAnnounces(request,AnnounceSort.getAnnounceSort(AnnounceSort.SORT_TITLE, true) );
-        	//listAnnounces = AnnounceHome.findByListId( listIdAnnounces, AnnounceSort.getAnnounceSort(AnnounceSort.SORT_TITLE, true) );
-        }
-        
-        if(strSort.compareTo("title_announce") == 0){
-        	tmpb = AnnounceSort.getAnnounceSort(AnnounceSort.SORT_TITLE, true);
-        	//return getSortAnnounces(request,AnnounceSort.getAnnounceSort(AnnounceSort.SORT_TITLE, true) );
-        	//listAnnounces = AnnounceHome.findByListId( listIdAnnounces, AnnounceSort.getAnnounceSort(AnnounceSort.SORT_TITLE, true) );
-        }
-        if(strSort.compareTo("price_announce") == 0){
-        	tmpb = AnnounceSort.getAnnounceSort(AnnounceSort.SORT_PRICE, true);
-        	//return getSortAnnounces(request,AnnounceSort.getAnnounceSort(AnnounceSort.SORT_PRICE, true) );
-        	//listAnnounces = AnnounceHome.findByListId( listIdAnnounces, AnnounceSort.getAnnounceSort(AnnounceSort.SORT_PRICE, true) );
-        }
-        if(strSort.compareTo("description_announce") == 0){
-        	tmpb = AnnounceSort.getAnnounceSort(AnnounceSort.SORT_DESCRIPTION, true);
-        	//return getSortAnnounces(request,AnnounceSort.getAnnounceSort(AnnounceSort.SORT_DESCRIPTION, true) );
-        	//listAnnounces = AnnounceHome.findByListId( listIdAnnounces, AnnounceSort.getAnnounceSort(AnnounceSort.SORT_DESCRIPTION, true) );
-        }
-        
-        return getSortAnnounces(request,tmpb );
-    }
-    public XPage getSortAnnounces( HttpServletRequest request, AnnounceSort anSort )
-    {
-        _strCurrentPageIndex = Paginator.getPageIndex( request, Paginator.PARAMETER_PAGE_INDEX, DEFAULT_PAGE_INDEX );
-        _nDefaultItemsPerPage = AppPropertiesService.getPropertyInt( PROPERTY_DEFAULT_FRONT_LIST_ANNOUNCE_PER_PAGE, 10 );
-        _nItemsPerPage = Paginator.getItemsPerPage( request, Paginator.PARAMETER_ITEMS_PER_PAGE, _nItemsPerPage,
-                _nDefaultItemsPerPage );
-
-        AnnounceSearchFilter filter = getAnnounceFilterFromRequest( request );
-
-        int nCurrentPageIndex = ( StringUtils.isNotEmpty( _strCurrentPageIndex ) &&
-            StringUtils.isNumeric( _strCurrentPageIndex ) ) ? Integer.parseInt( _strCurrentPageIndex ) : 1;
-        List<Integer> listIdAnnounces = new ArrayList<Integer>(  );
-        int nNbItems = AnnounceSearchService.getInstance(  )
-                                            .getSearchResults( filter, nCurrentPageIndex, _nItemsPerPage,
-                listIdAnnounces );
-        
-        List<Announce> listAnnounces = AnnounceHome.findByListId( listIdAnnounces, anSort);
-
-        LocalizedDelegatePaginator<Announce> paginator = new LocalizedDelegatePaginator<Announce>( listAnnounces,
-                _nItemsPerPage, getUrlSearchAnnounce( request ), PARAMETER_PAGE_INDEX, _strCurrentPageIndex, nNbItems,
-                request.getLocale(  ) );
-
-        Map<String, Object> model = new HashMap<String, Object>(  );
-        model.put( MARK_NB_ITEMS_PER_PAGE, Integer.toString( _nItemsPerPage ) );
-        model.put( MARK_PAGINATOR, paginator );
-        model.put( MARK_LIST_FIELDS, getSectorList(  ) );
-        model.put( MARK_LOCALE, request.getLocale(  ) );
-
-        for ( Announce announce : paginator.getPageItems(  ) )
-        {
-            announce.setListIdImageResponse( AnnounceHome.findListIdImageResponse( announce.getId(  ) ) );
-        }
-
-        model.put( MARK_ANNOUNCES_LIST, paginator.getPageItems(  ) );
-        model.put( MARK_FILTER_DATE_MIN,
-            ( filter.getDateMin(  ) != null ) ? _dateFormat.format( filter.getDateMin(  ) ) : null );
-        model.put( MARK_FILTER_DATE_MAX,
-            ( filter.getDateMax(  ) != null ) ? _dateFormat.format( filter.getDateMax(  ) ) : null );
-        model.put( MARK_FILTER, filter );
-
-        LuteceUser user = SecurityService.getInstance(  ).getRegisteredUser( request );
-        model.put( MARK_USER, user );
-
-        //useful if you want to work with Portal.jsp and RunStandaloneApp.jsp
-        model.put( FULL_URL, request.getRequestURL(  ) );
-        
-        model.put( MARK_LIST_SECTORS, AnnounceApp.getSectorList(  ) );
-        int nIdSector = (request.getParameter("sector_id") == null ? 0 :Integer.parseInt(request.getParameter("sector_id")));
-        model.put( MARK_LIST_CATEGORIES, AnnounceApp.getCategoryList( nIdSector ));
-        model.put("sortArg", anSort.getSortColumn());
-        model.put( "page_index", _strCurrentPageIndex  );
-        if ( SecurityService.isAuthenticationEnable(  ) )
-        {
-            model.put( MARK_USER, SecurityService.getInstance(  ).getRegisteredUser( request ) );
-        }
-
-        XPage page = getXPage( TEMPLATE_LIST_ANNOUNCES, request.getLocale(  ), model );
-        page.setTitle( I18nService.getLocalizedString( PROPERTY_PAGE_TITLE_SEARCH_RESULTS, request.getLocale(  ) ) );
-
-        return page;
-    }
-
-   
+    
     /**
      * Get the HTML to describe a list of announces
      * @param request The request
