@@ -297,9 +297,8 @@ public class AnnounceSubscriptionProvider implements ISubscriptionProviderServic
         subscription.setIdSubscribedResource( strIdResource );
         subscription.setSubscriptionKey( strSubscriptionKey );
         subscription.setSubscriptionProvider( getProviderName(  ) );
-        subscription.setUserId( user.getName(  ) );
-
-        SubscriptionService.getInstance(  ).createSubscription( subscription, user );
+        subscription.setUserId( user.getUserInfo( LuteceUser.BUSINESS_INFO_ONLINE_EMAIL ) );
+        SubscriptionService.getInstance(  ).createSubscription( subscription );
     }
 
     /**
