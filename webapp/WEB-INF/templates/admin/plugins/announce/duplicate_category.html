@@ -1,0 +1,37 @@
+<div class="row">
+	<div class="col-xs-12 col-sm-12 col-md-12">
+		<div class="box box-primary">
+			<div class="box-header sr-only">
+				<h3 class="box-title">#i18n{announce.duplicate_category.pageTitle}</h3>
+			</div>
+			<div class="box-body">
+				<form class="form-horizontal" method="post" action="jsp/admin/plugins/announce/DoDuplicateCategory.jsp">
+					<input type="hidden" name="category_id" value="${category.id}">
+					<@fieldInputText i18nLabelKey='announce.category.label' inputName='category_label' mandatory=true value='' maxlength=255 i18nHelpBlockKey='' />	
+					<@fieldInputCombo items=list_sectors i18nLabelKey='announce.category.sector' inputName='category_sector_id' mandatory=true value=category.idSector?string />	
+					<@fieldInputCombo items=list_announces_validation i18nLabelKey='announce.category.announcesValidation' inputName='category_announces_validation' mandatory=true value=category.announcesValidation?string i18nHelpBlockKey='announce.globalParameterHelp' />	
+					<@fieldInputCombo items=mailing_list_list i18nLabelKey='announce.category.mailingList' inputName='mailing_list_id' value=category.idMailingList?string i18nHelpBlockKey='announce.category.mailingList.helper' />	
+					<@fieldInputCheckBox i18nLabelKey='announce.category.displayPrice' inputName='display_price' value="true" checked=category.displayPrice i18nHelpBlockKey='announce.category.displayPrice.helper' />	
+					<@fieldInputCheckBox i18nLabelKey='announce.category.priceMandatory' inputName='price_mandatory' value="true" checked=category.priceMandatory i18nHelpBlockKey='announce.category.priceMandatory.helper' />	
+					<#if isCaptchaEnabled?? && isCaptchaEnabled>
+						<@fieldInputCheckBox i18nLabelKey='announce.category.displayCaptcha' inputName='display_captcha' value="true" checked=category.displayCaptcha />
+					</#if>	
+					<#if listWorkflows??>
+						<@fieldInputCombo items=listWorkflows i18nLabelKey='announce.create_category.labelWorkflow' value=category.idWorkflow?string inputName="id_workflow" />
+					</#if>
+					<div class="form-group">
+						<div class="col-xs-12 col-sm-12 col-md-10 col-md-offset-3">
+							<button class="btn btn-flat btn-primary" type="submit" name="validate" value="validate" title="#i18n{announce.duplicate_category.buttonModify}">
+								<i class="fa fa-check"></i>&nbsp;#i18n{announce.duplicate_category.buttonModify}
+							</button>
+							<a class="btn btn-default btn-flat" type="button" href="jsp/admin/plugins/announce/ManageCategories.jsp" title="#i18n{portal.util.labelCancel}">
+								<i class="fa fa-remove"></i>&nbsp;#i18n{portal.util.labelCancel}
+							</a>
+						</div>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+	
+</div>
