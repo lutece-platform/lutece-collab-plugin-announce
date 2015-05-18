@@ -55,6 +55,7 @@ import fr.paris.lutece.portal.service.plugin.Plugin;
 import fr.paris.lutece.portal.service.rbac.RBACService;
 import fr.paris.lutece.portal.service.spring.SpringContextService;
 import fr.paris.lutece.portal.service.template.AppTemplateService;
+import fr.paris.lutece.portal.service.util.AppLogService;
 import fr.paris.lutece.portal.service.util.AppPathService;
 import fr.paris.lutece.portal.service.util.AppPropertiesService;
 import fr.paris.lutece.portal.service.workflow.WorkflowService;
@@ -103,7 +104,6 @@ public class CategoryJspBean extends PluginAdminPageJspBean
     private static final String PARAMETER_ID_WORKFLOW = "id_workflow";
     private static final String PARAMETER_DISPLAY_CAPTCHA = "display_captcha";
     private static final String PARAMETER_PRICE_MANDATORY = "price_mandatory";
-
     /* properties */
     private static final String PROPERTY_PAGE_TITLE_MANAGE_CATEGORIES = "announce.manage_categories.pageTitle";
     private static final String PROPERTY_PAGE_TITLE_CREATE_CATEGORY = "announce.create_category.pageTitle";
@@ -138,6 +138,7 @@ public class CategoryJspBean extends PluginAdminPageJspBean
     private static final String MESSAGE_CONFIRM_REMOVE_CATEGORY = "announce.message.confirmRemoveCategory";
     private static final String MESSAGE_PLEASE_REMOVE_ANNOUCES = "announce.message.pleaseRemoveAnnounces";
     private static final String MESSAGE_PLEASE_REMOVE_ENTRIES = "announce.message.pleaseRemoveEntries";
+    private static final String MESSAGE_COPY_TITLE = "announce.message.copy_title";
 
     /* Markers */
     private static final String MARK_CATEGORY = "category";
@@ -405,93 +406,7 @@ public class CategoryJspBean extends PluginAdminPageJspBean
         return getAdminPage( template.getHtml(  ) );
     }
     
-    /**
-     * Returns the form to update info about a category
-     * @return The HTML form to update info
-     * @param request The HTTP request
-     * @throws fr.paris.lutece.portal.service.admin.AccessDeniedException access
-     *             denied exception
-     */
-    public String getDuplicateCategory( HttpServletRequest request )
-        throws AccessDeniedException
-    {
-        setPageTitleProperty( PROPERTY_PAGE_TITLE_DUPLICATE_CATEGORY );
-
-        Category category = getAuthorizedCategory( request, CategoryResourceIdService.PERMISSION_MODIFY );
-
-        ReferenceList listSectors = SectorHome.findLocaleReferenceList( request.getLocale(  ) );
-
-        ReferenceList refMailingList = new ReferenceList(  );
-        AdminUser adminUser = getUser(  );
-        String strNothing = I18nService.getLocalizedString( PROPERTY_NOTHING, request.getLocale(  ) );
-        refMailingList.addItem( -1, strNothing );
-        refMailingList.addAll( AdminMailingListService.getMailingLists( adminUser ) );
-
-        ReferenceList listAnnouncesValidation = new ReferenceList(  );
-        listAnnouncesValidation.addItem( 0,
-            I18nService.getLocalizedString( PROPERTY_GLOBAL_PARAMETER, request.getLocale(  ) ) );
-        listAnnouncesValidation.addItem( 1,
-            I18nService.getLocalizedString( PROPERTY_MODIFY_CATEGORY_YES, request.getLocale(  ) ) );
-        listAnnouncesValidation.addItem( 2,
-            I18nService.getLocalizedString( PROPERTY_MODIFY_CATEGORY_NO, request.getLocale(  ) ) );
-
-        EntryFilter entryFilter = new EntryFilter(  );
-        entryFilter.setIdResource( category.getId(  ) );
-        entryFilter.setResourceType( Category.RESOURCE_TYPE );
-        entryFilter.setEntryParentNull( EntryFilter.FILTER_TRUE );
-        entryFilter.setFieldDependNull( EntryFilter.FILTER_TRUE );
-
-        List<Entry> listEntryFirstLevel = EntryHome.getEntryList( entryFilter );
-        List<Entry> listEntry = new ArrayList<Entry>( listEntryFirstLevel.size(  ) );
-
-        List<Integer> listOrderFirstLevel = new ArrayList<Integer>( listEntryFirstLevel.size(  ) );
-
-        entryFilter = new EntryFilter(  );
-        entryFilter.setIdResource( category.getId(  ) );
-        entryFilter.setResourceType( Category.RESOURCE_TYPE );
-        entryFilter.setFieldDependNull( EntryFilter.FILTER_TRUE );
-
-        for ( Entry entry : listEntryFirstLevel )
-        {
-            listEntry.add( entry );
-            // If the entry is a group, we add entries associated with this group
-            listOrderFirstLevel.add( listEntry.size(  ) );
-
-            if ( entry.getEntryType(  ).getGroup(  ) )
-            {
-                entryFilter.setIdEntryParent( entry.getIdEntry(  ) );
-
-                List<Entry> listEntryGroup = EntryHome.getEntryList( entryFilter );
-                entry.setChildren( listEntryGroup );
-                listEntry.addAll( listEntryGroup );
-            }
-        }
-
-        Map<String, Object> model = new HashMap<String, Object>(  );
-        model.put( MARK_GROUP_ENTRY_LIST, getRefListGroups( category.getId(  ) ) );
-        model.put( MARK_ENTRY_TYPE_LIST, EntryTypeService.getInstance(  ).getEntryTypeReferenceList(  ) );
-        model.put( MARK_ENTRY_LIST, listEntry );
-        model.put( MARK_LIST_ORDER_FIRST_LEVEL, listOrderFirstLevel );
-        model.put( MARK_LIST_WORKFLOWS,
-            WorkflowService.getInstance(  ).getWorkflowsEnabled( getUser(  ), getLocale(  ) ) );
-        model.put( MARK_IS_CAPTCHA_ENABLED, _captchaSecurityService.isAvailable(  ) );
-
-        UrlItem url = new UrlItem( JSP_URL_MODIFY );
-        url.addParameter( PARAMETER_CATEGORY_ID, category.getId(  ) );
-
-        model.put( MARK_CATEGORY, category );
-        model.put( MARK_NB_ITEMS_PER_PAGE, Integer.toString( _nItemsPerPage ) );
-        model.put( MARK_LIST_FIELDS, listSectors );
-        model.put( MARK_MAILING_LIST_LIST, refMailingList );
-        model.put( MARK_LIST_ANNOUNCES_VALIDATION, listAnnouncesValidation );
-        model.put( MARK_PLUGIN, getPlugin(  ) );
-
-        HtmlTemplate template = AppTemplateService.getTemplate( TEMPLATE_DUPLICATE_CATEGORY, getLocale(  ), model );
-
-        return getAdminPage( template.getHtml(  ) );
-    }
-
-
+   
     /**
      * Process the change form of a category
      * @return The JSP URL of the process result
@@ -542,56 +457,7 @@ public class CategoryJspBean extends PluginAdminPageJspBean
         return JSP_REDIRECT_TO_MANAGE_CATEGORIES;
     }
     
-    /**
-     * Process the change form of a category
-     * @return The JSP URL of the process result
-     * @param request The HTTP request
-     * @throws fr.paris.lutece.portal.service.admin.AccessDeniedException access
-     *             denied exception
-     */
-    public String doDuplicateCategory( HttpServletRequest request )
-        throws AccessDeniedException
-    {
-        String strCategoryLabel = request.getParameter( PARAMETER_CATEGORY_LABEL );
-        int nIdSector = Integer.parseInt( request.getParameter( PARAMETER_CATEGORY_SECTOR_ID ) );
-        int nAnnouncesValidation = Integer.parseInt( request.getParameter( PARAMETER_CATEGORY_ANNOUNCES_VALIDATION ) );
-        String strDisplayPrice = request.getParameter( PARAMETER_DISPLAY_PRICE );
-        int nIdMailingList = Integer.parseInt( request.getParameter( PARAMETER_MAILING_LIST_ID ) );
-        int nIdWorkflow = Integer.parseInt( request.getParameter( PARAMETER_ID_WORKFLOW ) );
-        boolean bDisplayCaptcha = Boolean.parseBoolean( request.getParameter( PARAMETER_DISPLAY_CAPTCHA ) );
-        boolean bPriceMandatory = Boolean.parseBoolean( request.getParameter( PARAMETER_PRICE_MANDATORY ) );
-
-        // Mandatory categories
-        if ( StringUtils.isEmpty( strCategoryLabel ) || ( nIdSector == 0 ) )
-        {
-            return AdminMessageService.getMessageUrl( request, Messages.MANDATORY_FIELDS, AdminMessage.TYPE_STOP );
-        }
-
-        Category category = new Category();
-        category.setLabel( strCategoryLabel );
-        category.setIdSector( nIdSector );
-        category.setAnnouncesValidation( nAnnouncesValidation );
-        category.setIdMailingList( nIdMailingList );
-        category.setIdWorkflow( nIdWorkflow );
-        category.setDisplayCaptcha( bDisplayCaptcha );
-
-        if ( strDisplayPrice != null )
-        {
-            category.setDisplayPrice( true );
-        }
-        else
-        {
-            category.setDisplayPrice( false );
-        }
-
-        category.setPriceMandatory( category.getDisplayPrice(  ) && bPriceMandatory );
-
-        CategoryHome.create( category );
-
-        // if the operation occurred well, redirects towards the list
-        return JSP_REDIRECT_TO_MANAGE_CATEGORIES;
-    }
-
+    
     /**
      * Manages the removal form of a category whose identifier is in the http
      * request
@@ -754,4 +620,24 @@ public class CategoryJspBean extends PluginAdminPageJspBean
 
         return refListGroups;
     }
+    
+    /**
+     * copy the form whose key is specified in the Http request
+     * @param request The HTTP request
+     * @return The URL to go after performing the action
+     */
+    public String doCopyCategory( HttpServletRequest request )
+    {
+    	String strIdCategory = request.getParameter( PARAMETER_CATEGORY_ID );
+    	int nIdCategory = Integer.parseInt(strIdCategory);
+    	Category category = CategoryHome.findByPrimaryKey( nIdCategory );
+    	Object[] strTitleCategory= {category.getLabel()};
+    	String strTitleCopyCategory = I18nService.getLocalizedString( MESSAGE_COPY_TITLE, strTitleCategory,
+                getLocale(  ) );
+    	category.setLabel(strTitleCopyCategory);
+    	CategoryHome.copy( category );
+        
+    	return JSP_REDIRECT_TO_MANAGE_CATEGORIES;
+    }
+
 }

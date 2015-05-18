@@ -63,7 +63,7 @@ public final class CategoryDAO implements ICategoryDAO
      * @param plugin The plugin
      * @return The new primary key
      */
-    private int newPrimaryKey( Plugin plugin )
+    public int newPrimaryKey( Plugin plugin )
     {
         DAOUtil daoUtil = new DAOUtil( SQL_QUERY_NEWPK, plugin );
         daoUtil.executeQuery(  );
@@ -106,6 +106,26 @@ public final class CategoryDAO implements ICategoryDAO
         daoUtil.free(  );
     }
 
+    @Override
+    public int copyCategory( Category category, Plugin plugin )
+    {
+        DAOUtil daoUtil = new DAOUtil( SQL_QUERY_INSERT, plugin );
+        category.setId( newPrimaryKey( plugin ) );
+        
+        int nIndex = 1;
+        daoUtil.setInt( nIndex++, category.getId(  ) );
+        daoUtil.setInt( nIndex++, category.getIdSector(  ) );
+        daoUtil.setString( nIndex++, category.getLabel(  ) );
+        daoUtil.setBoolean( nIndex++, category.getDisplayPrice(  ) );
+        daoUtil.setBoolean( nIndex++, category.getPriceMandatory(  ) );
+        daoUtil.setInt( nIndex++, category.getAnnouncesValidation(  ) );
+        daoUtil.setInt( nIndex++, category.getIdMailingList(  ) );
+        daoUtil.setBoolean( nIndex++, category.getDisplayCaptcha(  ) );
+        daoUtil.setInt( nIndex, category.getIdWorkflow(  ) );
+        daoUtil.executeUpdate(  );
+        daoUtil.free(  );
+        return category.getId(  );
+    }
     /**
      * {@inheritDoc}
      */

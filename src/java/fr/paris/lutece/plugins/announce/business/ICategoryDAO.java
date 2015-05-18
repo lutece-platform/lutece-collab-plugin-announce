@@ -116,4 +116,8 @@ public interface ICategoryDAO
      * @return The number of published announce of the category
      */
     int countPublishedAnnouncesForCategory( Category category, Plugin plugin );
+    
+    //int newPrimaryKey( Plugin plugin );
+    
+    int copyCategory( Category category, Plugin plugin );
 }

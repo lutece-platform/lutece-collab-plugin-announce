@@ -35,11 +35,17 @@ package fr.paris.lutece.plugins.announce.business;
 
 import fr.paris.lutece.plugins.announce.service.AnnounceCacheService;
 import fr.paris.lutece.plugins.announce.service.AnnouncePlugin;
+import fr.paris.lutece.plugins.genericattributes.business.Entry;
+import fr.paris.lutece.plugins.genericattributes.business.EntryFilter;
+import fr.paris.lutece.plugins.genericattributes.business.EntryHome;
 import fr.paris.lutece.portal.service.plugin.Plugin;
 import fr.paris.lutece.portal.service.plugin.PluginService;
 import fr.paris.lutece.portal.service.spring.SpringContextService;
+import fr.paris.lutece.portal.service.util.AppException;
 import fr.paris.lutece.util.ReferenceList;
+import fr.paris.lutece.util.sql.TransactionManager;
 
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -174,5 +180,81 @@ public final class CategoryHome
     public static int countPublishedAnnouncesForCategory( Category category )
     {
         return _dao.countPublishedAnnouncesForCategory( category, _plugin );
+    }
+    /**
+     * Copy of an instance of Form
+     *
+     * @param form The instance of the Form who must copy
+     * @param plugin the Plugin
+     *
+     */
+    public static void copy( Category category )
+    {
+    	/*EntryFilter entryFilter = new EntryFilter(  );
+        entryFilter.setIdResource( category.getId(  ) );
+        entryFilter.setResourceType( Category.RESOURCE_TYPE );
+        entryFilter.setEntryParentNull( EntryFilter.FILTER_TRUE );
+        entryFilter.setFieldDependNull( EntryFilter.FILTER_TRUE );
+        
+        Category cat = new Category();
+        
+        cat.setId(_dao.copyCategory( category, _plugin ) );
+        
+    	List<Entry> listEntryFirstLevel = EntryHome.getEntryList( entryFilter );
+        List<Entry> listEntry = new ArrayList<Entry>( listEntryFirstLevel.size(  ) );
+
+        List<Integer> listOrderFirstLevel = new ArrayList<Integer>( listEntryFirstLevel.size(  ) );
+
+        entryFilter = new EntryFilter(  );
+        entryFilter.setIdResource( cat.getId(  ) );
+        entryFilter.setResourceType( Category.RESOURCE_TYPE );
+        entryFilter.setFieldDependNull( EntryFilter.FILTER_TRUE );
+
+        for ( Entry entry : listEntryFirstLevel )
+        {
+            listEntry.add( entry );
+            // If the entry is a group, we add entries associated with this group
+            listOrderFirstLevel.add( listEntry.size(  ) );
+
+            if ( entry.getEntryType(  ).getGroup(  ) )
+            {
+                entryFilter.setIdEntryParent( entry.getIdEntry(  ) );
+
+                List<Entry> listEntryGroup = EntryHome.getEntryList( entryFilter );
+                entry.setChildren( listEntryGroup );
+                listEntry.addAll( listEntryGroup );
+            }
+        }
+    	 */
+    	 
+    	 List<Entry> listEntry;
+         EntryFilter filter = new EntryFilter(  );
+         filter.setIdResource( category.getId() );
+         filter.setResourceType( Category.RESOURCE_TYPE );
+         filter.setFieldDependNull( EntryFilter.FILTER_TRUE );
+         filter.setEntryParentNull( EntryFilter.FILTER_TRUE );
+         listEntry = EntryHome.getEntryList( filter );
+         
+         Category cat = new Category();
+         cat.setId(_dao.copyCategory( category, _plugin ) );
+         
+         try
+         {
+            
+             for ( Entry entry : listEntry )
+             {
+                 entry = EntryHome.findByPrimaryKey( entry.getIdEntry(  ) );
+                 entry.setIdResource( cat.getId(  ) );
+                 entry.setResourceType( Category.RESOURCE_TYPE );
+                 EntryHome.copy( entry );
+             }
+
+         }
+         catch ( Exception e )
+         {
+             throw new AppException( e.getMessage(  ), e );
+         }
+        
+     	
     }
 }

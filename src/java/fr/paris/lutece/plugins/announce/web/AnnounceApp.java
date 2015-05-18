@@ -298,24 +298,30 @@ public class AnnounceApp extends MVCApplication
        
         String strSort = (request.getParameter("sortBy") == null ? "" :request.getParameter("sortBy"));
         AnnounceSort anSort = AnnounceSort.DEFAULT_SORT;
+        String strUrl = getUrlSearchAnnounce( request, 0);
 
-        if(strSort.compareTo("date_modification") == 0)
+        if(strSort.compareTo("date_modification") == 0){
         	anSort = AnnounceSort.getAnnounceSort(AnnounceSort.SORT_DATE_MODIFICATION, false);
+        	strUrl = getUrlSearchAnnounce( request,1 );
+        }
         	        
-        if(strSort.compareTo("title_announce") == 0)
+        if(strSort.compareTo("title_announce") == 0){
         	anSort = AnnounceSort.getAnnounceSort(AnnounceSort.SORT_TITLE, true);
+        	strUrl = getUrlSearchAnnounce( request,2 );
+        }
         
-        if(strSort.compareTo("price_announce") == 0)
+        if(strSort.compareTo("price_announce") == 0){
         	anSort = AnnounceSort.getAnnounceSort(AnnounceSort.SORT_PRICE, true);
-       if(strSort.compareTo("description_announce") == 0)
-        	anSort = AnnounceSort.getAnnounceSort(AnnounceSort.SORT_DESCRIPTION, true);
+        	strUrl = getUrlSearchAnnounce( request,3 );
+        }
         	
         List<Announce> listAnnounces = AnnounceHome.findByListId( listIdAnnounces, anSort );
         
         //--------------------------END SORT----------------------------------
         
+        
         LocalizedDelegatePaginator<Announce> paginator = new LocalizedDelegatePaginator<Announce>( listAnnounces,
-                _nItemsPerPage, getUrlSearchAnnounce( request ), PARAMETER_PAGE_INDEX, _strCurrentPageIndex, nNbItems,
+                _nItemsPerPage, strUrl, PARAMETER_PAGE_INDEX, _strCurrentPageIndex, nNbItems,
                 request.getLocale(  ) );
 
         Map<String, Object> model = new HashMap<String, Object>(  );
@@ -1516,9 +1522,9 @@ public class AnnounceApp extends MVCApplication
      * @param request The request
      * @return The URL to search announces
      */
-    public static String getUrlSearchAnnounce( HttpServletRequest request )
+    public static String getUrlSearchAnnounce( HttpServletRequest request, int nSort )
     {
-        return getUrlSearchAnnounce( request, 0 );
+        return getUrlSearchAnnounce( request, 0 , nSort);
     }
 
     /**
@@ -1528,7 +1534,7 @@ public class AnnounceApp extends MVCApplication
      *            stored in session if any
      * @return The URL to search announces
      */
-    public static String getUrlSearchAnnounce( HttpServletRequest request, int nIdFilter )
+    public static String getUrlSearchAnnounce( HttpServletRequest request, int nIdFilter, int nSort)
     {
         UrlItem urlItem = new UrlItem( AppPathService.getBaseUrl( request ) + AppPathService.getPortalUrl(  ) );
         urlItem.addParameter( PARAMETER_PAGE, AnnounceUtils.PARAMETER_PAGE_ANNOUNCE );
@@ -1538,7 +1544,19 @@ public class AnnounceApp extends MVCApplication
         {
             urlItem.addParameter( PARAMETER_ID_FILTER, nIdFilter );
         }
-
+        if(nSort == 0){
+        	urlItem.addParameter( "sortBy", "date_creation" );
+        }
+        if(nSort == 1){
+        	urlItem.addParameter( "sortBy", "date_modification" );
+        }
+        if(nSort == 2){
+        	urlItem.addParameter( "sortBy", "title_announce" );
+        }
+        if(nSort == 3){
+        	urlItem.addParameter( "sortBy", "price_announce" );
+        }
+       
         return urlItem.getUrl(  );
     }
 

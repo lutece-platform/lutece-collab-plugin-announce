@@ -62,11 +62,13 @@ public class CategoryResourceIdService extends ResourceIdService
 
     /** Permission for modifying a category */
     public static final String PERMISSION_MODIFY = "MODIFY";
+    public static final String PERMISSION_COPY = "COPY";
 
     /* Properties */
     private static final String PROPERTY_LABEL_RESOURCE_TYPE = "announce.permission.resourceType.category.label";
     private static final String PROPERTY_LABEL_CREATE = "announce.permission.resourceType.category.create";
     private static final String PROPERTY_LABEL_MODIFY = "announce.permission.resourceType.category.modify";
+    private static final String PROPERTY_LABEL_COPY = "announce.permission.resourceType.category.copy";
     private static final String PROPERTY_LABEL_DELETE = "announce.permission.resourceType.category.delete";
 
     /** Creates a new instance of CategoryResourceIdService */
@@ -100,6 +102,11 @@ public class CategoryResourceIdService extends ResourceIdService
         p = new Permission(  );
         p.setPermissionKey( PERMISSION_DELETE );
         p.setPermissionTitleKey( PROPERTY_LABEL_DELETE );
+        rt.registerPermission( p );
+        
+        p = new Permission(  );
+        p.setPermissionKey( PERMISSION_COPY );
+        p.setPermissionTitleKey( PROPERTY_LABEL_COPY );
         rt.registerPermission( p );
 
         ResourceTypeManager.registerResourceType( rt );

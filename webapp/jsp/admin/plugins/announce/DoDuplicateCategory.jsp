@@ -4,5 +4,5 @@
 
 <%
     announceCategory.init( request, announceCategory.RIGHT_MANAGE_ANNOUNCE );
-    response.sendRedirect( announceCategory.doDuplicateCategory( request ) );
+    response.sendRedirect( announceCategory.doCopyCategory( request ) );
 %>
