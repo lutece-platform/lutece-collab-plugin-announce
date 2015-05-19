@@ -314,6 +314,7 @@ public final class AnnounceDAO implements IAnnounceDAO
 
         return announceList;
     }
+    
 
     /**
      * {@inheritDoc}

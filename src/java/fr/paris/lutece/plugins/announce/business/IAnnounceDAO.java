@@ -109,7 +109,7 @@ public interface IAnnounceDAO
      * @return The list of announces
      */
     List<Announce> findByListId( List<Integer> listIdAnnounces, AnnounceSort announceSort, Plugin plugin );
-
+    
     /**
      * selects all published announces for a given category
      * @param announceSort the sort to use

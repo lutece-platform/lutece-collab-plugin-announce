@@ -33,7 +33,10 @@
  */
 package fr.paris.lutece.plugins.announce.service.announcesearch;
 
+import fr.paris.lutece.plugins.announce.business.Announce;
+import fr.paris.lutece.plugins.announce.business.AnnounceHome;
 import fr.paris.lutece.plugins.announce.business.AnnounceSearchFilter;
+import fr.paris.lutece.plugins.announce.business.AnnounceSort;
 import fr.paris.lutece.plugins.announce.business.IndexerAction;
 import fr.paris.lutece.plugins.announce.business.IndexerActionFilter;
 import fr.paris.lutece.plugins.announce.business.IndexerActionHome;
@@ -48,7 +51,6 @@ import fr.paris.lutece.portal.service.util.AppPathService;
 import fr.paris.lutece.portal.service.util.AppPropertiesService;
 
 import org.apache.commons.lang.StringUtils;
-
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.miscellaneous.LimitTokenCountAnalyzer;
 import org.apache.lucene.index.DirectoryReader;
@@ -67,10 +69,8 @@ import org.apache.lucene.util.Version;
 
 import java.io.File;
 import java.io.IOException;
-
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
-
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -168,7 +168,7 @@ public final class AnnounceSearchService
      * @param listIdAnnounces Results as a collection of id of announces
      * @return The total number of items found
      */
-    public int getSearchResults( AnnounceSearchFilter filter, int nPageNumber, int nItemsPerPage,
+   public int getSearchResults( AnnounceSearchFilter filter, int nPageNumber, int nItemsPerPage,
         List<Integer> listIdAnnounces )
     {
         int nNbItems = 0;
@@ -197,6 +197,28 @@ public final class AnnounceSearchService
 
         return nNbItems;
     }
+    public int getSearchResultsBis( AnnounceSearchFilter filter, int nPageNumber, int nItemsPerPage, 
+    		List<Announce> listAnnouncesResults, AnnounceSort anSort )
+        {
+    		//List<Integer> listIdAnnounces = new ArrayList<Integer>(  );
+    		int nNbItems = 0;
+
+            try
+            {
+                IAnnounceSearchEngine engine = SpringContextService.getBean( BEAN_SEARCH_ENGINE );
+                nNbItems = engine.getSearchResultsBis( filter, PluginService.getPlugin( AnnouncePlugin.PLUGIN_NAME ),
+                		listAnnouncesResults, nPageNumber, nItemsPerPage,anSort );
+
+            }
+            catch ( Exception e )
+            {
+                AppLogService.error( e.getMessage(  ), e );
+                // If an error occurred clean result list
+                listAnnouncesResults.clear(  );
+            }
+
+            return nNbItems;
+        }
 
     /**
      * return searcher

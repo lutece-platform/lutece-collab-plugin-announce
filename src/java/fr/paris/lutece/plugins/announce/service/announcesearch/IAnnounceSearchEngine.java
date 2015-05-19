@@ -33,7 +33,9 @@
  */
 package fr.paris.lutece.plugins.announce.service.announcesearch;
 
+import fr.paris.lutece.plugins.announce.business.Announce;
 import fr.paris.lutece.plugins.announce.business.AnnounceSearchFilter;
+import fr.paris.lutece.plugins.announce.business.AnnounceSort;
 import fr.paris.lutece.portal.service.plugin.Plugin;
 import fr.paris.lutece.portal.service.search.SearchResult;
 
@@ -57,5 +59,8 @@ public interface IAnnounceSearchEngine
      * @return The total number of results found
      */
     int getSearchResults( AnnounceSearchFilter filter, Plugin plugin, List<SearchResult> listSearchResult, int nPage,
-        int nItemsPerPage );
+        int nItemsPerPage);
+    
+    int getSearchResultsBis( AnnounceSearchFilter filter, Plugin plugin, List<Announce> listSearchResult, int nPage,
+            int nItemsPerPage, AnnounceSort anSort );
 }
