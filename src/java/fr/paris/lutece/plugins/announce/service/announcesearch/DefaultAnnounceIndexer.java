@@ -73,8 +73,8 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
+import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
@@ -288,7 +288,7 @@ public class DefaultAnnounceIndexer implements IAnnounceSearchIndexer
         // Use a field that is indexed (i.e. searchable), but don't tokenize
         // the field into words.
         String strDate = DateTools.dateToString( ( announce.getTimePublication(  ) > 0 )
-                ? new Date( announce.getTimePublication(  ) ) : announce.getDateCreation(  ), DateTools.Resolution.DAY );
+                ? new Timestamp( announce.getTimePublication(  ) ) : announce.getDateCreation(  ), DateTools.Resolution.DAY );
         doc.add( new Field( AnnounceSearchItem.FIELD_DATE, strDate, Field.Store.YES, Field.Index.NOT_ANALYZED ) );
 
         if ( StringUtils.isNotBlank( announce.getPrice(  ) ) )
