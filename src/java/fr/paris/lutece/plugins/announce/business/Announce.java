@@ -41,9 +41,7 @@ import fr.paris.lutece.portal.service.resource.IExtendableResource;
 import fr.paris.lutece.portal.service.util.AppLogService;
 
 import java.io.Serializable;
-
 import java.sql.Timestamp;
-
 import java.util.Collection;
 import java.util.List;
 
@@ -75,6 +73,7 @@ public class Announce implements Serializable, IExtendableResource, RBACResource
     private List<Integer> _listIdImageResponse;
     private Timestamp _dateCreation;
     private Timestamp _dateModification;
+    private Timestamp _datePublication;
     private long _lTimePublication;
     private String _strPrice;
     private String _strTags;
@@ -529,4 +528,18 @@ public class Announce implements Serializable, IExtendableResource, RBACResource
 
         return this;
     }
+
+	/**
+	 * @return the _datePublication
+	 */
+	public Timestamp getDatePublication() {
+		return new Timestamp (this.getTimePublication());
+	}
+
+	/**
+	 * @param _datePublication the _datePublication to set
+	 */
+	public void setDatePublication() {
+		this._datePublication = new Timestamp (this.getTimePublication());
+	}
 }
