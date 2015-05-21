@@ -285,14 +285,12 @@ public class AnnounceApp extends MVCApplication
                 _nDefaultItemsPerPage );
 
         AnnounceSearchFilter filter = getAnnounceFilterFromRequest( request );
-
+        
         int nCurrentPageIndex = ( StringUtils.isNotEmpty( _strCurrentPageIndex ) &&
             StringUtils.isNumeric( _strCurrentPageIndex ) ) ? Integer.parseInt( _strCurrentPageIndex ) : 1;
-        List<Integer> listIdAnnounces = new ArrayList<Integer>(  );
         List<Announce> listAnnouncesResults = new ArrayList<Announce>();
         
-        
-        
+       
         //-------------------------SORT---------------------------------
        
         String strSort = (request.getParameter("sortBy") == null ? "" :request.getParameter("sortBy"));
@@ -333,7 +331,7 @@ public class AnnounceApp extends MVCApplication
         model.put( MARK_PAGINATOR, paginator );
         model.put( MARK_LIST_FIELDS, getSectorList(  ) );
         model.put( MARK_LOCALE, request.getLocale(  ) );
-
+        
         for ( Announce announce : paginator.getPageItems(  ) )
         {
             announce.setListIdImageResponse( AnnounceHome.findListIdImageResponse( announce.getId(  ) ) );
@@ -729,6 +727,8 @@ public class AnnounceApp extends MVCApplication
             model.put( MARK_USER_IS_AUTHOR, bUserIsAuthor );
             model.put( MARK_ANNOUNCE, announce );
             model.put( MARK_LIST_RESPONSES, listResponses );
+            model.put( "width", "500px" );
+            model.put( "height", "500px" );
             model.put( MARK_LIST_FIELDS, getSectorList(  ) );
             model.put( MARK_LOCALE, request.getLocale(  ) );
             model.put( MARK_IS_EXTEND_INSTALLED, PortalService.isExtendActivated(  ) );
