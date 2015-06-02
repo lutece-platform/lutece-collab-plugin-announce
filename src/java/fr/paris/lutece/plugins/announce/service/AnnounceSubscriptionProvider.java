@@ -33,8 +33,11 @@
  */
 package fr.paris.lutece.plugins.announce.service;
 
+import fr.paris.lutece.plugins.announce.business.Announce;
+import fr.paris.lutece.plugins.announce.business.AnnounceHome;
 import fr.paris.lutece.plugins.announce.business.AnnounceSearchFilter;
 import fr.paris.lutece.plugins.announce.business.AnnounceSearchFilterHome;
+import fr.paris.lutece.plugins.announce.business.AnnounceSort;
 import fr.paris.lutece.plugins.announce.business.CategoryHome;
 import fr.paris.lutece.plugins.announce.web.AnnounceApp;
 import fr.paris.lutece.plugins.subscribe.business.Subscription;
@@ -125,8 +128,74 @@ public class AnnounceSubscriptionProvider implements ISubscriptionProviderServic
             Map<String, Object> model = new HashMap<String, Object>(  );
             LuteceUser subscribedUser = LuteceUserService.getLuteceUserFromName( strIdSubscribedResource );
 
+            
             model.put( MARK_USER_NAME, strIdSubscribedResource );
             model.put( MARK_USER, subscribedUser );
+
+            HtmlTemplate template = AppTemplateService.getTemplate( TEMPLATE_USER_SUBSCRIPTION_DESCRIPTION, locale,
+                    model );
+
+            return template.getHtml(  );
+        }
+        else if ( StringUtils.equals( SUBSCRIPTION_CATEGORY, strSubscriptionKey ) )
+        {
+            Map<String, Object> model = new HashMap<String, Object>(  );
+
+            int nIdCategory = Integer.parseInt( strIdSubscribedResource );
+
+            model.put( MARK_CATEGORY, CategoryHome.findByPrimaryKey( nIdCategory ) );
+
+            HtmlTemplate template = AppTemplateService.getTemplate( TEMPLATE_CATEGORY_SUBSCRIPTION_DESCRIPTION, locale,
+                    model );
+
+            return template.getHtml(  );
+        }
+        else if ( StringUtils.equals( SUBSCRIPTION_FILTER, strSubscriptionKey ) )
+        {
+            AnnounceSearchFilter filter = AnnounceSearchFilterHome.findByPrimaryKey( Integer.parseInt( 
+                        strIdSubscribedResource ) );
+            Map<String, Object> model = new HashMap<String, Object>(  );
+            model.put( MARK_FILTER, filter );
+
+            if ( filter.getIdCategory(  ) > 0 )
+            {
+                model.put( MARK_CATEGORY, CategoryHome.findByPrimaryKey( filter.getIdCategory(  ) ) );
+            }
+
+            HtmlTemplate template = AppTemplateService.getTemplate( TEMPLATE_FILTER_SUBSCRIPTION_DESCRIPTION, locale,
+                    model );
+
+            return template.getHtml(  );
+        }
+
+        return StringUtils.EMPTY;
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getSubscriptionHtmlDescriptionBis( LuteceUser user, String strSubscriptionKey,
+        String strIdSubscribedResource, Locale locale, String userSub )
+    {
+        if ( StringUtils.equals( SUBSCRIPTION_USER, strSubscriptionKey ) )
+        {
+            Map<String, Object> model = new HashMap<String, Object>(  );
+            LuteceUser subscribedUser = LuteceUserService.getLuteceUserFromName( strIdSubscribedResource );
+            
+            List<Announce> listAnn = AnnounceHome.findAllPublished(AnnounceSort.DEFAULT_SORT);
+            String strUserSub="";
+            for(Announce ann :  listAnn){
+            	if(userSub.compareTo(ann.getUserName ())==0){
+            		strUserSub = ann.getUserLastName()+" "+ann.getUserSecondName();
+            	break;
+            	}
+            }
+
+            
+            model.put( MARK_USER_NAME, strIdSubscribedResource );
+            model.put( MARK_USER, subscribedUser );
+            model.put( "strUserSub", strUserSub );
 
             HtmlTemplate template = AppTemplateService.getTemplate( TEMPLATE_USER_SUBSCRIPTION_DESCRIPTION, locale,
                     model );
@@ -396,7 +465,7 @@ public class AnnounceSubscriptionProvider implements ISubscriptionProviderServic
      * @param strSubscriptionKey The type of subscriptions to get
      * @return The list of subscriptions of the given type
      */
-    private List<Subscription> getSubscriptionsToResource( String strSubscriptionKey )
+    public List<Subscription> getSubscriptionsToResource( String strSubscriptionKey )
     {
         SubscriptionFilter filter = new SubscriptionFilter(  );
         filter.setSubscriptionKey( strSubscriptionKey );

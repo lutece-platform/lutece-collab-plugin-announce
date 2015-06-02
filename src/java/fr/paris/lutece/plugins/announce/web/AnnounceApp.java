@@ -55,6 +55,7 @@ import fr.paris.lutece.plugins.genericattributes.business.Field;
 import fr.paris.lutece.plugins.genericattributes.business.GenericAttributeError;
 import fr.paris.lutece.plugins.genericattributes.business.Response;
 import fr.paris.lutece.plugins.genericattributes.business.ResponseHome;
+import fr.paris.lutece.plugins.subscribe.business.Subscription;
 import fr.paris.lutece.plugins.subscribe.web.SubscribeApp;
 import fr.paris.lutece.portal.business.mailinglist.Recipient;
 import fr.paris.lutece.portal.service.captcha.CaptchaSecurityService;
@@ -159,6 +160,7 @@ public class AnnounceApp extends MVCApplication
     private static final String ACTION_SUSPEND_ANNOUNCE_BY_USER = "suspend_by_user";
     private static final String ACTION_ENABLE_ANNOUNCE_BY_USER = "enable_by_user";
     private static final String ACTION_VIEW_SUBSCRIPTIONS = "view_subscriptions";
+    private static final String ACTION_VIEW_SUB = "view_sub";
     private static final String ACTION_SEARCH = "search";
     private static final String ACTION_ADDNEW = "addnew";
 
@@ -192,6 +194,7 @@ public class AnnounceApp extends MVCApplication
     private static final String TEMPLATE_PAGE_CREATE_ANNOUNCE_STEP_FORM = "skin/plugins/announce/create_announce_step_form.html";
     private static final String TEMPLATE_VIEW_ANNOUNCE = "skin/plugins/announce/view_announce.html";
     private static final String TEMPLATE_VIEW_ANNOUNCES = "skin/plugins/announce/view_announces.html";
+    private static final String TEMPLATE_VIEW_SUB = "skin/plugins/announce/subscription/user_sub_des.html";
     private static final String TEMPLATE_MY_ANNOUNCES = "skin/plugins/announce/my_announces.html";
     private static final String TEMPLATE_MODIFY_ANNOUNCE = "skin/plugins/announce/modify_announce.html";
     private static final String TEMPLATE_LIST_ANNOUNCES = "skin/plugins/announce/list_announces.html";
@@ -847,7 +850,50 @@ public class AnnounceApp extends MVCApplication
 
         throw new UserNotSignedException(  );
     }
+    public String getInfoSubscrition(HttpServletRequest request){
+    	String strUserName = request.getParameter( PARAMETER_USERNAME );
+        
+    	List<Subscription> listSubs = AnnounceSubscriptionProvider.getService(  ).getSubscriptionsToUsers();
+    	List<Announce> listAnn = AnnounceHome.getAnnouncesForUser( strUserName, AnnounceSort.DEFAULT_SORT );
+        
+        if(listSubs != null && !listSubs.isEmpty() && listAnn != null && !listAnn.isEmpty()){
+        	for(Subscription sub : listSubs)
+    		for(Announce ann : listAnn){
+    			if(sub.getUserId().compareTo(ann.getContactInformation())==0)
+    				return ann.getUserLastName()+" "+ann.getUserSecondName();
+    		}
+        }
+    	return "";
+    }
 
+    
+    /**
+     * Get the page to view the list of subscriptions of the current user
+     * @param request The request
+     * @return The XPage to display
+     * @throws UserNotSignedException If the user has not signed in
+     */
+    @Action( ACTION_VIEW_SUB )
+    public XPage getViewSub( HttpServletRequest request )
+        throws UserNotSignedException
+    {
+        if ( SecurityService.isAuthenticationEnable(  ) )
+        {
+            Map<String, Object> model = new HashMap<String, Object>(  );
+            model.put( "infoUserSubs", getInfoSubscrition(request) );
+            //model.put( "infoUserSubs", "Bass SECK" );
+            
+
+                //XPage page = getXPage(  );
+                //page.setTitle( I18nService.getLocalizedString( PROPERTY_PAGE_TITLE, request.getLocale(  ) ) );
+                //page.setContent( SubscribeApp.getSubscriptionList( request ) );
+                return getXPage( TEMPLATE_VIEW_SUB, request.getLocale(  ), model );
+                //return page;
+        }
+
+        throw new UserNotSignedException(  );
+    }
+    
     /**
      * Get the XPage to display the announces of the current user
      * @param request The request

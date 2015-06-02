@@ -119,7 +119,8 @@ public class AnnounceSubscribeApp extends MVCApplication
         }
 
         AnnounceSubscriptionProvider.getService(  ).createSubscriptionToUser( user, strUserName );
-
+        
+        
         String strReferer = request.getHeader( PARAMETER_REFERER );
 
         if ( StringUtils.isNotEmpty( strReferer ) )
