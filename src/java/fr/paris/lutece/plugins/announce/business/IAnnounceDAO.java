@@ -134,6 +134,8 @@ public interface IAnnounceDAO
      * @param plugin the plugin
      */
     void setPublished( Announce announce, Plugin plugin );
+    
+    void setHasNotifed( Announce announce, Plugin plugin );
 
     /**
      * suspend or enable an announce
@@ -201,4 +203,5 @@ public interface IAnnounceDAO
      * @return The list of ids of announces
      */
     List<Integer> findIdAnnouncesByDatePublication( long lMinPublicationTime, Plugin plugin );
+    
 }

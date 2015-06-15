@@ -292,6 +292,15 @@ public final class AnnounceHome
         AnnounceCacheService.getService(  ).removeKey( AnnounceCacheService.getListIdPublishedAnnouncesCacheKey(  ) );
         AnnounceCacheService.getService(  ).removeKey( AnnounceCacheService.getAnnounceCacheKey( announce.getId(  ) ) );
     }
+    
+    public static void setHasNotifed( Announce announce )
+    {
+        _dao.setHasNotifed( announce, _plugin );
+        
+
+       // AnnounceCacheService.getService(  ).removeKey( AnnounceCacheService.getListIdPublishedAnnouncesCacheKey(  ) );
+        AnnounceCacheService.getService(  ).removeKey( AnnounceCacheService.getAnnounceCacheKey( announce.getId(  ) ) );
+    }
 
     /**
      * suspend or UnSuspend an announce

@@ -79,8 +79,12 @@ public class Announce implements Serializable, IExtendableResource, RBACResource
     private String _strTags;
     private List<Response> _listResponse;
     private transient Collection<Action> _listActions;
+    private int _nHasNotify;
 
-    /**
+    
+	
+
+	/**
      * Get the list of responses of this announce
      * @return The list of responses of this announce
      */
@@ -542,4 +546,19 @@ public class Announce implements Serializable, IExtendableResource, RBACResource
 	public void setDatePublication() {
 		this._datePublication = new Timestamp (this.getTimePublication());
 	}
+	
+	/**
+	 * @return the _nHasNotify
+	 */
+	public int getHasNotify() {
+		return _nHasNotify;
+	}
+
+	/**
+	 * @param nHasNotify the _nHasNotify to set
+	 */
+	public void setHasNotify(int nHasNotify) {
+		this._nHasNotify = nHasNotify;
+	}
+
 }

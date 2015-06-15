@@ -865,34 +865,6 @@ public class AnnounceApp extends MVCApplication
         }
     	return "";
     }
-
-    
-    /**
-     * Get the page to view the list of subscriptions of the current user
-     * @param request The request
-     * @return The XPage to display
-     * @throws UserNotSignedException If the user has not signed in
-     */
-    @Action( ACTION_VIEW_SUB )
-    public XPage getViewSub( HttpServletRequest request )
-        throws UserNotSignedException
-    {
-        if ( SecurityService.isAuthenticationEnable(  ) )
-        {
-            Map<String, Object> model = new HashMap<String, Object>(  );
-            model.put( "infoUserSubs", getInfoSubscrition(request) );
-            //model.put( "infoUserSubs", "Bass SECK" );
-            
-
-                //XPage page = getXPage(  );
-                //page.setTitle( I18nService.getLocalizedString( PROPERTY_PAGE_TITLE, request.getLocale(  ) ) );
-                //page.setContent( SubscribeApp.getSubscriptionList( request ) );
-                return getXPage( TEMPLATE_VIEW_SUB, request.getLocale(  ), model );
-                //return page;
-        }
-
-        throw new UserNotSignedException(  );
-    }
     
     /**
      * Get the XPage to display the announces of the current user
@@ -1172,6 +1144,7 @@ public class AnnounceApp extends MVCApplication
         announce.setContactInformation( strContactInformation );
         announce.setTags( strTags );
         announce.setPrice( strPriceAnnounce );
+        announce.setHasNotify(0);
 
         Sector sector = SectorHome.findByPrimaryKey( category.getIdSector(  ) );
 
