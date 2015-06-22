@@ -34,6 +34,8 @@
 package fr.paris.lutece.plugins.announce.service.announcesearch;
 
 import fr.paris.lutece.portal.service.daemon.Daemon;
+import fr.paris.lutece.portal.service.util.AppPropertiesService;
+
 
 
 /**
@@ -41,12 +43,14 @@ import fr.paris.lutece.portal.service.daemon.Daemon;
  */
 public class AnnounceSearchIndexerDaemon extends Daemon
 {
+    private static final String PROPERTY_INDEXER_PARAM_TOTAL = "announce.indexer.total";   
     /**
      * {@inheritDoc}
      */
     @Override
     public void run(  )
     {
-        setLastRunLogs( AnnounceSearchService.getInstance(  ).processIndexing( false ) );
+        boolean bTotalIndexing = Boolean.valueOf( AppPropertiesService.getProperty( PROPERTY_INDEXER_PARAM_TOTAL, "true" ) );    
+        setLastRunLogs( AnnounceSearchService.getInstance(  ).processIndexing( bTotalIndexing ) );
     }
 }
