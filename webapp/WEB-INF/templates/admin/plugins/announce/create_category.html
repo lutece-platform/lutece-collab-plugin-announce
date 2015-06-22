@@ -6,7 +6,7 @@
 			</div>
 			<div class="box-body">
 				<form class="form-horizontal" method="post" action="jsp/admin/plugins/announce/DoCreateCategory.jsp">
-					<@fieldInputText i18nLabelKey='announce.category.label' inputName='category_label' mandatory=true value='' maxlength=255 i18nHelpBlockKey='announce.category.label' />	
+					<@fieldInputText i18nLabelKey='announce.category.label' inputName='category_label' mandatory=true value='' maxlength=50 i18nHelpBlockKey='announce.category.label' />	
 					<@fieldInputCombo items=list_sectors i18nLabelKey='announce.category.sector' inputName='category_sector_id' mandatory=true value="0" />	
 					<@fieldInputCombo items=list_announces_validation i18nLabelKey='announce.category.announcesValidation' inputName='category_announces_validation' mandatory=true value="0" i18nHelpBlockKey='announce.globalParameterHelp' />	
 					<@fieldInputCombo items=mailing_list_list i18nLabelKey='announce.category.mailingList' inputName='mailing_list_id' value="-1" i18nHelpBlockKey='announce.category.mailingList.helper' />	
