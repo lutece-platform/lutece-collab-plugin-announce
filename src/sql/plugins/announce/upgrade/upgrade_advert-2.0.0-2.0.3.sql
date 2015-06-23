@@ -1,0 +1,1 @@
+ALTER TABLE announce_announce ADD COLUMN has_notified INT NULL AFTER publication_time;

@@ -52,7 +52,7 @@ CREATE TABLE announce_announce(
 	tags varchar(255) NOT NULL,
 	has_pictures smallint default '0',
 	publication_time BIGINT default 0,
-	has_notifed int ,
+	has_notified int ,
 	PRIMARY KEY (id_announce)
 );
 
