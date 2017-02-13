@@ -6,17 +6,42 @@
 			</div>
 			<div class="box-body">
 				<form class="form-horizontal" method="post" action="jsp/admin/plugins/announce/DoCreateCategory.jsp">
-					<@fieldInputText i18nLabelKey='announce.category.label' inputName='category_label' mandatory=true value='' maxlength=50 i18nHelpBlockKey='announce.category.label' />	
-					<@fieldInputCombo items=list_sectors i18nLabelKey='announce.category.sector' inputName='category_sector_id' mandatory=true value="0" />	
-					<@fieldInputCombo items=list_announces_validation i18nLabelKey='announce.category.announcesValidation' inputName='category_announces_validation' mandatory=true value="0" i18nHelpBlockKey='announce.globalParameterHelp' />	
-					<@fieldInputCombo items=mailing_list_list i18nLabelKey='announce.category.mailingList' inputName='mailing_list_id' value="-1" i18nHelpBlockKey='announce.category.mailingList.helper' />	
-					<@fieldInputCheckBox i18nLabelKey='announce.category.displayPrice' inputName='display_price' value="true" checked=false i18nHelpBlockKey='announce.category.displayPrice.helper' />	
-					<@fieldInputCheckBox i18nLabelKey='announce.category.priceMandatory' inputName='price_mandatory' value="true" checked=false i18nHelpBlockKey='announce.category.priceMandatory.helper' />	
+					<@formGroup labelKey='#i18n{announce.category.label}' helpKey='#i18n{announce.category.label}' mandatory=true >
+						<@input name='category_label' type='text'  value='' maxlength=50  />
+					</@formGroup>
+					
+					<@formGroup labelKey='#i18n{announce.category.sector}' mandatory=true >
+						<@select name='category_sector_id' items=list_sectors default_value='0' />
+					</@formGroup>
+					
+					<@formGroup labelKey='#i18n{announce.category.announcesValidation}' mandatory=true >
+						<@select name='category_announces_validation' items=list_announces_validation default_value='0' />
+					</@formGroup>
+					
+					<@formGroup labelKey='#i18n{announce.category.mailingList}' helpKey='#i18n{announce.category.mailingList.helper}'>
+						<@select name='mailing_list_id' items=mailing_list_list default_value='0' />
+					</@formGroup>
+					
+					<@formGroup  helpKey='#i18n{announce.category.displayPrice.helper}' >
+						<@checkBox name='display_price' value="true"  checked=false labelKey='#i18n{announce.category.displayPrice}' />
+					</@formGroup>
+					
+					<@formGroup  helpKey='#i18n{announce.category.priceMandatory.helper}' >
+						<@checkBox name='price_mandatory' value="true"  checked=false labelKey='#i18n{announce.category.priceMandatory}' />
+					</@formGroup>
+					
 					<#if isCaptchaEnabled?? && isCaptchaEnabled>
-						<@fieldInputCheckBox i18nLabelKey='announce.category.displayCaptcha' inputName='display_captcha' value="true" checked=false />
+						<@formGroup >
+							<@checkBox name='display_captcha' value="true"  checked=false labelKey='#i18n{announce.category.displayCaptcha}' />
+						</@formGroup>
+						
 					</#if>	
+					
 					<#if listWorkflows??>
-						<@fieldInputCombo items=listWorkflows i18nLabelKey='announce.create_category.labelWorkflow' value='' inputName="id_workflow" />
+						<@formGroup labelKey='#i18n{announce.create_category.labelWorkflow}' >
+							<@select name='id_workflow' items=listWorkflows default_value='0' />
+						</@formGroup>
+						
 					</#if>
 					<div class="form-group">
 						<div class="col-xs-12 col-sm-12 col-md-6 col-md-offset-3">

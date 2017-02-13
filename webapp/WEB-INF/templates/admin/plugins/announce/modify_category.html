@@ -7,17 +7,41 @@
 			<div class="box-body">
 				<form class="form-horizontal" method="post" action="jsp/admin/plugins/announce/DoModifyCategory.jsp">
 					<input type="hidden" name="category_id" value="${category.id}">
-					<@fieldInputText i18nLabelKey='announce.category.label' inputName='category_label' mandatory=true value=category.label maxlength=50 i18nHelpBlockKey='' />	
-					<@fieldInputCombo items=list_sectors i18nLabelKey='announce.category.sector' inputName='category_sector_id' mandatory=true value=category.idSector?string />	
-					<@fieldInputCombo items=list_announces_validation i18nLabelKey='announce.category.announcesValidation' inputName='category_announces_validation' mandatory=true value=category.announcesValidation?string i18nHelpBlockKey='announce.globalParameterHelp' />	
-					<@fieldInputCombo items=mailing_list_list i18nLabelKey='announce.category.mailingList' inputName='mailing_list_id' value=category.idMailingList?string i18nHelpBlockKey='announce.category.mailingList.helper' />	
-					<@fieldInputCheckBox i18nLabelKey='announce.category.displayPrice' inputName='display_price' value="true" checked=category.displayPrice i18nHelpBlockKey='announce.category.displayPrice.helper' />	
-					<@fieldInputCheckBox i18nLabelKey='announce.category.priceMandatory' inputName='price_mandatory' value="true" checked=category.priceMandatory i18nHelpBlockKey='announce.category.priceMandatory.helper' />	
+					<@formGroup labelKey='#i18n{announce.category.label}' helpKey='#i18n{announce.category.label}' mandatory=true >
+						<@input name='category_label' type='text'  value=category.label maxlength=50  />
+					</@formGroup>
+					
+					<@formGroup labelKey='#i18n{announce.category.sector}' mandatory=true >
+						<@select name='category_sector_id' items=list_sectors default_value=category.idSector?string />
+					</@formGroup>
+					
+					<@formGroup labelKey='#i18n{announce.category.announcesValidation}' mandatory=true >
+						<@select name='category_announces_validation' items=list_announces_validation default_value=category.announcesValidation?string />
+					</@formGroup>
+					
+					<@formGroup labelKey='#i18n{announce.category.mailingList}' helpKey='#i18n{announce.category.mailingList.helper}'>
+						<@select name='mailing_list_id' items=mailing_list_list default_value=category.idMailingList?string />
+					</@formGroup>
+					
+					<@formGroup  helpKey='#i18n{announce.category.displayPrice.helper}' >
+						<@checkBox name='display_price' value="true"  checked=category.displayPrice labelKey='#i18n{announce.category.displayPrice}' />
+					</@formGroup>
+					
+					<@formGroup  helpKey='#i18n{announce.category.priceMandatory.helper}' >
+						<@checkBox name='price_mandatory' value="true"  checked=category.priceMandatory labelKey='#i18n{announce.category.priceMandatory}' />
+					</@formGroup>
+					
 					<#if isCaptchaEnabled?? && isCaptchaEnabled>
-						<@fieldInputCheckBox i18nLabelKey='announce.category.displayCaptcha' inputName='display_captcha' value="true" checked=category.displayCaptcha />
+						<@formGroup >
+							<@checkBox name='display_captcha' value="true"  checked=category.displayCaptcha labelKey='#i18n{announce.category.displayCaptcha}' />
+						</@formGroup>
+						
 					</#if>	
 					<#if listWorkflows??>
-						<@fieldInputCombo items=listWorkflows i18nLabelKey='announce.create_category.labelWorkflow' value=category.idWorkflow?string inputName="id_workflow" />
+						<@formGroup labelKey='#i18n{announce.create_category.labelWorkflow}' >
+							<@select name='id_workflow' items=listWorkflows default_value=category.idWorkflow?string />
+						</@formGroup>
+						
 					</#if>
 					<div class="form-group">
 						<div class="col-xs-12 col-sm-12 col-md-10 col-md-offset-3">
@@ -65,7 +89,7 @@
 							<input type="hidden" name="id_category" value="${category.id}">
 							<label for="id_type">#i18n{announce.modify_category.create_entry.labelEntryType}</label>
 							<div class="input-group">
-								<@comboWithParams name="id_type" default_value="-1" additionalParameters="class=\"form-control input-xs\"" items=entry_type_list />
+								<@select name="id_type" items=entry_type_list default_value="-1" params="class=\"form-control input-xs\"" />
 								<span class="input-group-btn">
 									<button type="submit" class="btn btn-primary btn-xs btn-flat" title="#i18n{announce.modify_category.create_entry.buttonLabelCreate}">
 										<i class="fa fa-plus"></i>
@@ -80,7 +104,7 @@
 						<#if entry_group_list?has_content>
 							<!-- List all entry of type group  -->
 							<div class="input-group">
-								<@comboWithParams name="id_entry_group" default_value="" additionalParameters="class=\"form-control  input-xs\"" items=entry_group_list />  
+								<@select name="id_entry_group" items=entry_group_list default_value="" params="class=\"form-control input-xs\"" />
 								<span class="input-group-btn">
 									<button type="submit" class="btn btn-default btn-xs btn-flat" title="#i18n{announce.modifyField.manageConditionalQuestion.titleMove}" name="add_to_group" value="move">
 										<i class="fa fa-sign-in"></i>

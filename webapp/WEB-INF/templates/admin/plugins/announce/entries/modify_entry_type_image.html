@@ -104,7 +104,8 @@
 						<input name="action" value="doInsertRegularExpression" type="hidden">
 						<label  for="id_expression">#i18n{announce.createEntry.manageRegularExpression.labelInsert}</label>
 						<div class="input-group">
-							<@comboWithParams name="id_expression" default_value="-1" additionalParameters="class=\"form-control input-xs\"" items=regular_expression_list />
+							<@select name="id_expression" items=regular_expression_list default_value="-1" params="class=\"form-control input-xs\"" />
+							
 							<span class="input-group-btn">
 								<button class="btn btn-primary btn-xs btn-flat" type="submit">#i18n{announce.createEntry.manageRegularExpression.buttonInsert}</button>
 							</span>

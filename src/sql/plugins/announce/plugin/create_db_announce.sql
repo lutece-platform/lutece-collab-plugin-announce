@@ -45,7 +45,7 @@ CREATE TABLE announce_announce(
 	description_announce LONG VARCHAR NOT NULL ,
 	price_announce varchar(50),
 	date_creation timestamp default CURRENT_TIMESTAMP NOT NULL,
-	date_modification timestamp NOT NULL,
+	date_modification timestamp default CURRENT_TIMESTAMP NOT NULL,
 	published smallint default '0',
 	suspended smallint default '0',
 	suspended_by_user smallint default '0',

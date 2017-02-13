@@ -65,7 +65,7 @@
 							<input type="hidden" name="id_category" value="${category.id}">
 							<label for="id_type">#i18n{announce.modify_category.create_entry.labelEntryType}</label>
 							<div class="input-group">
-								<@comboWithParams name="id_type" default_value="-1" additionalParameters="class=\"form-control input-xs\"" items=entry_type_list />
+								<@select name="id_type" items=entry_type_list default_value="-1" params="class=\"form-control input-xs\"" />
 								<span class="input-group-btn">
 									<button type="submit" class="btn btn-primary btn-xs btn-flat" title="#i18n{announce.modify_category.create_entry.buttonLabelCreate}">
 										<i class="fa fa-plus"></i>
@@ -80,7 +80,7 @@
 						<#if entry_group_list?has_content>
 							<!-- List all entry of type group  -->
 							<div class="input-group">
-								<@comboWithParams name="id_entry_group" default_value="" additionalParameters="class=\"form-control  input-xs\"" items=entry_group_list />  
+								<@select name="id_entry_group" items=entry_group_list default_value="" params="class=\"form-control  input-xs\"" />
 								<span class="input-group-btn">
 									<button type="submit" class="btn btn-default btn-xs btn-flat" title="#i18n{announce.modifyField.manageConditionalQuestion.titleMove}" name="add_to_group" value="move">
 										<i class="fa fa-sign-in"></i>

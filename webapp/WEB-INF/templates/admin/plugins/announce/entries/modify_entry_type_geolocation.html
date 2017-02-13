@@ -32,9 +32,11 @@
 		        	<label class="control-label col-xs-12 col-sm-12 col-md-3" for="">#i18n{announce.createEntry.mapProvider}</label>
 					<div class="col-xs-12 col-sm-12 col-md-6">
 						<#if entry.mapProvider?has_content && entry.mapProvider.key?has_content>
-							<@comboWithParams name="map_provider" default_value="${entry.mapProvider.key}" additionalParameters="class=\"form-control\"" items=entryTypeService.mapProvidersRefList />
+							<@select name="map_provider" items=entryTypeService.mapProvidersRefList default_value="${entry.mapProvider.key}" params="class=\"form-control\"" />
+							
 						<#else>
-							<@comboWithParams name="map_provider" default_value="-1" additionalParameters="class=\"form-control\"" items=entryTypeService.mapProvidersRefList />
+							<@select name="map_provider" items=entryTypeService.mapProvidersRefList default_value="-1" params="class=\"form-control\"" />
+							
 						</#if>
 					</div>
 				</div>

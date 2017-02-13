@@ -32,7 +32,7 @@
 								<form method="post" class="form-inline" action="jsp/admin/plugins/announce/DoModifySectorOrder.jsp">	
 									<input type="hidden" name="sector_id" value="${sector.id}">
 									<div class="input-group">
-										<@comboWithParams name="sector_order" default_value="${sector.order}" items=sector_order_list additionalParameters="class=\"input-xs form-control\"" />
+										<@select name="sector_order" items=sector_order_list default_value="${sector.order}" params="class=\"form-control input-xs\"" />
 										<span class="input-group-btn">
 											<button type="submit" class="btn btn-default btn-xs btn-flat" title="#i18n{announce.manage_sectors.buttonChangeOrder}" >
 												<i class="fa fa-check"></i>

@@ -122,7 +122,7 @@ public class CategoryJspBean extends PluginAdminPageJspBean
     private static final String TEMPLATE_MANAGE_CATEGORIES = "admin/plugins/announce/manage_categories.html";
     private static final String TEMPLATE_CREATE_CATEGORY = "admin/plugins/announce/create_category.html";
     private static final String TEMPLATE_MODIFY_CATEGORY = "admin/plugins/announce/modify_category.html";
-    private static final String TEMPLATE_DUPLICATE_CATEGORY = "admin/plugins/announce/duplicate_category.html";
+    //private static final String TEMPLATE_DUPLICATE_CATEGORY = "admin/plugins/announce/duplicate_category.html";
 
 
     /* Jsp Definition */
@@ -284,7 +284,8 @@ public class CategoryJspBean extends PluginAdminPageJspBean
         int nAnnouncesValidation = Integer.parseInt( request.getParameter( PARAMETER_CATEGORY_ANNOUNCES_VALIDATION ) );
         String strDisplayPrice = request.getParameter( PARAMETER_DISPLAY_PRICE );
         int nIdMailingList = Integer.parseInt( request.getParameter( PARAMETER_MAILING_LIST_ID ) );
-        int nIdWorkflow = Integer.parseInt( request.getParameter( PARAMETER_ID_WORKFLOW ) );
+        int nIdWorkflow = Integer.parseInt( request.getParameter( PARAMETER_ID_WORKFLOW ) != null ? 
+        		request.getParameter( PARAMETER_ID_WORKFLOW ) : "-1" );
         boolean bDisplayCaptcha = Boolean.parseBoolean( request.getParameter( PARAMETER_DISPLAY_CAPTCHA ) );
         boolean bPriceMandatory = Boolean.parseBoolean( request.getParameter( PARAMETER_PRICE_MANDATORY ) );
 
@@ -416,13 +417,14 @@ public class CategoryJspBean extends PluginAdminPageJspBean
      */
     public String doModifyCategory( HttpServletRequest request )
         throws AccessDeniedException
-    {
+    {	
         String strCategoryLabel = request.getParameter( PARAMETER_CATEGORY_LABEL );
         int nIdSector = Integer.parseInt( request.getParameter( PARAMETER_CATEGORY_SECTOR_ID ) );
         int nAnnouncesValidation = Integer.parseInt( request.getParameter( PARAMETER_CATEGORY_ANNOUNCES_VALIDATION ) );
         String strDisplayPrice = request.getParameter( PARAMETER_DISPLAY_PRICE );
         int nIdMailingList = Integer.parseInt( request.getParameter( PARAMETER_MAILING_LIST_ID ) );
-        int nIdWorkflow = Integer.parseInt( request.getParameter( PARAMETER_ID_WORKFLOW ) );
+        int nIdWorkflow = Integer.parseInt( request.getParameter( PARAMETER_ID_WORKFLOW ) != null ? 
+        		request.getParameter( PARAMETER_ID_WORKFLOW ) : "-1");
         boolean bDisplayCaptcha = Boolean.parseBoolean( request.getParameter( PARAMETER_DISPLAY_CAPTCHA ) );
         boolean bPriceMandatory = Boolean.parseBoolean( request.getParameter( PARAMETER_PRICE_MANDATORY ) );
 
