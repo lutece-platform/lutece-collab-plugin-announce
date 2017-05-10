@@ -31,7 +31,7 @@
 								<td>
 									<#if announce.hasPictures>
 										<a href="jsp/site/Portal.jsp?page=announce&action=view_announce&announce_id=${announce.id}">
-											<img class="thumbnail" width="80" height="80" src="image?resource_type=GENERICATTRIBUTES_RESPONSE&id=${announce.listIdImageResponse?first}" />
+											<img class="thumbnail" width="80" height="80" src="image?resource_type=announce_img&id=${announce.listIdImageResponse?first}" />
 										</a>
 									</#if>
 									<#if announce.category.displayPrice>

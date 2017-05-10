@@ -78,6 +78,7 @@ CREATE TABLE announce_announce_response (
 	is_image SMALLINT DEFAULT '0',
 	PRIMARY KEY (id_announce,id_response)
 );
+CREATE INDEX announce_response_file ON announce_announce_response (id_response);
 
 DROP TABLE IF EXISTS announce_search_filters;
 CREATE TABLE announce_search_filters(

@@ -204,4 +204,12 @@ public interface IAnnounceDAO
      */
     List<Integer> findIdAnnouncesByDatePublication( long lMinPublicationTime, Plugin plugin );
     
+    /**
+     * Get the announce id from its image response id
+     * @param nIdResponse the id of the response
+     * @param plugin the plugin
+     * @return The announce id, or null if there no anncounce has this response as an image
+     */
+    Integer findIdByImageResponse( int nIdResponse, Plugin plugin );
+
 }

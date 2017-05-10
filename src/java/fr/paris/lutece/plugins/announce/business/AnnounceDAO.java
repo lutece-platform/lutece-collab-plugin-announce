@@ -88,9 +88,11 @@ public final class AnnounceDAO implements IAnnounceDAO
 
     // SQL commands to manage announce responses
     private static final String SQL_QUERY_INSERT_ANNOUNCE_RESPONSE = "INSERT INTO announce_announce_response (id_announce, id_response, is_image) VALUES (?,?,?)";
+    private static final String SQL_FRAGMENT_AND_IS_IMAGE = " AND is_image = ?";
     private static final String SQL_QUERY_SELECT_ANNOUNCE_RESPONSE_LIST = "SELECT id_response FROM announce_announce_response WHERE id_announce = ?";
-    private static final String SQL_QUERY_SELECT_ANNOUNCE_IMAGE_RESPONSE_LIST = SQL_QUERY_SELECT_ANNOUNCE_RESPONSE_LIST +
-        " AND is_image = ?";
+    private static final String SQL_QUERY_SELECT_ANNOUNCE_IMAGE_RESPONSE_LIST = SQL_QUERY_SELECT_ANNOUNCE_RESPONSE_LIST + SQL_FRAGMENT_AND_IS_IMAGE;
+    private static final String SQL_QUERY_SELECT_ANNOUNCE_BY_RESPONSE = "SELECT id_announce FROM announce_announce_response WHERE id_response = ?";
+    private static final String SQL_QUERY_SELECT_ANNOUNCE_BY_IMAGE_RESPONSE = SQL_QUERY_SELECT_ANNOUNCE_BY_RESPONSE + SQL_FRAGMENT_AND_IS_IMAGE ;
     private static final String SQL_QUERY_DELETE_ANNOUNCE_RESPONSE = "DELETE FROM announce_announce_response WHERE id_announce = ?";
 
     // Constants
@@ -526,6 +528,27 @@ public final class AnnounceDAO implements IAnnounceDAO
         daoUtil.free(  );
 
         return listIdResponse;
+    }
+
+    /**
+     * {@inheritDoc }
+     */
+    @Override
+    public Integer findIdByImageResponse( int nIdResponse, Plugin plugin )
+    {
+        DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECT_ANNOUNCE_BY_IMAGE_RESPONSE, plugin );
+        daoUtil.setInt( 1, nIdResponse );
+        daoUtil.setBoolean( 2, Boolean.TRUE );
+        daoUtil.executeQuery(  );
+
+        if ( daoUtil.next(  ) )
+        {
+            return daoUtil.getInt( 1 );
+        }
+
+        daoUtil.free(  );
+
+        return null;
     }
 
     /**

@@ -128,8 +128,8 @@
 		                            <#if response.file?? && response.file.idFile &gt; 0>
 		                            	<#assign isImage = true>
 																		<div id="gallery">
-																			<a title="#i18n{announce.view_announce.imagesCaption}" href="image?resource_type=GENERICATTRIBUTES_RESPONSE&id=${response.idResponse}">
-																				<img src="image?resource_type=GENERICATTRIBUTES_RESPONSE&id=${response.idResponse}" title="${announce.title} - image ${imageIndex}" alt="#i18n{announce.view_announce.imagesCaption}" />
+																			<a title="#i18n{announce.view_announce.imagesCaption}" href="image?resource_type=announce_img&id=${response.idResponse}">
+																				<img src="image?resource_type=announce_img&id=${response.idResponse}" title="${announce.title} - image ${imageIndex}" alt="#i18n{announce.view_announce.imagesCaption}" />
 																			</a>
 		                            <#else>
 
@@ -137,8 +137,8 @@
 		                            </#if>
 		                  	    <#else>
 			                    	<#if isImage?? && isImage>
-															<a title="#i18n{announce.view_announce.imagesCaption}" href="image?resource_type=GENERICATTRIBUTES_RESPONSE&id=${response.idResponse}">
-																<img src="image?resource_type=GENERICATTRIBUTES_RESPONSE&id=${response.idResponse}" title="${announce.title} - image ${imageIndex}" alt="#i18n{announce.view_announce.imagesCaption}" />
+															<a title="#i18n{announce.view_announce.imagesCaption}" href="image?resource_type=announce_img&id=${response.idResponse}">
+																<img src="image?resource_type=announce_img&id=${response.idResponse}" title="${announce.title} - image ${imageIndex}" alt="#i18n{announce.view_announce.imagesCaption}" />
 															</a>
 			                    	<#else>
 			                    		<br />${response.toStringValueResponse}

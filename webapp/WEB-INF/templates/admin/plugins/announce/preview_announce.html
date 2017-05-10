@@ -74,8 +74,8 @@
                             	<#assign isImage = true>
                             	<ul id="slideshow">
 									<li>
-										<a class="pirobox_gall" title="#i18n{announce.view_announce.imagesCaption}" href="image?resource_type=GENERICATTRIBUTES_RESPONSE&id=${response.idResponse}">
-											<img height="80px" src="image?resource_type=GENERICATTRIBUTES_RESPONSE&id=${response.idResponse}" />
+										<a class="pirobox_gall" title="#i18n{announce.view_announce.imagesCaption}" href="image?resource_type=announce_img&id=${response.idResponse}">
+											<img height="80px" src="image?resource_type=announce_img&id=${response.idResponse}" />
 										</a>
 									</li>
                             <#else>
@@ -85,8 +85,8 @@
                   		<#else>
 	                    	<#if isImage?? && isImage>
 	                    		<li>
-									<a class="pirobox_gall" title="#i18n{announce.view_announce.imagesCaption}" href="image?resource_type=GENERICATTRIBUTES_RESPONSE&id=${response.idResponse}">
-										<img height="80px" src="image?resource_type=GENERICATTRIBUTES_RESPONSE&id=${response.idResponse}" />
+									<a class="pirobox_gall" title="#i18n{announce.view_announce.imagesCaption}" href="image?resource_type=announce_img&id=${response.idResponse}">
+										<img height="80px" src="image?resource_type=announce_img&id=${response.idResponse}" />
 									</a>
 								</li>
 	                    	<#else>

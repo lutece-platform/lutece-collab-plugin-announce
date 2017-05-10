@@ -33,6 +33,7 @@
  */
 package fr.paris.lutece.plugins.announce.service;
 
+import fr.paris.lutece.portal.service.image.ImageResourceManager;
 import fr.paris.lutece.portal.service.plugin.Plugin;
 import fr.paris.lutece.portal.service.plugin.PluginDefaultImplementation;
 import fr.paris.lutece.portal.service.plugin.PluginService;
@@ -54,7 +55,7 @@ public class AnnouncePlugin extends PluginDefaultImplementation
     @Override
     public void init(  )
     {
-        // Do nothing
+        ImageResourceManager.registerProvider( new AnnounceResponseImageResourceProvider( ) );
     }
 
     /**

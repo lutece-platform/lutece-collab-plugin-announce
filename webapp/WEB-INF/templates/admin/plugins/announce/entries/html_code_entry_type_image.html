@@ -20,8 +20,8 @@
 					<#list list_responses as response>
 						<#if response.file?? && response.file.idFile &gt; 0>
 							<li>
-								<a class="${class}" title="#i18n{announce.view_announce.imagesCaption}" href="image?resource_type=GENERICATTRIBUTES_RESPONSE&id=${response.idResponse}">
-									<img class="thumbnail" width="80" height="80" src="image?resource_type=GENERICATTRIBUTES_RESPONSE&id=${response.idResponse}" />
+								<a class="${class}" title="#i18n{announce.view_announce.imagesCaption}" href="image?resource_type=announce_img&id=${response.idResponse}">
+									<img class="thumbnail" width="80" height="80" src="image?resource_type=announce_img&id=${response.idResponse}" />
 									${response.toStringValueResponse!}
 								</a>
 							</li>

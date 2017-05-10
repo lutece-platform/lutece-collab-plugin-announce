@@ -34,7 +34,7 @@
 package fr.paris.lutece.plugins.announce.business;
 
 import fr.paris.lutece.plugins.genericattributes.business.Response;
-import fr.paris.lutece.plugins.genericattributes.service.ResponseImageResourceProvider;
+import fr.paris.lutece.plugins.announce.service.AnnounceResponseImageResourceProvider;
 import fr.paris.lutece.plugins.workflowcore.business.action.Action;
 import fr.paris.lutece.portal.service.rbac.RBACResource;
 import fr.paris.lutece.portal.service.resource.IExtendableResource;
@@ -473,7 +473,7 @@ public class Announce implements Serializable, IExtendableResource, RBACResource
     {
         if ( getHasPictures(  ) && ( getListIdImageResponse(  ) != null ) && ( getListIdImageResponse(  ).size(  ) > 0 ) )
         {
-            return ResponseImageResourceProvider.getUrlDownloadImageResponse( getListIdImageResponse(  ).get( 0 ) );
+            return AnnounceResponseImageResourceProvider.getUrlDownloadImageResponse( getListIdImageResponse(  ).get( 0 ) );
         }
 
         return null;

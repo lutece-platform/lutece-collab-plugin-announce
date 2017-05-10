@@ -183,6 +183,16 @@ public final class AnnounceHome
     }
 
     /**
+     * Returns the announce id from its image response id
+     * @param nIdResponse the id of the response
+     * @return The announce id, or null if there no announce that has this response as an image
+     */
+    public static Integer findIdByImageResponse( int nIdResponse )
+    {
+        return _dao.findIdByImageResponse( nIdResponse, _plugin );
+    }
+
+    /**
      * Load the data of all the announce objects and returns them in form of a
      * list
      * @param announceSort The sort

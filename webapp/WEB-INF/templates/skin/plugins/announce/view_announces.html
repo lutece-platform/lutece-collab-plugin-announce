@@ -26,7 +26,7 @@
 											<#list announce.listIdImageResponse as idImageResponse>
 												<#if idImageResponse_index == 0>
 													<a href="jsp/site/Portal.jsp?page=announce&action=view_announce&announce_id=${announce.id}">
-														<img class="thumbnail" width="80" height="80" src="image?resource_type=GENERICATTRIBUTES_RESPONSE&id=${idImageResponse}" />
+														<img class="thumbnail" width="80" height="80" src="image?resource_type=announce_img&id=${idImageResponse}" />
 													</a>
 												</#if>
 											</#list>
