@@ -132,18 +132,18 @@ public class AnnounceLuceneSearchEngine implements IAnnounceSearchEngine
             }
 
             //Type (=announce)
-            PhraseQuery queryType = new PhraseQuery(  );
-            queryType.add( new Term( AnnounceSearchItem.FIELD_TYPE, AnnouncePlugin.PLUGIN_NAME + "e" ) );
-            queries.add( queryType.toString(  ) );
+            PhraseQuery.Builder queryTypeBuilder = new PhraseQuery.Builder(  );
+            queryTypeBuilder.add( new Term( AnnounceSearchItem.FIELD_TYPE, AnnouncePlugin.PLUGIN_NAME + "e" ) );
+            queries.add( queryTypeBuilder.build( ).toString(  ) );
             sectors.add( AnnounceSearchItem.FIELD_TYPE );
             flags.add( BooleanClause.Occur.MUST );
 
             //Keywords in title or description
             if ( StringUtils.isNotBlank( filter.getKeywords(  ) ) )
             {
-                PhraseQuery queryContent = new PhraseQuery(  );
-                queryContent.add( new Term( AnnounceSearchItem.FIELD_CONTENTS, filter.getKeywords(  ) + "a" ) );
-                queries.add( queryContent.toString(  ) );
+                PhraseQuery.Builder queryContentBuilder = new PhraseQuery.Builder(  );
+                queryContentBuilder.add( new Term( AnnounceSearchItem.FIELD_CONTENTS, filter.getKeywords(  ) + "a" ) );
+                queries.add( queryContentBuilder.build( ).toString(  ) );
                 sectors.add( AnnounceSearchItem.FIELD_CONTENTS );
                 flags.add( BooleanClause.Occur.MUST );
             }
@@ -194,7 +194,7 @@ public class AnnounceLuceneSearchEngine implements IAnnounceSearchEngine
                 flags.add( BooleanClause.Occur.MUST );
             }
 
-            Query queryMulti = MultiFieldQueryParser.parse( IndexationService.LUCENE_INDEX_VERSION,
+            Query queryMulti = MultiFieldQueryParser.parse(
                     queries.toArray( new String[queries.size(  )] ), sectors.toArray( new String[sectors.size(  )] ),
                     flags.toArray( new BooleanClause.Occur[flags.size(  )] ),
                     AnnounceSearchService.getInstance(  ).getAnalyzer(  ) );
@@ -297,18 +297,18 @@ public class AnnounceLuceneSearchEngine implements IAnnounceSearchEngine
             }
 
             //Type (=announce)
-            PhraseQuery queryType = new PhraseQuery(  );
-            queryType.add( new Term( AnnounceSearchItem.FIELD_TYPE, AnnouncePlugin.PLUGIN_NAME + "e" ) );
-            queries.add( queryType.toString(  ) );
+            PhraseQuery.Builder queryTypeBuilder = new PhraseQuery.Builder(  );
+            queryTypeBuilder.add( new Term( AnnounceSearchItem.FIELD_TYPE, AnnouncePlugin.PLUGIN_NAME + "e" ) );
+            queries.add( queryTypeBuilder.build( ).toString(  ) );
             sectors.add( AnnounceSearchItem.FIELD_TYPE );
             flags.add( BooleanClause.Occur.MUST );
 
             //Keywords in title or description
             if ( StringUtils.isNotBlank( filter.getKeywords(  ) ) )
             {
-                PhraseQuery queryContent = new PhraseQuery(  );
-                queryContent.add( new Term( AnnounceSearchItem.FIELD_CONTENTS, filter.getKeywords(  ) + "a" ) );
-                queries.add( queryContent.toString(  ) );
+                PhraseQuery.Builder queryContentBuilder = new PhraseQuery.Builder(  );
+                queryContentBuilder.add( new Term( AnnounceSearchItem.FIELD_CONTENTS, filter.getKeywords(  ) + "a" ) );
+                queries.add( queryContentBuilder.build( ).toString(  ) );
                 sectors.add( AnnounceSearchItem.FIELD_CONTENTS );
                 flags.add( BooleanClause.Occur.MUST );
             }
@@ -359,7 +359,7 @@ public class AnnounceLuceneSearchEngine implements IAnnounceSearchEngine
                 flags.add( BooleanClause.Occur.MUST );
             }
 
-            Query queryMulti = MultiFieldQueryParser.parse( IndexationService.LUCENE_INDEX_VERSION,
+            Query queryMulti = MultiFieldQueryParser.parse(
                     queries.toArray( new String[queries.size(  )] ), sectors.toArray( new String[sectors.size(  )] ),
                     flags.toArray( new BooleanClause.Occur[flags.size(  )] ),
                     AnnounceSearchService.getInstance(  ).getAnalyzer(  ) );

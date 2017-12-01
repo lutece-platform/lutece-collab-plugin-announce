@@ -57,6 +57,8 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.lucene.document.DateTools;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
+import org.apache.lucene.document.StoredField;
+import org.apache.lucene.document.TextField;
 import org.apache.lucene.index.CorruptIndexException;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexableField;
@@ -263,33 +265,29 @@ public class DefaultAnnounceIndexer implements IAnnounceSearchIndexer
     {
         // make a new, empty document
         org.apache.lucene.document.Document doc = new org.apache.lucene.document.Document(  );
-        doc.add( new Field( AnnounceSearchItem.FIELD_SECTOR_ID, String.valueOf( announce.getCategory().getIdSector() ),
-                Field.Store.YES, Field.Index.NOT_ANALYZED ) );
+        doc.add( new Field( AnnounceSearchItem.FIELD_SECTOR_ID, String.valueOf( announce.getCategory().getIdSector() ), TextField.TYPE_STORED ) );
         
-        doc.add( new Field( AnnounceSearchItem.FIELD_CATEGORY_ID, String.valueOf( announce.getCategory(  ).getId(  ) ),
-                Field.Store.YES, Field.Index.NOT_ANALYZED ) );
-        doc.add( new Field( AnnounceSearchItem.FIELD_ID_ANNOUNCE, Integer.toString( announce.getId(  ) ),
-                Field.Store.YES, Field.Index.NOT_ANALYZED ) );
+        doc.add( new Field( AnnounceSearchItem.FIELD_CATEGORY_ID, String.valueOf( announce.getCategory(  ).getId(  ) ), TextField.TYPE_STORED ) );
+        doc.add( new Field( AnnounceSearchItem.FIELD_ID_ANNOUNCE, Integer.toString( announce.getId(  ) ), TextField.TYPE_STORED  ) );
 
-        doc.add( new Field( AnnounceSearchItem.FIELD_TAGS, announce.getTags(  ), Field.Store.YES,
-                Field.Index.NOT_ANALYZED ) );
+        doc.add( new Field( AnnounceSearchItem.FIELD_TAGS, announce.getTags(  ), TextField.TYPE_STORED ) );
 
         // Add the url as a field named "url".  Use an UnIndexed field, so
         // that the url is just stored with the question/answer, but is not searchable.
-        doc.add( new Field( AnnounceSearchItem.FIELD_URL, strUrl, Field.Store.YES, Field.Index.NOT_ANALYZED ) );
+        doc.add( new Field( AnnounceSearchItem.FIELD_URL, strUrl, TextField.TYPE_STORED ) );
 
         // Add the uid as a field, so that index can be incrementally maintained.
         // This field is not stored with question/answer, it is indexed, but it is not
         // tokenized prior to indexing.
         String strIdAnnounce = String.valueOf( announce.getId(  ) );
-        doc.add( new Field( AnnounceSearchItem.FIELD_UID, strIdAnnounce, Field.Store.YES, Field.Index.NOT_ANALYZED ) );
+        doc.add( new Field( AnnounceSearchItem.FIELD_UID, strIdAnnounce, TextField.TYPE_STORED ) );
 
         // Add the last modified date of the file a field named "modified".
         // Use a field that is indexed (i.e. searchable), but don't tokenize
         // the field into words.
         String strDate = DateTools.dateToString( ( announce.getTimePublication(  ) > 0 )
                 ? new Timestamp( announce.getTimePublication(  ) ) : announce.getDateCreation(  ), DateTools.Resolution.DAY );
-        doc.add( new Field( AnnounceSearchItem.FIELD_DATE, strDate, Field.Store.YES, Field.Index.NOT_ANALYZED ) );
+        doc.add( new Field( AnnounceSearchItem.FIELD_DATE, strDate, TextField.TYPE_STORED ) );
 
         if ( StringUtils.isNotBlank( announce.getPrice(  ) ) )
         {
@@ -298,7 +296,7 @@ public class DefaultAnnounceIndexer implements IAnnounceSearchIndexer
                 double dPrice = Double.parseDouble( AnnounceSearchService.getFormatedPriceString( announce.getPrice(  ) ) );
                 // Add the price of the announce
                 doc.add( new Field( AnnounceSearchItem.FIELD_PRICE,
-                        AnnounceSearchService.formatPriceForIndexer( dPrice ), Field.Store.YES, Field.Index.NOT_ANALYZED ) );
+                        AnnounceSearchService.formatPriceForIndexer( dPrice ), TextField.TYPE_STORED ) );
             }
             catch ( NumberFormatException nfe )
             {
@@ -346,14 +344,13 @@ public class DefaultAnnounceIndexer implements IAnnounceSearchIndexer
 
         // Add the tag-stripped contents as a Reader-valued Text field so it will
         // get tokenized and indexed.
-        doc.add( new Field( AnnounceSearchItem.FIELD_CONTENTS, strContent, Field.Store.NO, Field.Index.ANALYZED ) );
+        doc.add( new Field( AnnounceSearchItem.FIELD_CONTENTS, strContent, TextField.TYPE_NOT_STORED ) );
 
         // Add the subject name as a separate Text field, so that it can be searched
         // separately.
-        doc.add( new Field( AnnounceSearchItem.FIELD_TITLE, announce.getTitle(  ), Field.Store.YES, Field.Index.ANALYZED ) );
+        doc.add( new StoredField( AnnounceSearchItem.FIELD_TITLE, announce.getTitle(  ) ) );
 
-        doc.add( new Field( AnnounceSearchItem.FIELD_TYPE, AnnouncePlugin.PLUGIN_NAME, Field.Store.YES,
-                Field.Index.NOT_ANALYZED ) );
+        doc.add( new Field( AnnounceSearchItem.FIELD_TYPE, AnnouncePlugin.PLUGIN_NAME, TextField.TYPE_STORED ) );
 
         // return the document
         return doc;

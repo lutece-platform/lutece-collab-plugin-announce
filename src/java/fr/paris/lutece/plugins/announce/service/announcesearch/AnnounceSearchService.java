@@ -69,6 +69,7 @@ import org.apache.lucene.util.Version;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Paths;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.ArrayList;
@@ -266,7 +267,7 @@ public final class AnnounceSearchService
 
         try
         {
-            IndexReader ir = DirectoryReader.open( NIOFSDirectory.open( new File( getIndex(  ) ) ) );
+            IndexReader ir = DirectoryReader.open( NIOFSDirectory.open( Paths.get( getIndex(  ) ) ) );
             searcher = new IndexSearcher( ir );
         }
         catch ( IOException e )
@@ -305,7 +306,7 @@ public final class AnnounceSearchService
         {
             sbLogs.append( "\r\nIndexing all contents ...\r\n" );
 
-            Directory dir = NIOFSDirectory.open( new File( getIndex(  ) ) );
+            Directory dir = NIOFSDirectory.open( Paths.get( getIndex(  ) ) );
 
             //Nouveau
             if ( !DirectoryReader.indexExists( dir ) )
@@ -317,20 +318,7 @@ public final class AnnounceSearchService
 
             if ( IndexWriter.isLocked( dir ) )
             {
-                _nSkipedIndexations++;
-
-                if ( bCreate ||
-                        ( _nSkipedIndexations >= AppPropertiesService.getPropertyInt( PROPERTY_MAX_SKIPPED_INDEXATION,
-                            10 ) ) )
-                {
-                    IndexWriter.unlock( dir );
-                    bIsLocked = false;
-                }
-                else
-                {
-                    bIsLocked = true;
-                    _nSkipedIndexations = 0;
-                }
+                sbLogs.append(  "AnnounceSearchService, the index is locked. Aborting." );
             }
 
             if ( !bIsLocked )
@@ -357,8 +345,7 @@ public final class AnnounceSearchService
                   writer.optimize(  );*/
                 Date start = new Date(  );
 
-                IndexWriterConfig conf = new IndexWriterConfig( Version.LUCENE_46,
-                        new LimitTokenCountAnalyzer( _analyzer, _nWriterMaxSectorLength ) );
+                IndexWriterConfig conf = new IndexWriterConfig( new LimitTokenCountAnalyzer( _analyzer, _nWriterMaxSectorLength ) );
                 LogMergePolicy mergePolicy = new LogDocMergePolicy(  );
                 mergePolicy.setMergeFactor( _nWriterMergeFactor );
 
