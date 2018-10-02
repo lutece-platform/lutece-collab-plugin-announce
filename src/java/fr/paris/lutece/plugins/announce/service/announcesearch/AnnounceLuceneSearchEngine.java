@@ -142,7 +142,7 @@ public class AnnounceLuceneSearchEngine implements IAnnounceSearchEngine
             if ( StringUtils.isNotBlank( filter.getKeywords(  ) ) )
             {
                 PhraseQuery.Builder queryContentBuilder = new PhraseQuery.Builder(  );
-                queryContentBuilder.add( new Term( AnnounceSearchItem.FIELD_CONTENTS, filter.getKeywords(  ) + "a" ) );
+                queryContentBuilder.add( new Term( AnnounceSearchItem.FIELD_CONTENTS, filter.getKeywords(  )  ) );
                 queries.add( queryContentBuilder.build( ).toString(  ) );
                 sectors.add( AnnounceSearchItem.FIELD_CONTENTS );
                 flags.add( BooleanClause.Occur.MUST );
@@ -307,7 +307,7 @@ public class AnnounceLuceneSearchEngine implements IAnnounceSearchEngine
             if ( StringUtils.isNotBlank( filter.getKeywords(  ) ) )
             {
                 PhraseQuery.Builder queryContentBuilder = new PhraseQuery.Builder(  );
-                queryContentBuilder.add( new Term( AnnounceSearchItem.FIELD_CONTENTS, filter.getKeywords(  ) + "a" ) );
+                queryContentBuilder.add( new Term( AnnounceSearchItem.FIELD_CONTENTS, filter.getKeywords(  )  ) );
                 queries.add( queryContentBuilder.build( ).toString(  ) );
                 sectors.add( AnnounceSearchItem.FIELD_CONTENTS );
                 flags.add( BooleanClause.Occur.MUST );

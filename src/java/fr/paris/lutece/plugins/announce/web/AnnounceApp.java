@@ -829,10 +829,11 @@ public class AnnounceApp extends MVCApplication
      * @param request The request
      * @return The XPage to display
      * @throws UserNotSignedException If the user has not signed in
+     * @throws SiteMessageException If the authentication mode is not activated
      */
     @Action( ACTION_VIEW_SUBSCRIPTIONS )
     public XPage getViewSubscriptions( HttpServletRequest request )
-        throws UserNotSignedException
+        throws UserNotSignedException, SiteMessageException
     {
         if ( SecurityService.isAuthenticationEnable(  ) )
         {
@@ -847,7 +848,10 @@ public class AnnounceApp extends MVCApplication
                 return page;
             }
         }
-
+        else
+        {
+            SiteMessageService.setMessage( request, PROPERTY_NOT_AUTHORIZED, SiteMessage.TYPE_STOP );
+        }
         throw new UserNotSignedException(  );
     }
     public String getInfoSubscrition(HttpServletRequest request){
