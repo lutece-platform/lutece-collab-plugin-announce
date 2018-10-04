@@ -54,11 +54,7 @@ import fr.paris.lutece.util.url.UrlItem;
 import org.apache.commons.lang.StringUtils;
 
 //import org.apache.lucene.demo.html.HTMLParser;
-import org.apache.lucene.document.DateTools;
-import org.apache.lucene.document.Document;
-import org.apache.lucene.document.Field;
-import org.apache.lucene.document.StoredField;
-import org.apache.lucene.document.TextField;
+import org.apache.lucene.document.*;
 import org.apache.lucene.index.CorruptIndexException;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexableField;
@@ -350,7 +346,7 @@ public class DefaultAnnounceIndexer implements IAnnounceSearchIndexer
         // separately.
         doc.add( new StoredField( AnnounceSearchItem.FIELD_TITLE, announce.getTitle(  ) ) );
 
-        doc.add( new Field( AnnounceSearchItem.FIELD_TYPE, AnnouncePlugin.PLUGIN_NAME, TextField.TYPE_STORED ) );
+        doc.add( new Field( AnnounceSearchItem.FIELD_TYPE, AnnouncePlugin.PLUGIN_NAME, StringField.TYPE_STORED ) );
 
         // return the document
         return doc;
