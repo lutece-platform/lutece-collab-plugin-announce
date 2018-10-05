@@ -133,6 +133,7 @@ public class AnnounceLuceneSearchEngine implements IAnnounceSearchEngine
 
             //Type (=announce)
             PhraseQuery.Builder queryTypeBuilder = new PhraseQuery.Builder(  );
+            //add character "e" to TYPE because field is not analyzed when added to lucene document, but it's analyzed then in MultiFieldQueryParser.parse method
             queryTypeBuilder.add( new Term( AnnounceSearchItem.FIELD_TYPE, AnnouncePlugin.PLUGIN_NAME + "e" ) );
             queries.add( queryTypeBuilder.build( ).toString(  ) );
             sectors.add( AnnounceSearchItem.FIELD_TYPE );
@@ -298,6 +299,7 @@ public class AnnounceLuceneSearchEngine implements IAnnounceSearchEngine
 
             //Type (=announce)
             PhraseQuery.Builder queryTypeBuilder = new PhraseQuery.Builder(  );
+            //add character "e" to TYPE because field is not analyzed when added to lucene document, but it's analyzed then in MultiFieldQueryParser.parse method
             queryTypeBuilder.add( new Term( AnnounceSearchItem.FIELD_TYPE, AnnouncePlugin.PLUGIN_NAME + "e" ) );
             queries.add( queryTypeBuilder.build( ).toString(  ) );
             sectors.add( AnnounceSearchItem.FIELD_TYPE );
