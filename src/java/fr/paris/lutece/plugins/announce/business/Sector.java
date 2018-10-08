@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002-2017, Mairie de Paris
+ * Copyright (c) 2002-2018, Mairie de Paris
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -37,7 +37,6 @@ import fr.paris.lutece.portal.service.rbac.RBACResource;
 
 import java.util.Collection;
 
-
 /**
  * Sector
  */
@@ -47,7 +46,7 @@ public class Sector implements RBACResource
      */
     public static final String RESOURCE_TYPE = "SECTOR";
 
-    /////////////////////////////////////////////////////////////////////////////////
+    // ///////////////////////////////////////////////////////////////////////////////
     // Constants
     private int _nId;
     private String _strLabel;
@@ -61,16 +60,19 @@ public class Sector implements RBACResource
 
     /**
      * gets the id of sector
+     * 
      * @return the sector id
      */
-    public int getId(  )
+    public int getId( )
     {
         return _nId;
     }
 
     /**
      * sets the id of sector
-     * @param nId the sector id
+     * 
+     * @param nId
+     *            the sector id
      */
     public void setId( int nId )
     {
@@ -79,16 +81,19 @@ public class Sector implements RBACResource
 
     /**
      * gets the label of sector
+     * 
      * @return gets the label of sector
      */
-    public String getLabel(  )
+    public String getLabel( )
     {
         return _strLabel;
     }
 
     /**
      * sets the label of sector
-     * @param strLabel the label of sector
+     * 
+     * @param strLabel
+     *            the label of sector
      */
     public void setLabel( String strLabel )
     {
@@ -97,16 +102,19 @@ public class Sector implements RBACResource
 
     /**
      * gets the description of sector
+     * 
      * @return the description of sector
      */
-    public String getDescription(  )
+    public String getDescription( )
     {
         return _strDescription;
     }
 
     /**
      * gets the description of sector
-     * @param strDescription the description of sector
+     * 
+     * @param strDescription
+     *            the description of sector
      */
     public void setDescription( String strDescription )
     {
@@ -115,16 +123,19 @@ public class Sector implements RBACResource
 
     /**
      * gets the number of categories for the sector
+     * 
      * @return the number of categories for the sector
      */
-    public int getNumberCategories(  )
+    public int getNumberCategories( )
     {
         return _nNumberCategories;
     }
 
     /**
      * sets the number of categories for the sector
-     * @param nNumberCategories the number of categories for the sector
+     * 
+     * @param nNumberCategories
+     *            the number of categories for the sector
      */
     public void setNumberCategories( int nNumberCategories )
     {
@@ -133,16 +144,19 @@ public class Sector implements RBACResource
 
     /**
      * gets the list of categories of the sector
+     * 
      * @return the list of categories of the sector
      */
-    public Collection<Category> getListCategories(  )
+    public Collection<Category> getListCategories( )
     {
         return _listCategories;
     }
 
     /**
      * sets the list of categories of the sector
-     * @param listCategories the list of categories of the sector
+     * 
+     * @param listCategories
+     *            the list of categories of the sector
      */
     public void setListCategories( Collection<Category> listCategories )
     {
@@ -151,16 +165,19 @@ public class Sector implements RBACResource
 
     /**
      * gets weather or not the announces of the filed must be moderated
+     * 
      * @return weather or not the announces of the filed must be moderated
      */
-    public boolean getAnnouncesValidation(  )
+    public boolean getAnnouncesValidation( )
     {
         return _bAnnouncesValidation;
     }
 
     /**
      * sets weather or not the announces of the filed must be moderated
-     * @param bAnnouncesValidation weather or not the announces of the filed must be moderated
+     * 
+     * @param bAnnouncesValidation
+     *            weather or not the announces of the filed must be moderated
      */
     public void setAnnouncesValidation( boolean bAnnouncesValidation )
     {
@@ -171,32 +188,35 @@ public class Sector implements RBACResource
      * {@inheritDoc}
      */
     @Override
-    public String getResourceId(  )
+    public String getResourceId( )
     {
-        return Integer.toString( getId(  ) );
+        return Integer.toString( getId( ) );
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public String getResourceTypeCode(  )
+    public String getResourceTypeCode( )
     {
         return RESOURCE_TYPE;
     }
 
     /**
      * Get the order of the announce
+     * 
      * @return The order of the announce
      */
-    public int getOrder(  )
+    public int getOrder( )
     {
         return _nOrder;
     }
 
     /**
      * Set the order of the announce
-     * @param nOrder The order of the announce
+     * 
+     * @param nOrder
+     *            The order of the announce
      */
     public void setOrder( int nOrder )
     {
@@ -205,16 +225,19 @@ public class Sector implements RBACResource
 
     /**
      * Get the number of announces
+     * 
      * @return The number of announces
      */
-    public int getNumberAnnounces(  )
+    public int getNumberAnnounces( )
     {
         return _nNumberAnnounces;
     }
 
     /**
      * Set the number of announces
-     * @param nNumberAnnounces The number of announces
+     * 
+     * @param nNumberAnnounces
+     *            The number of announces
      */
     public void setNumberAnnounces( int nNumberAnnounces )
     {
@@ -223,16 +246,19 @@ public class Sector implements RBACResource
 
     /**
      * gets the tags of sector
+     * 
      * @return gets the tags of sector
      */
-    public String getTags(  )
+    public String getTags( )
     {
         return _strTags;
     }
 
     /**
      * sets the Tags of sector
-     * @param strTags the Tags of sector
+     * 
+     * @param strTags
+     *            the Tags of sector
      */
     public void setTags( String strTags )
     {

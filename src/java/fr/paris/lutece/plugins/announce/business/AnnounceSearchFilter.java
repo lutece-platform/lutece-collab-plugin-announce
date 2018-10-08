@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002-2017, Mairie de Paris
+ * Copyright (c) 2002-2018, Mairie de Paris
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -35,7 +35,6 @@ package fr.paris.lutece.plugins.announce.business;
 
 import java.util.Date;
 
-
 /**
  * Search filter for announces
  */
@@ -52,16 +51,19 @@ public class AnnounceSearchFilter
 
     /**
      * Get the id of the filter
+     * 
      * @return The id of the filter
      */
-    public int getIdFilter(  )
+    public int getIdFilter( )
     {
         return _nIdFilter;
     }
 
     /**
      * Set the id of the filter
-     * @param nIdFilter The id of the filter
+     * 
+     * @param nIdFilter
+     *            The id of the filter
      */
     public void setIdFilter( int nIdFilter )
     {
@@ -70,33 +72,40 @@ public class AnnounceSearchFilter
 
     /**
      * Get the keywords of the filter
+     * 
      * @return The keywords of the filter
      */
-    public String getKeywords(  )
+    public String getKeywords( )
     {
         return _strKeywords;
     }
 
     /**
      * Set the keywords of the filter
-     * @param strKeywords The keywords of the filter
+     * 
+     * @param strKeywords
+     *            The keywords of the filter
      */
     public void setKeywords( String strKeywords )
     {
         this._strKeywords = strKeywords;
     }
+
     /**
      * Get the id of the sector of the filter
+     * 
      * @return The id of the sector of the filter
      */
-    public int getIdSector(  )
+    public int getIdSector( )
     {
         return _nIdSector;
     }
 
     /**
      * Set the id of the sector of the filter
-     * @param nIdSector The id of the sector of the filter
+     * 
+     * @param nIdSector
+     *            The id of the sector of the filter
      */
     public void setIdSector( int nIdSector )
     {
@@ -105,16 +114,19 @@ public class AnnounceSearchFilter
 
     /**
      * Get the id of the category of the filter
+     * 
      * @return The id of the category of the filter
      */
-    public int getIdCategory(  )
+    public int getIdCategory( )
     {
         return _nIdCategory;
     }
 
     /**
      * Set the id of the category of the filter
-     * @param nIdCategory The id of the category of the filter
+     * 
+     * @param nIdCategory
+     *            The id of the category of the filter
      */
     public void setIdCategory( int nIdCategory )
     {
@@ -123,16 +135,19 @@ public class AnnounceSearchFilter
 
     /**
      * Get the minimum publication date of the filter
+     * 
      * @return The minimum publication date of the filter
      */
-    public Date getDateMin(  )
+    public Date getDateMin( )
     {
         return _dateMin;
     }
 
     /**
      * Set the minimum publication date of the filter
-     * @param dateMin The minimum publication date of the filter
+     * 
+     * @param dateMin
+     *            The minimum publication date of the filter
      */
     public void setDateMin( Date dateMin )
     {
@@ -141,16 +156,19 @@ public class AnnounceSearchFilter
 
     /**
      * Get the maximum publication date of the filter
+     * 
      * @return The maximum publication date of the filter
      */
-    public Date getDateMax(  )
+    public Date getDateMax( )
     {
         return _dateMax;
     }
 
     /**
      * Set the maximum publication date of the filter
-     * @param dateMax The maximum publication date of the filter
+     * 
+     * @param dateMax
+     *            The maximum publication date of the filter
      */
     public void setDateMax( Date dateMax )
     {
@@ -159,16 +177,19 @@ public class AnnounceSearchFilter
 
     /**
      * Get the minimum price of the filter
+     * 
      * @return The minimum price of the filter
      */
-    public int getPriceMin(  )
+    public int getPriceMin( )
     {
         return _nPriceMin;
     }
 
     /**
      * Set the minimum price of the filter
-     * @param nPriceMin The minimum price of the filter
+     * 
+     * @param nPriceMin
+     *            The minimum price of the filter
      */
     public void setPriceMin( int nPriceMin )
     {
@@ -177,16 +198,19 @@ public class AnnounceSearchFilter
 
     /**
      * Get the maximum price of the filter
+     * 
      * @return The maximum price of the filter
      */
-    public int getPriceMax(  )
+    public int getPriceMax( )
     {
         return _nPriceMax;
     }
 
     /**
      * Set the maximum price of the filter
-     * @param nPriceMax The maximum price of the filter
+     * 
+     * @param nPriceMax
+     *            The maximum price of the filter
      */
     public void setPriceMax( int nPriceMax )
     {

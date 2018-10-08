@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002-2017, Mairie de Paris
+ * Copyright (c) 2002-2018, Mairie de Paris
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -48,7 +48,6 @@ import fr.paris.lutece.util.sql.TransactionManager;
 import java.util.ArrayList;
 import java.util.List;
 
-
 /**
  * the Home class for category
  */
@@ -59,15 +58,15 @@ public final class CategoryHome
     private static Plugin _plugin = PluginService.getPlugin( AnnouncePlugin.PLUGIN_NAME );
 
     /** Creates a new instance of CategoryHome */
-    private CategoryHome(  )
+    private CategoryHome( )
     {
     }
 
     /**
      * Creation of an instance of category
      *
-     * @param category The instance of the category which contains the
-     *            informations to store
+     * @param category
+     *            The instance of the category which contains the informations to store
      */
     public static void create( Category category )
     {
@@ -77,15 +76,14 @@ public final class CategoryHome
     /**
      * Update of the category which is specified in parameter
      *
-     * @param category The instance of the category which contains the
-     *            informations to store
+     * @param category
+     *            The instance of the category which contains the informations to store
      * @return The instance of the category which has been updated
      */
     public static Category update( Category category )
     {
         _dao.store( category, _plugin );
-        AnnounceCacheService.getService(  )
-                            .putInCache( AnnounceCacheService.getCategoryCacheKey( category.getId(  ) ), category );
+        AnnounceCacheService.getService( ).putInCache( AnnounceCacheService.getCategoryCacheKey( category.getId( ) ), category );
 
         return category;
     }
@@ -93,53 +91,52 @@ public final class CategoryHome
     /**
      * Remove the Category whose identifier is specified in parameter
      *
-     * @param category The Category object to remove
+     * @param category
+     *            The Category object to remove
      */
     public static void remove( Category category )
     {
-    	List<Entry> listEntry;
-        EntryFilter filter = new EntryFilter(  );
-        filter.setIdResource( category.getId() );
+        List<Entry> listEntry;
+        EntryFilter filter = new EntryFilter( );
+        filter.setIdResource( category.getId( ) );
         filter.setResourceType( Category.RESOURCE_TYPE );
         filter.setFieldDependNull( EntryFilter.FILTER_TRUE );
         filter.setEntryParentNull( EntryFilter.FILTER_TRUE );
         listEntry = EntryHome.getEntryList( filter );
-        
+
         try
         {
-           
+
             for ( Entry entry : listEntry )
             {
-                EntryHome.remove( entry.getIdEntry() );
+                EntryHome.remove( entry.getIdEntry( ) );
             }
 
         }
-        catch ( Exception e )
+        catch( Exception e )
         {
-            throw new AppException( e.getMessage(  ), e );
+            throw new AppException( e.getMessage( ), e );
         }
-    	
-    	AnnounceSearchFilterHome.deleteByIdCategory( category.getId(  ) );
+
+        AnnounceSearchFilterHome.deleteByIdCategory( category.getId( ) );
         _dao.delete( category, _plugin );
-        AnnounceCacheService.getService(  ).removeKey( AnnounceCacheService.getCategoryCacheKey( category.getId(  ) ) );
+        AnnounceCacheService.getService( ).removeKey( AnnounceCacheService.getCategoryCacheKey( category.getId( ) ) );
     }
 
-    ///////////////////////////////////////////////////////////////////////////
+    // /////////////////////////////////////////////////////////////////////////
     // Finders
-    ///////////////////////////////////////////////////////////////////////////
+    // /////////////////////////////////////////////////////////////////////////
 
     /**
-     * Returns an instance of a category whose identifier is specified in
-     * parameter
+     * Returns an instance of a category whose identifier is specified in parameter
      *
-     * @param nKey The Primary key of the category
+     * @param nKey
+     *            The Primary key of the category
      * @return An instance of category
      */
     public static Category findByPrimaryKey( int nKey )
     {
-        Category category = (Category) AnnounceCacheService.getService(  )
-                                                           .getFromCache( AnnounceCacheService.getCategoryCacheKey( 
-                    nKey ) );
+        Category category = (Category) AnnounceCacheService.getService( ).getFromCache( AnnounceCacheService.getCategoryCacheKey( nKey ) );
 
         if ( category == null )
         {
@@ -147,9 +144,7 @@ public final class CategoryHome
 
             if ( category != null )
             {
-                AnnounceCacheService.getService(  )
-                                    .putInCache( AnnounceCacheService.getCategoryCacheKey( category.getId(  ) ),
-                    category );
+                AnnounceCacheService.getService( ).putInCache( AnnounceCacheService.getCategoryCacheKey( category.getId( ) ), category );
             }
         }
 
@@ -158,16 +153,19 @@ public final class CategoryHome
 
     /**
      * Returns a collection of categories objects
+     * 
      * @return A collection of categories
      */
-    public static List<Category> findAll(  )
+    public static List<Category> findAll( )
     {
         return _dao.selectAll( _plugin );
     }
 
     /**
      * selects the categories list for a given sector
-     * @param sector the sector
+     * 
+     * @param sector
+     *            the sector
      * @return the categories list
      */
     public static List<Category> findCategoriesForSector( Sector sector )
@@ -177,16 +175,19 @@ public final class CategoryHome
 
     /**
      * gets the categories reference list
+     * 
      * @return the categories reference list
      */
-    public static ReferenceList findCategoriesReferenceList(  )
+    public static ReferenceList findCategoriesReferenceList( )
     {
         return _dao.selectCategoriesReferenceList( _plugin );
     }
 
     /**
      * counts the entries for a given category
-     * @param category the category
+     * 
+     * @param category
+     *            the category
      * @return the number of entries
      */
     public static int countEntriesForCategory( Category category )
@@ -196,50 +197,54 @@ public final class CategoryHome
 
     /**
      * Count the number of published announce of a given category
-     * @param category The category to get the number of published announce of
+     * 
+     * @param category
+     *            The category to get the number of published announce of
      * @return The number of published announce of the category
      */
     public static int countPublishedAnnouncesForCategory( Category category )
     {
         return _dao.countPublishedAnnouncesForCategory( category, _plugin );
     }
+
     /**
      * Copy of an instance of Form
      *
-     * @param form The instance of the Form who must copy
-     * @param plugin the Plugin
+     * @param form
+     *            The instance of the Form who must copy
+     * @param plugin
+     *            the Plugin
      *
      */
     public static void copy( Category category )
     {
-    	 List<Entry> listEntry;
-         EntryFilter filter = new EntryFilter(  );
-         filter.setIdResource( category.getId() );
-         filter.setResourceType( Category.RESOURCE_TYPE );
-         filter.setFieldDependNull( EntryFilter.FILTER_TRUE );
-         filter.setEntryParentNull( EntryFilter.FILTER_TRUE );
-         listEntry = EntryHome.getEntryList( filter );
-         
-         Category cat = new Category();
-         cat.setId(_dao.copyCategory( category, _plugin ) );
-         
-         try
-         {
-            
-             for ( Entry entry : listEntry )
-             {
-                 entry = EntryHome.findByPrimaryKey( entry.getIdEntry(  ) );
-                 entry.setIdResource( cat.getId(  ) );
-                 entry.setResourceType( Category.RESOURCE_TYPE );
-                 EntryHome.copy( entry );
-             }
+        List<Entry> listEntry;
+        EntryFilter filter = new EntryFilter( );
+        filter.setIdResource( category.getId( ) );
+        filter.setResourceType( Category.RESOURCE_TYPE );
+        filter.setFieldDependNull( EntryFilter.FILTER_TRUE );
+        filter.setEntryParentNull( EntryFilter.FILTER_TRUE );
+        listEntry = EntryHome.getEntryList( filter );
 
-         }
-         catch ( Exception e )
-         {
-             throw new AppException( e.getMessage(  ), e );
-         }
-        
-     	
+        Category cat = new Category( );
+        cat.setId( _dao.copyCategory( category, _plugin ) );
+
+        try
+        {
+
+            for ( Entry entry : listEntry )
+            {
+                entry = EntryHome.findByPrimaryKey( entry.getIdEntry( ) );
+                entry.setIdResource( cat.getId( ) );
+                entry.setResourceType( Category.RESOURCE_TYPE );
+                EntryHome.copy( entry );
+            }
+
+        }
+        catch( Exception e )
+        {
+            throw new AppException( e.getMessage( ), e );
+        }
+
     }
 }

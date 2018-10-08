@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002-2017, Mairie de Paris
+ * Copyright (c) 2002-2018, Mairie de Paris
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -39,7 +39,6 @@ import fr.paris.lutece.portal.service.util.AppLogService;
 import javax.servlet.http.HttpSessionEvent;
 import javax.servlet.http.HttpSessionListener;
 
-
 /**
  * Will remove fileItems uploaded by flash
  */
@@ -60,13 +59,13 @@ public class AnnounceSessionListener implements HttpSessionListener
     @Override
     public void sessionDestroyed( HttpSessionEvent se )
     {
-        String strSessionId = se.getSession(  ).getId(  );
+        String strSessionId = se.getSession( ).getId( );
 
-        if ( AppLogService.isDebugEnabled(  ) )
+        if ( AppLogService.isDebugEnabled( ) )
         {
             AppLogService.debug( "FormSessionListener removing " + strSessionId );
         }
 
-        AnnounceAsynchronousUploadHandler.getHandler(  ).removeSessionFiles( strSessionId );
+        AnnounceAsynchronousUploadHandler.getHandler( ).removeSessionFiles( strSessionId );
     }
 }

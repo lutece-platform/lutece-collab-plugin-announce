@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002-2017, Mairie de Paris
+ * Copyright (c) 2002-2018, Mairie de Paris
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -38,7 +38,6 @@ import fr.paris.lutece.portal.business.portlet.PortletHome;
 import fr.paris.lutece.portal.business.portlet.PortletTypeHome;
 import fr.paris.lutece.portal.service.spring.SpringContextService;
 
-
 /**
  * This class provides instances management methods for LastAnnounces portlet
  */
@@ -53,7 +52,7 @@ public class LastAnnouncesPortletHome extends PortletHome
     /**
      * Constructor
      */
-    public LastAnnouncesPortletHome(  )
+    public LastAnnouncesPortletHome( )
     {
         if ( _singleton == null )
         {
@@ -63,12 +62,13 @@ public class LastAnnouncesPortletHome extends PortletHome
 
     /**
      * Returns the identifier of the portlet type
+     * 
      * @return the portlet type identifier
      */
     @Override
-    public String getPortletTypeId(  )
+    public String getPortletTypeId( )
     {
-        String strCurrentClassName = this.getClass(  ).getName(  );
+        String strCurrentClassName = this.getClass( ).getName( );
         String strPortletTypeId = PortletTypeHome.getPortletTypeId( strCurrentClassName );
 
         return strPortletTypeId;
@@ -76,13 +76,14 @@ public class LastAnnouncesPortletHome extends PortletHome
 
     /**
      * Returns the instance of AppointmentPortlet Portlet
+     * 
      * @return the AppointmentPortlet Portlet instance
      */
-    public static PortletHome getInstance(  )
+    public static PortletHome getInstance( )
     {
         if ( _singleton == null )
         {
-            _singleton = new LastAnnouncesPortletHome(  );
+            _singleton = new LastAnnouncesPortletHome( );
         }
 
         return _singleton;
@@ -90,10 +91,11 @@ public class LastAnnouncesPortletHome extends PortletHome
 
     /**
      * Returns the instance of the portlet DAO singleton
+     * 
      * @return the instance of the DAO singleton
      */
     @Override
-    public IPortletInterfaceDAO getDAO(  )
+    public IPortletInterfaceDAO getDAO( )
     {
         return _dao;
     }

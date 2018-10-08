@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002-2017, Mairie de Paris
+ * Copyright (c) 2002-2018, Mairie de Paris
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -50,7 +50,6 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
-
 /**
  * This class provides the user interface to manage MyAnnouncesPortlet features
  */
@@ -79,13 +78,12 @@ public class LastAnnouncesPortletJspBean extends PortletJspBean
     {
         String strPageId = request.getParameter( PARAMETER_PAGE_ID );
         String strPortletTypeId = request.getParameter( PARAMETER_PORTLET_TYPE_ID );
-        Map<String, Object> model = new HashMap<String, Object>(  );
-        model.put( MARK_DEFAULT_NB_ANNOUNCES_TO_DISPLAY,
-            AppPropertiesService.getProperty( PROPERTY_DEFAULT_NB_ANNOUNCES_TO_DISPLAY ) );
+        Map<String, Object> model = new HashMap<String, Object>( );
+        model.put( MARK_DEFAULT_NB_ANNOUNCES_TO_DISPLAY, AppPropertiesService.getProperty( PROPERTY_DEFAULT_NB_ANNOUNCES_TO_DISPLAY ) );
 
         HtmlTemplate template = getCreateTemplate( strPageId, strPortletTypeId, model );
 
-        return template.getHtml(  );
+        return template.getHtml( );
     }
 
     /**
@@ -98,12 +96,12 @@ public class LastAnnouncesPortletJspBean extends PortletJspBean
         int nPortletId = Integer.parseInt( strPortletId );
         LastAnnouncesPortlet portlet = (LastAnnouncesPortlet) PortletHome.findByPrimaryKey( nPortletId );
 
-        Map<String, Object> model = new HashMap<String, Object>(  );
+        Map<String, Object> model = new HashMap<String, Object>( );
         model.put( MARK_PORTLET, portlet );
 
         HtmlTemplate template = getModifyTemplate( portlet, model );
 
-        return template.getHtml(  );
+        return template.getHtml( );
     }
 
     /**
@@ -112,7 +110,7 @@ public class LastAnnouncesPortletJspBean extends PortletJspBean
     @Override
     public String doCreate( HttpServletRequest request )
     {
-        LastAnnouncesPortlet portlet = new LastAnnouncesPortlet(  );
+        LastAnnouncesPortlet portlet = new LastAnnouncesPortlet( );
 
         // recovers portlet specific attributes
         String strPageId = request.getParameter( PARAMETER_PAGE_ID );
@@ -139,9 +137,9 @@ public class LastAnnouncesPortletJspBean extends PortletJspBean
         portlet.setNbAnnouncesToDisplay( nNbAnnouncesToDisplay );
 
         // Creates the portlet
-        LastAnnouncesPortletHome.getInstance(  ).create( portlet );
+        LastAnnouncesPortletHome.getInstance( ).create( portlet );
 
-        //Displays the page with the new Portlet
+        // Displays the page with the new Portlet
         return "../" + getPageUrl( nPageId );
     }
 
@@ -176,9 +174,9 @@ public class LastAnnouncesPortletJspBean extends PortletJspBean
         portlet.setNbAnnouncesToDisplay( nNbAnnouncesToDisplay );
 
         // updates the portlet
-        portlet.update(  );
+        portlet.update( );
 
         // displays the page with the updated portlet
-        return "../" + getPageUrl( portlet.getPageId(  ) );
+        return "../" + getPageUrl( portlet.getPageId( ) );
     }
 }

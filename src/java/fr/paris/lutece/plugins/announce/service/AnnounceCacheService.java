@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002-2017, Mairie de Paris
+ * Copyright (c) 2002-2018, Mairie de Paris
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -37,7 +37,6 @@ import fr.paris.lutece.plugins.announce.business.Announce;
 import fr.paris.lutece.plugins.announce.business.Category;
 import fr.paris.lutece.portal.service.cache.AbstractCacheableService;
 
-
 /**
  * Cache service for announces
  */
@@ -47,28 +46,31 @@ public final class AnnounceCacheService extends AbstractCacheableService
     private static final String ANNOUNCE_KEY_PREFIXE = "announce.announce.";
     private static final String CATEGORY_KEY_PREFIXE = "announce.category.";
     private static final String PUBLISHED_ANNOUNCES_ID_LIST_KEY_PREFIXE = "announce.announce.allPublishedId";
-    private static AnnounceCacheService _instance = new AnnounceCacheService(  );
+    private static AnnounceCacheService _instance = new AnnounceCacheService( );
 
     /**
      * Private constructor
      */
-    private AnnounceCacheService(  )
+    private AnnounceCacheService( )
     {
-        initCache(  );
+        initCache( );
     }
 
     /**
      * Get the instance of this service
+     * 
      * @return the instance of this service
      */
-    public static AnnounceCacheService getService(  )
+    public static AnnounceCacheService getService( )
     {
         return _instance;
     }
 
     /**
      * Get the cache key of an announce
-     * @param nIdAnnounce The id of the announce to get the key of
+     * 
+     * @param nIdAnnounce
+     *            The id of the announce to get the key of
      * @return The cache key of the announce
      */
     public static String getAnnounceCacheKey( int nIdAnnounce )
@@ -78,7 +80,9 @@ public final class AnnounceCacheService extends AbstractCacheableService
 
     /**
      * Get the cache key of a category
-     * @param nIdCategory The id of the category to get the key of
+     * 
+     * @param nIdCategory
+     *            The id of the category to get the key of
      * @return The cache key of the category
      */
     public static String getCategoryCacheKey( int nIdCategory )
@@ -88,9 +92,10 @@ public final class AnnounceCacheService extends AbstractCacheableService
 
     /**
      * Get the cache key of the list of published announces
+     * 
      * @return The cache key of the list of published announces
      */
-    public static String getListIdPublishedAnnouncesCacheKey(  )
+    public static String getListIdPublishedAnnouncesCacheKey( )
     {
         return PUBLISHED_ANNOUNCES_ID_LIST_KEY_PREFIXE;
     }
@@ -99,7 +104,7 @@ public final class AnnounceCacheService extends AbstractCacheableService
      * {@inheritDoc}
      */
     @Override
-    public String getName(  )
+    public String getName( )
     {
         return CACHE_SERVICE_NAME;
     }
@@ -116,12 +121,12 @@ public final class AnnounceCacheService extends AbstractCacheableService
         {
             if ( object instanceof Announce )
             {
-                return ( (Announce) object ).clone(  );
+                return ( (Announce) object ).clone( );
             }
 
             if ( object instanceof Category )
             {
-                return ( (Category) object ).clone(  );
+                return ( (Category) object ).clone( );
             }
         }
 
@@ -138,12 +143,12 @@ public final class AnnounceCacheService extends AbstractCacheableService
 
         if ( object instanceof Announce )
         {
-            clonedObject = ( (Announce) object ).clone(  );
+            clonedObject = ( (Announce) object ).clone( );
         }
 
         if ( object instanceof Category )
         {
-            clonedObject = ( (Category) object ).clone(  );
+            clonedObject = ( (Category) object ).clone( );
         }
 
         super.putInCache( strKey, clonedObject );

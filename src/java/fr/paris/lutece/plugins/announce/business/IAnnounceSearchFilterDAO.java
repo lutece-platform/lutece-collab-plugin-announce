@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002-2017, Mairie de Paris
+ * Copyright (c) 2002-2018, Mairie de Paris
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -37,7 +37,6 @@ import fr.paris.lutece.portal.service.plugin.Plugin;
 
 import java.util.List;
 
-
 /**
  * Interface for announce search filter DAO
  */
@@ -45,51 +44,71 @@ public interface IAnnounceSearchFilterDAO
 {
     /**
      * Find a filter by primary key
-     * @param nIdFilter The id of the filter
-     * @param plugin The plugin
+     * 
+     * @param nIdFilter
+     *            The id of the filter
+     * @param plugin
+     *            The plugin
      * @return The filter
      */
     AnnounceSearchFilter findByPrimaryKey( int nIdFilter, Plugin plugin );
 
     /**
      * Insert a new filter into the database
-     * @param filter the filter
-     * @param plugin The plugin
+     * 
+     * @param filter
+     *            the filter
+     * @param plugin
+     *            The plugin
      */
     void create( AnnounceSearchFilter filter, Plugin plugin );
 
     /**
      * Update a filter
-     * @param filter The filter to update
-     * @param plugin The plugin
+     * 
+     * @param filter
+     *            The filter to update
+     * @param plugin
+     *            The plugin
      */
     void update( AnnounceSearchFilter filter, Plugin plugin );
 
     /**
      * Remove a filter from the database
-     * @param nIdFilter The id of the filter
-     * @param plugin The plugin
+     * 
+     * @param nIdFilter
+     *            The id of the filter
+     * @param plugin
+     *            The plugin
      */
     void delete( int nIdFilter, Plugin plugin );
 
     /**
      * Remove filters from the database from the id of categories
-     * @param nIdCategory The id of the category
-     * @param plugin The plugin
+     * 
+     * @param nIdCategory
+     *            The id of the category
+     * @param plugin
+     *            The plugin
      */
     void deleteByIdCategory( int nIdCategory, Plugin plugin );
 
     /**
      * Get the list of every filters
-     * @param plugin The plugin
+     * 
+     * @param plugin
+     *            The plugin
      * @return the list of every filters
      */
     List<AnnounceSearchFilter> findAll( Plugin plugin );
 
     /**
      * Get the list of filters from a list of id
-     * @param listIdFilters The list of id of filters
-     * @param plugin The plugin
+     * 
+     * @param listIdFilters
+     *            The list of id of filters
+     * @param plugin
+     *            The plugin
      * @return the list of filters
      */
     List<AnnounceSearchFilter> findByListId( List<Integer> listIdFilters, Plugin plugin );

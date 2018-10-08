@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002-2017, Mairie de Paris
+ * Copyright (c) 2002-2018, Mairie de Paris
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -59,7 +59,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 
-
 /**
  * Daemon to send notification to users when subscribed announces are created
  */
@@ -75,7 +74,7 @@ public class AnnounceSubscriptionDaemon extends Daemon
      * {@inheritDoc}
      */
     @Override
-    public void run(  )
+    public void run( )
     {
         String strTimeLastRun = DatastoreService.getDataValue( DATASTORE_KEY_SUBSCRIPTION_DAEMON_LAST_RUN, "0" );
 
@@ -85,7 +84,7 @@ public class AnnounceSubscriptionDaemon extends Daemon
         {
             lTimeLastRun = Long.parseLong( strTimeLastRun );
         }
-        catch ( NumberFormatException nfe )
+        catch( NumberFormatException nfe )
         {
             lTimeLastRun = 0L;
             DatastoreService.removeData( DATASTORE_KEY_SUBSCRIPTION_DAEMON_LAST_RUN );
@@ -93,98 +92,95 @@ public class AnnounceSubscriptionDaemon extends Daemon
 
         List<Integer> listIdAnnounces = AnnounceHome.findIdAnnouncesByDatePublication( lTimeLastRun );
         // We save the current time
-        DatastoreService.setDataValue( DATASTORE_KEY_SUBSCRIPTION_DAEMON_LAST_RUN,
-            Long.toString( System.currentTimeMillis(  ) ) );
+        DatastoreService.setDataValue( DATASTORE_KEY_SUBSCRIPTION_DAEMON_LAST_RUN, Long.toString( System.currentTimeMillis( ) ) );
 
-        if ( ( listIdAnnounces != null ) && ( listIdAnnounces.size(  ) > 0 ) )
+        if ( ( listIdAnnounces != null ) && ( listIdAnnounces.size( ) > 0 ) )
         {
             // We get the list of announces
             List<Announce> listAnnounce = AnnounceHome.findByListId( listIdAnnounces, AnnounceSort.DEFAULT_SORT );
 
             for ( Announce announce : listAnnounce )
             {
-                announce.setListIdImageResponse( AnnounceHome.findListIdImageResponse( announce.getId(  ) ) );
-                announce.setListResponse( AnnounceHome.findListResponse( announce.getId(  ), false ) );
+                announce.setListIdImageResponse( AnnounceHome.findListIdImageResponse( announce.getId( ) ) );
+                announce.setListResponse( AnnounceHome.findListResponse( announce.getId( ), false ) );
             }
 
             // We associated announces to the id of the associated category
-            Map<Integer, List<Announce>> mapAnnouncesByCategories = new HashMap<Integer, List<Announce>>( listAnnounce.size(  ) );
-            Map<Integer, Announce> mapAnnouncesById = new HashMap<Integer, Announce>( listAnnounce.size(  ) );
-            Map<String, List<Announce>> mapAnnouncesByUsers = new HashMap<String, List<Announce>>( listAnnounce.size(  ) );
+            Map<Integer, List<Announce>> mapAnnouncesByCategories = new HashMap<Integer, List<Announce>>( listAnnounce.size( ) );
+            Map<Integer, Announce> mapAnnouncesById = new HashMap<Integer, Announce>( listAnnounce.size( ) );
+            Map<String, List<Announce>> mapAnnouncesByUsers = new HashMap<String, List<Announce>>( listAnnounce.size( ) );
 
             for ( Announce announce : listAnnounce )
             {
-                List<Announce> listMapAnnounce = mapAnnouncesByCategories.get( announce.getCategory(  ).getId(  ) );
+                List<Announce> listMapAnnounce = mapAnnouncesByCategories.get( announce.getCategory( ).getId( ) );
 
                 if ( listMapAnnounce == null )
                 {
-                    listMapAnnounce = new ArrayList<Announce>(  );
-                    mapAnnouncesByCategories.put( announce.getCategory(  ).getId(  ), listMapAnnounce );
+                    listMapAnnounce = new ArrayList<Announce>( );
+                    mapAnnouncesByCategories.put( announce.getCategory( ).getId( ), listMapAnnounce );
                 }
 
                 listMapAnnounce.add( announce );
 
-                listMapAnnounce = mapAnnouncesByUsers.get( announce.getUserName(  ) );
+                listMapAnnounce = mapAnnouncesByUsers.get( announce.getUserName( ) );
 
                 if ( listMapAnnounce == null )
                 {
-                    listMapAnnounce = new ArrayList<Announce>(  );
-                    mapAnnouncesByUsers.put( announce.getUserName(  ), listMapAnnounce );
+                    listMapAnnounce = new ArrayList<Announce>( );
+                    mapAnnouncesByUsers.put( announce.getUserName( ), listMapAnnounce );
                 }
 
                 listMapAnnounce.add( announce );
 
-                mapAnnouncesById.put( announce.getId(  ), announce );
+                mapAnnouncesById.put( announce.getId( ), announce );
             }
 
-            // We create a map that will user names with recently published announces they subscribed to  
-            Map<String, List<Announce>> mapUserAnnounces = new HashMap<String, List<Announce>>(  );
+            // We create a map that will user names with recently published announces they subscribed to
+            Map<String, List<Announce>> mapUserAnnounces = new HashMap<String, List<Announce>>( );
 
-            List<Subscription> listSubscriptions = AnnounceSubscriptionProvider.getService(  ).getSubscriptionsToUsers(  );
+            List<Subscription> listSubscriptions = AnnounceSubscriptionProvider.getService( ).getSubscriptionsToUsers( );
 
             for ( Subscription subscription : listSubscriptions )
             {
-                List<Announce> listAnnouncesToAdd = mapAnnouncesByUsers.get( subscription.getIdSubscribedResource(  ) );
+                List<Announce> listAnnouncesToAdd = mapAnnouncesByUsers.get( subscription.getIdSubscribedResource( ) );
 
-                if ( ( listAnnouncesToAdd != null ) && ( listAnnouncesToAdd.size(  ) > 0 ) )
+                if ( ( listAnnouncesToAdd != null ) && ( listAnnouncesToAdd.size( ) > 0 ) )
                 {
-                    addAnnounceToMap( listAnnouncesToAdd, subscription.getUserId(  ), mapUserAnnounces );
+                    addAnnounceToMap( listAnnouncesToAdd, subscription.getUserId( ), mapUserAnnounces );
                 }
             }
 
-            listSubscriptions = AnnounceSubscriptionProvider.getService(  ).getsubscriptionsToCategories(  );
+            listSubscriptions = AnnounceSubscriptionProvider.getService( ).getsubscriptionsToCategories( );
 
             for ( Subscription subscription : listSubscriptions )
             {
-                List<Announce> listAnnouncesToAdd = mapAnnouncesByCategories.get( Integer.parseInt( 
-                            subscription.getIdSubscribedResource(  ) ) );
+                List<Announce> listAnnouncesToAdd = mapAnnouncesByCategories.get( Integer.parseInt( subscription.getIdSubscribedResource( ) ) );
 
-                if ( ( listAnnouncesToAdd != null ) && ( listAnnouncesToAdd.size(  ) > 0 ) )
+                if ( ( listAnnouncesToAdd != null ) && ( listAnnouncesToAdd.size( ) > 0 ) )
                 {
-                    addAnnounceToMap( listAnnouncesToAdd, subscription.getUserId(  ), mapUserAnnounces );
+                    addAnnounceToMap( listAnnouncesToAdd, subscription.getUserId( ), mapUserAnnounces );
                 }
             }
 
-            listSubscriptions = AnnounceSubscriptionProvider.getService(  ).getSubscriptionsToFilters(  );
+            listSubscriptions = AnnounceSubscriptionProvider.getService( ).getSubscriptionsToFilters( );
 
             for ( Subscription subscription : listSubscriptions )
             {
-                AnnounceSearchFilter filter = AnnounceSearchFilterHome.findByPrimaryKey( Integer.parseInt( 
-                            subscription.getIdSubscribedResource(  ) ) );
+                AnnounceSearchFilter filter = AnnounceSearchFilterHome.findByPrimaryKey( Integer.parseInt( subscription.getIdSubscribedResource( ) ) );
 
-                if ( ( filter.getDateMin(  ) == null ) || ( filter.getDateMin(  ).getTime(  ) < lTimeLastRun ) )
+                if ( ( filter.getDateMin( ) == null ) || ( filter.getDateMin( ).getTime( ) < lTimeLastRun ) )
                 {
                     filter.setDateMin( new Date( lTimeLastRun ) );
                 }
 
-                List<Integer> listIdFilteredAnnounces = new ArrayList<Integer>(  );
+                List<Integer> listIdFilteredAnnounces = new ArrayList<Integer>( );
                 // We get every announces matching the given filter with the last run date
-                AnnounceSearchService.getInstance(  ).getSearchResults( filter, 0, 0, listIdFilteredAnnounces );
+                AnnounceSearchService.getInstance( ).getSearchResults( filter, 0, 0, listIdFilteredAnnounces );
 
                 // We remove announces that are not newly published
-                if ( listIdFilteredAnnounces.size(  ) > 0 )
+                if ( listIdFilteredAnnounces.size( ) > 0 )
                 {
-                    List<Integer> listIdNewlyPublishedAnnounces = new ArrayList<Integer>( listIdFilteredAnnounces.size(  ) );
+                    List<Integer> listIdNewlyPublishedAnnounces = new ArrayList<Integer>( listIdFilteredAnnounces.size( ) );
 
                     for ( Integer nId : listIdFilteredAnnounces )
                     {
@@ -194,42 +190,42 @@ public class AnnounceSubscriptionDaemon extends Daemon
                         }
                     }
 
-                    if ( listIdNewlyPublishedAnnounces.size(  ) > 0 )
+                    if ( listIdNewlyPublishedAnnounces.size( ) > 0 )
                     {
-                        addAnnounceToMap( getListAnnouncesFromId( listIdNewlyPublishedAnnounces, mapAnnouncesById ),
-                            subscription.getUserId(  ), mapUserAnnounces );
+                        addAnnounceToMap( getListAnnouncesFromId( listIdNewlyPublishedAnnounces, mapAnnouncesById ), subscription.getUserId( ),
+                                mapUserAnnounces );
                     }
                 }
             }
 
             String strSubject = AppPropertiesService.getProperty( PROPERTY_SUBSCRIPTION_NOTIFICATION_SUBJECT );
-            String strSenderName = MailService.getNoReplyEmail(  );
+            String strSenderName = MailService.getNoReplyEmail( );
             String strSenderEmail = strSenderName;
 
-            for ( Entry<String, List<Announce>> entry : mapUserAnnounces.entrySet(  ) )
+            for ( Entry<String, List<Announce>> entry : mapUserAnnounces.entrySet( ) )
             {
-                notifyUser( entry.getKey(  ), entry.getValue(  ), strSubject, strSenderName, strSenderEmail );
+                notifyUser( entry.getKey( ), entry.getValue( ), strSubject, strSenderName, strSenderEmail );
             }
         }
     }
 
     /**
      * Get the list of announces from a list of id
-     * @param listIdFilteredAnnounces The list of ids to get
-     * @param mapAnnouncesById The map of announces. If an announce which id is
-     *            in the id list is not in the map, then it is loaded from the
-     *            database
+     * 
+     * @param listIdFilteredAnnounces
+     *            The list of ids to get
+     * @param mapAnnouncesById
+     *            The map of announces. If an announce which id is in the id list is not in the map, then it is loaded from the database
      * @return the list of announces
      */
-    private List<Announce> getListAnnouncesFromId( List<Integer> listIdFilteredAnnounces,
-        Map<Integer, Announce> mapAnnouncesById )
+    private List<Announce> getListAnnouncesFromId( List<Integer> listIdFilteredAnnounces, Map<Integer, Announce> mapAnnouncesById )
     {
-        if ( ( listIdFilteredAnnounces == null ) || ( listIdFilteredAnnounces.size(  ) == 0 ) )
+        if ( ( listIdFilteredAnnounces == null ) || ( listIdFilteredAnnounces.size( ) == 0 ) )
         {
-            return new ArrayList<Announce>(  );
+            return new ArrayList<Announce>( );
         }
 
-        List<Announce> listAnnounces = new ArrayList<Announce>( listIdFilteredAnnounces.size(  ) );
+        List<Announce> listAnnounces = new ArrayList<Announce>( listIdFilteredAnnounces.size( ) );
 
         for ( Integer nIdAnnounce : listIdFilteredAnnounces )
         {
@@ -238,8 +234,8 @@ public class AnnounceSubscriptionDaemon extends Daemon
             if ( announce == null )
             {
                 announce = AnnounceHome.findByPrimaryKey( nIdAnnounce );
-                announce.setListIdImageResponse( AnnounceHome.findListIdImageResponse( announce.getId(  ) ) );
-                announce.setListResponse( AnnounceHome.findListResponse( announce.getId(  ), false ) );
+                announce.setListIdImageResponse( AnnounceHome.findListIdImageResponse( announce.getId( ) ) );
+                announce.setListResponse( AnnounceHome.findListResponse( announce.getId( ), false ) );
                 mapAnnouncesById.put( nIdAnnounce, announce );
             }
 
@@ -251,9 +247,13 @@ public class AnnounceSubscriptionDaemon extends Daemon
 
     /**
      * Associates an announce with a user in a map
-     * @param listAnnounce The announce
-     * @param strUserName The name of the user
-     * @param map The map
+     * 
+     * @param listAnnounce
+     *            The announce
+     * @param strUserName
+     *            The name of the user
+     * @param map
+     *            The map
      */
     private void addAnnounceToMap( List<Announce> listAnnounce, String strUserName, Map<String, List<Announce>> map )
     {
@@ -261,7 +261,7 @@ public class AnnounceSubscriptionDaemon extends Daemon
 
         if ( listMapAnnounces == null )
         {
-            listMapAnnounces = new ArrayList<Announce>(  );
+            listMapAnnounces = new ArrayList<Announce>( );
             map.put( strUserName, listMapAnnounces );
         }
 
@@ -272,7 +272,7 @@ public class AnnounceSubscriptionDaemon extends Daemon
 
             for ( Announce announce : listMapAnnounces )
             {
-                if ( announce.getId(  ) == announceToAdd.getId(  ) )
+                if ( announce.getId( ) == announceToAdd.getId( ) )
                 {
                     bHasAnnounce = true;
 
@@ -289,25 +289,30 @@ public class AnnounceSubscriptionDaemon extends Daemon
 
     /**
      * Notify a user that announces ha has subscribed to have been published
-     * @param strUserName The name of the user to notify
-     * @param listAnnouncesToNotify The list of published announces
-     * @param strSubject The subject of the email to send
-     * @param strSenderName The name of the sender of the email
-     * @param strSenderEmail The email address of the sender of the email
+     * 
+     * @param strUserName
+     *            The name of the user to notify
+     * @param listAnnouncesToNotify
+     *            The list of published announces
+     * @param strSubject
+     *            The subject of the email to send
+     * @param strSenderName
+     *            The name of the sender of the email
+     * @param strSenderEmail
+     *            The email address of the sender of the email
      */
-    private void notifyUser( String strUserName, List<Announce> listAnnouncesToNotify, String strSubject,
-        String strSenderName, String strSenderEmail )
+    private void notifyUser( String strUserName, List<Announce> listAnnouncesToNotify, String strSubject, String strSenderName, String strSenderEmail )
     {
         LuteceUser user = LuteceUserService.getLuteceUserFromName( strUserName );
 
-        String strUserEmail = ( user != null ) ? user.getEmail(  ) : strUserName;
+        String strUserEmail = ( user != null ) ? user.getEmail( ) : strUserName;
 
-        Map<String, Object> model = new HashMap<String, Object>(  );
+        Map<String, Object> model = new HashMap<String, Object>( );
         model.put( MARK_LIST_ANNOUNCES, listAnnouncesToNotify );
-        model.put( MARK_PROD_URL, AppPathService.getProdUrl(  ) );
+        model.put( MARK_PROD_URL, AppPathService.getProdUrl( ) );
 
-        HtmlTemplate template = AppTemplateService.getTemplate( TEMPLATE_EMAIL_ANNOUNCES, Locale.getDefault(  ), model );
+        HtmlTemplate template = AppTemplateService.getTemplate( TEMPLATE_EMAIL_ANNOUNCES, Locale.getDefault( ), model );
 
-        MailService.sendMailHtml( strUserEmail, strSenderName, strSenderEmail, strSubject, template.getHtml(  ) );
+        MailService.sendMailHtml( strUserEmail, strSenderName, strSenderEmail, strSubject, template.getHtml( ) );
     }
 }

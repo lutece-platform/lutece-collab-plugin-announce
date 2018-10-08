@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002-2017, Mairie de Paris
+ * Copyright (c) 2002-2018, Mairie de Paris
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -51,7 +51,6 @@ import org.apache.commons.lang.StringUtils;
 
 import javax.servlet.http.HttpServletRequest;
 
-
 /**
  * Announce subscribe Application
  */
@@ -70,57 +69,61 @@ public class AnnounceSubscribeApp extends MVCApplication
 
     /**
      * Do create a subscription filter and redirect the user to the search page
-     * @param request The request
+     * 
+     * @param request
+     *            The request
      * @return The XPage
-     * @throws UserNotSignedException If the user has not signed in
+     * @throws UserNotSignedException
+     *             If the user has not signed in
      */
     @Action( ACTION_DO_CREATE_SUBSCRIPTION_FILTER )
-    public XPage doCreateSubscriptionFilter( HttpServletRequest request )
-        throws UserNotSignedException
+    public XPage doCreateSubscriptionFilter( HttpServletRequest request ) throws UserNotSignedException
     {
-        LuteceUser user = SecurityService.getInstance(  ).getRegisteredUser( request );
+        LuteceUser user = SecurityService.getInstance( ).getRegisteredUser( request );
 
         if ( user == null )
         {
-            throw new UserNotSignedException(  );
+            throw new UserNotSignedException( );
         }
 
         AnnounceSearchFilter filter = AnnounceApp.getAnnounceFilterFromRequest( request );
         AnnounceSearchFilterHome.create( filter );
 
-        AnnounceSubscriptionProvider.getService(  ).createSubscriptionToFilter( user, filter.getIdFilter(  ) );
+        AnnounceSubscriptionProvider.getService( ).createSubscriptionToFilter( user, filter.getIdFilter( ) );
 
         return redirect( request, AnnounceApp.getUrlSearchAnnounce( request ) );
     }
 
     /**
      * Do subscribe to a user
-     * @param request The request
+     * 
+     * @param request
+     *            The request
      * @return The XPage
-     * @throws UserNotSignedException If the user has not signed in
-     * @throws SiteMessageException If a site message needs to be displayed
+     * @throws UserNotSignedException
+     *             If the user has not signed in
+     * @throws SiteMessageException
+     *             If a site message needs to be displayed
      */
     @Action( ACTION_DO_CREATE_USER_SUBSCRIPTION )
-    public XPage doSubscribeToUser( HttpServletRequest request )
-        throws UserNotSignedException, SiteMessageException
+    public XPage doSubscribeToUser( HttpServletRequest request ) throws UserNotSignedException, SiteMessageException
     {
-        LuteceUser user = SecurityService.getInstance(  ).getRegisteredUser( request );
+        LuteceUser user = SecurityService.getInstance( ).getRegisteredUser( request );
 
         if ( user == null )
         {
-            throw new UserNotSignedException(  );
+            throw new UserNotSignedException( );
         }
 
         String strUserName = request.getParameter( PARAMETER_USER_NAME );
 
-        if ( AnnounceSubscriptionProvider.getService(  ).hasSubscribedToUser( user, strUserName ) )
+        if ( AnnounceSubscriptionProvider.getService( ).hasSubscribedToUser( user, strUserName ) )
         {
             SiteMessageService.setMessage( request, MESSAGE_USER_ALREADY_SUBSCRIBED, SiteMessage.TYPE_STOP );
         }
 
-        AnnounceSubscriptionProvider.getService(  ).createSubscriptionToUser( user, strUserName );
-        
-        
+        AnnounceSubscriptionProvider.getService( ).createSubscriptionToUser( user, strUserName );
+
         String strReferer = request.getHeader( PARAMETER_REFERER );
 
         if ( StringUtils.isNotEmpty( strReferer ) )
@@ -133,20 +136,23 @@ public class AnnounceSubscribeApp extends MVCApplication
 
     /**
      * Do subscribe to a category
-     * @param request The request
+     * 
+     * @param request
+     *            The request
      * @return The XPage
-     * @throws UserNotSignedException If the user has not signed in
-     * @throws SiteMessageException If a site message needs to be displayed
+     * @throws UserNotSignedException
+     *             If the user has not signed in
+     * @throws SiteMessageException
+     *             If a site message needs to be displayed
      */
     @Action( ACTION_DO_CREATE_CATEGORY_SUBSCRIPTION )
-    public XPage doSubscribeToCategory( HttpServletRequest request )
-        throws UserNotSignedException, SiteMessageException
+    public XPage doSubscribeToCategory( HttpServletRequest request ) throws UserNotSignedException, SiteMessageException
     {
-        LuteceUser user = SecurityService.getInstance(  ).getRegisteredUser( request );
+        LuteceUser user = SecurityService.getInstance( ).getRegisteredUser( request );
 
         if ( user == null )
         {
-            throw new UserNotSignedException(  );
+            throw new UserNotSignedException( );
         }
 
         String strIdCategory = request.getParameter( PARAMETER_ID_CATEGORY );
@@ -155,12 +161,12 @@ public class AnnounceSubscribeApp extends MVCApplication
         {
             int nIdCategory = Integer.parseInt( strIdCategory );
 
-            if ( AnnounceSubscriptionProvider.getService(  ).hasSubscribedToCategory( user, nIdCategory ) )
+            if ( AnnounceSubscriptionProvider.getService( ).hasSubscribedToCategory( user, nIdCategory ) )
             {
                 SiteMessageService.setMessage( request, MESSAGE_CATEGORY_ALREADY_SUBSCRIBED, SiteMessage.TYPE_STOP );
             }
 
-            AnnounceSubscriptionProvider.getService(  ).createSubscriptionToCategory( user, nIdCategory );
+            AnnounceSubscriptionProvider.getService( ).createSubscriptionToCategory( user, nIdCategory );
         }
 
         String strReferer = request.getHeader( PARAMETER_REFERER );

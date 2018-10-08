@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002-2017, Mairie de Paris
+ * Copyright (c) 2002-2018, Mairie de Paris
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -76,7 +76,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-
 /**
  * DefaultAnnounceIndexer
  */
@@ -94,37 +93,43 @@ public class DefaultAnnounceIndexer implements IAnnounceSearchIndexer
      * {@inheritDoc}
      */
     @Override
-    public String getDescription(  )
+    public String getDescription( )
     {
         return AppPropertiesService.getProperty( PROPERTY_INDEXER_DESCRIPTION );
     }
 
     /**
      * Index given list of record
-     * @param indexWriter the indexWriter
-     * @param listIdAnounce The list of id announce
-     * @param plugin the plugin
-     * @throws CorruptIndexException If the index is corrupted
-     * @throws IOException If an IO Exception occurred
-     * @throws InterruptedException If the indexer is interrupted
+     * 
+     * @param indexWriter
+     *            the indexWriter
+     * @param listIdAnounce
+     *            The list of id announce
+     * @param plugin
+     *            the plugin
+     * @throws CorruptIndexException
+     *             If the index is corrupted
+     * @throws IOException
+     *             If an IO Exception occurred
+     * @throws InterruptedException
+     *             If the indexer is interrupted
      */
-    private void indexListAnnounce( IndexWriter indexWriter, List<Integer> listIdAnounce, Plugin plugin )
-        throws CorruptIndexException, IOException, InterruptedException
+    private void indexListAnnounce( IndexWriter indexWriter, List<Integer> listIdAnounce, Plugin plugin ) throws CorruptIndexException, IOException,
+            InterruptedException
     {
-        String strPortalUrl = AppPathService.getPortalUrl(  );
-        Iterator<Integer> it = listIdAnounce.iterator(  );
+        String strPortalUrl = AppPathService.getPortalUrl( );
+        Iterator<Integer> it = listIdAnounce.iterator( );
 
-        while ( it.hasNext(  ) )
+        while ( it.hasNext( ) )
         {
-            Integer nAnnounceId = it.next(  );
+            Integer nAnnounceId = it.next( );
             Announce announce = AnnounceHome.findByPrimaryKey( nAnnounceId );
 
             UrlItem urlAnnounce = new UrlItem( strPortalUrl );
-            urlAnnounce.addParameter( XPageAppService.PARAM_XPAGE_APP,
-                AppPropertiesService.getProperty( AnnounceUtils.PARAMETER_PAGE_ANNOUNCE ) ); //FIXME
-            urlAnnounce.addParameter( PARAMETER_ANNOUNCE_ID, announce.getId(  ) );
+            urlAnnounce.addParameter( XPageAppService.PARAM_XPAGE_APP, AppPropertiesService.getProperty( AnnounceUtils.PARAMETER_PAGE_ANNOUNCE ) ); // FIXME
+            urlAnnounce.addParameter( PARAMETER_ANNOUNCE_ID, announce.getId( ) );
 
-            indexWriter.addDocument( getDocument( announce, urlAnnounce.getUrl(  ), plugin ) );
+            indexWriter.addDocument( getDocument( announce, urlAnnounce.getUrl( ), plugin ) );
         }
     }
 
@@ -132,59 +137,57 @@ public class DefaultAnnounceIndexer implements IAnnounceSearchIndexer
      * {@inheritDoc}
      */
     @Override
-    public synchronized void processIndexing( IndexWriter indexWriter, boolean bCreate, StringBuffer sbLogs )
-        throws IOException, InterruptedException, SiteMessageException
+    public synchronized void processIndexing( IndexWriter indexWriter, boolean bCreate, StringBuffer sbLogs ) throws IOException, InterruptedException,
+            SiteMessageException
     {
         Plugin plugin = PluginService.getPlugin( AnnouncePlugin.PLUGIN_NAME );
-        List<Integer> listIdAnnounce = new ArrayList<Integer>(  );
+        List<Integer> listIdAnnounce = new ArrayList<Integer>( );
 
         if ( !bCreate )
         {
-            //incremental indexing
-            //delete all record which must be deleted
-            for ( IndexerAction action : AnnounceSearchService.getInstance(  )
-                                                              .getAllIndexerActionByTask( IndexerAction.TASK_DELETE,
-                    plugin ) )
+            // incremental indexing
+            // delete all record which must be deleted
+            for ( IndexerAction action : AnnounceSearchService.getInstance( ).getAllIndexerActionByTask( IndexerAction.TASK_DELETE, plugin ) )
             {
-                sbLogAnnounce( sbLogs, action.getIdAnnounce(  ), IndexerAction.TASK_DELETE );
+                sbLogAnnounce( sbLogs, action.getIdAnnounce( ), IndexerAction.TASK_DELETE );
 
-                Term term = new Term( AnnounceSearchItem.FIELD_ID_ANNOUNCE, Integer.toString( action.getIdAnnounce(  ) ) );
-                Term[] terms = { term };
+                Term term = new Term( AnnounceSearchItem.FIELD_ID_ANNOUNCE, Integer.toString( action.getIdAnnounce( ) ) );
+                Term [ ] terms = {
+                    term
+                };
 
                 indexWriter.deleteDocuments( terms );
-                AnnounceSearchService.getInstance(  ).removeIndexerAction( action.getIdAction(  ), plugin );
+                AnnounceSearchService.getInstance( ).removeIndexerAction( action.getIdAction( ), plugin );
             }
 
-            //Update all record which must be updated
-            for ( IndexerAction action : AnnounceSearchService.getInstance(  )
-                                                              .getAllIndexerActionByTask( IndexerAction.TASK_MODIFY,
-                    plugin ) )
+            // Update all record which must be updated
+            for ( IndexerAction action : AnnounceSearchService.getInstance( ).getAllIndexerActionByTask( IndexerAction.TASK_MODIFY, plugin ) )
             {
-                sbLogAnnounce( sbLogs, action.getIdAnnounce(  ), IndexerAction.TASK_MODIFY );
+                sbLogAnnounce( sbLogs, action.getIdAnnounce( ), IndexerAction.TASK_MODIFY );
 
-                Term term = new Term( AnnounceSearchItem.FIELD_ID_ANNOUNCE, Integer.toString( action.getIdAnnounce(  ) ) );
-                Term[] terms = { term };
+                Term term = new Term( AnnounceSearchItem.FIELD_ID_ANNOUNCE, Integer.toString( action.getIdAnnounce( ) ) );
+                Term [ ] terms = {
+                    term
+                };
 
                 indexWriter.deleteDocuments( terms );
 
-                listIdAnnounce.add( action.getIdAnnounce(  ) );
+                listIdAnnounce.add( action.getIdAnnounce( ) );
 
-                AnnounceSearchService.getInstance(  ).removeIndexerAction( action.getIdAction(  ), plugin );
+                AnnounceSearchService.getInstance( ).removeIndexerAction( action.getIdAction( ), plugin );
             }
 
             this.indexListAnnounce( indexWriter, listIdAnnounce, plugin );
 
-            listIdAnnounce = new ArrayList<Integer>(  );
+            listIdAnnounce = new ArrayList<Integer>( );
 
-            //add all record which must be added
-            for ( IndexerAction action : AnnounceSearchService.getInstance(  )
-                                                              .getAllIndexerActionByTask( IndexerAction.TASK_CREATE,
-                    plugin ) )
+            // add all record which must be added
+            for ( IndexerAction action : AnnounceSearchService.getInstance( ).getAllIndexerActionByTask( IndexerAction.TASK_CREATE, plugin ) )
             {
-                sbLogAnnounce( sbLogs, action.getIdAnnounce(  ), IndexerAction.TASK_CREATE );
-                listIdAnnounce.add( action.getIdAnnounce(  ) );
+                sbLogAnnounce( sbLogs, action.getIdAnnounce( ), IndexerAction.TASK_CREATE );
+                listIdAnnounce.add( action.getIdAnnounce( ) );
 
-                AnnounceSearchService.getInstance(  ).removeIndexerAction( action.getIdAction(  ), plugin );
+                AnnounceSearchService.getInstance( ).removeIndexerAction( action.getIdAction( ), plugin );
             }
 
             this.indexListAnnounce( indexWriter, listIdAnnounce, plugin );
@@ -193,52 +196,55 @@ public class DefaultAnnounceIndexer implements IAnnounceSearchIndexer
         {
             for ( Announce announce : AnnounceHome.findAllPublished( AnnounceSort.DEFAULT_SORT ) )
             {
-                if ( !announce.getSuspended(  ) && !announce.getSuspendedByUser(  ) )
+                if ( !announce.getSuspended( ) && !announce.getSuspendedByUser( ) )
                 {
                     sbLogs.append( "Indexing Announce" );
                     sbLogs.append( "\r\n" );
 
-                    sbLogAnnounce( sbLogs, announce.getId(  ), IndexerAction.TASK_CREATE );
+                    sbLogAnnounce( sbLogs, announce.getId( ), IndexerAction.TASK_CREATE );
 
-                    listIdAnnounce.add( announce.getId(  ) );
+                    listIdAnnounce.add( announce.getId( ) );
                 }
             }
 
             this.indexListAnnounce( indexWriter, listIdAnnounce, plugin );
         }
 
-        indexWriter.commit(  );
+        indexWriter.commit( );
     }
 
     /**
      * Get the subject document
-     * @param strDocument id of the subject to index
+     * 
+     * @param strDocument
+     *            id of the subject to index
      * @return The list of lucene documents
-     * @throws IOException If an IO Exception occurred
-     * @throws InterruptedException If the indexer is interrupted
-     * @throws SiteMessageException the exception
+     * @throws IOException
+     *             If an IO Exception occurred
+     * @throws InterruptedException
+     *             If the indexer is interrupted
+     * @throws SiteMessageException
+     *             the exception
      */
-    public static List<Document> getDocuments( String strDocument )
-        throws IOException, InterruptedException, SiteMessageException
+    public static List<Document> getDocuments( String strDocument ) throws IOException, InterruptedException, SiteMessageException
     {
-        List<org.apache.lucene.document.Document> listDocs = new ArrayList<org.apache.lucene.document.Document>(  );
-        String strPortalUrl = AppPathService.getPortalUrl(  );
+        List<org.apache.lucene.document.Document> listDocs = new ArrayList<org.apache.lucene.document.Document>( );
+        String strPortalUrl = AppPathService.getPortalUrl( );
         Plugin plugin = PluginService.getPlugin( AnnouncePlugin.PLUGIN_NAME );
 
         for ( Announce announce : AnnounceHome.findAllPublished( AnnounceSort.DEFAULT_SORT ) )
         {
-            if ( !announce.getSuspended(  ) && !announce.getSuspendedByUser(  ) )
+            if ( !announce.getSuspended( ) && !announce.getSuspendedByUser( ) )
             {
                 UrlItem urlAnnounce = new UrlItem( strPortalUrl );
-                urlAnnounce.addParameter( XPageAppService.PARAM_XPAGE_APP,
-                    AppPropertiesService.getProperty( AnnounceUtils.PARAMETER_PAGE_ANNOUNCE ) ); //FIXME
-                urlAnnounce.addParameter( PARAMETER_ANNOUNCE_ID, announce.getId(  ) );
+                urlAnnounce.addParameter( XPageAppService.PARAM_XPAGE_APP, AppPropertiesService.getProperty( AnnounceUtils.PARAMETER_PAGE_ANNOUNCE ) ); // FIXME
+                urlAnnounce.addParameter( PARAMETER_ANNOUNCE_ID, announce.getId( ) );
 
-                org.apache.lucene.document.Document docAnnounce = getDocument( announce, urlAnnounce.getUrl(  ), plugin );
+                org.apache.lucene.document.Document docAnnounce = getDocument( announce, urlAnnounce.getUrl( ), plugin );
                 listDocs.add( docAnnounce );
-                if (docAnnounce != null)
+                if ( docAnnounce != null )
                 {
-                    IndexationService.write(docAnnounce);
+                    IndexationService.write( docAnnounce );
                 }
             }
         }
@@ -247,96 +253,94 @@ public class DefaultAnnounceIndexer implements IAnnounceSearchIndexer
     }
 
     /**
-     * Builds a document which will be used by Lucene during the indexing of the
-     * announces list
-     * @param announce the announce
-     * @param strUrl the url
-     * @param plugin the plugin
-     * @throws IOException If an IO Exception occurred
-     * @throws InterruptedException If the indexer is interrupted
+     * Builds a document which will be used by Lucene during the indexing of the announces list
+     * 
+     * @param announce
+     *            the announce
+     * @param strUrl
+     *            the url
+     * @param plugin
+     *            the plugin
+     * @throws IOException
+     *             If an IO Exception occurred
+     * @throws InterruptedException
+     *             If the indexer is interrupted
      * @return the document
      */
-    public static org.apache.lucene.document.Document getDocument( Announce announce, String strUrl, Plugin plugin )
-        throws IOException, InterruptedException
+    public static org.apache.lucene.document.Document getDocument( Announce announce, String strUrl, Plugin plugin ) throws IOException, InterruptedException
     {
         // make a new, empty document
-        org.apache.lucene.document.Document doc = new org.apache.lucene.document.Document(  );
-        doc.add( new Field( AnnounceSearchItem.FIELD_SECTOR_ID, String.valueOf( announce.getCategory().getIdSector() ), TextField.TYPE_STORED ) );
-        
-        doc.add( new Field( AnnounceSearchItem.FIELD_CATEGORY_ID, String.valueOf( announce.getCategory(  ).getId(  ) ), TextField.TYPE_STORED ) );
-        doc.add( new Field( AnnounceSearchItem.FIELD_ID_ANNOUNCE, Integer.toString( announce.getId(  ) ), TextField.TYPE_STORED  ) );
+        org.apache.lucene.document.Document doc = new org.apache.lucene.document.Document( );
+        doc.add( new Field( AnnounceSearchItem.FIELD_SECTOR_ID, String.valueOf( announce.getCategory( ).getIdSector( ) ), TextField.TYPE_STORED ) );
 
-        doc.add( new Field( AnnounceSearchItem.FIELD_TAGS, announce.getTags(  ), TextField.TYPE_STORED ) );
+        doc.add( new Field( AnnounceSearchItem.FIELD_CATEGORY_ID, String.valueOf( announce.getCategory( ).getId( ) ), TextField.TYPE_STORED ) );
+        doc.add( new Field( AnnounceSearchItem.FIELD_ID_ANNOUNCE, Integer.toString( announce.getId( ) ), TextField.TYPE_STORED ) );
 
-        // Add the url as a field named "url".  Use an UnIndexed field, so
+        doc.add( new Field( AnnounceSearchItem.FIELD_TAGS, announce.getTags( ), TextField.TYPE_STORED ) );
+
+        // Add the url as a field named "url". Use an UnIndexed field, so
         // that the url is just stored with the question/answer, but is not searchable.
         doc.add( new Field( AnnounceSearchItem.FIELD_URL, strUrl, TextField.TYPE_STORED ) );
 
         // Add the uid as a field, so that index can be incrementally maintained.
         // This field is not stored with question/answer, it is indexed, but it is not
         // tokenized prior to indexing.
-        String strIdAnnounce = String.valueOf( announce.getId(  ) );
+        String strIdAnnounce = String.valueOf( announce.getId( ) );
         doc.add( new Field( AnnounceSearchItem.FIELD_UID, strIdAnnounce, TextField.TYPE_STORED ) );
 
         // Add the last modified date of the file a field named "modified".
         // Use a field that is indexed (i.e. searchable), but don't tokenize
         // the field into words.
-        String strDate = DateTools.dateToString( ( announce.getTimePublication(  ) > 0 )
-                ? new Timestamp( announce.getTimePublication(  ) ) : announce.getDateCreation(  ), DateTools.Resolution.DAY );
+        String strDate = DateTools.dateToString(
+                ( announce.getTimePublication( ) > 0 ) ? new Timestamp( announce.getTimePublication( ) ) : announce.getDateCreation( ),
+                DateTools.Resolution.DAY );
         doc.add( new Field( AnnounceSearchItem.FIELD_DATE, strDate, TextField.TYPE_STORED ) );
 
-        if ( StringUtils.isNotBlank( announce.getPrice(  ) ) )
+        if ( StringUtils.isNotBlank( announce.getPrice( ) ) )
         {
             try
             {
-                double dPrice = Double.parseDouble( AnnounceSearchService.getFormatedPriceString( announce.getPrice(  ) ) );
+                double dPrice = Double.parseDouble( AnnounceSearchService.getFormatedPriceString( announce.getPrice( ) ) );
                 // Add the price of the announce
-                doc.add( new Field( AnnounceSearchItem.FIELD_PRICE,
-                        AnnounceSearchService.formatPriceForIndexer( dPrice ), TextField.TYPE_STORED ) );
+                doc.add( new Field( AnnounceSearchItem.FIELD_PRICE, AnnounceSearchService.formatPriceForIndexer( dPrice ), TextField.TYPE_STORED ) );
             }
-            catch ( NumberFormatException nfe )
+            catch( NumberFormatException nfe )
             {
-                AppLogService.error( "Announce price could not be parsed : " + announce.getPrice(  ) );
+                AppLogService.error( "Announce price could not be parsed : " + announce.getPrice( ) );
             }
         }
 
         String strContentToIndex = getContentToIndex( announce, plugin );
 
-        /*    StringReader readerPage = new StringReader( strContentToIndex );
-            HTMLParser parser = new HTMLParser( readerPage );
+        /*
+         * StringReader readerPage = new StringReader( strContentToIndex ); HTMLParser parser = new HTMLParser( readerPage );
+         * 
+         * //the content of the question/answer is recovered in the parser because this one //had replaced the encoded characters (as &eacute;) by the
+         * corresponding special character (as ?) Reader reader = parser.getReader( ); int c; StringBuffer sb = new StringBuffer( );
+         * 
+         * while ( ( c = reader.read( ) ) != -1 ) { sb.append( String.valueOf( (char) c ) ); }
+         * 
+         * reader.close( );
+         */
 
-            //the content of the question/answer is recovered in the parser because this one
-            //had replaced the encoded characters (as &eacute;) by the corresponding special character (as ?)
-            Reader reader = parser.getReader(  );
-            int c;
-            StringBuffer sb = new StringBuffer(  );
-
-            while ( ( c = reader.read(  ) ) != -1 )
-            {
-                sb.append( String.valueOf( (char) c ) );
-            }
-
-            reader.close(  );*/
-
-        //NOUVEAU
-        ContentHandler handler = new BodyContentHandler(  );
-        Metadata metadata = new Metadata(  );
+        // NOUVEAU
+        ContentHandler handler = new BodyContentHandler( );
+        Metadata metadata = new Metadata( );
 
         try
         {
-            new HtmlParser(  ).parse( new ByteArrayInputStream( strContentToIndex.getBytes(  ) ), handler, metadata,
-                new ParseContext(  ) );
+            new HtmlParser( ).parse( new ByteArrayInputStream( strContentToIndex.getBytes( ) ), handler, metadata, new ParseContext( ) );
         }
-        catch ( SAXException e )
+        catch( SAXException e )
         {
             throw new AppException( "Error during announce parsing." );
         }
-        catch ( TikaException e )
+        catch( TikaException e )
         {
             throw new AppException( "Error during announce parsing." );
         }
 
-        String strContent = handler.toString(  );
+        String strContent = handler.toString( );
 
         // Add the tag-stripped contents as a Reader-valued Text field so it will
         // get tokenized and indexed.
@@ -344,7 +348,7 @@ public class DefaultAnnounceIndexer implements IAnnounceSearchIndexer
 
         // Add the subject name as a separate Text field, so that it can be searched
         // separately.
-        doc.add( new StoredField( AnnounceSearchItem.FIELD_TITLE, announce.getTitle(  ) ) );
+        doc.add( new StoredField( AnnounceSearchItem.FIELD_TITLE, announce.getTitle( ) ) );
 
         doc.add( new Field( AnnounceSearchItem.FIELD_TYPE, AnnouncePlugin.PLUGIN_NAME, StringField.TYPE_STORED ) );
 
@@ -354,28 +358,31 @@ public class DefaultAnnounceIndexer implements IAnnounceSearchIndexer
 
     /**
      * Set the Content to index
-     * @param announce The {@link Announce} to index
-     * @param plugin The {@link Plugin}
+     * 
+     * @param announce
+     *            The {@link Announce} to index
+     * @param plugin
+     *            The {@link Plugin}
      * @return The content to index
      */
     private static String getContentToIndex( Announce announce, Plugin plugin )
     {
-        StringBuffer sbContentToIndex = new StringBuffer(  );
-        //Do not index question here
-        sbContentToIndex.append( announce.getTitle(  ) );
+        StringBuffer sbContentToIndex = new StringBuffer( );
+        // Do not index question here
+        sbContentToIndex.append( announce.getTitle( ) );
         sbContentToIndex.append( BLANK_SPACE );
-        sbContentToIndex.append( announce.getDescription(  ) );
+        sbContentToIndex.append( announce.getDescription( ) );
         sbContentToIndex.append( BLANK_SPACE );
-        sbContentToIndex.append( announce.getTags(  ) );
+        sbContentToIndex.append( announce.getTags( ) );
 
-        return sbContentToIndex.toString(  );
+        return sbContentToIndex.toString( );
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public String getName(  )
+    public String getName( )
     {
         return AppPropertiesService.getProperty( PROPERTY_INDEXER_NAME );
     }
@@ -384,7 +391,7 @@ public class DefaultAnnounceIndexer implements IAnnounceSearchIndexer
      * {@inheritDoc}
      */
     @Override
-    public String getVersion(  )
+    public String getVersion( )
     {
         return AppPropertiesService.getProperty( PROPERTY_INDEXER_VERSION );
     }
@@ -393,14 +400,13 @@ public class DefaultAnnounceIndexer implements IAnnounceSearchIndexer
      * {@inheritDoc}
      */
     @Override
-    public boolean isEnable(  )
+    public boolean isEnable( )
     {
         boolean bReturn = false;
         String strEnable = AppPropertiesService.getProperty( PROPERTY_INDEXER_ENABLE );
 
-        if ( ( strEnable != null ) &&
-                ( strEnable.equalsIgnoreCase( Boolean.TRUE.toString(  ) ) || strEnable.equals( ENABLE_VALUE_TRUE ) ) &&
-                PluginService.isPluginEnable( AnnouncePlugin.PLUGIN_NAME ) )
+        if ( ( strEnable != null ) && ( strEnable.equalsIgnoreCase( Boolean.TRUE.toString( ) ) || strEnable.equals( ENABLE_VALUE_TRUE ) )
+                && PluginService.isPluginEnable( AnnouncePlugin.PLUGIN_NAME ) )
         {
             bReturn = true;
         }
@@ -410,15 +416,19 @@ public class DefaultAnnounceIndexer implements IAnnounceSearchIndexer
 
     /**
      * Indexing action performed on the recording
-     * @param sbLogs the buffer log
-     * @param nIdAnnounce the id of the announce
-     * @param nAction the indexer action key performed
+     * 
+     * @param sbLogs
+     *            the buffer log
+     * @param nIdAnnounce
+     *            the id of the announce
+     * @param nAction
+     *            the indexer action key performed
      */
     private void sbLogAnnounce( StringBuffer sbLogs, int nIdAnnounce, int nAction )
     {
         sbLogs.append( "Indexing Announce:" );
 
-        switch ( nAction )
+        switch( nAction )
         {
             case IndexerAction.TASK_CREATE:
                 sbLogs.append( "Insert " );

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002-2017, Mairie de Paris
+ * Copyright (c) 2002-2018, Mairie de Paris
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -40,7 +40,6 @@ import fr.paris.lutece.portal.service.spring.SpringContextService;
 
 import java.util.List;
 
-
 /**
  * Home for announce search filters
  */
@@ -51,7 +50,9 @@ public class AnnounceSearchFilterHome
 
     /**
      * Find a filter by primary key
-     * @param nIdFilter The id of the filter
+     * 
+     * @param nIdFilter
+     *            The id of the filter
      * @return The filter
      */
     public static AnnounceSearchFilter findByPrimaryKey( int nIdFilter )
@@ -61,7 +62,9 @@ public class AnnounceSearchFilterHome
 
     /**
      * Insert a new filter into the database
-     * @param filter the filter
+     * 
+     * @param filter
+     *            the filter
      */
     public static void create( AnnounceSearchFilter filter )
     {
@@ -70,7 +73,9 @@ public class AnnounceSearchFilterHome
 
     /**
      * Update a filter
-     * @param filter The filter to update
+     * 
+     * @param filter
+     *            The filter to update
      */
     public static void update( AnnounceSearchFilter filter )
     {
@@ -79,7 +84,9 @@ public class AnnounceSearchFilterHome
 
     /**
      * Remove a filter from the database
-     * @param nIdFilter The id of the filter
+     * 
+     * @param nIdFilter
+     *            The id of the filter
      */
     public static void delete( int nIdFilter )
     {
@@ -88,7 +95,9 @@ public class AnnounceSearchFilterHome
 
     /**
      * Remove filters from the database from the id of categories
-     * @param nIdCategory The id of the filter
+     * 
+     * @param nIdCategory
+     *            The id of the filter
      */
     public static void deleteByIdCategory( int nIdCategory )
     {
@@ -97,16 +106,19 @@ public class AnnounceSearchFilterHome
 
     /**
      * Get the list of every filters
+     * 
      * @return the list of every filters
      */
-    public List<AnnounceSearchFilter> findAll(  )
+    public List<AnnounceSearchFilter> findAll( )
     {
         return _dao.findAll( _plugin );
     }
 
     /**
      * Get the list of filters from a list of id
-     * @param listIdFilters The list of id of filters
+     * 
+     * @param listIdFilters
+     *            The list of id of filters
      * @return the list of filters
      */
     public List<AnnounceSearchFilter> findByListId( List<Integer> listIdFilters )
