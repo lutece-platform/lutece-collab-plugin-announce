@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002-2017, Mairie de Paris
+ * Copyright (c) 2002-2018, Mairie de Paris
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -48,13 +48,12 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
-
 /**
  * This class represents business objects AppointmentPortlet
  */
 public class LastAnnouncesPortlet extends PortletHtmlContent
 {
-    /////////////////////////////////////////////////////////////////////////////////
+    // ///////////////////////////////////////////////////////////////////////////////
     // Constants
     private static final String TEMPLATE_PORTLET_CONTENT = "skin/plugins/announce/portletlastannounces_content.html";
     private static final String MARK_PORTLET = "portlet";
@@ -64,23 +63,26 @@ public class LastAnnouncesPortlet extends PortletHtmlContent
     /**
      * Sets the identifier of the portlet type to value specified
      */
-    public LastAnnouncesPortlet(  )
+    public LastAnnouncesPortlet( )
     {
-        setPortletTypeId( MyAnnouncesPortletHome.getInstance(  ).getPortletTypeId(  ) );
+        setPortletTypeId( MyAnnouncesPortletHome.getInstance( ).getPortletTypeId( ) );
     }
 
     /**
      * Get the number of announces to display
+     * 
      * @return The number of announces to display
      */
-    public int getNbAnnouncesToDisplay(  )
+    public int getNbAnnouncesToDisplay( )
     {
         return _nNbAnnouncesToDisplay;
     }
 
     /**
      * Set the number of announces to display
-     * @param nNbAnnouncesToDisplay The number of announces to display
+     * 
+     * @param nNbAnnouncesToDisplay
+     *            The number of announces to display
      */
     public void setNbAnnouncesToDisplay( int nNbAnnouncesToDisplay )
     {
@@ -98,19 +100,16 @@ public class LastAnnouncesPortlet extends PortletHtmlContent
             AnnounceSort announceSort = AnnounceSort.getAnnounceSort( AnnounceSort.SORT_DATE_CREATION, false );
             List<Integer> listAllIdAnnounces = AnnounceHome.findAllPublishedId( announceSort );
 
-            String strContent = AnnounceApp.getAnnounceListById( request,
-                    ( getNbAnnouncesToDisplay(  ) > listAllIdAnnounces.size(  ) ) ? listAllIdAnnounces
-                                                                                  : listAllIdAnnounces.subList( 0,
-                        getNbAnnouncesToDisplay(  ) ), announceSort );
+            String strContent = AnnounceApp.getAnnounceListById( request, ( getNbAnnouncesToDisplay( ) > listAllIdAnnounces.size( ) ) ? listAllIdAnnounces
+                    : listAllIdAnnounces.subList( 0, getNbAnnouncesToDisplay( ) ), announceSort );
 
-            Map<String, Object> model = new HashMap<String, Object>(  );
+            Map<String, Object> model = new HashMap<String, Object>( );
             model.put( MARK_PORTLET, this );
             model.put( MARK_CONTENT, strContent );
 
-            HtmlTemplate template = AppTemplateService.getTemplate( TEMPLATE_PORTLET_CONTENT, request.getLocale(  ),
-                    model );
+            HtmlTemplate template = AppTemplateService.getTemplate( TEMPLATE_PORTLET_CONTENT, request.getLocale( ), model );
 
-            return template.getHtml(  );
+            return template.getHtml( );
         }
 
         return StringUtils.EMPTY;
@@ -119,17 +118,17 @@ public class LastAnnouncesPortlet extends PortletHtmlContent
     /**
      * Updates the current instance of the MyAnnouncePortlet object
      */
-    public void update(  )
+    public void update( )
     {
-        LastAnnouncesPortletHome.getInstance(  ).update( this );
+        LastAnnouncesPortletHome.getInstance( ).update( this );
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public void remove(  )
+    public void remove( )
     {
-        LastAnnouncesPortletHome.getInstance(  ).remove( this );
+        LastAnnouncesPortletHome.getInstance( ).remove( this );
     }
 }

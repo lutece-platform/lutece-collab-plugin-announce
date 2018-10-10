@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002-2017, Mairie de Paris
+ * Copyright (c) 2002-2018, Mairie de Paris
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -36,7 +36,6 @@ package fr.paris.lutece.plugins.announce.service.entrytype;
 import fr.paris.lutece.plugins.genericattributes.business.Entry;
 import fr.paris.lutece.plugins.genericattributes.service.entrytype.AbstractEntryTypeGroup;
 
-
 /**
  *
  * class EntryTypeGroup
@@ -44,7 +43,7 @@ import fr.paris.lutece.plugins.genericattributes.service.entrytype.AbstractEntry
  */
 public class EntryTypeGroup extends AbstractEntryTypeGroup
 {
-    //	templates
+    // templates
     private static final String TEMPLATE_CREATE = "admin/plugins/announce/entries/create_entry_type_group.html";
     private static final String TEMPLATE_MODIFY = "admin/plugins/announce/entries/modify_entry_type_group.html";
     private static final String TEMPLATE_HTML_CODE = "skin/plugins/announce/entries/html_code_entry_type_group.html";

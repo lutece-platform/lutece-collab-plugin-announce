@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002-2017, Mairie de Paris
+ * Copyright (c) 2002-2018, Mairie de Paris
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -35,7 +35,6 @@ package fr.paris.lutece.plugins.announce.business.portlet;
 
 import fr.paris.lutece.portal.business.portlet.Portlet;
 
-
 /**
  * this class provides Data Access methods for MyAnnouncePortlet objects
  */
@@ -44,7 +43,8 @@ public final class MyAnnouncesPortletDAO implements IMyAnnouncesPortletDAO
     /**
      * Insert a new record in the table.
      *
-     * @param portlet The Instance of the Portlet
+     * @param portlet
+     *            The Instance of the Portlet
      */
     @Override
     public void insert( Portlet portlet )
@@ -54,7 +54,9 @@ public final class MyAnnouncesPortletDAO implements IMyAnnouncesPortletDAO
 
     /**
      * Delete record from table
-     * @param nPortletId The identifier of the Portlet
+     * 
+     * @param nPortletId
+     *            The identifier of the Portlet
      */
     @Override
     public void delete( int nPortletId )
@@ -64,7 +66,9 @@ public final class MyAnnouncesPortletDAO implements IMyAnnouncesPortletDAO
 
     /**
      * Update the record in the table
-     * @param portlet The reference of the portlet
+     * 
+     * @param portlet
+     *            The reference of the portlet
      */
     @Override
     public void store( Portlet portlet )
@@ -74,13 +78,15 @@ public final class MyAnnouncesPortletDAO implements IMyAnnouncesPortletDAO
 
     /**
      * Load the data of the portlet from the table
+     * 
      * @return portlet The instance of the object portlet
-     * @param nIdPortlet The identifier of the portlet
+     * @param nIdPortlet
+     *            The identifier of the portlet
      */
     @Override
     public Portlet load( int nIdPortlet )
     {
-        MyAnnouncesPortlet portlet = new MyAnnouncesPortlet(  );
+        MyAnnouncesPortlet portlet = new MyAnnouncesPortlet( );
         portlet.setId( nIdPortlet );
 
         return portlet;

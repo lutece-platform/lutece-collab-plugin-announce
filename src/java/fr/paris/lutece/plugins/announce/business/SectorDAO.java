@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002-2017, Mairie de Paris
+ * Copyright (c) 2002-2018, Mairie de Paris
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -43,7 +43,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Locale;
 
-
 /**
  * DAO implementation to manage sectors
  */
@@ -68,17 +67,19 @@ public final class SectorDAO implements ISectorDAO
 
     /**
      * Generates a new primary key
-     * @param plugin The plugin
+     * 
+     * @param plugin
+     *            The plugin
      * @return The new primary key
      */
     private int newPrimaryKey( Plugin plugin )
     {
         DAOUtil daoUtil = new DAOUtil( SQL_QUERY_NEWPK, plugin );
-        daoUtil.executeQuery(  );
+        daoUtil.executeQuery( );
 
         int nKey;
 
-        if ( !daoUtil.next(  ) )
+        if ( !daoUtil.next( ) )
         {
             // if the table is empty
             nKey = 1;
@@ -86,7 +87,7 @@ public final class SectorDAO implements ISectorDAO
 
         nKey = daoUtil.getInt( 1 ) + 1;
 
-        daoUtil.free(  );
+        daoUtil.free( );
 
         return nKey;
     }
@@ -99,15 +100,15 @@ public final class SectorDAO implements ISectorDAO
     {
         DAOUtil daoUtil = new DAOUtil( SQL_QUERY_INSERT, plugin );
         sector.setId( newPrimaryKey( plugin ) );
-        daoUtil.setInt( 1, sector.getId(  ) );
-        daoUtil.setString( 2, sector.getLabel(  ) );
-        daoUtil.setString( 3, sector.getDescription(  ) );
-        daoUtil.setBoolean( 4, sector.getAnnouncesValidation(  ) );
+        daoUtil.setInt( 1, sector.getId( ) );
+        daoUtil.setString( 2, sector.getLabel( ) );
+        daoUtil.setString( 3, sector.getDescription( ) );
+        daoUtil.setBoolean( 4, sector.getAnnouncesValidation( ) );
         daoUtil.setInt( 5, selectMaxOrder( plugin ) + 1 );
-        daoUtil.setString( 6, sector.getTags(  ) );
+        daoUtil.setString( 6, sector.getTags( ) );
 
-        daoUtil.executeUpdate(  );
-        daoUtil.free(  );
+        daoUtil.executeUpdate( );
+        daoUtil.free( );
     }
 
     /**
@@ -118,13 +119,13 @@ public final class SectorDAO implements ISectorDAO
     {
         DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECT, plugin );
         daoUtil.setInt( 1, nIdFIeld );
-        daoUtil.executeQuery(  );
+        daoUtil.executeQuery( );
 
         Sector sector = null;
 
-        if ( daoUtil.next(  ) )
+        if ( daoUtil.next( ) )
         {
-            sector = new Sector(  );
+            sector = new Sector( );
             sector.setId( daoUtil.getInt( 1 ) );
             sector.setLabel( daoUtil.getString( 2 ) );
             sector.setDescription( daoUtil.getString( 3 ) );
@@ -134,7 +135,7 @@ public final class SectorDAO implements ISectorDAO
             sector.setNumberCategories( countCategoriesForSector( sector, plugin ) );
         }
 
-        daoUtil.free(  );
+        daoUtil.free( );
 
         return sector;
     }
@@ -146,9 +147,9 @@ public final class SectorDAO implements ISectorDAO
     public void delete( Sector sector, Plugin plugin )
     {
         DAOUtil daoUtil = new DAOUtil( SQL_QUERY_DELETE, plugin );
-        daoUtil.setInt( 1, sector.getId(  ) );
-        daoUtil.executeUpdate(  );
-        daoUtil.free(  );
+        daoUtil.setInt( 1, sector.getId( ) );
+        daoUtil.executeUpdate( );
+        daoUtil.free( );
     }
 
     /**
@@ -159,15 +160,15 @@ public final class SectorDAO implements ISectorDAO
     {
         DAOUtil daoUtil = new DAOUtil( SQL_QUERY_UPDATE, plugin );
 
-        daoUtil.setString( 1, sector.getLabel(  ) );
-        daoUtil.setString( 2, sector.getDescription(  ) );
-        daoUtil.setBoolean( 3, sector.getAnnouncesValidation(  ) );
-        daoUtil.setString( 4, sector.getTags(  ) );
+        daoUtil.setString( 1, sector.getLabel( ) );
+        daoUtil.setString( 2, sector.getDescription( ) );
+        daoUtil.setBoolean( 3, sector.getAnnouncesValidation( ) );
+        daoUtil.setString( 4, sector.getTags( ) );
 
-        daoUtil.setInt( 5, sector.getId(  ) );
+        daoUtil.setInt( 5, sector.getId( ) );
 
-        daoUtil.executeUpdate(  );
-        daoUtil.free(  );
+        daoUtil.executeUpdate( );
+        daoUtil.free( );
     }
 
     /**
@@ -176,13 +177,13 @@ public final class SectorDAO implements ISectorDAO
     @Override
     public Collection<Sector> selectAll( Plugin plugin )
     {
-        Collection<Sector> listSectors = new ArrayList<Sector>(  );
+        Collection<Sector> listSectors = new ArrayList<Sector>( );
         DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECTALL, plugin );
-        daoUtil.executeQuery(  );
+        daoUtil.executeQuery( );
 
-        while ( daoUtil.next(  ) )
+        while ( daoUtil.next( ) )
         {
-            Sector sector = new Sector(  );
+            Sector sector = new Sector( );
             sector.setId( daoUtil.getInt( 1 ) );
             sector.setLabel( daoUtil.getString( 2 ) );
             sector.setDescription( daoUtil.getString( 3 ) );
@@ -194,7 +195,7 @@ public final class SectorDAO implements ISectorDAO
             listSectors.add( sector );
         }
 
-        daoUtil.free(  );
+        daoUtil.free( );
 
         return listSectors;
     }
@@ -205,21 +206,21 @@ public final class SectorDAO implements ISectorDAO
     @Override
     public ReferenceList selectReferenceList( Plugin plugin )
     {
-        ReferenceList listSectors = new ReferenceList(  );
+        ReferenceList listSectors = new ReferenceList( );
 
         DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECTALL, plugin );
-        daoUtil.executeQuery(  );
+        daoUtil.executeQuery( );
 
-        while ( daoUtil.next(  ) )
+        while ( daoUtil.next( ) )
         {
-            ReferenceItem item = new ReferenceItem(  );
+            ReferenceItem item = new ReferenceItem( );
             item.setCode( daoUtil.getString( 1 ) );
             item.setName( daoUtil.getString( 2 ) );
 
             listSectors.add( item );
         }
 
-        daoUtil.free(  );
+        daoUtil.free( );
 
         return listSectors;
     }
@@ -230,7 +231,7 @@ public final class SectorDAO implements ISectorDAO
     @Override
     public ReferenceList selectLocaleReferenceList( Plugin plugin, Locale locale )
     {
-        ReferenceList frontListSectors = new ReferenceList(  );
+        ReferenceList frontListSectors = new ReferenceList( );
         frontListSectors.addItem( "0", I18nService.getLocalizedString( PROPERTY_FIELD_REFERENCE_LIST_TOP_LABEL, locale ) );
 
         ReferenceList listSectors = selectReferenceList( plugin );
@@ -242,8 +243,10 @@ public final class SectorDAO implements ISectorDAO
     /**
      * Counts the number of categories for a specified sector
      *
-     * @param plugin The plugin
-     * @param sector The specified sector
+     * @param plugin
+     *            The plugin
+     * @param sector
+     *            The specified sector
      * @return The Number of categories
      */
     private int countCategoriesForSector( Sector sector, Plugin plugin )
@@ -251,20 +254,20 @@ public final class SectorDAO implements ISectorDAO
         int nNumberCategories = 0;
         DAOUtil daoUtil = new DAOUtil( SQL_QUERY_COUNT_CATEGORIES_FOR_FIELD, plugin );
 
-        daoUtil.setInt( 1, sector.getId(  ) );
-        daoUtil.executeQuery(  );
+        daoUtil.setInt( 1, sector.getId( ) );
+        daoUtil.executeQuery( );
 
-        if ( daoUtil.next(  ) )
+        if ( daoUtil.next( ) )
         {
             nNumberCategories = daoUtil.getInt( 1 );
         }
 
-        daoUtil.free(  );
+        daoUtil.free( );
 
         return nNumberCategories;
     }
 
-    ////////////////////////////////////////////////////////////////////////////
+    // //////////////////////////////////////////////////////////////////////////
     // Order management
 
     /**
@@ -276,8 +279,8 @@ public final class SectorDAO implements ISectorDAO
         DAOUtil daoUtil = new DAOUtil( SQL_QUERY_UPDATE_FIELD_ORDER, plugin );
         daoUtil.setInt( 1, nNewOrder );
         daoUtil.setInt( 2, nId );
-        daoUtil.executeUpdate(  );
-        daoUtil.free(  );
+        daoUtil.executeUpdate( );
+        daoUtil.free( );
     }
 
     /**
@@ -289,9 +292,9 @@ public final class SectorDAO implements ISectorDAO
         DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECT_FIELD_ID_BY_ORDER, plugin );
         int nResult = 0;
         daoUtil.setInt( 1, nOrder );
-        daoUtil.executeQuery(  );
+        daoUtil.executeQuery( );
 
-        if ( !daoUtil.next(  ) )
+        if ( !daoUtil.next( ) )
         {
             // If number order doesn't exist
             nResult = 1;
@@ -301,7 +304,7 @@ public final class SectorDAO implements ISectorDAO
             nResult = daoUtil.getInt( 1 );
         }
 
-        daoUtil.free(  );
+        daoUtil.free( );
 
         return nResult;
     }
@@ -315,9 +318,9 @@ public final class SectorDAO implements ISectorDAO
         DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECT_FIELD_ORDER_BY_ID, plugin );
         int nResult = 0;
         daoUtil.setInt( 1, nId );
-        daoUtil.executeQuery(  );
+        daoUtil.executeQuery( );
 
-        if ( !daoUtil.next(  ) )
+        if ( !daoUtil.next( ) )
         {
             // If number order doesn't exist
             nResult = 1;
@@ -327,7 +330,7 @@ public final class SectorDAO implements ISectorDAO
             nResult = daoUtil.getInt( 1 );
         }
 
-        daoUtil.free(  );
+        daoUtil.free( );
 
         return nResult;
     }
@@ -340,14 +343,14 @@ public final class SectorDAO implements ISectorDAO
     {
         int nOrder = 0;
         DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECT_MAX_ORDER, plugin );
-        daoUtil.executeQuery(  );
+        daoUtil.executeQuery( );
 
-        if ( daoUtil.next(  ) )
+        if ( daoUtil.next( ) )
         {
             nOrder = daoUtil.getInt( 1 );
         }
 
-        daoUtil.free(  );
+        daoUtil.free( );
 
         return nOrder;
     }

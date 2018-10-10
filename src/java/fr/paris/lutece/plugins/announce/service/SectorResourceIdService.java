@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002-2017, Mairie de Paris
+ * Copyright (c) 2002-2018, Mairie de Paris
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -44,7 +44,6 @@ import fr.paris.lutece.util.ReferenceList;
 
 import java.util.Locale;
 
-
 /**
  *
  * class SectorResourceIdService
@@ -70,7 +69,7 @@ public class SectorResourceIdService extends ResourceIdService
     private static final String PROPERTY_LABEL_DELETE = "announce.permission.resourceType.sector.delete";
 
     /** Creates a new instance of SectorResourceIdService */
-    public SectorResourceIdService(  )
+    public SectorResourceIdService( )
     {
         setPluginName( AnnouncePlugin.PLUGIN_NAME );
     }
@@ -79,25 +78,25 @@ public class SectorResourceIdService extends ResourceIdService
      * {@inheritDoc}
      */
     @Override
-    public void register(  )
+    public void register( )
     {
-        ResourceType rt = new ResourceType(  );
-        rt.setResourceIdServiceClass( SectorResourceIdService.class.getName(  ) );
+        ResourceType rt = new ResourceType( );
+        rt.setResourceIdServiceClass( SectorResourceIdService.class.getName( ) );
         rt.setPluginName( AnnouncePlugin.PLUGIN_NAME );
         rt.setResourceTypeKey( Sector.RESOURCE_TYPE );
         rt.setResourceTypeLabelKey( PROPERTY_LABEL_RESOURCE_TYPE );
 
-        Permission p = new Permission(  );
+        Permission p = new Permission( );
         p.setPermissionKey( PERMISSION_CREATE );
         p.setPermissionTitleKey( PROPERTY_LABEL_CREATE );
         rt.registerPermission( p );
 
-        p = new Permission(  );
+        p = new Permission( );
         p.setPermissionKey( PERMISSION_MODIFY );
         p.setPermissionTitleKey( PROPERTY_LABEL_MODIFY );
         rt.registerPermission( p );
 
-        p = new Permission(  );
+        p = new Permission( );
         p.setPermissionKey( PERMISSION_DELETE );
         p.setPermissionTitleKey( PROPERTY_LABEL_DELETE );
         rt.registerPermission( p );
@@ -111,7 +110,7 @@ public class SectorResourceIdService extends ResourceIdService
     @Override
     public ReferenceList getResourceIdList( Locale locale )
     {
-        return SectorHome.findReferenceList(  );
+        return SectorHome.findReferenceList( );
     }
 
     /**
@@ -126,13 +125,13 @@ public class SectorResourceIdService extends ResourceIdService
         {
             nIdSector = Integer.parseInt( strId );
         }
-        catch ( NumberFormatException ne )
+        catch( NumberFormatException ne )
         {
             AppLogService.error( ne );
         }
 
         Sector sector = SectorHome.findByPrimaryKey( nIdSector );
 
-        return sector.getLabel(  );
+        return sector.getLabel( );
     }
 }

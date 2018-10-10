@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002-2017, Mairie de Paris
+ * Copyright (c) 2002-2018, Mairie de Paris
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -36,10 +36,10 @@ package fr.paris.lutece.plugins.announce.service.upload;
 import fr.paris.lutece.plugins.genericattributes.service.upload.AbstractGenAttUploadHandler;
 import fr.paris.lutece.portal.service.spring.SpringContextService;
 
-
 /**
  *
  * FormAsynchronousUploadHandler.
+ * 
  * @see #getFileItems(String, String)
  * @see #removeFileItem(String, String, int)
  *
@@ -54,9 +54,10 @@ public class AnnounceAsynchronousUploadHandler extends AbstractGenAttUploadHandl
 
     /**
      * Get the handler
+     * 
      * @return the handler
      */
-    public static AnnounceAsynchronousUploadHandler getHandler(  )
+    public static AnnounceAsynchronousUploadHandler getHandler( )
     {
         return SpringContextService.getBean( BEAN_ANNOUNCE_ASYNCHRONOUS_UPLOAD_HANDLER );
     }
@@ -65,7 +66,7 @@ public class AnnounceAsynchronousUploadHandler extends AbstractGenAttUploadHandl
      * {@inheritDoc}
      */
     @Override
-    public String getUploadSubmitPrefix(  )
+    public String getUploadSubmitPrefix( )
     {
         return UPLOAD_SUBMIT_PREFIX;
     }
@@ -74,7 +75,7 @@ public class AnnounceAsynchronousUploadHandler extends AbstractGenAttUploadHandl
      * {@inheritDoc}
      */
     @Override
-    public String getUploadDeletePrefix(  )
+    public String getUploadDeletePrefix( )
     {
         return UPLOAD_DELETE_PREFIX;
     }
@@ -83,7 +84,7 @@ public class AnnounceAsynchronousUploadHandler extends AbstractGenAttUploadHandl
      * {@inheritDoc}
      */
     @Override
-    public String getUploadCheckboxPrefix(  )
+    public String getUploadCheckboxPrefix( )
     {
         return UPLOAD_CHECKBOX_PREFIX;
     }
@@ -92,7 +93,7 @@ public class AnnounceAsynchronousUploadHandler extends AbstractGenAttUploadHandl
      * {@inheritDoc}
      */
     @Override
-    public String getHandlerName(  )
+    public String getHandlerName( )
     {
         return HANDLER_NAME;
     }

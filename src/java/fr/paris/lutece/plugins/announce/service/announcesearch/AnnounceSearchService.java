@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002-2017, Mairie de Paris
+ * Copyright (c) 2002-2018, Mairie de Paris
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -76,7 +76,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-
 /**
  * AnnounceSearchService
  */
@@ -113,20 +112,18 @@ public final class AnnounceSearchService
     /**
      * Creates a new instance of DirectorySearchService
      */
-    private AnnounceSearchService(  )
+    private AnnounceSearchService( )
     {
         // Read configuration properties
-        String strIndex = getIndex(  );
+        String strIndex = getIndex( );
 
         if ( StringUtils.isEmpty( strIndex ) )
         {
             throw new AppException( "Lucene index path not found in announce.properties", null );
         }
 
-        _nWriterMergeFactor = AppPropertiesService.getPropertyInt( PROPERTY_WRITER_MERGE_FACTOR,
-                DEFAULT_WRITER_MERGE_FACTOR );
-        _nWriterMaxSectorLength = AppPropertiesService.getPropertyInt( PROPERTY_WRITER_MAX_FIELD_LENGTH,
-                DEFAULT_WRITER_MAX_FIELD_LENGTH );
+        _nWriterMergeFactor = AppPropertiesService.getPropertyInt( PROPERTY_WRITER_MERGE_FACTOR, DEFAULT_WRITER_MERGE_FACTOR );
+        _nWriterMaxSectorLength = AppPropertiesService.getPropertyInt( PROPERTY_WRITER_MAX_FIELD_LENGTH, DEFAULT_WRITER_MAX_FIELD_LENGTH );
 
         String strAnalyserClassName = AppPropertiesService.getProperty( PROPERTY_ANALYSER_CLASS_NAME );
 
@@ -139,9 +136,9 @@ public final class AnnounceSearchService
 
         try
         {
-            _analyzer = (Analyzer) Class.forName( strAnalyserClassName ).newInstance(  );
+            _analyzer = (Analyzer) Class.forName( strAnalyserClassName ).newInstance( );
         }
-        catch ( Exception e )
+        catch( Exception e )
         {
             throw new AppException( "Failed to load Lucene Analyzer class", e );
         }
@@ -149,13 +146,14 @@ public final class AnnounceSearchService
 
     /**
      * Get the HelpdeskSearchService instance
+     * 
      * @return The {@link AnnounceSearchService}
      */
-    public static AnnounceSearchService getInstance(  )
+    public static AnnounceSearchService getInstance( )
     {
         if ( _singleton == null )
         {
-            _singleton = new AnnounceSearchService(  );
+            _singleton = new AnnounceSearchService( );
         }
 
         return _singleton;
@@ -163,126 +161,112 @@ public final class AnnounceSearchService
 
     /**
      * Return search results
-     * @param filter The search filter
-     * @param nPageNumber The current page
-     * @param nItemsPerPage The number of items per page to get
-     * @param listIdAnnounces Results as a collection of id of announces
+     * 
+     * @param filter
+     *            The search filter
+     * @param nPageNumber
+     *            The current page
+     * @param nItemsPerPage
+     *            The number of items per page to get
+     * @param listIdAnnounces
+     *            Results as a collection of id of announces
      * @return The total number of items found
      */
-   public int getSearchResults( AnnounceSearchFilter filter, int nPageNumber, int nItemsPerPage,
-        List<Integer> listIdAnnounces )
+    public int getSearchResults( AnnounceSearchFilter filter, int nPageNumber, int nItemsPerPage, List<Integer> listIdAnnounces )
     {
         int nNbItems = 0;
 
         try
         {
             IAnnounceSearchEngine engine = SpringContextService.getBean( BEAN_SEARCH_ENGINE );
-            List<SearchResult> listResults = new ArrayList<SearchResult>(  );
-            nNbItems = engine.getSearchResults( filter, PluginService.getPlugin( AnnouncePlugin.PLUGIN_NAME ),
-                    listResults, nPageNumber, nItemsPerPage );
+            List<SearchResult> listResults = new ArrayList<SearchResult>( );
+            nNbItems = engine.getSearchResults( filter, PluginService.getPlugin( AnnouncePlugin.PLUGIN_NAME ), listResults, nPageNumber, nItemsPerPage );
 
             for ( SearchResult searchResult : listResults )
             {
-                if ( searchResult.getId(  ) != null )
+                if ( searchResult.getId( ) != null )
                 {
-                    listIdAnnounces.add( Integer.parseInt( searchResult.getId(  ) ) );
+                    listIdAnnounces.add( Integer.parseInt( searchResult.getId( ) ) );
                 }
             }
         }
-        catch ( Exception e )
+        catch( Exception e )
         {
-            AppLogService.error( e.getMessage(  ), e );
+            AppLogService.error( e.getMessage( ), e );
             // If an error occurred clean result list
-            listIdAnnounces.clear(  );
+            listIdAnnounces.clear( );
         }
 
         return nNbItems;
     }
-    public int getSearchResultsBis( AnnounceSearchFilter filter, int nPageNumber, int nItemsPerPage, 
-    		List<Announce> listAnnouncesResults, AnnounceSort anSort )
+
+    public int getSearchResultsBis( AnnounceSearchFilter filter, int nPageNumber, int nItemsPerPage, List<Announce> listAnnouncesResults, AnnounceSort anSort )
+    {
+        // List<Integer> listIdAnnounces = new ArrayList<Integer>( );
+        int nNbItems = 0;
+
+        try
         {
-    		//List<Integer> listIdAnnounces = new ArrayList<Integer>(  );
-    		int nNbItems = 0;
+            IAnnounceSearchEngine engine = SpringContextService.getBean( BEAN_SEARCH_ENGINE );
+            nNbItems = engine.getSearchResultsBis( filter, PluginService.getPlugin( AnnouncePlugin.PLUGIN_NAME ), listAnnouncesResults, nPageNumber,
+                    nItemsPerPage, anSort );
 
-            try
-            {
-                IAnnounceSearchEngine engine = SpringContextService.getBean( BEAN_SEARCH_ENGINE );
-                nNbItems = engine.getSearchResultsBis( filter, PluginService.getPlugin( AnnouncePlugin.PLUGIN_NAME ),
-                		listAnnouncesResults, nPageNumber, nItemsPerPage,anSort );
-
-            }
-            catch ( Exception e )
-            {
-                AppLogService.error( e.getMessage(  ), e );
-                // If an error occurred clean result list
-                listAnnouncesResults.clear(  );
-            }
-
-            return nNbItems;
+        }
+        catch( Exception e )
+        {
+            AppLogService.error( e.getMessage( ), e );
+            // If an error occurred clean result list
+            listAnnouncesResults.clear( );
         }
 
-    /**
-     * return searcher
-     * @return searcher
-     */
-
-    /*  public Searcher getSearcher(  )
-      {
-          Directory dir = null;
-          Searcher searcher = null;
-
-          try
-          {
-              dir = NIOFSDirectory.open( new File( getIndex(  ) ) );
-              searcher = new IndexSearcher( dir, true );
-          }
-          catch ( IOException e )
-          {
-              AppLogService.error( e.getMessage(  ), e );
-
-              if ( dir != null )
-              {
-                  try
-                  {
-                      dir.close(  );
-                  }
-                  catch ( IOException e1 )
-                  {
-                      AppLogService.error( e1.getMessage(  ), e );
-                  }
-              }
-          }
-
-          return searcher;
-      }*/
+        return nNbItems;
+    }
 
     /**
      * return searcher
+     * 
      * @return searcher
      */
-    public IndexSearcher getSearcher(  )
+
+    /*
+     * public Searcher getSearcher( ) { Directory dir = null; Searcher searcher = null;
+     * 
+     * try { dir = NIOFSDirectory.open( new File( getIndex( ) ) ); searcher = new IndexSearcher( dir, true ); } catch ( IOException e ) { AppLogService.error(
+     * e.getMessage( ), e );
+     * 
+     * if ( dir != null ) { try { dir.close( ); } catch ( IOException e1 ) { AppLogService.error( e1.getMessage( ), e ); } } }
+     * 
+     * return searcher; }
+     */
+
+    /**
+     * return searcher
+     * 
+     * @return searcher
+     */
+    public IndexSearcher getSearcher( )
     {
         IndexReader dir = null;
         IndexSearcher searcher = null;
 
         try
         {
-            IndexReader ir = DirectoryReader.open( NIOFSDirectory.open( Paths.get( getIndex(  ) ) ) );
+            IndexReader ir = DirectoryReader.open( NIOFSDirectory.open( Paths.get( getIndex( ) ) ) );
             searcher = new IndexSearcher( ir );
         }
-        catch ( IOException e )
+        catch( IOException e )
         {
-            AppLogService.error( e.getMessage(  ), e );
+            AppLogService.error( e.getMessage( ), e );
 
             if ( dir != null )
             {
                 try
                 {
-                    dir.close(  );
+                    dir.close( );
                 }
-                catch ( IOException e1 )
+                catch( IOException e1 )
                 {
-                    AppLogService.error( e1.getMessage(  ), e );
+                    AppLogService.error( e1.getMessage( ), e );
                 }
             }
         }
@@ -292,13 +276,14 @@ public final class AnnounceSearchService
 
     /**
      * Process indexing
-     * @param bCreate true for start full indexing
-     *            false for begin incremental indexing
+     * 
+     * @param bCreate
+     *            true for start full indexing false for begin incremental indexing
      * @return the log
      */
     public String processIndexing( boolean bCreate )
     {
-        StringBuffer sbLogs = new StringBuffer(  );
+        StringBuffer sbLogs = new StringBuffer( );
         IndexWriter writer = null;
         boolean bCreateIndex = bCreate;
 
@@ -306,11 +291,11 @@ public final class AnnounceSearchService
         {
             sbLogs.append( "\r\nIndexing all contents ...\r\n" );
 
-            Directory dir = NIOFSDirectory.open( Paths.get( getIndex(  ) ) );
+            Directory dir = NIOFSDirectory.open( Paths.get( getIndex( ) ) );
 
-            //Nouveau
+            // Nouveau
             if ( !DirectoryReader.indexExists( dir ) )
-            { //init index
+            { // init index
                 bCreateIndex = true;
             }
 
@@ -318,35 +303,30 @@ public final class AnnounceSearchService
 
             if ( IndexWriter.isLocked( dir ) )
             {
-                sbLogs.append(  "AnnounceSearchService, the index is locked. Aborting." );
+                sbLogs.append( "AnnounceSearchService, the index is locked. Aborting." );
             }
 
             if ( !bIsLocked )
             {
-                /*  writer = new IndexWriter( dir, _analyzer, bCreateIndex, IndexWriter.MaxFieldLength.UNLIMITED );
-                  writer.setMergeFactor( _nWriterMergeFactor );
-                  writer.setMaxFieldLength( _nWriterMaxSectorLength );
-
-                  Date start = new Date(  );
-
-                  sbLogs.append( "\r\n<strong>Indexer : " );
-                  sbLogs.append( _indexer.getName(  ) );
-                  sbLogs.append( " - " );
-                  sbLogs.append( _indexer.getDescription(  ) );
-                  sbLogs.append( "</strong>\r\n" );
-                  _indexer.processIndexing( writer, bCreateIndex, sbLogs );
-
-                  Date end = new Date(  );
-
-                  sbLogs.append( "Duration of the treatment : " );
-                  sbLogs.append( end.getTime(  ) - start.getTime(  ) );
-                  sbLogs.append( " milliseconds\r\n" );
-
-                  writer.optimize(  );*/
-                Date start = new Date(  );
+                /*
+                 * writer = new IndexWriter( dir, _analyzer, bCreateIndex, IndexWriter.MaxFieldLength.UNLIMITED ); writer.setMergeFactor( _nWriterMergeFactor );
+                 * writer.setMaxFieldLength( _nWriterMaxSectorLength );
+                 * 
+                 * Date start = new Date( );
+                 * 
+                 * sbLogs.append( "\r\n<strong>Indexer : " ); sbLogs.append( _indexer.getName( ) ); sbLogs.append( " - " ); sbLogs.append(
+                 * _indexer.getDescription( ) ); sbLogs.append( "</strong>\r\n" ); _indexer.processIndexing( writer, bCreateIndex, sbLogs );
+                 * 
+                 * Date end = new Date( );
+                 * 
+                 * sbLogs.append( "Duration of the treatment : " ); sbLogs.append( end.getTime( ) - start.getTime( ) ); sbLogs.append( " milliseconds\r\n" );
+                 * 
+                 * writer.optimize( );
+                 */
+                Date start = new Date( );
 
                 IndexWriterConfig conf = new IndexWriterConfig( new LimitTokenCountAnalyzer( _analyzer, _nWriterMaxSectorLength ) );
-                LogMergePolicy mergePolicy = new LogDocMergePolicy(  );
+                LogMergePolicy mergePolicy = new LogDocMergePolicy( );
                 mergePolicy.setMergeFactor( _nWriterMergeFactor );
 
                 conf.setMergePolicy( mergePolicy );
@@ -362,30 +342,30 @@ public final class AnnounceSearchService
 
                 writer = new IndexWriter( dir, conf );
 
-                start = new Date(  );
+                start = new Date( );
 
                 sbLogs.append( "\r\n<strong>Indexer : " );
-                sbLogs.append( _indexer.getName(  ) );
+                sbLogs.append( _indexer.getName( ) );
                 sbLogs.append( " - " );
-                sbLogs.append( _indexer.getDescription(  ) );
+                sbLogs.append( _indexer.getDescription( ) );
                 sbLogs.append( "</strong>\r\n" );
                 _indexer.processIndexing( writer, bCreateIndex, sbLogs );
 
-                Date end = new Date(  );
+                Date end = new Date( );
 
                 sbLogs.append( "Duration of the treatment : " );
-                sbLogs.append( end.getTime(  ) - start.getTime(  ) );
+                sbLogs.append( end.getTime( ) - start.getTime( ) );
                 sbLogs.append( " milliseconds\r\n" );
             }
         }
-        catch ( Exception e )
+        catch( Exception e )
         {
             sbLogs.append( " caught a " );
-            sbLogs.append( e.getClass(  ) );
+            sbLogs.append( e.getClass( ) );
             sbLogs.append( "\n with message: " );
-            sbLogs.append( e.getMessage(  ) );
+            sbLogs.append( e.getMessage( ) );
             sbLogs.append( "\r\n" );
-            AppLogService.error( "Indexing error : " + e.getMessage(  ), e );
+            AppLogService.error( "Indexing error : " + e.getMessage( ), e );
         }
         finally
         {
@@ -393,27 +373,31 @@ public final class AnnounceSearchService
             {
                 if ( writer != null )
                 {
-                    writer.close(  );
+                    writer.close( );
                 }
             }
-            catch ( IOException e )
+            catch( IOException e )
             {
-                AppLogService.error( e.getMessage(  ), e );
+                AppLogService.error( e.getMessage( ), e );
             }
         }
 
-        return sbLogs.toString(  );
+        return sbLogs.toString( );
     }
 
     /**
      * Add Indexer Action to perform on a record
-     * @param nIdAnnounce announce id
-     * @param nIdTask the key of the action to do
-     * @param plugin the plugin
+     * 
+     * @param nIdAnnounce
+     *            announce id
+     * @param nIdTask
+     *            the key of the action to do
+     * @param plugin
+     *            the plugin
      */
     public void addIndexerAction( int nIdAnnounce, int nIdTask, Plugin plugin )
     {
-        IndexerAction indexerAction = new IndexerAction(  );
+        IndexerAction indexerAction = new IndexerAction( );
         indexerAction.setIdAnnounce( nIdAnnounce );
         indexerAction.setIdTask( nIdTask );
         IndexerActionHome.create( indexerAction );
@@ -421,8 +405,11 @@ public final class AnnounceSearchService
 
     /**
      * Remove a Indexer Action
-     * @param nIdAction the key of the action to remove
-     * @param plugin the plugin
+     * 
+     * @param nIdAction
+     *            the key of the action to remove
+     * @param plugin
+     *            the plugin
      */
     public void removeIndexerAction( int nIdAction, Plugin plugin )
     {
@@ -431,13 +418,16 @@ public final class AnnounceSearchService
 
     /**
      * return a list of IndexerAction by task key
-     * @param nIdTask the task key
-     * @param plugin the plugin
+     * 
+     * @param nIdTask
+     *            the task key
+     * @param plugin
+     *            the plugin
      * @return a list of IndexerAction
      */
     public List<IndexerAction> getAllIndexerActionByTask( int nIdTask, Plugin plugin )
     {
-        IndexerActionFilter filter = new IndexerActionFilter(  );
+        IndexerActionFilter filter = new IndexerActionFilter( );
         filter.setIdTask( nIdTask );
 
         return IndexerActionHome.getList( filter );
@@ -445,9 +435,10 @@ public final class AnnounceSearchService
 
     /**
      * Get the path to the index of the search service
+     * 
      * @return The path to the index of the search service
      */
-    private String getIndex(  )
+    private String getIndex( )
     {
         if ( _strIndex == null )
         {
@@ -459,53 +450,61 @@ public final class AnnounceSearchService
 
     /**
      * Get the analyzed of this search service
+     * 
      * @return The analyzer of this search service
      */
-    public Analyzer getAnalyzer(  )
+    public Analyzer getAnalyzer( )
     {
         return _analyzer;
     }
 
     /**
      * Format a price for the indexer
-     * @param dPrice The price to format
+     * 
+     * @param dPrice
+     *            The price to format
      * @return The formated price
      */
     public static String formatPriceForIndexer( double dPrice )
     {
-        NumberFormat formatter = new DecimalFormat( getPriceFormat(  ) );
+        NumberFormat formatter = new DecimalFormat( getPriceFormat( ) );
 
         return formatter.format( dPrice );
     }
 
     /**
      * Format a numerous string
-     * @param strPrice The price
+     * 
+     * @param strPrice
+     *            The price
      * @return The formated price
      */
     public static String getFormatedPriceString( String strPrice )
     {
         return strPrice.replaceAll( CONSTANT_BLANK_SPACE, StringUtils.EMPTY ).replace( CONSTANT_COMA, CONSTANT_POINT )
-                       .replaceAll( CONSTANT_EURO, StringUtils.EMPTY ).trim(  );
+                .replaceAll( CONSTANT_EURO, StringUtils.EMPTY ).trim( );
     }
 
     /**
      * Format a price for the indexer
-     * @param nPrice The price to format
+     * 
+     * @param nPrice
+     *            The price to format
      * @return The formated price
      */
     public static String formatPriceForIndexer( int nPrice )
     {
-        NumberFormat formatter = new DecimalFormat( getPriceFormat(  ) );
+        NumberFormat formatter = new DecimalFormat( getPriceFormat( ) );
 
         return formatter.format( nPrice );
     }
 
     /**
      * Get the price format to use
+     * 
      * @return the price format to use
      */
-    private static String getPriceFormat(  )
+    private static String getPriceFormat( )
     {
         if ( _strPriceFormat == null )
         {

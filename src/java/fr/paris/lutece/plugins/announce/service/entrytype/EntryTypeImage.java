@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002-2017, Mairie de Paris
+ * Copyright (c) 2002-2018, Mairie de Paris
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -63,7 +63,6 @@ import javax.imageio.ImageIO;
 
 import javax.servlet.http.HttpServletRequest;
 
-
 /**
  *
  * class EntryTypeImage
@@ -112,8 +111,7 @@ public class EntryTypeImage extends AbstractEntryTypeFile
      * {@inheritDoc}
      */
     @Override
-    public GenericAttributeError getResponseData( Entry entry, HttpServletRequest request, List<Response> listResponse,
-        Locale locale )
+    public GenericAttributeError getResponseData( Entry entry, HttpServletRequest request, List<Response> listResponse, Locale locale )
     {
         List<FileItem> listFilesSource = null;
 
@@ -128,36 +126,35 @@ public class EntryTypeImage extends AbstractEntryTypeFile
 
             GenericAttributeError formError = null;
 
-            if ( ( listFilesSource != null ) && !listFilesSource.isEmpty(  ) )
+            if ( ( listFilesSource != null ) && !listFilesSource.isEmpty( ) )
             {
                 formError = checkResponseData( entry, listFilesSource, locale, request );
 
                 if ( formError != null )
                 {
                     // Add the response to the list in order to have the error message in the page
-                    Response response = new Response(  );
+                    Response response = new Response( );
                     response.setEntry( entry );
                     listResponse.add( response );
                 }
 
                 for ( FileItem fileItem : listFilesSource )
                 {
-                    String strFilename = ( fileItem != null ) ? FileUploadService.getFileNameOnly( fileItem )
-                                                              : StringUtils.EMPTY;
+                    String strFilename = ( fileItem != null ) ? FileUploadService.getFileNameOnly( fileItem ) : StringUtils.EMPTY;
 
-                    //Add the image to the response list
-                    Response response = new Response(  );
+                    // Add the image to the response list
+                    Response response = new Response( );
                     response.setEntry( entry );
 
-                    if ( ( fileItem != null ) && ( fileItem.getSize(  ) < Integer.MAX_VALUE ) )
+                    if ( ( fileItem != null ) && ( fileItem.getSize( ) < Integer.MAX_VALUE ) )
                     {
-                        PhysicalFile physicalFile = new PhysicalFile(  );
-                        physicalFile.setValue( fileItem.get(  ) );
+                        PhysicalFile physicalFile = new PhysicalFile( );
+                        physicalFile.setValue( fileItem.get( ) );
 
-                        File file = new File(  );
+                        File file = new File( );
                         file.setPhysicalFile( physicalFile );
                         file.setTitle( strFilename );
-                        file.setSize( (int) fileItem.getSize(  ) );
+                        file.setSize( (int) fileItem.getSize( ) );
                         file.setMimeType( FileSystemUtil.getMIMEType( strFilename ) );
 
                         response.setFile( file );
@@ -169,36 +166,37 @@ public class EntryTypeImage extends AbstractEntryTypeFile
 
                     try
                     {
-                        if ( ( fileItem != null ) && ( fileItem.get(  ) != null ) )
+                        if ( ( fileItem != null ) && ( fileItem.get( ) != null ) )
                         {
-                            image = ImageIO.read( new ByteArrayInputStream( fileItem.get(  ) ) );
+                            image = ImageIO.read( new ByteArrayInputStream( fileItem.get( ) ) );
                         }
                     }
-                    catch ( IOException e )
+                    catch( IOException e )
                     {
                         AppLogService.error( e );
                     }
 
                     if ( ( image == null ) && StringUtils.isNotBlank( strFilename ) )
                     {
-                        formError = new GenericAttributeError(  );
+                        formError = new GenericAttributeError( );
                         formError.setMandatoryError( false );
 
-                        Object[] args = { ( fileItem != null ) ? fileItem.getName(  ) : StringUtils.EMPTY };
-                        formError.setErrorMessage( I18nService.getLocalizedString( MESSAGE_ERROR_NOT_AN_IMAGE, args,
-                                request.getLocale(  ) ) );
-                        formError.setTitleQuestion( entry.getTitle(  ) );
+                        Object [ ] args = {
+                            ( fileItem != null ) ? fileItem.getName( ) : StringUtils.EMPTY
+                        };
+                        formError.setErrorMessage( I18nService.getLocalizedString( MESSAGE_ERROR_NOT_AN_IMAGE, args, request.getLocale( ) ) );
+                        formError.setTitleQuestion( entry.getTitle( ) );
                     }
                 }
 
                 return formError;
             }
 
-            if ( entry.isMandatory(  ) && ( ( listFilesSource == null ) || listFilesSource.isEmpty(  ) ) )
+            if ( entry.isMandatory( ) && ( ( listFilesSource == null ) || listFilesSource.isEmpty( ) ) )
             {
                 formError = new MandatoryError( entry, locale );
 
-                Response response = new Response(  );
+                Response response = new Response( );
                 response.setEntry( entry );
                 listResponse.add( response );
             }
@@ -213,9 +211,9 @@ public class EntryTypeImage extends AbstractEntryTypeFile
      * {@inheritDoc}
      */
     @Override
-    public AbstractGenAttUploadHandler getAsynchronousUploadHandler(  )
+    public AbstractGenAttUploadHandler getAsynchronousUploadHandler( )
     {
-        return AnnounceAsynchronousUploadHandler.getHandler(  );
+        return AnnounceAsynchronousUploadHandler.getHandler( );
     }
 
     /**
@@ -228,7 +226,7 @@ public class EntryTypeImage extends AbstractEntryTypeFile
     }
 
     @Override
-    protected boolean checkForImages(  )
+    protected boolean checkForImages( )
     {
         return true;
     }

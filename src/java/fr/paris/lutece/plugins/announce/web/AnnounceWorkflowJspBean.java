@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002-2017, Mairie de Paris
+ * Copyright (c) 2002-2018, Mairie de Paris
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -49,7 +49,6 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
-
 /**
  * Announce workflow JSP Bean
  */
@@ -79,12 +78,12 @@ public class AnnounceWorkflowJspBean extends MVCAdminJspBean
     private static final String ACTION_DO_PROCESS_WORKFLOW_ACTION = "doProcessWorkflowAction";
 
     /**
-     * Get the workflow action form before processing the action. If the action
-     * does not need to display any form, then redirect the user to the workflow
-     * action processing page.
-     * @param request The request
-     * @return The HTML content to display, or the next URL to redirect the user
-     *         to
+     * Get the workflow action form before processing the action. If the action does not need to display any form, then redirect the user to the workflow action
+     * processing page.
+     * 
+     * @param request
+     *            The request
+     * @return The HTML content to display, or the next URL to redirect the user to
      */
     @View( VIEW_WORKFLOW_ACTION_FORM )
     public String getWorkflowActionForm( HttpServletRequest request )
@@ -92,19 +91,18 @@ public class AnnounceWorkflowJspBean extends MVCAdminJspBean
         String strIdAction = request.getParameter( PARAMETER_ID_ACTION );
         String strIdAnnounce = request.getParameter( PARAMETER_ID_ANNOUNCE );
 
-        if ( StringUtils.isNotEmpty( strIdAction ) && StringUtils.isNumeric( strIdAction ) &&
-                StringUtils.isNotEmpty( strIdAnnounce ) && StringUtils.isNumeric( strIdAnnounce ) )
+        if ( StringUtils.isNotEmpty( strIdAction ) && StringUtils.isNumeric( strIdAction ) && StringUtils.isNotEmpty( strIdAnnounce )
+                && StringUtils.isNumeric( strIdAnnounce ) )
         {
             int nIdAction = Integer.parseInt( strIdAction );
             int nIdAnnounce = Integer.parseInt( strIdAnnounce );
 
-            if ( WorkflowService.getInstance(  ).isDisplayTasksForm( nIdAction, getLocale(  ) ) )
+            if ( WorkflowService.getInstance( ).isDisplayTasksForm( nIdAction, getLocale( ) ) )
             {
-                String strHtmlTasksForm = WorkflowService.getInstance(  )
-                                                         .getDisplayTasksForm( nIdAnnounce, Announce.RESOURCE_TYPE,
-                        nIdAction, request, getLocale(  ) );
+                String strHtmlTasksForm = WorkflowService.getInstance( ).getDisplayTasksForm( nIdAnnounce, Announce.RESOURCE_TYPE, nIdAction, request,
+                        getLocale( ) );
 
-                Map<String, Object> model = new HashMap<String, Object>(  );
+                Map<String, Object> model = new HashMap<String, Object>( );
 
                 model.put( MARK_TASKS_FORM, strHtmlTasksForm );
                 model.put( PARAMETER_ID_ACTION, nIdAction );
@@ -116,13 +114,14 @@ public class AnnounceWorkflowJspBean extends MVCAdminJspBean
             return doProcessWorkflowAction( request );
         }
 
-        return redirect( request,
-            AppPathService.getBaseUrl( request ) + AnnounceJspBean.getURLManageAnnounces( request ) );
+        return redirect( request, AppPathService.getBaseUrl( request ) + AnnounceJspBean.getURLManageAnnounces( request ) );
     }
 
     /**
      * Do process a workflow action over an appointment
-     * @param request The request
+     * 
+     * @param request
+     *            The request
      * @return The next URL to redirect to
      */
     @Action( ACTION_DO_PROCESS_WORKFLOW_ACTION )
@@ -131,8 +130,8 @@ public class AnnounceWorkflowJspBean extends MVCAdminJspBean
         String strIdAction = request.getParameter( PARAMETER_ID_ACTION );
         String strIdAnnounce = request.getParameter( PARAMETER_ID_ANNOUNCE );
 
-        if ( StringUtils.isNotEmpty( strIdAction ) && StringUtils.isNumeric( strIdAction ) &&
-                StringUtils.isNotEmpty( strIdAnnounce ) && StringUtils.isNumeric( strIdAnnounce ) )
+        if ( StringUtils.isNotEmpty( strIdAction ) && StringUtils.isNumeric( strIdAction ) && StringUtils.isNotEmpty( strIdAnnounce )
+                && StringUtils.isNumeric( strIdAnnounce ) )
         {
             int nIdAction = Integer.parseInt( strIdAction );
             int nIdAnnounce = Integer.parseInt( strIdAnnounce );
@@ -141,11 +140,10 @@ public class AnnounceWorkflowJspBean extends MVCAdminJspBean
 
             if ( request.getParameter( PARAMETER_BACK ) == null )
             {
-                if ( WorkflowService.getInstance(  ).isDisplayTasksForm( nIdAction, getLocale(  ) ) )
+                if ( WorkflowService.getInstance( ).isDisplayTasksForm( nIdAction, getLocale( ) ) )
                 {
-                    String strError = WorkflowService.getInstance(  )
-                                                     .doSaveTasksForm( nIdAnnounce, Announce.RESOURCE_TYPE, nIdAction,
-                            announce.getCategory(  ).getId(  ), request, getLocale(  ) );
+                    String strError = WorkflowService.getInstance( ).doSaveTasksForm( nIdAnnounce, Announce.RESOURCE_TYPE, nIdAction,
+                            announce.getCategory( ).getId( ), request, getLocale( ) );
 
                     if ( strError != null )
                     {
@@ -153,9 +151,8 @@ public class AnnounceWorkflowJspBean extends MVCAdminJspBean
                     }
                 }
 
-                WorkflowService.getInstance(  )
-                               .doProcessAction( nIdAnnounce, Announce.RESOURCE_TYPE, nIdAction,
-                    announce.getCategory(  ).getId(  ), request, getLocale(  ), false );
+                WorkflowService.getInstance( ).doProcessAction( nIdAnnounce, Announce.RESOURCE_TYPE, nIdAction, announce.getCategory( ).getId( ), request,
+                        getLocale( ), false );
             }
         }
 

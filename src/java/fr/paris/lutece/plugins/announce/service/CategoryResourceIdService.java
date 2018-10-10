@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002-2017, Mairie de Paris
+ * Copyright (c) 2002-2018, Mairie de Paris
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -44,7 +44,6 @@ import fr.paris.lutece.util.ReferenceList;
 
 import java.util.Locale;
 
-
 /**
  *
  * class CategoryResourceIdService
@@ -72,7 +71,7 @@ public class CategoryResourceIdService extends ResourceIdService
     private static final String PROPERTY_LABEL_DELETE = "announce.permission.resourceType.category.delete";
 
     /** Creates a new instance of CategoryResourceIdService */
-    public CategoryResourceIdService(  )
+    public CategoryResourceIdService( )
     {
         setPluginName( AnnouncePlugin.PLUGIN_NAME );
     }
@@ -81,30 +80,30 @@ public class CategoryResourceIdService extends ResourceIdService
      * {@inheritDoc}
      */
     @Override
-    public void register(  )
+    public void register( )
     {
-        ResourceType rt = new ResourceType(  );
-        rt.setResourceIdServiceClass( CategoryResourceIdService.class.getName(  ) );
+        ResourceType rt = new ResourceType( );
+        rt.setResourceIdServiceClass( CategoryResourceIdService.class.getName( ) );
         rt.setPluginName( AnnouncePlugin.PLUGIN_NAME );
         rt.setResourceTypeKey( Category.RESOURCE_TYPE );
         rt.setResourceTypeLabelKey( PROPERTY_LABEL_RESOURCE_TYPE );
 
-        Permission p = new Permission(  );
+        Permission p = new Permission( );
         p.setPermissionKey( PERMISSION_CREATE );
         p.setPermissionTitleKey( PROPERTY_LABEL_CREATE );
         rt.registerPermission( p );
 
-        p = new Permission(  );
+        p = new Permission( );
         p.setPermissionKey( PERMISSION_MODIFY );
         p.setPermissionTitleKey( PROPERTY_LABEL_MODIFY );
         rt.registerPermission( p );
 
-        p = new Permission(  );
+        p = new Permission( );
         p.setPermissionKey( PERMISSION_DELETE );
         p.setPermissionTitleKey( PROPERTY_LABEL_DELETE );
         rt.registerPermission( p );
-        
-        p = new Permission(  );
+
+        p = new Permission( );
         p.setPermissionKey( PERMISSION_COPY );
         p.setPermissionTitleKey( PROPERTY_LABEL_COPY );
         rt.registerPermission( p );
@@ -118,7 +117,7 @@ public class CategoryResourceIdService extends ResourceIdService
     @Override
     public ReferenceList getResourceIdList( Locale locale )
     {
-        return CategoryHome.findCategoriesReferenceList(  );
+        return CategoryHome.findCategoriesReferenceList( );
     }
 
     /**
@@ -133,13 +132,13 @@ public class CategoryResourceIdService extends ResourceIdService
         {
             nIdCategory = Integer.parseInt( strId );
         }
-        catch ( NumberFormatException ne )
+        catch( NumberFormatException ne )
         {
             AppLogService.error( ne );
         }
 
         Category category = CategoryHome.findByPrimaryKey( nIdCategory );
 
-        return category.getLabel(  );
+        return category.getLabel( );
     }
 }

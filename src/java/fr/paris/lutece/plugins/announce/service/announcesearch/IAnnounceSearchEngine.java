@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002-2017, Mairie de Paris
+ * Copyright (c) 2002-2018, Mairie de Paris
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -41,26 +41,27 @@ import fr.paris.lutece.portal.service.search.SearchResult;
 
 import java.util.List;
 
-
 /**
  * SearchEngine
  */
 public interface IAnnounceSearchEngine
 {
     /**
-     * Get list of record key return by the search. Only results of the current
-     * page are returned by this function
-     * @param filter The search filter
-     * @param plugin the plugin
-     * @param listSearchResult The list of search results
-     * @param nPage The number of the current page
-     * @param nItemsPerPage The number of items per page. 0 to ignore the
-     *            pagination
+     * Get list of record key return by the search. Only results of the current page are returned by this function
+     * 
+     * @param filter
+     *            The search filter
+     * @param plugin
+     *            the plugin
+     * @param listSearchResult
+     *            The list of search results
+     * @param nPage
+     *            The number of the current page
+     * @param nItemsPerPage
+     *            The number of items per page. 0 to ignore the pagination
      * @return The total number of results found
      */
-    int getSearchResults( AnnounceSearchFilter filter, Plugin plugin, List<SearchResult> listSearchResult, int nPage,
-        int nItemsPerPage);
-    
-    int getSearchResultsBis( AnnounceSearchFilter filter, Plugin plugin, List<Announce> listSearchResult, int nPage,
-            int nItemsPerPage, AnnounceSort anSort );
+    int getSearchResults( AnnounceSearchFilter filter, Plugin plugin, List<SearchResult> listSearchResult, int nPage, int nItemsPerPage );
+
+    int getSearchResultsBis( AnnounceSearchFilter filter, Plugin plugin, List<Announce> listSearchResult, int nPage, int nItemsPerPage, AnnounceSort anSort );
 }

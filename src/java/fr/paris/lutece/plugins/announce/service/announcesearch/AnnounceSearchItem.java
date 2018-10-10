@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002-2017, Mairie de Paris
+ * Copyright (c) 2002-2018, Mairie de Paris
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -37,7 +37,6 @@ import fr.paris.lutece.portal.service.search.SearchItem;
 
 import org.apache.lucene.document.Document;
 
-
 /**
  * AnnounceSearchItem
  */
@@ -47,9 +46,8 @@ public class AnnounceSearchItem extends SearchItem
      * Category id
      */
     public static final String FIELD_CATEGORY_ID = "category_id";
-    
-	
-	public static final String FIELD_SECTOR_ID = "sector_id";
+
+    public static final String FIELD_SECTOR_ID = "sector_id";
 
     /**
      * Id announce
@@ -72,7 +70,8 @@ public class AnnounceSearchItem extends SearchItem
     /**
      * Constructor
      *
-     * @param document The Lucene {@link Document}
+     * @param document
+     *            The Lucene {@link Document}
      */
     public AnnounceSearchItem( Document document )
     {
@@ -82,16 +81,19 @@ public class AnnounceSearchItem extends SearchItem
 
     /**
      * gets id catgory
+     * 
      * @return the _strSubjectId
      */
-    public String getCategoryId(  )
+    public String getCategoryId( )
     {
         return _strCategoryId;
     }
 
     /**
      * sets id category
-     * @param strCategoryId the _strSubjectId to set
+     * 
+     * @param strCategoryId
+     *            the _strSubjectId to set
      */
     public void setCategoryId( String strCategoryId )
     {

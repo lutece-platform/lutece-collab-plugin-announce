@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002-2017, Mairie de Paris
+ * Copyright (c) 2002-2018, Mairie de Paris
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -41,7 +41,6 @@ import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
 
-
 /**
  * DAO for announce search filters
  */
@@ -60,22 +59,24 @@ public class AnnounceSearchFilterDAO implements IAnnounceSearchFilterDAO
 
     /**
      * Get a new primary key
-     * @param plugin The plugin
+     * 
+     * @param plugin
+     *            The plugin
      * @return the new value of the primary key
      */
     private int getNewPrimaryKey( Plugin plugin )
     {
         DAOUtil daoUtil = new DAOUtil( SQL_QUERY_NEW_PRIMARY_KEY, plugin );
-        daoUtil.executeQuery(  );
+        daoUtil.executeQuery( );
 
         int nRes = 1;
 
-        if ( daoUtil.next(  ) )
+        if ( daoUtil.next( ) )
         {
             nRes = daoUtil.getInt( 1 ) + 1;
         }
 
-        daoUtil.free(  );
+        daoUtil.free( );
 
         return nRes;
     }
@@ -88,16 +89,16 @@ public class AnnounceSearchFilterDAO implements IAnnounceSearchFilterDAO
     {
         DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECT_BY_PRIMARY_KEY, plugin );
         daoUtil.setInt( 1, nIdFilter );
-        daoUtil.executeQuery(  );
+        daoUtil.executeQuery( );
 
         AnnounceSearchFilter filter = null;
 
-        if ( daoUtil.next(  ) )
+        if ( daoUtil.next( ) )
         {
             filter = getFilterFromDAO( daoUtil );
         }
 
-        daoUtil.free(  );
+        daoUtil.free( );
 
         return filter;
     }
@@ -112,17 +113,15 @@ public class AnnounceSearchFilterDAO implements IAnnounceSearchFilterDAO
 
         DAOUtil daoUtil = new DAOUtil( SQL_QUERY_INSERT, plugin );
         int nIndex = 1;
-        daoUtil.setInt( nIndex++, filter.getIdFilter(  ) );
-        daoUtil.setInt( nIndex++, filter.getIdCategory(  ) );
-        daoUtil.setString( nIndex++, filter.getKeywords(  ) );
-        daoUtil.setDate( nIndex++,
-            ( filter.getDateMin(  ) == null ) ? null : new Date( filter.getDateMin(  ).getTime(  ) ) );
-        daoUtil.setDate( nIndex++,
-            ( filter.getDateMax(  ) == null ) ? null : new Date( filter.getDateMax(  ).getTime(  ) ) );
-        daoUtil.setInt( nIndex++, filter.getPriceMin(  ) );
-        daoUtil.setInt( nIndex, filter.getPriceMax(  ) );
-        daoUtil.executeUpdate(  );
-        daoUtil.free(  );
+        daoUtil.setInt( nIndex++, filter.getIdFilter( ) );
+        daoUtil.setInt( nIndex++, filter.getIdCategory( ) );
+        daoUtil.setString( nIndex++, filter.getKeywords( ) );
+        daoUtil.setDate( nIndex++, ( filter.getDateMin( ) == null ) ? null : new Date( filter.getDateMin( ).getTime( ) ) );
+        daoUtil.setDate( nIndex++, ( filter.getDateMax( ) == null ) ? null : new Date( filter.getDateMax( ).getTime( ) ) );
+        daoUtil.setInt( nIndex++, filter.getPriceMin( ) );
+        daoUtil.setInt( nIndex, filter.getPriceMax( ) );
+        daoUtil.executeUpdate( );
+        daoUtil.free( );
     }
 
     /**
@@ -133,16 +132,16 @@ public class AnnounceSearchFilterDAO implements IAnnounceSearchFilterDAO
     {
         DAOUtil daoUtil = new DAOUtil( SQL_QUERY_UPDATE, plugin );
         int nIndex = 1;
-        daoUtil.setInt( nIndex++, filter.getIdCategory(  ) );
-        daoUtil.setString( nIndex++, filter.getKeywords(  ) );
-        daoUtil.setDate( nIndex++, new Date( filter.getDateMin(  ).getTime(  ) ) );
-        daoUtil.setDate( nIndex++, new Date( filter.getDateMax(  ).getTime(  ) ) );
-        daoUtil.setInt( nIndex++, filter.getPriceMin(  ) );
-        daoUtil.setInt( nIndex++, filter.getPriceMax(  ) );
-        daoUtil.setInt( nIndex, filter.getIdFilter(  ) );
+        daoUtil.setInt( nIndex++, filter.getIdCategory( ) );
+        daoUtil.setString( nIndex++, filter.getKeywords( ) );
+        daoUtil.setDate( nIndex++, new Date( filter.getDateMin( ).getTime( ) ) );
+        daoUtil.setDate( nIndex++, new Date( filter.getDateMax( ).getTime( ) ) );
+        daoUtil.setInt( nIndex++, filter.getPriceMin( ) );
+        daoUtil.setInt( nIndex++, filter.getPriceMax( ) );
+        daoUtil.setInt( nIndex, filter.getIdFilter( ) );
 
-        daoUtil.executeUpdate(  );
-        daoUtil.free(  );
+        daoUtil.executeUpdate( );
+        daoUtil.free( );
     }
 
     /**
@@ -153,8 +152,8 @@ public class AnnounceSearchFilterDAO implements IAnnounceSearchFilterDAO
     {
         DAOUtil daoUtil = new DAOUtil( SQL_QUERY_DELETE, plugin );
         daoUtil.setInt( 1, nIdFilter );
-        daoUtil.executeUpdate(  );
-        daoUtil.free(  );
+        daoUtil.executeUpdate( );
+        daoUtil.free( );
     }
 
     /**
@@ -165,8 +164,8 @@ public class AnnounceSearchFilterDAO implements IAnnounceSearchFilterDAO
     {
         DAOUtil daoUtil = new DAOUtil( SQL_QUERY_DELETE_BY_ID_CATEGORY, plugin );
         daoUtil.setInt( 1, nIdCategory );
-        daoUtil.executeUpdate(  );
-        daoUtil.free(  );
+        daoUtil.executeUpdate( );
+        daoUtil.free( );
     }
 
     /**
@@ -176,16 +175,16 @@ public class AnnounceSearchFilterDAO implements IAnnounceSearchFilterDAO
     public List<AnnounceSearchFilter> findAll( Plugin plugin )
     {
         DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECT, plugin );
-        daoUtil.executeQuery(  );
+        daoUtil.executeQuery( );
 
-        List<AnnounceSearchFilter> listFilters = new ArrayList<AnnounceSearchFilter>(  );
+        List<AnnounceSearchFilter> listFilters = new ArrayList<AnnounceSearchFilter>( );
 
-        while ( daoUtil.next(  ) )
+        while ( daoUtil.next( ) )
         {
             listFilters.add( getFilterFromDAO( daoUtil ) );
         }
 
-        daoUtil.free(  );
+        daoUtil.free( );
 
         return listFilters;
     }
@@ -196,7 +195,7 @@ public class AnnounceSearchFilterDAO implements IAnnounceSearchFilterDAO
     @Override
     public List<AnnounceSearchFilter> findByListId( List<Integer> listIdFilters, Plugin plugin )
     {
-        if ( ( listIdFilters == null ) || ( listIdFilters.size(  ) == 0 ) )
+        if ( ( listIdFilters == null ) || ( listIdFilters.size( ) == 0 ) )
         {
             return null;
         }
@@ -216,33 +215,33 @@ public class AnnounceSearchFilterDAO implements IAnnounceSearchFilterDAO
 
         sbSql.append( CONSTANT_CLOSE_PARENTHESIS );
 
-        DAOUtil daoUtil = new DAOUtil( sbSql.toString(  ), plugin );
-        daoUtil.executeQuery(  );
+        DAOUtil daoUtil = new DAOUtil( sbSql.toString( ), plugin );
+        daoUtil.executeQuery( );
 
-        List<AnnounceSearchFilter> listFilters = new ArrayList<AnnounceSearchFilter>(  );
+        List<AnnounceSearchFilter> listFilters = new ArrayList<AnnounceSearchFilter>( );
 
-        while ( daoUtil.next(  ) )
+        while ( daoUtil.next( ) )
         {
             listFilters.add( getFilterFromDAO( daoUtil ) );
         }
 
-        daoUtil.free(  );
+        daoUtil.free( );
 
         return listFilters;
     }
 
     /**
      * Get a filter from a DAOUtil
-     * @param daoUtil The daoUtil to read data from. Note that the daoUtil will
-     *            NOT be freed by this method, and that the call to the
-     *            daoUtil.next( ) must have been done before calling this
-     *            method.
+     * 
+     * @param daoUtil
+     *            The daoUtil to read data from. Note that the daoUtil will NOT be freed by this method, and that the call to the daoUtil.next( ) must have been
+     *            done before calling this method.
      * @return The filter
      */
     private AnnounceSearchFilter getFilterFromDAO( DAOUtil daoUtil )
     {
         int nIndex = 1;
-        AnnounceSearchFilter filter = new AnnounceSearchFilter(  );
+        AnnounceSearchFilter filter = new AnnounceSearchFilter( );
         filter.setIdFilter( daoUtil.getInt( nIndex++ ) );
         filter.setIdCategory( daoUtil.getInt( nIndex++ ) );
         filter.setKeywords( daoUtil.getString( nIndex++ ) );

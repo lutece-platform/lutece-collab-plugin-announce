@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002-2017, Mairie de Paris
+ * Copyright (c) 2002-2018, Mairie de Paris
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -39,7 +39,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-
 /**
  * DTO for announces
  */
@@ -49,54 +48,55 @@ public class AnnounceDTO extends Announce
      * Serial version UID
      */
     private static final long serialVersionUID = -8507335801957930807L;
-    private Map<Integer, List<Response>> _mapResponsesByIdEntry = new HashMap<Integer, List<Response>>(  );
+    private Map<Integer, List<Response>> _mapResponsesByIdEntry = new HashMap<Integer, List<Response>>( );
 
     /**
      * Default constructor
      */
-    public AnnounceDTO(  )
+    public AnnounceDTO( )
     {
         // Do nothing
     }
 
     /**
      * Creates a new announce DTO from an announce
-     * @param announce The announce to read data from
+     * 
+     * @param announce
+     *            The announce to read data from
      */
     public AnnounceDTO( Announce announce )
     {
-        setId( announce.getId(  ) );
-        setCategory( announce.getCategory(  ) );
-        setContactInformation( announce.getContactInformation(  ) );
-        setDateCreation( announce.getDateCreation(  ) );
-        setDescription( announce.getDescription(  ) );
-        setHasPictures( announce.getHasPictures(  ) );
-        setPrice( announce.getPrice(  ) );
-        setPublished( announce.getPublished(  ) );
-        setSuspended( announce.getSuspended(  ) );
-        setSuspendedByUser( announce.getSuspendedByUser(  ) );
-        setTags( announce.getTags(  ) );
-        setListIdImageResponse( announce.getListIdImageResponse(  ) );
-        setTitle( announce.getTitle(  ) );
-        setUserName( announce.getUserName(  ) );
+        setId( announce.getId( ) );
+        setCategory( announce.getCategory( ) );
+        setContactInformation( announce.getContactInformation( ) );
+        setDateCreation( announce.getDateCreation( ) );
+        setDescription( announce.getDescription( ) );
+        setHasPictures( announce.getHasPictures( ) );
+        setPrice( announce.getPrice( ) );
+        setPublished( announce.getPublished( ) );
+        setSuspended( announce.getSuspended( ) );
+        setSuspendedByUser( announce.getSuspendedByUser( ) );
+        setTags( announce.getTags( ) );
+        setListIdImageResponse( announce.getListIdImageResponse( ) );
+        setTitle( announce.getTitle( ) );
+        setUserName( announce.getUserName( ) );
     }
 
     /**
-     * Get the map containing an association between entries of the form and the
-     * id of the associated entry
-     * @return The map containing an association between entries of the form and
-     *         the
-     *         id of the associated entry
+     * Get the map containing an association between entries of the form and the id of the associated entry
+     * 
+     * @return The map containing an association between entries of the form and the id of the associated entry
      */
-    public Map<Integer, List<Response>> getMapResponsesByIdEntry(  )
+    public Map<Integer, List<Response>> getMapResponsesByIdEntry( )
     {
         return _mapResponsesByIdEntry;
     }
 
     /**
-     * Set the map containing an association between entries of the form and the
-     * id of the associated entry
-     * @param mapResponsesByIdEntry The map
+     * Set the map containing an association between entries of the form and the id of the associated entry
+     * 
+     * @param mapResponsesByIdEntry
+     *            The map
      */
     public void setMapResponsesByIdEntry( Map<Integer, List<Response>> mapResponsesByIdEntry )
     {

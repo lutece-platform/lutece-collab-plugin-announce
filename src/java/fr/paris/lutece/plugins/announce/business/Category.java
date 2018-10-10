@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002-2017, Mairie de Paris
+ * Copyright (c) 2002-2018, Mairie de Paris
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -38,7 +38,6 @@ import fr.paris.lutece.portal.service.util.AppLogService;
 
 import java.io.Serializable;
 
-
 /**
  * Business class for category
  */
@@ -54,7 +53,7 @@ public class Category implements RBACResource, Serializable, Cloneable
      */
     private static final long serialVersionUID = -5333528106051789202L;
 
-    /////////////////////////////////////////////////////////////////////////////////
+    // ///////////////////////////////////////////////////////////////////////////////
     // Constants
     private int _nId;
     private int _nIdSector;
@@ -71,16 +70,19 @@ public class Category implements RBACResource, Serializable, Cloneable
 
     /**
      * gets the id of category
+     * 
      * @return the id of category
      */
-    public int getId(  )
+    public int getId( )
     {
         return _nId;
     }
 
     /**
      * sets the id of category
-     * @param nId the id of category
+     * 
+     * @param nId
+     *            the id of category
      */
     public void setId( int nId )
     {
@@ -89,16 +91,19 @@ public class Category implements RBACResource, Serializable, Cloneable
 
     /**
      * gets the id of category sector
+     * 
      * @return the id of category sector
      */
-    public int getIdSector(  )
+    public int getIdSector( )
     {
         return _nIdSector;
     }
 
     /**
      * sets the id of category sector
-     * @param nIdSector the id of category sector
+     * 
+     * @param nIdSector
+     *            the id of category sector
      */
     public void setIdSector( int nIdSector )
     {
@@ -107,16 +112,19 @@ public class Category implements RBACResource, Serializable, Cloneable
 
     /**
      * gets the label
+     * 
      * @return the label
      */
-    public String getLabel(  )
+    public String getLabel( )
     {
         return _strLabel;
     }
 
     /**
      * sets the label
-     * @param strLabel the label
+     * 
+     * @param strLabel
+     *            the label
      */
     public void setLabel( String strLabel )
     {
@@ -125,16 +133,19 @@ public class Category implements RBACResource, Serializable, Cloneable
 
     /**
      * gets the number of announces
+     * 
      * @return the number of announces
      */
-    public int getNumberAnnounces(  )
+    public int getNumberAnnounces( )
     {
         return _nNumberAnnounces;
     }
 
     /**
      * sets the number of announces
-     * @param nNumberAnnounces the number of announces
+     * 
+     * @param nNumberAnnounces
+     *            the number of announces
      */
     public void setNumberAnnounces( int nNumberAnnounces )
     {
@@ -143,17 +154,19 @@ public class Category implements RBACResource, Serializable, Cloneable
 
     /**
      * weather or not the announces must be moderated before publishing
+     * 
      * @return weather or not the announces must be moderated before publishing
      */
-    public int getAnnouncesValidation(  )
+    public int getAnnouncesValidation( )
     {
         return _nAnnouncesValidation;
     }
 
     /**
      * sets weather or not the announces must be moderated before publishing
-     * @param nAnnouncesValidation weather or not the announces must be
-     *            moderated before publishing
+     * 
+     * @param nAnnouncesValidation
+     *            weather or not the announces must be moderated before publishing
      */
     public void setAnnouncesValidation( int nAnnouncesValidation )
     {
@@ -164,33 +177,35 @@ public class Category implements RBACResource, Serializable, Cloneable
      * {@inheritDoc}
      */
     @Override
-    public String getResourceId(  )
+    public String getResourceId( )
     {
-        return Integer.toString( getId(  ) );
+        return Integer.toString( getId( ) );
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public String getResourceTypeCode(  )
+    public String getResourceTypeCode( )
     {
         return RESOURCE_TYPE;
     }
 
     /**
      * weather or not the category must display the price of announce
+     * 
      * @return weather or not the category must display the price of announce
      */
-    public boolean getDisplayPrice(  )
+    public boolean getDisplayPrice( )
     {
         return _bDisplayPrice;
     }
 
     /**
      * sets weather or not the category must display the price of announce
-     * @param displayPrice weather or not the category must display the price of
-     *            announce
+     * 
+     * @param displayPrice
+     *            weather or not the category must display the price of announce
      */
     public void setDisplayPrice( boolean displayPrice )
     {
@@ -199,17 +214,19 @@ public class Category implements RBACResource, Serializable, Cloneable
 
     /**
      * Check if the price attribute is mandatory or not
+     * 
      * @return True if the price attribute is mandatory, false otherwise
      */
-    public boolean getPriceMandatory(  )
+    public boolean getPriceMandatory( )
     {
         return _bPriceMandatory;
     }
 
     /**
      * Set the price attribute mandatory or not
-     * @param bPriceMandatory True if the price attribute is mandatory, false
-     *            otherwise
+     * 
+     * @param bPriceMandatory
+     *            True if the price attribute is mandatory, false otherwise
      */
     public void setPriceMandatory( boolean bPriceMandatory )
     {
@@ -218,17 +235,19 @@ public class Category implements RBACResource, Serializable, Cloneable
 
     /**
      * Get the id of the mailing list associated with this category
+     * 
      * @return The id of the mailing list associated with this category
      */
-    public int getIdMailingList(  )
+    public int getIdMailingList( )
     {
         return _nIdMailingList;
     }
 
     /**
      * Set the id of the mailing list associated with this category
-     * @param nIdMailingList The id of the mailing list associated with this
-     *            category
+     * 
+     * @param nIdMailingList
+     *            The id of the mailing list associated with this category
      */
     public void setIdMailingList( int nIdMailingList )
     {
@@ -237,16 +256,19 @@ public class Category implements RBACResource, Serializable, Cloneable
 
     /**
      * gets the tags of category
+     * 
      * @return gets the tags of category
      */
-    public String getTags(  )
+    public String getTags( )
     {
         return _strTags;
     }
 
     /**
      * sets the Tags of category
-     * @param strTags the Tags of category
+     * 
+     * @param strTags
+     *            the Tags of category
      */
     public void setTags( String strTags )
     {
@@ -256,13 +278,14 @@ public class Category implements RBACResource, Serializable, Cloneable
     /**
      * @return the _strLabelSector
      */
-    public String getLabelSector(  )
+    public String getLabelSector( )
     {
         return _strLabelSector;
     }
 
     /**
-     * @param strLabelSector the _strLabelSector to set
+     * @param strLabelSector
+     *            the _strLabelSector to set
      */
     public void setLabelSector( String strLabelSector )
     {
@@ -271,16 +294,19 @@ public class Category implements RBACResource, Serializable, Cloneable
 
     /**
      * Get the id of the associated workflow
+     * 
      * @return The id of the associated workflow
      */
-    public int getIdWorkflow(  )
+    public int getIdWorkflow( )
     {
         return _nIdWorkflow;
     }
 
     /**
      * Set the id of the associated workflow
-     * @param nIdWorkflow The id of the associated workflow
+     * 
+     * @param nIdWorkflow
+     *            The id of the associated workflow
      */
     public void setIdWorkflow( int nIdWorkflow )
     {
@@ -289,18 +315,19 @@ public class Category implements RBACResource, Serializable, Cloneable
 
     /**
      * Check if a captcha should be displayed when creating an announce
-     * @return True if a captcha should be displayed when creating an announce,
-     *         false otherwise
+     * 
+     * @return True if a captcha should be displayed when creating an announce, false otherwise
      */
-    public boolean getDisplayCaptcha(  )
+    public boolean getDisplayCaptcha( )
     {
         return _bDisplayCaptcha;
     }
 
     /**
      * Set whether a captcha should be displayed when creating an announce
-     * @param bDisplayCaptcha True if a captcha should be displayed when
-     *            creating an announce, false otherwise
+     * 
+     * @param bDisplayCaptcha
+     *            True if a captcha should be displayed when creating an announce, false otherwise
      */
     public void setDisplayCaptcha( boolean bDisplayCaptcha )
     {
@@ -311,15 +338,15 @@ public class Category implements RBACResource, Serializable, Cloneable
      * {@inheritDoc}
      */
     @Override
-    public Object clone(  )
+    public Object clone( )
     {
         try
         {
-            return super.clone(  );
+            return super.clone( );
         }
-        catch ( CloneNotSupportedException e )
+        catch( CloneNotSupportedException e )
         {
-            AppLogService.error( e.getMessage(  ), e );
+            AppLogService.error( e.getMessage( ), e );
         }
 
         return this;

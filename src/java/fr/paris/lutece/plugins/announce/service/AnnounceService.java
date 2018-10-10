@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002-2017, Mairie de Paris
+ * Copyright (c) 2002-2018, Mairie de Paris
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -80,7 +80,6 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
-
 /**
  * Service for announces
  */
@@ -119,23 +118,26 @@ public class AnnounceService implements Serializable
 
     /**
      * Return the HTML code of the form
-     * @param announce The announce the get the HTML form of, or null to get a
-     *            default form for the given category. The list of responses of
-     *            the announce must have been set if the announce is not null.
-     * @param category the category to display the form of
-     * @param locale the locale
-     * @param bDisplayFront True if the entry will be displayed in Front Office,
-     *            false if it will be displayed in Back Office.
-     * @param request HttpServletRequest
+     * 
+     * @param announce
+     *            The announce the get the HTML form of, or null to get a default form for the given category. The list of responses of the announce must have
+     *            been set if the announce is not null.
+     * @param category
+     *            the category to display the form of
+     * @param locale
+     *            the locale
+     * @param bDisplayFront
+     *            True if the entry will be displayed in Front Office, false if it will be displayed in Back Office.
+     * @param request
+     *            HttpServletRequest
      * @return the HTML code of the form
      */
-    public String getHtmlAnnounceForm( Announce announce, Category category, Locale locale, boolean bDisplayFront,
-        HttpServletRequest request )
+    public String getHtmlAnnounceForm( Announce announce, Category category, Locale locale, boolean bDisplayFront, HttpServletRequest request )
     {
-        Map<String, Object> model = new HashMap<String, Object>(  );
-        StringBuffer strBuffer = new StringBuffer(  );
-        EntryFilter filter = new EntryFilter(  );
-        filter.setIdResource( category.getId(  ) );
+        Map<String, Object> model = new HashMap<String, Object>( );
+        StringBuffer strBuffer = new StringBuffer( );
+        EntryFilter filter = new EntryFilter( );
+        filter.setIdResource( category.getId( ) );
         filter.setResourceType( Category.RESOURCE_TYPE );
         filter.setEntryParentNull( EntryFilter.FILTER_TRUE );
         filter.setFieldDependNull( EntryFilter.FILTER_TRUE );
@@ -144,40 +146,37 @@ public class AnnounceService implements Serializable
 
         if ( announce != null )
         {
-            if ( ( announce.getListResponse(  ) == null ) && ( announce.getId(  ) > 0 ) )
+            if ( ( announce.getListResponse( ) == null ) && ( announce.getId( ) > 0 ) )
             {
-                announce.setListResponse( AnnounceHome.findListResponse( announce.getId(  ), true ) );
+                announce.setListResponse( AnnounceHome.findListResponse( announce.getId( ), true ) );
             }
 
             announceDTO = new AnnounceDTO( announce );
 
-            if ( announce.getListResponse(  ) != null )
+            if ( announce.getListResponse( ) != null )
             {
-                for ( Response response : announce.getListResponse(  ) )
+                for ( Response response : announce.getListResponse( ) )
                 {
-                    if ( ( response.getFile(  ) != null ) && ( response.getFile(  ).getIdFile(  ) > 0 ) )
+                    if ( ( response.getFile( ) != null ) && ( response.getFile( ).getIdFile( ) > 0 ) )
                     {
-                        File file = FileHome.findByPrimaryKey( response.getFile(  ).getIdFile(  ) );
-                        PhysicalFile physicalFile = PhysicalFileHome.findByPrimaryKey( file.getPhysicalFile(  )
-                                                                                           .getIdPhysicalFile(  ) );
-                        FileItem fileItem = new GenAttFileItem( physicalFile.getValue(  ), file.getTitle(  ) );
-                        AnnounceAsynchronousUploadHandler.getHandler(  )
-                                                         .addFileItemToUploadedFilesList( fileItem,
-                            IEntryTypeService.PREFIX_ATTRIBUTE +
-                            Integer.toString( response.getEntry(  ).getIdEntry(  ) ), request );
+                        File file = FileHome.findByPrimaryKey( response.getFile( ).getIdFile( ) );
+                        PhysicalFile physicalFile = PhysicalFileHome.findByPrimaryKey( file.getPhysicalFile( ).getIdPhysicalFile( ) );
+                        FileItem fileItem = new GenAttFileItem( physicalFile.getValue( ), file.getTitle( ) );
+                        AnnounceAsynchronousUploadHandler.getHandler( ).addFileItemToUploadedFilesList( fileItem,
+                                IEntryTypeService.PREFIX_ATTRIBUTE + Integer.toString( response.getEntry( ).getIdEntry( ) ), request );
                     }
                 }
 
-                Map<Integer, List<Response>> mapResponsesByIdEntry = announceDTO.getMapResponsesByIdEntry(  );
+                Map<Integer, List<Response>> mapResponsesByIdEntry = announceDTO.getMapResponsesByIdEntry( );
 
-                for ( Response response : announce.getListResponse(  ) )
+                for ( Response response : announce.getListResponse( ) )
                 {
-                    List<Response> listResponse = mapResponsesByIdEntry.get( response.getEntry(  ).getIdEntry(  ) );
+                    List<Response> listResponse = mapResponsesByIdEntry.get( response.getEntry( ).getIdEntry( ) );
 
                     if ( listResponse == null )
                     {
-                        listResponse = new ArrayList<Response>(  );
-                        mapResponsesByIdEntry.put( response.getEntry(  ).getIdEntry(  ), listResponse );
+                        listResponse = new ArrayList<Response>( );
+                        mapResponsesByIdEntry.put( response.getEntry( ).getIdEntry( ), listResponse );
                     }
 
                     listResponse.add( response );
@@ -189,105 +188,103 @@ public class AnnounceService implements Serializable
 
         for ( Entry entry : listEntryFirstLevel )
         {
-            getHtmlEntry( announceDTO, entry.getIdEntry(  ), strBuffer, locale, bDisplayFront, request );
+            getHtmlEntry( announceDTO, entry.getIdEntry( ), strBuffer, locale, bDisplayFront, request );
         }
 
-        Sector sector = SectorHome.findByPrimaryKey( category.getIdSector(  ) );
+        Sector sector = SectorHome.findByPrimaryKey( category.getIdSector( ) );
 
         model.put( MARK_CATEGORY, category );
         model.put( MARK_SECTOR, sector );
-        model.put( MARK_STR_ENTRY, strBuffer.toString(  ) );
+        model.put( MARK_STR_ENTRY, strBuffer.toString( ) );
         model.put( MARK_LOCALE, locale );
 
-        HtmlTemplate template = AppTemplateService.getTemplate( bDisplayFront ? TEMPLATE_HTML_CODE_FORM
-                                                                              : TEMPLATE_HTML_CODE_FORM_ADMIN, locale,
-                model );
+        HtmlTemplate template = AppTemplateService.getTemplate( bDisplayFront ? TEMPLATE_HTML_CODE_FORM : TEMPLATE_HTML_CODE_FORM_ADMIN, locale, model );
 
-        return template.getHtml(  );
+        return template.getHtml( );
     }
 
     /**
      * Insert in the string buffer the content of the HTML code of the entry
-     * @param announce The announce to load current values, or null to use
-     *            default values
-     * @param nIdEntry the key of the entry which HTML code must be insert in
-     *            the stringBuffer
-     * @param stringBuffer the buffer which contains the HTML code
-     * @param locale the locale
-     * @param bDisplayFront True if the entry will be displayed in Front Office,
-     *            false if it will be displayed in Back Office.
-     * @param request HttpServletRequest
+     * 
+     * @param announce
+     *            The announce to load current values, or null to use default values
+     * @param nIdEntry
+     *            the key of the entry which HTML code must be insert in the stringBuffer
+     * @param stringBuffer
+     *            the buffer which contains the HTML code
+     * @param locale
+     *            the locale
+     * @param bDisplayFront
+     *            True if the entry will be displayed in Front Office, false if it will be displayed in Back Office.
+     * @param request
+     *            HttpServletRequest
      */
-    public void getHtmlEntry( AnnounceDTO announce, int nIdEntry, StringBuffer stringBuffer, Locale locale,
-        boolean bDisplayFront, HttpServletRequest request )
+    public void getHtmlEntry( AnnounceDTO announce, int nIdEntry, StringBuffer stringBuffer, Locale locale, boolean bDisplayFront, HttpServletRequest request )
     {
-        Map<String, Object> model = new HashMap<String, Object>(  );
+        Map<String, Object> model = new HashMap<String, Object>( );
         StringBuffer strConditionalQuestionStringBuffer = null;
         HtmlTemplate template;
         Entry entry = EntryHome.findByPrimaryKey( nIdEntry );
 
-        if ( entry.getEntryType(  ).getGroup(  ) )
+        if ( entry.getEntryType( ).getGroup( ) )
         {
-            StringBuffer strGroupStringBuffer = new StringBuffer(  );
+            StringBuffer strGroupStringBuffer = new StringBuffer( );
 
-            for ( Entry entryChild : entry.getChildren(  ) )
+            for ( Entry entryChild : entry.getChildren( ) )
             {
-                getHtmlEntry( announce, entryChild.getIdEntry(  ), strGroupStringBuffer, locale, bDisplayFront, request );
+                getHtmlEntry( announce, entryChild.getIdEntry( ), strGroupStringBuffer, locale, bDisplayFront, request );
             }
 
-            model.put( MARK_STR_LIST_CHILDREN, strGroupStringBuffer.toString(  ) );
+            model.put( MARK_STR_LIST_CHILDREN, strGroupStringBuffer.toString( ) );
         }
         else
         {
-            if ( entry.getNumberConditionalQuestion(  ) != 0 )
+            if ( entry.getNumberConditionalQuestion( ) != 0 )
             {
-                for ( Field field : entry.getFields(  ) )
+                for ( Field field : entry.getFields( ) )
                 {
-                    field.setConditionalQuestions( FieldHome.findByPrimaryKey( field.getIdField(  ) )
-                                                            .getConditionalQuestions(  ) );
+                    field.setConditionalQuestions( FieldHome.findByPrimaryKey( field.getIdField( ) ).getConditionalQuestions( ) );
                 }
             }
         }
 
-        if ( entry.getNumberConditionalQuestion(  ) != 0 )
+        if ( entry.getNumberConditionalQuestion( ) != 0 )
         {
-            strConditionalQuestionStringBuffer = new StringBuffer(  );
+            strConditionalQuestionStringBuffer = new StringBuffer( );
 
-            for ( Field field : entry.getFields(  ) )
+            for ( Field field : entry.getFields( ) )
             {
-                if ( field.getConditionalQuestions(  ).size(  ) != 0 )
+                if ( field.getConditionalQuestions( ).size( ) != 0 )
                 {
-                    StringBuffer strGroupStringBuffer = new StringBuffer(  );
+                    StringBuffer strGroupStringBuffer = new StringBuffer( );
 
-                    for ( Entry entryConditional : field.getConditionalQuestions(  ) )
+                    for ( Entry entryConditional : field.getConditionalQuestions( ) )
                     {
-                        getHtmlEntry( announce, entryConditional.getIdEntry(  ), strGroupStringBuffer, locale,
-                            bDisplayFront, request );
+                        getHtmlEntry( announce, entryConditional.getIdEntry( ), strGroupStringBuffer, locale, bDisplayFront, request );
                     }
 
-                    model.put( MARK_STR_LIST_CHILDREN, strGroupStringBuffer.toString(  ) );
+                    model.put( MARK_STR_LIST_CHILDREN, strGroupStringBuffer.toString( ) );
                     model.put( MARK_FIELD, field );
                     template = AppTemplateService.getTemplate( TEMPLATE_DIV_CONDITIONAL_ENTRY, locale, model );
-                    strConditionalQuestionStringBuffer.append( template.getHtml(  ) );
+                    strConditionalQuestionStringBuffer.append( template.getHtml( ) );
                 }
             }
 
-            model.put( MARK_STR_LIST_CHILDREN, strConditionalQuestionStringBuffer.toString(  ) );
+            model.put( MARK_STR_LIST_CHILDREN, strConditionalQuestionStringBuffer.toString( ) );
         }
 
         model.put( MARK_ENTRY, entry );
         model.put( MARK_LOCALE, locale );
 
-        LuteceUser user = SecurityService.getInstance(  ).getRegisteredUser( request );
+        LuteceUser user = SecurityService.getInstance( ).getRegisteredUser( request );
 
-        if ( ( user == null ) && SecurityService.isAuthenticationEnable(  ) &&
-                SecurityService.getInstance(  ).isExternalAuthentication(  ) )
+        if ( ( user == null ) && SecurityService.isAuthenticationEnable( ) && SecurityService.getInstance( ).isExternalAuthentication( ) )
         {
             try
             {
-                user = SecurityService.getInstance(  ).getRemoteUser( request );
+                user = SecurityService.getInstance( ).getRemoteUser( request );
             }
-            catch ( UserNotSignedException e )
+            catch( UserNotSignedException e )
             {
                 // Nothing to do : lutece user is not mandatory
             }
@@ -295,161 +292,170 @@ public class AnnounceService implements Serializable
 
         model.put( MARK_USER, user );
 
-        if ( ( announce != null ) && ( announce.getMapResponsesByIdEntry(  ) != null ) )
+        if ( ( announce != null ) && ( announce.getMapResponsesByIdEntry( ) != null ) )
         {
-            List<Response> listResponses = announce.getMapResponsesByIdEntry(  ).get( entry.getIdEntry(  ) );
-           if( listResponses != null ){
-        	   
-	            for ( Response response : listResponses ){
-	            
-	            	for ( Field filed: entry.getFields( ) ){
-	            	
-	            		if( response.getField( ) != null && filed.getIdField ( ) == response.getField( ).getIdField( ) )
-	            		
-	            			response.setField( filed );
-	            	}
-	            }
-           }
-            
+            List<Response> listResponses = announce.getMapResponsesByIdEntry( ).get( entry.getIdEntry( ) );
+            if ( listResponses != null )
+            {
+
+                for ( Response response : listResponses )
+                {
+
+                    for ( Field filed : entry.getFields( ) )
+                    {
+
+                        if ( response.getField( ) != null && filed.getIdField( ) == response.getField( ).getIdField( ) )
+
+                            response.setField( filed );
+                    }
+                }
+            }
+
             model.put( MARK_LIST_RESPONSES, listResponses );
         }
 
         IEntryTypeService entryTypeService = EntryTypeServiceManager.getEntryTypeService( entry );
 
-        // If the entry type is a file, we add the 
+        // If the entry type is a file, we add the
         if ( entryTypeService instanceof AbstractEntryTypeUpload )
         {
-            model.put( MARK_UPLOAD_HANDLER,
-                ( (AbstractEntryTypeUpload) entryTypeService ).getAsynchronousUploadHandler(  ) );
+            model.put( MARK_UPLOAD_HANDLER, ( (AbstractEntryTypeUpload) entryTypeService ).getAsynchronousUploadHandler( ) );
         }
 
-        template = AppTemplateService.getTemplate( EntryTypeServiceManager.getEntryTypeService( entry )
-                                                                          .getTemplateHtmlForm( entry, bDisplayFront ),
-                locale, model );
-        stringBuffer.append( template.getHtml(  ) );
+        template = AppTemplateService.getTemplate( EntryTypeServiceManager.getEntryTypeService( entry ).getTemplateHtmlForm( entry, bDisplayFront ), locale,
+                model );
+        stringBuffer.append( template.getHtml( ) );
     }
 
     /**
      * Get the responses associated with an entry.<br />
-     * Return null if there is no error in the response, or return the list of
-     * errors
-     * Response created are stored the map of {@link AnnounceDTO}. The key of
-     * the map is this id of the entry, and the value the list of responses
-     * @param request the request
-     * @param nIdEntry the key of the entry
-     * @param locale the locale
-     * @param announce The announce
-     * @return null if there is no error in the response or the list of errors
-     *         found
+     * Return null if there is no error in the response, or return the list of errors Response created are stored the map of {@link AnnounceDTO}. The key of the
+     * map is this id of the entry, and the value the list of responses
+     * 
+     * @param request
+     *            the request
+     * @param nIdEntry
+     *            the key of the entry
+     * @param locale
+     *            the locale
+     * @param announce
+     *            The announce
+     * @return null if there is no error in the response or the list of errors found
      */
-    public List<GenericAttributeError> getResponseEntry( HttpServletRequest request, int nIdEntry, Locale locale,
-        AnnounceDTO announce )
+    public List<GenericAttributeError> getResponseEntry( HttpServletRequest request, int nIdEntry, Locale locale, AnnounceDTO announce )
     {
-        List<Response> listResponse = new ArrayList<Response>(  );
-        announce.getMapResponsesByIdEntry(  ).put( nIdEntry, listResponse );
+        List<Response> listResponse = new ArrayList<Response>( );
+        announce.getMapResponsesByIdEntry( ).put( nIdEntry, listResponse );
 
         return getResponseEntry( request, nIdEntry, listResponse, false, locale, announce );
     }
 
     /**
      * Get the responses associated with an entry.<br />
-     * Return null if there is no error in the response, or return the list of
-     * errors
-     * @param request the request
-     * @param nIdEntry the key of the entry
-     * @param listResponse The list of response to add responses found in
-     * @param bResponseNull true if the response created must be null
-     * @param locale the locale
-     * @param announce The announce
-     * @return null if there is no error in the response or the list of errors
-     *         found
+     * Return null if there is no error in the response, or return the list of errors
+     * 
+     * @param request
+     *            the request
+     * @param nIdEntry
+     *            the key of the entry
+     * @param listResponse
+     *            The list of response to add responses found in
+     * @param bResponseNull
+     *            true if the response created must be null
+     * @param locale
+     *            the locale
+     * @param announce
+     *            The announce
+     * @return null if there is no error in the response or the list of errors found
      */
-    private List<GenericAttributeError> getResponseEntry( HttpServletRequest request, int nIdEntry,
-        List<Response> listResponse, boolean bResponseNull, Locale locale, AnnounceDTO announce )
+    private List<GenericAttributeError> getResponseEntry( HttpServletRequest request, int nIdEntry, List<Response> listResponse, boolean bResponseNull,
+            Locale locale, AnnounceDTO announce )
     {
-        List<GenericAttributeError> listFormErrors = new ArrayList<GenericAttributeError>(  );
+        List<GenericAttributeError> listFormErrors = new ArrayList<GenericAttributeError>( );
         Entry entry = EntryHome.findByPrimaryKey( nIdEntry );
 
-        List<Field> listField = new ArrayList<Field>(  );
+        List<Field> listField = new ArrayList<Field>( );
 
-        for ( Field field : entry.getFields(  ) )
+        for ( Field field : entry.getFields( ) )
         {
-            field = FieldHome.findByPrimaryKey( field.getIdField(  ) );
+            field = FieldHome.findByPrimaryKey( field.getIdField( ) );
             listField.add( field );
         }
 
         entry.setFields( listField );
 
-        if ( entry.getEntryType(  ).getGroup(  ) )
+        if ( entry.getEntryType( ).getGroup( ) )
         {
-            for ( Entry entryChild : entry.getChildren(  ) )
+            for ( Entry entryChild : entry.getChildren( ) )
             {
-                List<Response> listResponseChild = new ArrayList<Response>(  );
-                announce.getMapResponsesByIdEntry(  ).put( entryChild.getIdEntry(  ), listResponseChild );
+                List<Response> listResponseChild = new ArrayList<Response>( );
+                announce.getMapResponsesByIdEntry( ).put( entryChild.getIdEntry( ), listResponseChild );
 
-                listFormErrors.addAll( getResponseEntry( request, entryChild.getIdEntry(  ), listResponseChild, false,
-                        locale, announce ) );
+                listFormErrors.addAll( getResponseEntry( request, entryChild.getIdEntry( ), listResponseChild, false, locale, announce ) );
             }
         }
-        else if ( !entry.getEntryType(  ).getComment(  ) )
-        {
-            GenericAttributeError formError = null;
-
-            if ( !bResponseNull )
+        else
+            if ( !entry.getEntryType( ).getComment( ) )
             {
-                formError = EntryTypeServiceManager.getEntryTypeService( entry )
-                                                   .getResponseData( entry, request, listResponse, locale );
+                GenericAttributeError formError = null;
+
+                if ( !bResponseNull )
+                {
+                    formError = EntryTypeServiceManager.getEntryTypeService( entry ).getResponseData( entry, request, listResponse, locale );
+
+                    if ( formError != null )
+                    {
+                        formError.setUrl( getEntryUrl( entry ) );
+                    }
+                }
+                else
+                {
+                    Response response = new Response( );
+                    response.setEntry( entry );
+                    listResponse.add( response );
+                }
 
                 if ( formError != null )
                 {
-                    formError.setUrl( getEntryUrl( entry ) );
+                    entry.setError( formError );
+                    listFormErrors.add( formError );
                 }
-            }
-            else
-            {
-                Response response = new Response(  );
-                response.setEntry( entry );
-                listResponse.add( response );
-            }
 
-            if ( formError != null )
-            {
-                entry.setError( formError );
-                listFormErrors.add( formError );
-            }
-
-            if ( entry.getNumberConditionalQuestion(  ) != 0 )
-            {
-                for ( Field field : entry.getFields(  ) )
+                if ( entry.getNumberConditionalQuestion( ) != 0 )
                 {
-                    boolean bIsFieldInResponseList = isFieldInTheResponseList( field.getIdField(  ), listResponse );
-
-                    for ( Entry conditionalEntry : field.getConditionalQuestions(  ) )
+                    for ( Field field : entry.getFields( ) )
                     {
-                        List<Response> listResponseChild = new ArrayList<Response>(  );
-                        announce.getMapResponsesByIdEntry(  ).put( conditionalEntry.getIdEntry(  ), listResponseChild );
+                        boolean bIsFieldInResponseList = isFieldInTheResponseList( field.getIdField( ), listResponse );
 
-                        listFormErrors.addAll( getResponseEntry( request, conditionalEntry.getIdEntry(  ),
-                                listResponseChild, !bIsFieldInResponseList, locale, announce ) );
+                        for ( Entry conditionalEntry : field.getConditionalQuestions( ) )
+                        {
+                            List<Response> listResponseChild = new ArrayList<Response>( );
+                            announce.getMapResponsesByIdEntry( ).put( conditionalEntry.getIdEntry( ), listResponseChild );
+
+                            listFormErrors.addAll( getResponseEntry( request, conditionalEntry.getIdEntry( ), listResponseChild, !bIsFieldInResponseList,
+                                    locale, announce ) );
+                        }
                     }
                 }
             }
-        }
 
         return listFormErrors;
     }
 
     /**
      * Check if a field is in a response list
-     * @param nIdField the id of the field to search
-     * @param listResponse the list of responses
+     * 
+     * @param nIdField
+     *            the id of the field to search
+     * @param listResponse
+     *            the list of responses
      * @return true if the field is in the response list, false otherwise
      */
     public Boolean isFieldInTheResponseList( int nIdField, List<Response> listResponse )
     {
         for ( Response response : listResponse )
         {
-            if ( ( response.getField(  ) != null ) && ( response.getField(  ).getIdField(  ) == nIdField ) )
+            if ( ( response.getField( ) != null ) && ( response.getField( ).getIdField( ) == nIdField ) )
             {
                 return true;
             }
@@ -460,34 +466,37 @@ public class AnnounceService implements Serializable
 
     /**
      * Get the URL to modify an entry of the form in front office
-     * @param entry the entry
+     * 
+     * @param entry
+     *            the entry
      * @return The URL to modify the entry in front office
      */
     public String getEntryUrl( Entry entry )
     {
-        UrlItem url = new UrlItem( AppPathService.getPortalUrl(  ) );
+        UrlItem url = new UrlItem( AppPathService.getPortalUrl( ) );
         url.addParameter( XPageAppService.PARAM_XPAGE_APP, AnnouncePlugin.PLUGIN_NAME );
         url.addParameter( MVCUtils.PARAMETER_VIEW, VIEW_GET_FORM );
 
-        if ( ( entry != null ) && ( entry.getIdResource(  ) > 0 ) )
+        if ( ( entry != null ) && ( entry.getIdResource( ) > 0 ) )
         {
-            url.addParameter( PARAMETER_ID_CATEGORY, entry.getIdResource(  ) );
-            url.setAnchor( PREFIX_ATTRIBUTE + entry.getIdEntry(  ) );
+            url.addParameter( PARAMETER_ID_CATEGORY, entry.getIdResource( ) );
+            url.setAnchor( PREFIX_ATTRIBUTE + entry.getIdEntry( ) );
         }
 
-        return url.getUrl(  );
+        return url.getUrl( );
     }
 
     /**
-     * Convert an AppointmentDTO to an Appointment by transferring response from
-     * the map of class AppointmentDTO to the list of class Appointment.
-     * @param announce The announce to get the map to convert
+     * Convert an AppointmentDTO to an Appointment by transferring response from the map of class AppointmentDTO to the list of class Appointment.
+     * 
+     * @param announce
+     *            The announce to get the map to convert
      */
     public void convertMapResponseToList( AnnounceDTO announce )
     {
-        List<Response> listResponse = new ArrayList<Response>(  );
+        List<Response> listResponse = new ArrayList<Response>( );
 
-        for ( List<Response> listResponseByEntry : announce.getMapResponsesByIdEntry(  ).values(  ) )
+        for ( List<Response> listResponseByEntry : announce.getMapResponsesByIdEntry( ).values( ) )
         {
             listResponse.addAll( listResponseByEntry );
         }
@@ -498,9 +507,10 @@ public class AnnounceService implements Serializable
 
     /**
      * Get the date format to use
+     * 
      * @return The date format to use
      */
-    public static DateFormat getDateFormat(  )
+    public static DateFormat getDateFormat( )
     {
         DateFormat dateFormat = new SimpleDateFormat( PATTERN_DATE, Locale.FRENCH );
         dateFormat.setLenient( false );

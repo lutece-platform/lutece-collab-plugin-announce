@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002-2017, Mairie de Paris
+ * Copyright (c) 2002-2018, Mairie de Paris
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -39,7 +39,6 @@ import java.sql.Timestamp;
 
 import java.util.List;
 
-
 /**
  * IAnnounceDAO Interface
  */
@@ -47,114 +46,159 @@ public interface IAnnounceDAO
 {
     /**
      * Insert a new record in the table.
-     * @param announce instance of the Announce object to insert
-     * @param plugin the Plugin
+     * 
+     * @param announce
+     *            instance of the Announce object to insert
+     * @param plugin
+     *            the Plugin
      */
     void insert( Announce announce, Plugin plugin );
 
     /**
      * Update the record in the table
-     * @param announce the reference of the Announce
-     * @param plugin the Plugin
+     * 
+     * @param announce
+     *            the reference of the Announce
+     * @param plugin
+     *            the Plugin
      */
     void store( Announce announce, Plugin plugin );
 
     /**
      * Delete a record from the table
-     * @param nIdAnnounce int identifier of the Announce to delete
-     * @param plugin the Plugin
+     * 
+     * @param nIdAnnounce
+     *            int identifier of the Announce to delete
+     * @param plugin
+     *            the Plugin
      */
     void delete( int nIdAnnounce, Plugin plugin );
 
-    ///////////////////////////////////////////////////////////////////////////
+    // /////////////////////////////////////////////////////////////////////////
     // Finders
 
     /**
      * Load the data from the table
+     * 
      * @return The instance of the announce
-     * @param nKey the primary key
-     * @param plugin the Plugin
+     * @param nKey
+     *            the primary key
+     * @param plugin
+     *            the Plugin
      */
     Announce load( int nKey, Plugin plugin );
 
     /**
      * Load the data of all the announce objects and returns them as a List
-     * @param announceSort the sort to use
-     * @param plugin the Plugin
+     * 
+     * @param announceSort
+     *            the sort to use
+     * @param plugin
+     *            the Plugin
      * @return The List which contains the data of all the announce objects
      */
     List<Integer> selectAll( AnnounceSort announceSort, Plugin plugin );
 
     /**
      * selects id of published announces
-     * @param announceSort the sort to use
-     * @param plugin the plugin
+     * 
+     * @param announceSort
+     *            the sort to use
+     * @param plugin
+     *            the plugin
      * @return id of published announces
      */
     List<Integer> selectAllPublishedId( AnnounceSort announceSort, Plugin plugin );
 
     /**
      * selects all the published announces
-     * @param announceSort the sort to use
-     * @param plugin the plugin
+     * 
+     * @param announceSort
+     *            the sort to use
+     * @param plugin
+     *            the plugin
      * @return announces list
      */
     List<Announce> selectAllPublished( AnnounceSort announceSort, Plugin plugin );
 
     /**
      * Get the list of announces from a list of ids
-     * @param announceSort the sort to use
-     * @param listIdAnnounces The list of ids of announces to get
-     * @param plugin The plugin
+     * 
+     * @param announceSort
+     *            the sort to use
+     * @param listIdAnnounces
+     *            The list of ids of announces to get
+     * @param plugin
+     *            The plugin
      * @return The list of announces
      */
     List<Announce> findByListId( List<Integer> listIdAnnounces, AnnounceSort announceSort, Plugin plugin );
-    
+
     /**
      * selects all published announces for a given category
-     * @param announceSort the sort to use
-     * @param category announces list
-     * @param plugin the plugin
+     * 
+     * @param announceSort
+     *            the sort to use
+     * @param category
+     *            announces list
+     * @param plugin
+     *            the plugin
      * @return announces list
      */
     List<Integer> selectAllPublishedForCategory( Category category, AnnounceSort announceSort, Plugin plugin );
 
     /**
      * selects all announces for a given user
-     * @param announceSort the sort to use
-     * @param strUsername the username
-     * @param plugin the plugin
+     * 
+     * @param announceSort
+     *            the sort to use
+     * @param strUsername
+     *            the username
+     * @param plugin
+     *            the plugin
      * @return all announces for a given user
      */
     List<Announce> selectAllForUser( String strUsername, AnnounceSort announceSort, Plugin plugin );
 
     /**
      * publish or unpublish an announce
-     * @param announce the announce
-     * @param plugin the plugin
+     * 
+     * @param announce
+     *            the announce
+     * @param plugin
+     *            the plugin
      */
     void setPublished( Announce announce, Plugin plugin );
-    
+
     void setHasNotifed( Announce announce, Plugin plugin );
 
     /**
      * suspend or enable an announce
-     * @param announce the announce
-     * @param plugin the plugin
+     * 
+     * @param announce
+     *            the announce
+     * @param plugin
+     *            the plugin
      */
     void setSuspended( Announce announce, Plugin plugin );
 
     /**
      * suspend or enable an announce
-     * @param announce the announce
-     * @param plugin the plugin
+     * 
+     * @param announce
+     *            the announce
+     * @param plugin
+     *            the plugin
      */
     void setSuspendedByUser( Announce announce, Plugin plugin );
 
     /**
      * Get the list of ids of announces that was created before the given date
-     * @param timestamp The timestamp
-     * @param plugin The plugin
+     * 
+     * @param timestamp
+     *            The timestamp
+     * @param plugin
+     *            The plugin
      * @return The list of ids
      */
     List<Integer> findIdAnnouncesByDateCreation( Timestamp timestamp, Plugin plugin );
@@ -165,49 +209,68 @@ public interface IAnnounceDAO
 
     /**
      * Associates a response to an Announce
-     * @param nIdAnnounce The id of the Announce
-     * @param nIdResponse The id of the response
-     * @param bIsImage True if the response is an image, false otherwise
-     * @param plugin The plugin
+     * 
+     * @param nIdAnnounce
+     *            The id of the Announce
+     * @param nIdResponse
+     *            The id of the response
+     * @param bIsImage
+     *            True if the response is an image, false otherwise
+     * @param plugin
+     *            The plugin
      */
     void insertAnnounceResponse( int nIdAnnounce, int nIdResponse, boolean bIsImage, Plugin plugin );
 
     /**
      * Get the list of id of responses associated with an announce
-     * @param nIdAnnounce the id of the announce
-     * @param plugin the plugin
+     * 
+     * @param nIdAnnounce
+     *            the id of the announce
+     * @param plugin
+     *            the plugin
      * @return the list of responses, or an empty list if no response was found
      */
     List<Integer> findListIdResponse( int nIdAnnounce, Plugin plugin );
 
     /**
      * Get the list of id of image responses associated with an announce
-     * @param nIdAnnounce the id of the announce
-     * @param plugin the plugin
+     * 
+     * @param nIdAnnounce
+     *            the id of the announce
+     * @param plugin
+     *            the plugin
      * @return the list of responses, or an empty list if no response was found
      */
     List<Integer> findListIdImageResponse( int nIdAnnounce, Plugin plugin );
 
     /**
      * Remove the association between an announce and responses
-     * @param nIdAnnounce The id of the announce
-     * @param plugin The plugin
+     * 
+     * @param nIdAnnounce
+     *            The id of the announce
+     * @param plugin
+     *            The plugin
      */
     void deleteAnnounceResponse( int nIdAnnounce, Plugin plugin );
 
     /**
      * Get the list of ids of announces that were created after a given time
-     * @param lMinPublicationTime The minimum publication time of announces to
-     *            get
-     * @param plugin The plugin
+     * 
+     * @param lMinPublicationTime
+     *            The minimum publication time of announces to get
+     * @param plugin
+     *            The plugin
      * @return The list of ids of announces
      */
     List<Integer> findIdAnnouncesByDatePublication( long lMinPublicationTime, Plugin plugin );
-    
+
     /**
      * Get the announce id from its image response id
-     * @param nIdResponse the id of the response
-     * @param plugin the plugin
+     * 
+     * @param nIdResponse
+     *            the id of the response
+     * @param plugin
+     *            the plugin
      * @return The announce id, or null if there no anncounce has this response as an image
      */
     Integer findIdByImageResponse( int nIdResponse, Plugin plugin );

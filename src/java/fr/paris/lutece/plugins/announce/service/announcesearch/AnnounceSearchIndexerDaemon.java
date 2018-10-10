@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002-2017, Mairie de Paris
+ * Copyright (c) 2002-2018, Mairie de Paris
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -36,21 +36,20 @@ package fr.paris.lutece.plugins.announce.service.announcesearch;
 import fr.paris.lutece.portal.service.daemon.Daemon;
 import fr.paris.lutece.portal.service.util.AppPropertiesService;
 
-
-
 /**
  * AnnounceSearchIndexerDaemon
  */
 public class AnnounceSearchIndexerDaemon extends Daemon
 {
-    private static final String PROPERTY_INDEXER_PARAM_TOTAL = "announce.indexer.total";   
+    private static final String PROPERTY_INDEXER_PARAM_TOTAL = "announce.indexer.total";
+
     /**
      * {@inheritDoc}
      */
     @Override
-    public void run(  )
+    public void run( )
     {
-        boolean bTotalIndexing = Boolean.valueOf( AppPropertiesService.getProperty( PROPERTY_INDEXER_PARAM_TOTAL, "true" ) );    
-        setLastRunLogs( AnnounceSearchService.getInstance(  ).processIndexing( bTotalIndexing ) );
+        boolean bTotalIndexing = Boolean.valueOf( AppPropertiesService.getProperty( PROPERTY_INDEXER_PARAM_TOTAL, "true" ) );
+        setLastRunLogs( AnnounceSearchService.getInstance( ).processIndexing( bTotalIndexing ) );
     }
 }

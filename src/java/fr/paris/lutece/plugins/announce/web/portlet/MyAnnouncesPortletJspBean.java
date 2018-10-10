@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002-2017, Mairie de Paris
+ * Copyright (c) 2002-2018, Mairie de Paris
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -41,7 +41,6 @@ import fr.paris.lutece.util.html.HtmlTemplate;
 
 import javax.servlet.http.HttpServletRequest;
 
-
 /**
  * This class provides the user interface to manage MyAnnouncesPortlet features
  */
@@ -62,7 +61,7 @@ public class MyAnnouncesPortletJspBean extends PortletJspBean
         String strPortletTypeId = request.getParameter( PARAMETER_PORTLET_TYPE_ID );
         HtmlTemplate template = getCreateTemplate( strPageId, strPortletTypeId );
 
-        return template.getHtml(  );
+        return template.getHtml( );
     }
 
     /**
@@ -76,7 +75,7 @@ public class MyAnnouncesPortletJspBean extends PortletJspBean
         MyAnnouncesPortlet portlet = (MyAnnouncesPortlet) PortletHome.findByPrimaryKey( nPortletId );
         HtmlTemplate template = getModifyTemplate( portlet );
 
-        return template.getHtml(  );
+        return template.getHtml( );
     }
 
     /**
@@ -85,7 +84,7 @@ public class MyAnnouncesPortletJspBean extends PortletJspBean
     @Override
     public String doCreate( HttpServletRequest request )
     {
-        MyAnnouncesPortlet portlet = new MyAnnouncesPortlet(  );
+        MyAnnouncesPortlet portlet = new MyAnnouncesPortlet( );
 
         // recovers portlet specific attributes
         String strPageId = request.getParameter( PARAMETER_PAGE_ID );
@@ -102,9 +101,9 @@ public class MyAnnouncesPortletJspBean extends PortletJspBean
         portlet.setPageId( nPageId );
 
         // Creates the portlet
-        MyAnnouncesPortletHome.getInstance(  ).create( portlet );
+        MyAnnouncesPortletHome.getInstance( ).create( portlet );
 
-        //Displays the page with the new Portlet
+        // Displays the page with the new Portlet
         return "../" + getPageUrl( nPageId );
     }
 
@@ -128,9 +127,9 @@ public class MyAnnouncesPortletJspBean extends PortletJspBean
         }
 
         // updates the portlet
-        portlet.update(  );
+        portlet.update( );
 
         // displays the page with the updated portlet
-        return "../" + getPageUrl( portlet.getPageId(  ) );
+        return "../" + getPageUrl( portlet.getPageId( ) );
     }
 }

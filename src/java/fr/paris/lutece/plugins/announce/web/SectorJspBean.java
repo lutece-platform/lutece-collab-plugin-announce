@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002-2017, Mairie de Paris
+ * Copyright (c) 2002-2018, Mairie de Paris
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -61,10 +61,8 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
-
 /**
- * This class provides the user interface to manage sector features ( manage,
- * create, modify, remove )
+ * This class provides the user interface to manage sector features ( manage, create, modify, remove )
  */
 public class SectorJspBean extends PluginAdminPageJspBean
 {
@@ -123,13 +121,13 @@ public class SectorJspBean extends PluginAdminPageJspBean
      * {@inheritDoc}
      */
     @Override
-    public Plugin getPlugin(  )
+    public Plugin getPlugin( )
     {
-        Plugin plugin = super.getPlugin(  );
+        Plugin plugin = super.getPlugin( );
 
         if ( plugin == null )
         {
-            plugin = AnnounceUtils.getPlugin(  );
+            plugin = AnnounceUtils.getPlugin( );
         }
 
         return plugin;
@@ -138,7 +136,8 @@ public class SectorJspBean extends PluginAdminPageJspBean
     /**
      * Returns the list of sector
      *
-     * @param request The Http request
+     * @param request
+     *            The Http request
      * @return the sectors list
      */
     public String getManageSectors( HttpServletRequest request )
@@ -147,69 +146,68 @@ public class SectorJspBean extends PluginAdminPageJspBean
 
         _strCurrentPageIndex = Paginator.getPageIndex( request, Paginator.PARAMETER_PAGE_INDEX, _strCurrentPageIndex );
         _nDefaultItemsPerPage = AppPropertiesService.getPropertyInt( PROPERTY_DEFAULT_LIST_FIELD_PER_PAGE, 50 );
-        _nItemsPerPage = Paginator.getItemsPerPage( request, Paginator.PARAMETER_ITEMS_PER_PAGE, _nItemsPerPage,
-                _nDefaultItemsPerPage );
+        _nItemsPerPage = Paginator.getItemsPerPage( request, Paginator.PARAMETER_ITEMS_PER_PAGE, _nItemsPerPage, _nDefaultItemsPerPage );
 
-        Collection<Sector> listSectors = SectorHome.findAll(  );
+        Collection<Sector> listSectors = SectorHome.findAll( );
 
-        //listSectors = AdminWorkgroupService.getAuthorizedCollection( listSectors, getUser(  ) );
-        Paginator<Sector> paginator = new Paginator<Sector>( (List<Sector>) listSectors, _nItemsPerPage,
-                getUrlPage(  ), PARAMETER_PAGE_INDEX, _strCurrentPageIndex );
+        // listSectors = AdminWorkgroupService.getAuthorizedCollection( listSectors, getUser( ) );
+        Paginator<Sector> paginator = new Paginator<Sector>( (List<Sector>) listSectors, _nItemsPerPage, getUrlPage( ), PARAMETER_PAGE_INDEX,
+                _strCurrentPageIndex );
 
-        Map<String, Object> model = new HashMap<String, Object>(  );
+        Map<String, Object> model = new HashMap<String, Object>( );
 
         model.put( MARK_NB_ITEMS_PER_PAGE, "" + _nItemsPerPage );
         model.put( MARK_PAGINATOR, paginator );
-        model.put( MARK_LIST_FIELDS, paginator.getPageItems(  ) );
-        model.put( MARK_FIELD_ORDER_LIST, getSectorOrderList(  ) );
+        model.put( MARK_LIST_FIELDS, paginator.getPageItems( ) );
+        model.put( MARK_FIELD_ORDER_LIST, getSectorOrderList( ) );
 
-        HtmlTemplate templateList = AppTemplateService.getTemplate( TEMPLATE_MANAGE_FIELDS, getLocale(  ), model );
+        HtmlTemplate templateList = AppTemplateService.getTemplate( TEMPLATE_MANAGE_FIELDS, getLocale( ), model );
 
-        return getAdminPage( templateList.getHtml(  ) );
+        return getAdminPage( templateList.getHtml( ) );
     }
 
     /**
      * Returns the form to create a sector
+     * 
      * @return the html code of the sector form
-     * @param request The Http request
-     * @throws fr.paris.lutece.portal.service.admin.AccessDeniedException access
-     *             denied exception
+     * @param request
+     *            The Http request
+     * @throws fr.paris.lutece.portal.service.admin.AccessDeniedException
+     *             access denied exception
      */
-    public String getCreateSector( HttpServletRequest request )
-        throws AccessDeniedException
+    public String getCreateSector( HttpServletRequest request ) throws AccessDeniedException
     {
-        if ( !RBACService.isAuthorized( Sector.RESOURCE_TYPE, RBAC.WILDCARD_RESOURCES_ID,
-                    SectorResourceIdService.PERMISSION_CREATE, getUser(  ) ) )
+        if ( !RBACService.isAuthorized( Sector.RESOURCE_TYPE, RBAC.WILDCARD_RESOURCES_ID, SectorResourceIdService.PERMISSION_CREATE, getUser( ) ) )
         {
-            throw new AccessDeniedException(  );
+            throw new AccessDeniedException( );
         }
 
         setPageTitleProperty( PROPERTY_PAGE_TITLE_CREATE_FIELD );
 
-        Collection<Sector> listSectors = SectorHome.findAll(  );
+        Collection<Sector> listSectors = SectorHome.findAll( );
 
-        HashMap<String, Object> model = new HashMap<String, Object>(  );
+        HashMap<String, Object> model = new HashMap<String, Object>( );
         model.put( MARK_LIST_FIELDS, listSectors );
 
-        HtmlTemplate template = AppTemplateService.getTemplate( TEMPLATE_CREATE_FIELD, getLocale(  ), model );
+        HtmlTemplate template = AppTemplateService.getTemplate( TEMPLATE_CREATE_FIELD, getLocale( ), model );
 
-        return getAdminPage( template.getHtml(  ) );
+        return getAdminPage( template.getHtml( ) );
     }
 
     /**
      * Process the data capture form of a new sector
+     * 
      * @return The Jsp URL of the process result
-     * @param request The Http Request
-     * @throws fr.paris.lutece.portal.service.admin.AccessDeniedException access
-     *             denied exception
+     * @param request
+     *            The Http Request
+     * @throws fr.paris.lutece.portal.service.admin.AccessDeniedException
+     *             access denied exception
      */
-    public String doCreateSector( HttpServletRequest request )
-        throws AccessDeniedException
+    public String doCreateSector( HttpServletRequest request ) throws AccessDeniedException
     {
-        if ( !RBACService.isAuthorized( Sector.RESOURCE_TYPE, RBAC.WILDCARD_RESOURCES_ID,
-                    SectorResourceIdService.PERMISSION_CREATE, getUser(  ) ) )
+        if ( !RBACService.isAuthorized( Sector.RESOURCE_TYPE, RBAC.WILDCARD_RESOURCES_ID, SectorResourceIdService.PERMISSION_CREATE, getUser( ) ) )
         {
-            throw new AccessDeniedException(  );
+            throw new AccessDeniedException( );
         }
 
         String strSectorLabel = request.getParameter( PARAMETER_FIELD_LABEL );
@@ -218,7 +216,7 @@ public class SectorJspBean extends PluginAdminPageJspBean
 
         String strAnnouncesValidation = request.getParameter( PARAMETER_FIELD_ANNOUNCES_VALIDATION );
 
-        Sector sector = new Sector(  );
+        Sector sector = new Sector( );
         sector.setLabel( strSectorLabel );
         sector.setDescription( strSectorDescription );
         sector.setTags( strTags );
@@ -227,19 +225,19 @@ public class SectorJspBean extends PluginAdminPageJspBean
         {
             sector.setAnnouncesValidation( false );
         }
-        else if ( strAnnouncesValidation.equals( CHECKBOX_ON ) )
-        {
-            sector.setAnnouncesValidation( true );
-        }
+        else
+            if ( strAnnouncesValidation.equals( CHECKBOX_ON ) )
+            {
+                sector.setAnnouncesValidation( true );
+            }
 
         // Mandatory sectors
-        if ( ( strSectorLabel == null ) || ( strSectorDescription == null ) || strSectorDescription.equals( "" ) ||
-                strSectorLabel.equals( "" ) )
+        if ( ( strSectorLabel == null ) || ( strSectorDescription == null ) || strSectorDescription.equals( "" ) || strSectorLabel.equals( "" ) )
         {
             return AdminMessageService.getMessageUrl( request, Messages.MANDATORY_FIELDS, AdminMessage.TYPE_STOP );
         }
 
-        SectorHome.create( sector, getPlugin(  ) );
+        SectorHome.create( sector, getPlugin( ) );
 
         // if the operation occurred well, redirects towards the list
         return JSP_REDIRECT_TO_MANAGE_FIELDS;
@@ -247,34 +245,36 @@ public class SectorJspBean extends PluginAdminPageJspBean
 
     /**
      * Returns the form to update info about a sector
+     * 
      * @return The HTML form to update info
-     * @param request The Http request
-     * @throws fr.paris.lutece.portal.service.admin.AccessDeniedException access
-     *             denied exception
+     * @param request
+     *            The Http request
+     * @throws fr.paris.lutece.portal.service.admin.AccessDeniedException
+     *             access denied exception
      */
-    public String getModifySector( HttpServletRequest request )
-        throws AccessDeniedException
+    public String getModifySector( HttpServletRequest request ) throws AccessDeniedException
     {
         setPageTitleProperty( PROPERTY_PAGE_TITLE_MODIFY_FIELD );
 
         Sector sector = getAuthorizedSector( request, SectorResourceIdService.PERMISSION_MODIFY );
-        HashMap<String, Object> model = new HashMap<String, Object>(  );
+        HashMap<String, Object> model = new HashMap<String, Object>( );
         model.put( MARK_FIELD, sector );
 
-        HtmlTemplate template = AppTemplateService.getTemplate( TEMPLATE_MODIFY_FIELD, getLocale(  ), model );
+        HtmlTemplate template = AppTemplateService.getTemplate( TEMPLATE_MODIFY_FIELD, getLocale( ), model );
 
-        return getAdminPage( template.getHtml(  ) );
+        return getAdminPage( template.getHtml( ) );
     }
 
     /**
      * Process the change form of a sector
+     * 
      * @return The Jsp URL of the process result
-     * @param request The Http request
-     * @throws fr.paris.lutece.portal.service.admin.AccessDeniedException access
-     *             denied exception
+     * @param request
+     *            The Http request
+     * @throws fr.paris.lutece.portal.service.admin.AccessDeniedException
+     *             access denied exception
      */
-    public String doModifySector( HttpServletRequest request )
-        throws AccessDeniedException
+    public String doModifySector( HttpServletRequest request ) throws AccessDeniedException
     {
         String strSectorLabel = request.getParameter( PARAMETER_FIELD_LABEL );
         String strSectorDescription = request.getParameter( PARAMETER_FIELD_DESCRIPTION );
@@ -293,41 +293,41 @@ public class SectorJspBean extends PluginAdminPageJspBean
         {
             sector.setAnnouncesValidation( false );
         }
-        else if ( strAnnouncesValidation.equals( CHECKBOX_ON ) )
-        {
-            sector.setAnnouncesValidation( true );
-        }
+        else
+            if ( strAnnouncesValidation.equals( CHECKBOX_ON ) )
+            {
+                sector.setAnnouncesValidation( true );
+            }
 
         sector.setLabel( strSectorLabel );
         sector.setDescription( strSectorDescription );
         sector.setTags( strTags );
-        SectorHome.update( sector, getPlugin(  ) );
+        SectorHome.update( sector, getPlugin( ) );
 
         // if the operation occurred well, redirects towards the list
         return JSP_REDIRECT_TO_MANAGE_FIELDS;
     }
 
     /**
-     * Manages the removal form of a sector whose identifier is in the http
-     * request
+     * Manages the removal form of a sector whose identifier is in the http request
+     * 
      * @return the html code to confirm
-     * @param request The Http request
-     * @throws fr.paris.lutece.portal.service.admin.AccessDeniedException access
-     *             denied exception
+     * @param request
+     *            The Http request
+     * @throws fr.paris.lutece.portal.service.admin.AccessDeniedException
+     *             access denied exception
      */
-    public String getConfirmRemoveSector( HttpServletRequest request )
-        throws AccessDeniedException
+    public String getConfirmRemoveSector( HttpServletRequest request ) throws AccessDeniedException
     {
         int nIdSector = Integer.parseInt( request.getParameter( PARAMETER_FIELD_ID ) );
         Sector sector = getAuthorizedSector( request, SectorResourceIdService.PERMISSION_DELETE );
 
-        if ( sector.getNumberCategories(  ) == 0 )
+        if ( sector.getNumberCategories( ) == 0 )
         {
             UrlItem url = new UrlItem( JSP_DO_REMOVE_FIELD );
             url.addParameter( PARAMETER_FIELD_ID, nIdSector );
 
-            return AdminMessageService.getMessageUrl( request, MESSAGE_CONFIRM_REMOVE_FIELD, url.getUrl(  ),
-                AdminMessage.TYPE_CONFIRMATION );
+            return AdminMessageService.getMessageUrl( request, MESSAGE_CONFIRM_REMOVE_FIELD, url.getUrl( ), AdminMessage.TYPE_CONFIRMATION );
         }
 
         return AdminMessageService.getMessageUrl( request, MESSAGE_CANNOT_REMOVE_FIELD, AdminMessage.TYPE_STOP );
@@ -335,21 +335,22 @@ public class SectorJspBean extends PluginAdminPageJspBean
 
     /**
      * Treats the removal form of a sector
+     * 
      * @return the jsp URL to display the form to manage sectors
-     * @param request The Http request
-     * @throws fr.paris.lutece.portal.service.admin.AccessDeniedException access
-     *             denied exception
+     * @param request
+     *            The Http request
+     * @throws fr.paris.lutece.portal.service.admin.AccessDeniedException
+     *             access denied exception
      */
-    public String doDeleteSector( HttpServletRequest request )
-        throws AccessDeniedException
+    public String doDeleteSector( HttpServletRequest request ) throws AccessDeniedException
     {
         int nIdSector = Integer.parseInt( request.getParameter( PARAMETER_FIELD_ID ) );
 
         Sector sector = getAuthorizedSector( request, SectorResourceIdService.PERMISSION_DELETE );
         int nOrder = SectorHome.getOrderById( nIdSector );
-        int nNewOrder = SectorHome.getMaxOrderSector(  );
+        int nNewOrder = SectorHome.getMaxOrderSector( );
         modifySectorOrder( nOrder, nNewOrder, nIdSector );
-        SectorHome.remove( sector, getPlugin(  ) );
+        SectorHome.remove( sector, getPlugin( ) );
 
         // if the operation occurred well, redirects towards the list
         return JSP_REDIRECT_TO_MANAGE_FIELDS;
@@ -358,7 +359,8 @@ public class SectorJspBean extends PluginAdminPageJspBean
     /**
      * Modifies the order in the list of contactLists
      *
-     * @param request The Http request
+     * @param request
+     *            The Http request
      * @return The Jsp URL of the process result
      */
     public String doModifySectorOrder( HttpServletRequest request )
@@ -374,12 +376,13 @@ public class SectorJspBean extends PluginAdminPageJspBean
 
     /**
      * Builts a list of sequence numbers
+     * 
      * @return the list of sequence numbers
      */
-    private ReferenceList getSectorOrderList(  )
+    private ReferenceList getSectorOrderList( )
     {
-        int nMax = SectorHome.getMaxOrderSector(  );
-        ReferenceList list = new ReferenceList(  );
+        int nMax = SectorHome.getMaxOrderSector( );
+        ReferenceList list = new ReferenceList( );
 
         for ( int i = 1; i < ( nMax + 1 ); i++ )
         {
@@ -391,9 +394,13 @@ public class SectorJspBean extends PluginAdminPageJspBean
 
     /**
      * Modify the place in the list for sector
-     * @param nOrder the actual place in the list
-     * @param nNewOrder the new place in the list
-     * @param nIdSector the id of the sector
+     * 
+     * @param nOrder
+     *            the actual place in the list
+     * @param nNewOrder
+     *            the new place in the list
+     * @param nIdSector
+     *            the id of the sector
      */
     private void modifySectorOrder( int nOrder, int nNewOrder, int nIdSector )
     {
@@ -421,43 +428,42 @@ public class SectorJspBean extends PluginAdminPageJspBean
 
     /**
      * Return UrlPage Url
+     * 
      * @return url
      */
-    private String getUrlPage(  )
+    private String getUrlPage( )
     {
         UrlItem url = new UrlItem( JSP_MANAGE_FIELDS );
 
-        return url.getUrl(  );
+        return url.getUrl( );
     }
 
     /**
      * Get the authorized Sector
      *
-     * @param request The {@link HttpServletRequest}
-     * @param strPermissionType The type of permission (see
-     *            {@link SectorResourceIdService} class)
+     * @param request
+     *            The {@link HttpServletRequest}
+     * @param strPermissionType
+     *            The type of permission (see {@link SectorResourceIdService} class)
      * @return The sector or null if user have no access
-     * @throws AccessDeniedException If the user is not authorized to access
-     *             this feature
+     * @throws AccessDeniedException
+     *             If the user is not authorized to access this feature
      */
-    private Sector getAuthorizedSector( HttpServletRequest request, String strPermissionType )
-        throws AccessDeniedException
+    private Sector getAuthorizedSector( HttpServletRequest request, String strPermissionType ) throws AccessDeniedException
     {
         String strIdSector = request.getParameter( PARAMETER_FIELD_ID );
 
         if ( ( strIdSector == null ) || !strIdSector.matches( REGEX_ID ) )
         {
-            throw new AccessDeniedException(  );
+            throw new AccessDeniedException( );
         }
 
         int nIdSector = Integer.parseInt( strIdSector );
         Sector sector = SectorHome.findByPrimaryKey( nIdSector );
 
-        if ( ( sector == null ) ||
-                !RBACService.isAuthorized( Sector.RESOURCE_TYPE, String.valueOf( sector.getId(  ) ), strPermissionType,
-                    getUser(  ) ) )
+        if ( ( sector == null ) || !RBACService.isAuthorized( Sector.RESOURCE_TYPE, String.valueOf( sector.getId( ) ), strPermissionType, getUser( ) ) )
         {
-            throw new AccessDeniedException(  );
+            throw new AccessDeniedException( );
         }
 
         return sector;

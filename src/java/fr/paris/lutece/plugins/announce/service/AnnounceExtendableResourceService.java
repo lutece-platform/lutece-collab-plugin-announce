@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002-2017, Mairie de Paris
+ * Copyright (c) 2002-2018, Mairie de Paris
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -44,7 +44,6 @@ import org.apache.commons.lang.StringUtils;
 
 import java.util.Locale;
 
-
 /**
  * Extendable resource service for announces
  */
@@ -67,8 +66,7 @@ public class AnnounceExtendableResourceService implements IExtendableResourceSer
     @Override
     public IExtendableResource getResource( String strIdResource, String strResourceType )
     {
-        if ( isInvoked( strResourceType ) && StringUtils.isNotEmpty( strIdResource ) &&
-                StringUtils.isNumeric( strIdResource ) )
+        if ( isInvoked( strResourceType ) && StringUtils.isNotEmpty( strIdResource ) && StringUtils.isNumeric( strIdResource ) )
         {
             int nIdResource = Integer.parseInt( strIdResource );
             Announce announce = AnnounceHome.findByPrimaryKey( nIdResource );
@@ -88,7 +86,7 @@ public class AnnounceExtendableResourceService implements IExtendableResourceSer
      * {@inheritDoc}
      */
     @Override
-    public String getResourceType(  )
+    public String getResourceType( )
     {
         return Announce.RESOURCE_TYPE;
     }

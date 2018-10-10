@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002-2017, Mairie de Paris
+ * Copyright (c) 2002-2018, Mairie de Paris
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -47,7 +47,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-
 /**
  * AnnounceIndexer
  */
@@ -63,8 +62,7 @@ public class AnnounceIndexer implements SearchIndexer
      * {@inheritDoc}
      */
     @Override
-    public List<Document> getDocuments( String strDocument )
-        throws IOException, InterruptedException, SiteMessageException
+    public List<Document> getDocuments( String strDocument ) throws IOException, InterruptedException, SiteMessageException
     {
         return DefaultAnnounceIndexer.getDocuments( strDocument );
     }
@@ -73,17 +71,17 @@ public class AnnounceIndexer implements SearchIndexer
      * {@inheritDoc}
      */
     @Override
-    public void indexDocuments(  ) throws IOException, InterruptedException, SiteMessageException
+    public void indexDocuments( ) throws IOException, InterruptedException, SiteMessageException
     {
-        AnnounceSearchService.getInstance(  ).processIndexing( true );
-        DefaultAnnounceIndexer.getDocuments("");
+        AnnounceSearchService.getInstance( ).processIndexing( true );
+        DefaultAnnounceIndexer.getDocuments( "" );
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public String getName(  )
+    public String getName( )
     {
         return AppPropertiesService.getProperty( INDEXER_NAME );
     }
@@ -92,7 +90,7 @@ public class AnnounceIndexer implements SearchIndexer
      * {@inheritDoc}
      */
     @Override
-    public String getVersion(  )
+    public String getVersion( )
     {
         return AppPropertiesService.getProperty( INDEXER_VERSION );
     }
@@ -101,7 +99,7 @@ public class AnnounceIndexer implements SearchIndexer
      * {@inheritDoc}
      */
     @Override
-    public String getDescription(  )
+    public String getDescription( )
     {
         return AppPropertiesService.getProperty( INDEXER_DESCRIPTION );
     }
@@ -110,7 +108,7 @@ public class AnnounceIndexer implements SearchIndexer
      * {@inheritDoc}
      */
     @Override
-    public boolean isEnable(  )
+    public boolean isEnable( )
     {
         String strEnable = AppPropertiesService.getProperty( PROPERTY_INDEXER_ENABLE, "true" );
 
@@ -121,9 +119,9 @@ public class AnnounceIndexer implements SearchIndexer
      * {@inheritDoc}
      */
     @Override
-    public List<String> getListType(  )
+    public List<String> getListType( )
     {
-        List<String> listType = new ArrayList<String>(  );
+        List<String> listType = new ArrayList<String>( );
         listType.add( AnnouncePlugin.PLUGIN_NAME );
 
         return listType;
@@ -133,7 +131,7 @@ public class AnnounceIndexer implements SearchIndexer
      * {@inheritDoc}
      */
     @Override
-    public String getSpecificSearchAppUrl(  )
+    public String getSpecificSearchAppUrl( )
     {
         return JSP_SEARCH_ANNOUNCE;
     }

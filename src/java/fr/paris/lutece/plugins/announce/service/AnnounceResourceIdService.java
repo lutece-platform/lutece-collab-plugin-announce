@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002-2017, Mairie de Paris
+ * Copyright (c) 2002-2018, Mairie de Paris
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -44,7 +44,6 @@ import fr.paris.lutece.util.ReferenceList;
 
 import java.util.Locale;
 
-
 /**
  * Class AnnounceResourceIdService
  */
@@ -72,7 +71,7 @@ public class AnnounceResourceIdService extends ResourceIdService
     private static final String PROPERTY_LABEL_WORKFLOW_ACTION = "announce.permission.resourceType.announce.workflowAction";
 
     /** Creates a new instance of SectorResourceIdService */
-    public AnnounceResourceIdService(  )
+    public AnnounceResourceIdService( )
     {
         setPluginName( AnnouncePlugin.PLUGIN_NAME );
     }
@@ -81,30 +80,30 @@ public class AnnounceResourceIdService extends ResourceIdService
      * {@inheritDoc}
      */
     @Override
-    public void register(  )
+    public void register( )
     {
-        ResourceType rt = new ResourceType(  );
-        rt.setResourceIdServiceClass( AnnounceResourceIdService.class.getName(  ) );
+        ResourceType rt = new ResourceType( );
+        rt.setResourceIdServiceClass( AnnounceResourceIdService.class.getName( ) );
         rt.setPluginName( AnnouncePlugin.PLUGIN_NAME );
         rt.setResourceTypeKey( Announce.RESOURCE_TYPE );
         rt.setResourceTypeLabelKey( PROPERTY_LABEL_RESOURCE_TYPE );
 
-        Permission p = new Permission(  );
+        Permission p = new Permission( );
         p.setPermissionKey( PERMISSION_PUBLISH );
         p.setPermissionTitleKey( PROPERTY_LABEL_PUBLISH );
         rt.registerPermission( p );
 
-        p = new Permission(  );
+        p = new Permission( );
         p.setPermissionKey( PERMISSION_DELETE );
         p.setPermissionTitleKey( PROPERTY_LABEL_DELETE );
         rt.registerPermission( p );
 
-        p = new Permission(  );
+        p = new Permission( );
         p.setPermissionKey( PERMISSION_SUSPEND );
         p.setPermissionTitleKey( PROPERTY_LABEL_SUSPEND );
         rt.registerPermission( p );
 
-        p = new Permission(  );
+        p = new Permission( );
         p.setPermissionKey( PERMISSION_EXECUTE_WORKFLOW_ACTION );
         p.setPermissionTitleKey( PROPERTY_LABEL_WORKFLOW_ACTION );
         rt.registerPermission( p );
@@ -118,7 +117,7 @@ public class AnnounceResourceIdService extends ResourceIdService
     @Override
     public ReferenceList getResourceIdList( Locale locale )
     {
-        return new ReferenceList(  );
+        return new ReferenceList( );
     }
 
     /**
@@ -133,13 +132,13 @@ public class AnnounceResourceIdService extends ResourceIdService
         {
             nIdAnnounce = Integer.parseInt( strId );
         }
-        catch ( NumberFormatException ne )
+        catch( NumberFormatException ne )
         {
             AppLogService.error( ne );
         }
 
         Announce announce = AnnounceHome.findByPrimaryKey( nIdAnnounce );
 
-        return announce.getTitle(  );
+        return announce.getTitle( );
     }
 }

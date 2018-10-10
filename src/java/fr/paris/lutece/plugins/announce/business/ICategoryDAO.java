@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002-2017, Mairie de Paris
+ * Copyright (c) 2002-2018, Mairie de Paris
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -38,7 +38,6 @@ import fr.paris.lutece.util.ReferenceList;
 
 import java.util.List;
 
-
 /**
  *
  * @author kpomdagu
@@ -48,8 +47,10 @@ public interface ICategoryDAO
     /**
      * Delete a record from the table
      *
-     * @param category The category object
-     * @param plugin The plugin
+     * @param category
+     *            The category object
+     * @param plugin
+     *            The plugin
      */
     void delete( Category category, Plugin plugin );
 
@@ -57,15 +58,20 @@ public interface ICategoryDAO
      * Insert a new record in the table.
      *
      *
-     * @param category The Category object
-     * @param plugin The plugin
+     * @param category
+     *            The Category object
+     * @param plugin
+     *            The plugin
      */
     void insert( Category category, Plugin plugin );
 
     /**
      * Load the data of Category from the table
-     * @param nCategoryId The identifier of Category
-     * @param plugin The plugin
+     * 
+     * @param nCategoryId
+     *            The identifier of Category
+     * @param plugin
+     *            The plugin
      * @return the instance of the Category
      */
     Category load( int nCategoryId, Plugin plugin );
@@ -74,50 +80,65 @@ public interface ICategoryDAO
      * Load the list of categorys
      *
      *
-     * @param plugin The plugin
+     * @param plugin
+     *            The plugin
      * @return The Collection of the Categories
      */
     List<Category> selectAll( Plugin plugin );
 
     /**
      * Update the record in the table
-     * @param category The reference of category
-     * @param plugin The plugin
+     * 
+     * @param category
+     *            The reference of category
+     * @param plugin
+     *            The plugin
      */
     void store( Category category, Plugin plugin );
 
     /**
      * Selects the list of categories associated to the specified sector
-     * @param sector The concerned sector
-     * @param plugin The plugin announce
+     * 
+     * @param sector
+     *            The concerned sector
+     * @param plugin
+     *            The plugin announce
      * @return The collection of categories
      */
     List<Category> selectCategoriesForSector( Sector sector, Plugin plugin );
 
     /**
      * gets the categories reference list
-     * @param plugin the plugin
+     * 
+     * @param plugin
+     *            the plugin
      * @return the categories reference list
      */
     ReferenceList selectCategoriesReferenceList( Plugin plugin );
 
     /**
      * counts the entries for a given category form
-     * @param category the category
-     * @param plugin the plugin
+     * 
+     * @param category
+     *            the category
+     * @param plugin
+     *            the plugin
      * @return number of entries for a given category form
      */
     int countEntriesForCategory( Category category, Plugin plugin );
 
     /**
      * Count the number of published announce of a given category
-     * @param category The category to get the number of published announce of
-     * @param plugin The plugin
+     * 
+     * @param category
+     *            The category to get the number of published announce of
+     * @param plugin
+     *            The plugin
      * @return The number of published announce of the category
      */
     int countPublishedAnnouncesForCategory( Category category, Plugin plugin );
-    
-    //int newPrimaryKey( Plugin plugin );
-    
+
+    // int newPrimaryKey( Plugin plugin );
+
     int copyCategory( Category category, Plugin plugin );
 }

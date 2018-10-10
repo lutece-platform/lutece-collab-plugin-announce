@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002-2017, Mairie de Paris
+ * Copyright (c) 2002-2018, Mairie de Paris
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -40,7 +40,6 @@ import fr.paris.lutece.util.sql.DAOUtil;
 import java.util.ArrayList;
 import java.util.List;
 
-
 /**
  * This class provides Data Access methods for Indexer Action objects
  */
@@ -48,13 +47,10 @@ public final class IndexerActionDAO implements IIndexerActionDAO
 {
     // Constants
     private static final String SQL_QUERY_NEW_PK = "SELECT max( id_action ) FROM announce_indexer_action";
-    private static final String SQL_QUERY_FIND_BY_PRIMARY_KEY = "SELECT id_action,id_announce,id_task" +
-        " FROM announce_indexer_action WHERE id_action = ?";
-    private static final String SQL_QUERY_INSERT = "INSERT INTO announce_indexer_action( id_action,id_announce,id_task)" +
-        " VALUES(?,?,?)";
+    private static final String SQL_QUERY_FIND_BY_PRIMARY_KEY = "SELECT id_action,id_announce,id_task" + " FROM announce_indexer_action WHERE id_action = ?";
+    private static final String SQL_QUERY_INSERT = "INSERT INTO announce_indexer_action( id_action,id_announce,id_task)" + " VALUES(?,?,?)";
     private static final String SQL_QUERY_DELETE = "DELETE FROM announce_indexer_action WHERE id_action = ? ";
-    private static final String SQL_QUERY_SELECT = "SELECT id_action,id_announce,id_task" +
-        " FROM announce_indexer_action  ";
+    private static final String SQL_QUERY_SELECT = "SELECT id_action,id_announce,id_task" + " FROM announce_indexer_action  ";
     private static final String SQL_FILTER_ID_TASK = " id_task = ? ";
     private static final String SQL_FILTER_ID_ANNOUNCE = " id_announce = ? ";
 
@@ -65,18 +61,18 @@ public final class IndexerActionDAO implements IIndexerActionDAO
     public int newPrimaryKey( Plugin plugin )
     {
         DAOUtil daoUtil = new DAOUtil( SQL_QUERY_NEW_PK, plugin );
-        daoUtil.executeQuery(  );
+        daoUtil.executeQuery( );
 
         int nKey;
 
-        if ( !daoUtil.next(  ) )
+        if ( !daoUtil.next( ) )
         {
             // if the table is empty
             nKey = 1;
         }
 
         nKey = daoUtil.getInt( 1 ) + 1;
-        daoUtil.free(  );
+        daoUtil.free( );
 
         return nKey;
     }
@@ -88,15 +84,15 @@ public final class IndexerActionDAO implements IIndexerActionDAO
     public synchronized void insert( IndexerAction indexerAction, Plugin plugin )
     {
         DAOUtil daoUtil = new DAOUtil( SQL_QUERY_INSERT, plugin );
-        daoUtil.setInt( 2, indexerAction.getIdAnnounce(  ) );
-        daoUtil.setInt( 3, indexerAction.getIdTask(  ) );
+        daoUtil.setInt( 2, indexerAction.getIdAnnounce( ) );
+        daoUtil.setInt( 3, indexerAction.getIdTask( ) );
 
         indexerAction.setIdAction( newPrimaryKey( plugin ) );
-        daoUtil.setInt( 1, indexerAction.getIdAction(  ) );
+        daoUtil.setInt( 1, indexerAction.getIdAction( ) );
 
-        daoUtil.executeUpdate(  );
+        daoUtil.executeUpdate( );
 
-        daoUtil.free(  );
+        daoUtil.free( );
     }
 
     /**
@@ -109,17 +105,17 @@ public final class IndexerActionDAO implements IIndexerActionDAO
 
         DAOUtil daoUtil = new DAOUtil( SQL_QUERY_FIND_BY_PRIMARY_KEY, plugin );
         daoUtil.setInt( 1, nId );
-        daoUtil.executeQuery(  );
+        daoUtil.executeQuery( );
 
-        if ( daoUtil.next(  ) )
+        if ( daoUtil.next( ) )
         {
-            indexerAction = new IndexerAction(  );
+            indexerAction = new IndexerAction( );
             indexerAction.setIdAction( daoUtil.getInt( 1 ) );
             indexerAction.setIdAnnounce( daoUtil.getInt( 2 ) );
             indexerAction.setIdTask( daoUtil.getInt( 3 ) );
         }
 
-        daoUtil.free(  );
+        daoUtil.free( );
 
         return indexerAction;
     }
@@ -132,8 +128,8 @@ public final class IndexerActionDAO implements IIndexerActionDAO
     {
         DAOUtil daoUtil = new DAOUtil( SQL_QUERY_DELETE, plugin );
         daoUtil.setInt( 1, nId );
-        daoUtil.executeUpdate(  );
-        daoUtil.free(  );
+        daoUtil.executeUpdate( );
+        daoUtil.free( );
     }
 
     /**
@@ -142,16 +138,16 @@ public final class IndexerActionDAO implements IIndexerActionDAO
     @Override
     public List<IndexerAction> selectList( IndexerActionFilter filter, Plugin plugin )
     {
-        List<IndexerAction> indexerActionList = new ArrayList<IndexerAction>(  );
+        List<IndexerAction> indexerActionList = new ArrayList<IndexerAction>( );
         IndexerAction indexerAction = null;
-        List<String> listStrFilter = new ArrayList<String>(  );
+        List<String> listStrFilter = new ArrayList<String>( );
 
-        if ( filter.containsIdTask(  ) )
+        if ( filter.containsIdTask( ) )
         {
             listStrFilter.add( SQL_FILTER_ID_TASK );
         }
 
-        if ( filter.containsIdAnnounce(  ) )
+        if ( filter.containsIdAnnounce( ) )
         {
             listStrFilter.add( SQL_FILTER_ID_ANNOUNCE );
         }
@@ -162,22 +158,22 @@ public final class IndexerActionDAO implements IIndexerActionDAO
 
         int nIndex = 1;
 
-        if ( filter.containsIdTask(  ) )
+        if ( filter.containsIdTask( ) )
         {
-            daoUtil.setInt( nIndex, filter.getIdTask(  ) );
+            daoUtil.setInt( nIndex, filter.getIdTask( ) );
             nIndex++;
         }
 
-        if ( filter.containsIdAnnounce(  ) )
+        if ( filter.containsIdAnnounce( ) )
         {
-            daoUtil.setInt( nIndex, filter.getIdAnnounce(  ) );
+            daoUtil.setInt( nIndex, filter.getIdAnnounce( ) );
         }
 
-        daoUtil.executeQuery(  );
+        daoUtil.executeQuery( );
 
-        while ( daoUtil.next(  ) )
+        while ( daoUtil.next( ) )
         {
-            indexerAction = new IndexerAction(  );
+            indexerAction = new IndexerAction( );
             indexerAction.setIdAction( daoUtil.getInt( 1 ) );
             indexerAction.setIdAnnounce( daoUtil.getInt( 2 ) );
             indexerAction.setIdTask( daoUtil.getInt( 3 ) );
@@ -185,7 +181,7 @@ public final class IndexerActionDAO implements IIndexerActionDAO
             indexerActionList.add( indexerAction );
         }
 
-        daoUtil.free(  );
+        daoUtil.free( );
 
         return indexerActionList;
     }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002-2017, Mairie de Paris
+ * Copyright (c) 2002-2018, Mairie de Paris
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -45,7 +45,6 @@ import java.sql.Timestamp;
 import java.util.Collection;
 import java.util.List;
 
-
 /**
  * This is the business class for the object Announce
  */
@@ -81,21 +80,21 @@ public class Announce implements Serializable, IExtendableResource, RBACResource
     private transient Collection<Action> _listActions;
     private int _nHasNotify;
 
-    
-	
-
-	/**
+    /**
      * Get the list of responses of this announce
+     * 
      * @return The list of responses of this announce
      */
-    public List<Response> getListResponse(  )
+    public List<Response> getListResponse( )
     {
         return _listResponse;
     }
 
     /**
      * Set the list of responses of this announce
-     * @param listResponse The list of responses of this announce
+     * 
+     * @param listResponse
+     *            The list of responses of this announce
      */
     public void setListResponse( List<Response> listResponse )
     {
@@ -104,16 +103,19 @@ public class Announce implements Serializable, IExtendableResource, RBACResource
 
     /**
      * Returns the IdAnnounce
+     * 
      * @return The IdAnnounce
      */
-    public int getId(  )
+    public int getId( )
     {
         return _nIdAnnounce;
     }
 
     /**
      * Sets the IdAnnounce
-     * @param nIdAnnounce The IdAnnounce
+     * 
+     * @param nIdAnnounce
+     *            The IdAnnounce
      */
     public void setId( int nIdAnnounce )
     {
@@ -122,16 +124,19 @@ public class Announce implements Serializable, IExtendableResource, RBACResource
 
     /**
      * Returns the Published state
+     * 
      * @return The Published state
      */
-    public boolean getPublished(  )
+    public boolean getPublished( )
     {
         return _bPublished;
     }
 
     /**
      * Sets the Published state
-     * @param bPublished the published state
+     * 
+     * @param bPublished
+     *            the published state
      */
     public void setPublished( boolean bPublished )
     {
@@ -140,16 +145,19 @@ public class Announce implements Serializable, IExtendableResource, RBACResource
 
     /**
      * gets the suspended state
+     * 
      * @return the suspended state of announce
      */
-    public boolean getSuspended(  )
+    public boolean getSuspended( )
     {
         return _bSuspended;
     }
 
     /**
      * sets the suspended state
-     * @param bSuspended the suspended state
+     * 
+     * @param bSuspended
+     *            the suspended state
      */
     public void setSuspended( boolean bSuspended )
     {
@@ -158,25 +166,29 @@ public class Announce implements Serializable, IExtendableResource, RBACResource
 
     /**
      * gets the title
+     * 
      * @return the title of announce
      */
-    public String getTitle(  )
+    public String getTitle( )
     {
         return _strTitle;
     }
 
     /**
      * gets the description
+     * 
      * @return the description of announce
      */
-    public String getDescription(  )
+    public String getDescription( )
     {
         return _strDescription;
     }
 
     /**
      * gets the title
-     * @param strTitle gets the suspended state
+     * 
+     * @param strTitle
+     *            gets the suspended state
      */
     public void setTitle( String strTitle )
     {
@@ -185,7 +197,9 @@ public class Announce implements Serializable, IExtendableResource, RBACResource
 
     /**
      * sets the description
-     * @param strDescription the description
+     * 
+     * @param strDescription
+     *            the description
      */
     public void setDescription( String strDescription )
     {
@@ -194,16 +208,19 @@ public class Announce implements Serializable, IExtendableResource, RBACResource
 
     /**
      * gets the category
+     * 
      * @return the announce category
      */
-    public Category getCategory(  )
+    public Category getCategory( )
     {
         return _category;
     }
 
     /**
      * sets the announce category
-     * @param category the announce category
+     * 
+     * @param category
+     *            the announce category
      */
     public void setCategory( Category category )
     {
@@ -212,52 +229,61 @@ public class Announce implements Serializable, IExtendableResource, RBACResource
 
     /**
      * gets the user name
+     * 
      * @return the username
      */
-    public String getUserName(  )
+    public String getUserName( )
     {
         return _strUserName;
     }
 
     /**
      * sets the announce user name
-     * @param strUserName the user name
+     * 
+     * @param strUserName
+     *            the user name
      */
     public void setUserName( String strUserName )
     {
         _strUserName = strUserName;
     }
-    
+
     /**
      * gets the user name
+     * 
      * @return the username
      */
-    public String getUserLastName(  )
+    public String getUserLastName( )
     {
         return _strUserLastName;
     }
 
     /**
      * sets the announce user name
-     * @param strUserName the user name
+     * 
+     * @param strUserName
+     *            the user name
      */
     public void setUserLastName( String strUserLastName )
     {
         _strUserLastName = strUserLastName;
     }
-    
+
     /**
      * gets the user name
+     * 
      * @return the username
      */
-    public String getUserSecondName(  )
+    public String getUserSecondName( )
     {
         return _strUserSecondName;
     }
 
     /**
      * sets the announce user name
-     * @param strUserName the user name
+     * 
+     * @param strUserName
+     *            the user name
      */
     public void setUserSecondName( String strUserSecondName )
     {
@@ -266,16 +292,19 @@ public class Announce implements Serializable, IExtendableResource, RBACResource
 
     /**
      * weather or not the announce has pictures in slideshow
+     * 
      * @return weather or not the announce has pictures in slideshow
      */
-    public boolean getHasPictures(  )
+    public boolean getHasPictures( )
     {
         return _bHasPictures;
     }
 
     /**
      * set weather or not the announce has pictures
-     * @param bHasPictures weather or not the announce has pictures
+     * 
+     * @param bHasPictures
+     *            weather or not the announce has pictures
      */
     public void setHasPictures( boolean bHasPictures )
     {
@@ -284,17 +313,19 @@ public class Announce implements Serializable, IExtendableResource, RBACResource
 
     /**
      * Gets the list of ids of images responses of this announce
+     * 
      * @return The list of ids of images responses of this announce
      */
-    public List<Integer> getListIdImageResponse(  )
+    public List<Integer> getListIdImageResponse( )
     {
         return _listIdImageResponse;
     }
 
     /**
      * Sets the list of ids of images responses of this announce
-     * @param listIdImageResponse the list of ids of image responses of this
-     *            announce
+     * 
+     * @param listIdImageResponse
+     *            the list of ids of image responses of this announce
      */
     public void setListIdImageResponse( List<Integer> listIdImageResponse )
     {
@@ -303,16 +334,19 @@ public class Announce implements Serializable, IExtendableResource, RBACResource
 
     /**
      * gets the creation date
+     * 
      * @return the creation date
      */
-    public Timestamp getDateCreation(  )
+    public Timestamp getDateCreation( )
     {
         return _dateCreation;
     }
 
     /**
      * sets the creation date
-     * @param time the creation date
+     * 
+     * @param time
+     *            the creation date
      */
     public void setDateCreation( Timestamp time )
     {
@@ -321,16 +355,19 @@ public class Announce implements Serializable, IExtendableResource, RBACResource
 
     /**
      * Get the modification date
+     * 
      * @return The modification date
      */
-    public Timestamp getDateModification(  )
+    public Timestamp getDateModification( )
     {
         return _dateModification;
     }
 
     /**
      * Set the modification date
-     * @param dateModification The modification date
+     * 
+     * @param dateModification
+     *            The modification date
      */
     public void setDateModification( Timestamp dateModification )
     {
@@ -339,16 +376,19 @@ public class Announce implements Serializable, IExtendableResource, RBACResource
 
     /**
      * gets the publication time
+     * 
      * @return the publication time
      */
-    public long getTimePublication(  )
+    public long getTimePublication( )
     {
         return _lTimePublication;
     }
 
     /**
      * sets the publication time
-     * @param lTime the publication time
+     * 
+     * @param lTime
+     *            the publication time
      */
     public void setTimePublication( long lTime )
     {
@@ -357,16 +397,19 @@ public class Announce implements Serializable, IExtendableResource, RBACResource
 
     /**
      * gets the contact information
+     * 
      * @return the contact information
      */
-    public String getContactInformation(  )
+    public String getContactInformation( )
     {
         return _strContactInformation;
     }
 
     /**
      * sets the contact information
-     * @param strContactInformation the contact information
+     * 
+     * @param strContactInformation
+     *            the contact information
      */
     public void setContactInformation( String strContactInformation )
     {
@@ -375,16 +418,19 @@ public class Announce implements Serializable, IExtendableResource, RBACResource
 
     /**
      * gets the price of the announce
+     * 
      * @return the price of announce
      */
-    public String getPrice(  )
+    public String getPrice( )
     {
         return _strPrice;
     }
 
     /**
      * sets the price of the announce
-     * @param price the price of the announce
+     * 
+     * @param price
+     *            the price of the announce
      */
     public void setPrice( String price )
     {
@@ -393,18 +439,19 @@ public class Announce implements Serializable, IExtendableResource, RBACResource
 
     /**
      * Check if the announce was suspended by the user or not
-     * @return True if the announce was suspended by the user or not, false
-     *         otherwise
+     * 
+     * @return True if the announce was suspended by the user or not, false otherwise
      */
-    public boolean getSuspendedByUser(  )
+    public boolean getSuspendedByUser( )
     {
         return _bSuspendedByUser;
     }
 
     /**
      * Set the announce was suspended by the user or not
-     * @param bSuspendedByUser True to set the announce was suspended by the
-     *            user or not, false otherwise
+     * 
+     * @param bSuspendedByUser
+     *            True to set the announce was suspended by the user or not, false otherwise
      */
     public void setSuspendedByUser( boolean bSuspendedByUser )
     {
@@ -413,16 +460,19 @@ public class Announce implements Serializable, IExtendableResource, RBACResource
 
     /**
      * gets the tags of announce
+     * 
      * @return gets the tags of announce
      */
-    public String getTags(  )
+    public String getTags( )
     {
         return _strTags;
     }
 
     /**
      * sets the Tags of announce
-     * @param strTags the Tags of announce
+     * 
+     * @param strTags
+     *            the Tags of announce
      */
     public void setTags( String strTags )
     {
@@ -433,16 +483,16 @@ public class Announce implements Serializable, IExtendableResource, RBACResource
      * {@inheritDoc}
      */
     @Override
-    public String getIdExtendableResource(  )
+    public String getIdExtendableResource( )
     {
-        return Integer.toString( getId(  ) );
+        return Integer.toString( getId( ) );
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public String getExtendableResourceType(  )
+    public String getExtendableResourceType( )
     {
         return RESOURCE_TYPE;
     }
@@ -451,29 +501,29 @@ public class Announce implements Serializable, IExtendableResource, RBACResource
      * {@inheritDoc}
      */
     @Override
-    public String getExtendableResourceName(  )
+    public String getExtendableResourceName( )
     {
-        return getTitle(  );
+        return getTitle( );
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public String getExtendableResourceDescription(  )
+    public String getExtendableResourceDescription( )
     {
-        return getDescription(  );
+        return getDescription( );
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public String getExtendableResourceImageUrl(  )
+    public String getExtendableResourceImageUrl( )
     {
-        if ( getHasPictures(  ) && ( getListIdImageResponse(  ) != null ) && ( getListIdImageResponse(  ).size(  ) > 0 ) )
+        if ( getHasPictures( ) && ( getListIdImageResponse( ) != null ) && ( getListIdImageResponse( ).size( ) > 0 ) )
         {
-            return AnnounceResponseImageResourceProvider.getUrlDownloadImageResponse( getListIdImageResponse(  ).get( 0 ) );
+            return AnnounceResponseImageResourceProvider.getUrlDownloadImageResponse( getListIdImageResponse( ).get( 0 ) );
         }
 
         return null;
@@ -481,16 +531,19 @@ public class Announce implements Serializable, IExtendableResource, RBACResource
 
     /**
      * Get the list of workflow actions of this announce
+     * 
      * @return The list of workflow announce of this announce
      */
-    public Collection<Action> getListWorkflowActions(  )
+    public Collection<Action> getListWorkflowActions( )
     {
         return _listActions;
     }
 
     /**
      * Set the list of workflow actions of this announce
-     * @param listActions The list of workflow actions of this announce
+     * 
+     * @param listActions
+     *            The list of workflow actions of this announce
      */
     public void setListWorkflowActions( Collection<Action> listActions )
     {
@@ -501,64 +554,70 @@ public class Announce implements Serializable, IExtendableResource, RBACResource
      * {@inheritDoc}
      */
     @Override
-    public String getResourceTypeCode(  )
+    public String getResourceTypeCode( )
     {
-        return getExtendableResourceType(  );
+        return getExtendableResourceType( );
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public String getResourceId(  )
+    public String getResourceId( )
     {
-        return getIdExtendableResource(  );
+        return getIdExtendableResource( );
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public Object clone(  )
+    public Object clone( )
     {
         try
         {
-            return super.clone(  );
+            return super.clone( );
         }
-        catch ( CloneNotSupportedException e )
+        catch( CloneNotSupportedException e )
         {
-            AppLogService.error( e.getMessage(  ), e );
+            AppLogService.error( e.getMessage( ), e );
         }
 
         return this;
     }
 
-	/**
-	 * @return the _datePublication
-	 */
-	public Timestamp getDatePublication() {
-		return new Timestamp (this.getTimePublication());
-	}
+    /**
+     * @return the _datePublication
+     */
+    public Timestamp getDatePublication( )
+    {
+        return new Timestamp( this.getTimePublication( ) );
+    }
 
-	/**
-	 * @param _datePublication the _datePublication to set
-	 */
-	public void setDatePublication() {
-		this._datePublication = new Timestamp (this.getTimePublication());
-	}
-	
-	/**
-	 * @return the _nHasNotify
-	 */
-	public int getHasNotify() {
-		return _nHasNotify;
-	}
+    /**
+     * @param _datePublication
+     *            the _datePublication to set
+     */
+    public void setDatePublication( )
+    {
+        this._datePublication = new Timestamp( this.getTimePublication( ) );
+    }
 
-	/**
-	 * @param nHasNotify the _nHasNotify to set
-	 */
-	public void setHasNotify(int nHasNotify) {
-		this._nHasNotify = nHasNotify;
-	}
+    /**
+     * @return the _nHasNotify
+     */
+    public int getHasNotify( )
+    {
+        return _nHasNotify;
+    }
+
+    /**
+     * @param nHasNotify
+     *            the _nHasNotify to set
+     */
+    public void setHasNotify( int nHasNotify )
+    {
+        this._nHasNotify = nHasNotify;
+    }
 
 }

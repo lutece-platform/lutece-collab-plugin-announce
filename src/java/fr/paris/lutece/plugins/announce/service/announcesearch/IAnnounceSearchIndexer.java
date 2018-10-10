@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002-2017, Mairie de Paris
+ * Copyright (c) 2002-2018, Mairie de Paris
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -39,7 +39,6 @@ import org.apache.lucene.index.IndexWriter;
 
 import java.io.IOException;
 
-
 /**
  *
  * IAnnounceSearchIndexer
@@ -49,38 +48,47 @@ public interface IAnnounceSearchIndexer
 {
     /**
      * add to the index writer the document associate to the key specified in parameter
-     * @param indexWriter lucene index writer
-     * @param bCreate true for indexing all directory
-     *                                   false for use incremental indexing
-     * @param sbLog the buffer logger
-     * @throws IOException If an IO error occured
-     * @throws InterruptedException If a thread error occured
-     * @throws SiteMessageException occurs when a site message need to be displayed
+     * 
+     * @param indexWriter
+     *            lucene index writer
+     * @param bCreate
+     *            true for indexing all directory false for use incremental indexing
+     * @param sbLog
+     *            the buffer logger
+     * @throws IOException
+     *             If an IO error occured
+     * @throws InterruptedException
+     *             If a thread error occured
+     * @throws SiteMessageException
+     *             occurs when a site message need to be displayed
      */
-    void processIndexing( IndexWriter indexWriter, boolean bCreate, StringBuffer sbLog )
-        throws IOException, InterruptedException, SiteMessageException;
+    void processIndexing( IndexWriter indexWriter, boolean bCreate, StringBuffer sbLog ) throws IOException, InterruptedException, SiteMessageException;
 
     /**
      * Returns the indexer service name
+     * 
      * @return the indexer service name
      */
-    String getName(  );
+    String getName( );
 
     /**
      * Returns the indexer service version
+     * 
      * @return the indexer service version
      */
-    String getVersion(  );
+    String getVersion( );
 
     /**
      * Returns the indexer service description
+     * 
      * @return the indexer service description
      */
-    String getDescription(  );
+    String getDescription( );
 
     /**
      * Tells whether the service is enable or not
+     * 
      * @return true if enable, otherwise false
      */
-    boolean isEnable(  );
+    boolean isEnable( );
 }
