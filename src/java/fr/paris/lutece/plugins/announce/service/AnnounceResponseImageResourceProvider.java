@@ -146,7 +146,7 @@ public class AnnounceResponseImageResourceProvider implements ImageResourceProvi
             // this function from code not associated with a request. So no warnings.
             HttpServletRequest request = LocalVariables.getRequest( );
 
-            if ( request == null || isImageAuthorized( nIdResource, request ) )
+            if ( request == null || isImageAuthorized( nIdAnnounce, request ) )
             {
                 Response response = ResponseHome.findByPrimaryKey( nIdResource );
 
