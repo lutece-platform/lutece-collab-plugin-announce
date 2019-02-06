@@ -70,7 +70,7 @@
 							
 							<td>
 								<a class="btn btn-primary btn-xs btn-flat" href="jsp/admin/plugins/announce/PreviewAnnounce.jsp?announce_id=${announce.id}">
-									<i class="fa fa-eye"></i>
+									<i class="fa fa-eye" title="#i18n{announce.preview_announce.pageTitle}"></i>
 								</a>
 								<#if right_publish_announce?? && right_publish_announce>
 									<#if announce.published>
@@ -104,7 +104,7 @@
 									</#if>
 								</#if>
 								<#if right_delete_announce?? && right_delete_announce>
-									<a class="btn btn-danger btn-xs btn-flat" href="jsp/admin/plugins/announce/RemoveAnnounce.jsp?announce_id=${announce.id}" title="#i18n{announce.manage_announces.suspendedByUser}">
+									<a class="btn btn-danger btn-xs btn-flat" href="jsp/admin/plugins/announce/RemoveAnnounce.jsp?announce_id=${announce.id}" title="#i18n{announce.announce.actions.delete}">
 										<i class="fa fa-trash"></i>
 									</a>
 								</#if>
