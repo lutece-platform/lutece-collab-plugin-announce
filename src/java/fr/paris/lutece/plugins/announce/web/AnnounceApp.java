@@ -33,6 +33,7 @@
  */
 package fr.paris.lutece.plugins.announce.web;
 
+import com.mchange.lang.DoubleUtils;
 import fr.paris.lutece.plugins.announce.business.Announce;
 import fr.paris.lutece.plugins.announce.business.AnnounceDTO;
 import fr.paris.lutece.plugins.announce.business.AnnounceHome;
@@ -1034,11 +1035,11 @@ public class AnnounceApp extends MVCApplication
         String strDescriptionAnnounce = request.getParameter( PARAMETER_DESCRIPTION_ANNOUNCE );
         String strContactInformation = request.getParameter( PARAMETER_CONTACT_INFORMATION );
         String strTags = request.getParameter( PARAMETER_TAGS );
-        String strPriceAnnounce = ( request.getParameter( PARAMETER_PRICE_ANNOUNCE ) == null ) ? StringUtils.EMPTY : request
-                .getParameter( PARAMETER_PRICE_ANNOUNCE );
+        Double nPriceAnnounce = ( request.getParameter( PARAMETER_PRICE_ANNOUNCE ) == null ) ? 0.0 : Double.parseDouble(request
+                .getParameter( PARAMETER_PRICE_ANNOUNCE ));
 
         if ( StringUtils.isEmpty( strTitleAnnounce ) || StringUtils.isEmpty( strDescriptionAnnounce ) || StringUtils.isEmpty( strContactInformation )
-                || ( category.getDisplayPrice( ) && category.getPriceMandatory( ) && StringUtils.isBlank( strPriceAnnounce ) ) )
+                || ( category.getDisplayPrice( ) && category.getPriceMandatory( ) && ( nPriceAnnounce == 0.0) ) )
         {
             SiteMessageService.setMessage( request, Messages.MANDATORY_FIELDS, SiteMessage.TYPE_STOP );
 
@@ -1065,7 +1066,7 @@ public class AnnounceApp extends MVCApplication
         announce.setCategory( category );
         announce.setTitle( strTitleAnnounce );
         announce.setDescription( strDescriptionAnnounce );
-        announce.setPrice( strPriceAnnounce );
+        announce.setPrice( nPriceAnnounce );
         announce.setContactInformation( strContactInformation );
         announce.setUserName( user.getName( ) );
         announce.setUserLastName( user.getUserInfo( LuteceUser.NAME_GIVEN ) );
@@ -1165,11 +1166,11 @@ public class AnnounceApp extends MVCApplication
         String strDescriptionAnnounce = request.getParameter( PARAMETER_DESCRIPTION_ANNOUNCE );
         String strContactInformation = request.getParameter( PARAMETER_CONTACT_INFORMATION );
         String strTags = request.getParameter( PARAMETER_TAGS );
-        String strPriceAnnounce = ( request.getParameter( PARAMETER_PRICE_ANNOUNCE ) == null ) ? StringUtils.EMPTY : request
-                .getParameter( PARAMETER_PRICE_ANNOUNCE );
+        Double nPriceAnnounce = ( request.getParameter( PARAMETER_PRICE_ANNOUNCE ) == null ) ? 0.0 : Double.parseDouble(request
+                .getParameter( PARAMETER_PRICE_ANNOUNCE ));
 
         if ( StringUtils.isEmpty( strTitleAnnounce ) || StringUtils.isEmpty( strDescriptionAnnounce ) || StringUtils.isEmpty( strContactInformation )
-                || ( category.getDisplayPrice( ) && category.getPriceMandatory( ) && StringUtils.isBlank( strPriceAnnounce ) ) )
+                || ( category.getDisplayPrice( ) && category.getPriceMandatory( ) && (nPriceAnnounce == 0.0 ) ) )
         {
             SiteMessageService.setMessage( request, Messages.MANDATORY_FIELDS, SiteMessage.TYPE_STOP );
 
@@ -1180,7 +1181,7 @@ public class AnnounceApp extends MVCApplication
         announce.setDescription( strDescriptionAnnounce );
         announce.setContactInformation( strContactInformation );
         announce.setTags( strTags );
-        announce.setPrice( strPriceAnnounce );
+        announce.setPrice( nPriceAnnounce );
         announce.setHasNotify( 0 );
 
         Sector sector = SectorHome.findByPrimaryKey( category.getIdSector( ) );

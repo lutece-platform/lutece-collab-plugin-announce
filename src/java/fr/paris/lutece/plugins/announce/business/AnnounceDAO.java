@@ -142,7 +142,7 @@ public final class AnnounceDAO implements IAnnounceDAO
         daoUtil.setInt( nIndex++, announce.getCategory( ).getId( ) );
         daoUtil.setString( nIndex++, announce.getTitle( ) );
         daoUtil.setString( nIndex++, announce.getDescription( ) );
-        daoUtil.setString( nIndex++, announce.getPrice( ) );
+        daoUtil.setDouble( nIndex++, announce.getPrice( ) );
         daoUtil.setTimestamp( nIndex++, announce.getDateCreation( ) );
         daoUtil.setTimestamp( nIndex++, announce.getDateModification( ) );
         daoUtil.setBoolean( nIndex++, announce.getPublished( ) );
@@ -200,7 +200,7 @@ public final class AnnounceDAO implements IAnnounceDAO
 
         daoUtil.setString( nIndex++, announce.getTitle( ) );
         daoUtil.setString( nIndex++, announce.getDescription( ) );
-        daoUtil.setString( nIndex++, announce.getPrice( ) );
+        daoUtil.setDouble( nIndex++, announce.getPrice( ) );
         daoUtil.setString( nIndex++, announce.getContactInformation( ) );
         daoUtil.setBoolean( nIndex++, announce.getPublished( ) );
         daoUtil.setString( nIndex++, announce.getTags( ) );
@@ -576,7 +576,7 @@ public final class AnnounceDAO implements IAnnounceDAO
         announce.setId( daoUtil.getInt( nIndex++ ) );
         announce.setTitle( daoUtil.getString( nIndex++ ) );
         announce.setDescription( daoUtil.getString( nIndex++ ) );
-        announce.setPrice( daoUtil.getString( nIndex++ ) );
+        announce.setPrice( daoUtil.getDouble( nIndex++ ) );
         announce.setDateCreation( daoUtil.getTimestamp( nIndex++ ) );
         announce.setDateModification( daoUtil.getTimestamp( nIndex++ ) );
         announce.setUserName( daoUtil.getString( nIndex++ ) );

@@ -74,7 +74,7 @@ public class Announce implements Serializable, IExtendableResource, RBACResource
     private Timestamp _dateModification;
     private Timestamp _datePublication;
     private long _lTimePublication;
-    private String _strPrice;
+    private Double _nPrice;
     private String _strTags;
     private List<Response> _listResponse;
     private transient Collection<Action> _listActions;
@@ -421,9 +421,9 @@ public class Announce implements Serializable, IExtendableResource, RBACResource
      * 
      * @return the price of announce
      */
-    public String getPrice( )
+    public Double getPrice( )
     {
-        return _strPrice;
+        return _nPrice;
     }
 
     /**
@@ -432,9 +432,9 @@ public class Announce implements Serializable, IExtendableResource, RBACResource
      * @param price
      *            the price of the announce
      */
-    public void setPrice( String price )
+    public void setPrice( Double price )
     {
-        this._strPrice = price;
+        this._nPrice = price;
     }
 
     /**

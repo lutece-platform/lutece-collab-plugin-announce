@@ -36,7 +36,6 @@ package fr.paris.lutece.plugins.announce.service.announcesearch;
 import fr.paris.lutece.plugins.announce.business.Announce;
 import fr.paris.lutece.plugins.announce.business.AnnounceHome;
 import fr.paris.lutece.plugins.announce.business.AnnounceSort;
-import fr.paris.lutece.plugins.announce.business.CategoryHome;
 import fr.paris.lutece.plugins.announce.business.IndexerAction;
 import fr.paris.lutece.plugins.announce.service.AnnouncePlugin;
 import fr.paris.lutece.plugins.announce.utils.AnnounceUtils;
@@ -46,18 +45,12 @@ import fr.paris.lutece.portal.service.plugin.Plugin;
 import fr.paris.lutece.portal.service.plugin.PluginService;
 import fr.paris.lutece.portal.service.search.IndexationService;
 import fr.paris.lutece.portal.service.util.AppException;
-import fr.paris.lutece.portal.service.util.AppLogService;
 import fr.paris.lutece.portal.service.util.AppPathService;
 import fr.paris.lutece.portal.service.util.AppPropertiesService;
 import fr.paris.lutece.util.url.UrlItem;
-
-import org.apache.commons.lang.StringUtils;
-
-//import org.apache.lucene.demo.html.HTMLParser;
 import org.apache.lucene.document.*;
 import org.apache.lucene.index.CorruptIndexException;
 import org.apache.lucene.index.IndexWriter;
-import org.apache.lucene.index.IndexableField;
 import org.apache.lucene.index.Term;
 import org.apache.tika.exception.TikaException;
 import org.apache.tika.metadata.Metadata;
@@ -69,12 +62,12 @@ import org.xml.sax.SAXException;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.Reader;
-import java.io.StringReader;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+
+//import org.apache.lucene.demo.html.HTMLParser;
 
 /**
  * DefaultAnnounceIndexer
@@ -296,18 +289,11 @@ public class DefaultAnnounceIndexer implements IAnnounceSearchIndexer
                 DateTools.Resolution.DAY );
         doc.add( new Field( AnnounceSearchItem.FIELD_DATE, strDate, TextField.TYPE_STORED ) );
 
-        if ( StringUtils.isNotBlank( announce.getPrice( ) ) )
+        if (announce.getPrice() != 0.0)
         {
-            try
-            {
-                double dPrice = Double.parseDouble( AnnounceSearchService.getFormatedPriceString( announce.getPrice( ) ) );
+                double dPrice = announce.getPrice();
                 // Add the price of the announce
                 doc.add( new Field( AnnounceSearchItem.FIELD_PRICE, AnnounceSearchService.formatPriceForIndexer( dPrice ), TextField.TYPE_STORED ) );
-            }
-            catch( NumberFormatException nfe )
-            {
-                AppLogService.error( "Announce price could not be parsed : " + announce.getPrice( ) );
-            }
         }
 
         String strContentToIndex = getContentToIndex( announce, plugin );
