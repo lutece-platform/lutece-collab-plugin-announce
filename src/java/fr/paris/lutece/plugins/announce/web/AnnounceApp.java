@@ -300,7 +300,7 @@ public class AnnounceApp extends MVCApplication
 
         String strSort = ( request.getParameter( "sortBy" ) == null ? "" : request.getParameter( "sortBy" ) );
         AnnounceSort anSort = AnnounceSort.DEFAULT_SORT;
-        String strUrl = getUrlSearchAnnounceSort( request, 0 );
+        String strUrl = getUrlSearchAnnounceSort( request, 5 );
 
         if ( strSort.compareTo( "date_modification" ) == 0 )
         {
@@ -1632,6 +1632,10 @@ public class AnnounceApp extends MVCApplication
         if ( nSort == 4 )
         {
             urlItem.addParameter( "sortBy", "description_announce" );
+        }
+        if ( nSort == 5 )
+        {
+            urlItem.addParameter( "sortBy", "date_publication" );
         }
 
         return urlItem.getUrl( );
