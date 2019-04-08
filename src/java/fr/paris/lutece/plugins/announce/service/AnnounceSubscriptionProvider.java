@@ -399,7 +399,7 @@ public class AnnounceSubscriptionProvider implements ISubscriptionProviderServic
      */
     private void removeSubscription( LuteceUser user, String strIdResource, String strSubscriptionKey )
     {
-        SubscriptionFilter filter = new SubscriptionFilter( user.getUserInfo( LuteceUser.BUSINESS_INFO_ONLINE_EMAIL ), getProviderName( ), strSubscriptionKey,
+        SubscriptionFilter filter = new SubscriptionFilter( user.getName(), getProviderName( ), strSubscriptionKey,
                 strIdResource );
         List<Subscription> listSubscriptions = SubscriptionService.getInstance( ).findByFilter( filter );
 
