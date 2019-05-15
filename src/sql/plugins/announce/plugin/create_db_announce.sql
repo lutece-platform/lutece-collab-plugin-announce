@@ -1,7 +1,5 @@
 
---
--- Structure de la table announce_sector
---
+
 DROP TABLE IF EXISTS announce_sector;
 CREATE TABLE announce_sector(
 id_sector int DEFAULT '0' NOT NULL,
@@ -13,9 +11,7 @@ tags varchar(255) NOT NULL,
 PRIMARY KEY (id_sector)
 );
 
---
--- Structure de la table announce_category
---
+
 DROP TABLE IF EXISTS announce_category;
 CREATE TABLE announce_category(
 	id_category int default '0' NOT NULL,
@@ -30,9 +26,7 @@ CREATE TABLE announce_category(
 	PRIMARY KEY (id_category)
 );
 
---
--- Structure de la table announce_announce
---
+
 DROP TABLE IF EXISTS announce_announce;
 CREATE TABLE announce_announce(
 	id_announce int default '0' NOT NULL,
@@ -43,7 +37,7 @@ CREATE TABLE announce_announce(
 	id_category int default '0' NOT NULL,
 	title_announce varchar(255) NOT NULL ,
 	description_announce LONG VARCHAR NOT NULL ,
-	price_announce varchar(50),
+	price_announce DOUBLE,
 	date_creation timestamp default CURRENT_TIMESTAMP NOT NULL,
 	date_modification timestamp default CURRENT_TIMESTAMP NOT NULL,
 	published smallint default '0',
@@ -58,9 +52,6 @@ CREATE TABLE announce_announce(
 
 CREATE INDEX announce_user_name ON announce_announce (user_name);
 
-/*==============================================================*/
-/* Table structure for table announce_indexer_action				*/
-/*==============================================================*/
 DROP TABLE IF EXISTS announce_indexer_action;
 CREATE TABLE announce_indexer_action (
   id_action INT DEFAULT 0 NOT NULL,

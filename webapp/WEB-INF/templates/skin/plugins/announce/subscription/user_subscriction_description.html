@@ -1,3 +1,3 @@
-<div>
-	#i18n{announce.subscriptionDescription.user.labelSubscription} : "<#if user?? && ( ( user.getUserInfo('user.name.given')?? && user.getUserInfo('user.name.given') != '' ) || ( user.getUserInfo('user.name.family')?? && user.getUserInfo('user.name.family') != '' ) ) >${user.getUserInfo('user.name.given')}&nbsp;${user.getUserInfo('user.name.family')}<#else>${strUserSub}</#if>"
-</div>
+#i18n{announce.subscriptionDescription.user.labelSubscription} :
+<#assign EMPTY = ''>
+" <#if strUserSub!=EMPTY> ${strUserSub}<#else> #i18n{announce.subscriptionDescription.user.not.found}</#if>"

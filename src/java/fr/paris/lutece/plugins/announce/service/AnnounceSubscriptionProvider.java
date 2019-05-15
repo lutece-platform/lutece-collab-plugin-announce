@@ -176,7 +176,6 @@ public class AnnounceSubscriptionProvider implements ISubscriptionProviderServic
         if ( StringUtils.equals( SUBSCRIPTION_USER, strSubscriptionKey ) )
         {
             Map<String, Object> model = new HashMap<String, Object>( );
-            LuteceUser subscribedUser = LuteceUserService.getLuteceUserFromName( strIdSubscribedResource );
 
             List<Announce> listAnn = AnnounceHome.findAllPublished( AnnounceSort.DEFAULT_SORT );
             String strUserSub = "";
@@ -190,7 +189,6 @@ public class AnnounceSubscriptionProvider implements ISubscriptionProviderServic
             }
 
             model.put( MARK_USER_NAME, strIdSubscribedResource );
-            model.put( MARK_USER, subscribedUser );
             model.put( "strUserSub", strUserSub );
 
             HtmlTemplate template = AppTemplateService.getTemplate( TEMPLATE_USER_SUBSCRIPTION_DESCRIPTION, locale, model );
