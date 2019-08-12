@@ -89,3 +89,11 @@ CREATE TABLE announce_portlet_last_announces(
 	nb_announces int NOT NULL,
 	PRIMARY KEY (id_portlet)
 );
+
+DROP TABLE IF EXISTS announce_notify;
+CREATE TABLE announce_notify(
+id int default '0' NOT NULL,
+id_announce int default '0' NOT NULL,
+PRIMARY KEY (id)
+);
+

@@ -33,24 +33,19 @@
  */
 package fr.paris.lutece.plugins.announce.service;
 
-import fr.paris.lutece.plugins.announce.business.Announce;
-import fr.paris.lutece.plugins.announce.business.AnnounceHome;
-import fr.paris.lutece.plugins.announce.business.AnnounceSearchFilter;
-import fr.paris.lutece.plugins.announce.business.AnnounceSearchFilterHome;
-import fr.paris.lutece.plugins.announce.business.AnnounceSort;
-import fr.paris.lutece.plugins.announce.business.CategoryHome;
+import fr.paris.lutece.plugins.announce.business.*;
 import fr.paris.lutece.plugins.announce.web.AnnounceApp;
+import fr.paris.lutece.plugins.module.announce.subscribe.business.AnnounceSubscribtionDTO;
+import fr.paris.lutece.plugins.module.announce.subscribe.service.AnnounceSubscriptionService;
 import fr.paris.lutece.plugins.subscribe.business.Subscription;
 import fr.paris.lutece.plugins.subscribe.business.SubscriptionFilter;
 import fr.paris.lutece.plugins.subscribe.service.ISubscriptionProviderService;
-import fr.paris.lutece.plugins.subscribe.service.SubscriptionService;
 import fr.paris.lutece.portal.service.security.LuteceUser;
 import fr.paris.lutece.portal.service.security.LuteceUserService;
 import fr.paris.lutece.portal.service.spring.SpringContextService;
 import fr.paris.lutece.portal.service.template.AppTemplateService;
 import fr.paris.lutece.portal.web.LocalVariables;
 import fr.paris.lutece.util.html.HtmlTemplate;
-
 import org.apache.commons.lang.StringUtils;
 
 import java.util.HashMap;
@@ -377,12 +372,13 @@ public class AnnounceSubscriptionProvider implements ISubscriptionProviderServic
      */
     private void createSubscription( LuteceUser user, String strIdResource, String strSubscriptionKey )
     {
-        Subscription subscription = new Subscription( );
+        AnnounceSubscribtionDTO subscription = new AnnounceSubscribtionDTO( );
         subscription.setIdSubscribedResource( strIdResource );
         subscription.setSubscriptionKey( strSubscriptionKey );
         subscription.setSubscriptionProvider( getProviderName( ) );
         subscription.setUserId( user.getName() );
-        SubscriptionService.getInstance( ).createSubscription( subscription );
+        subscription.setEmailSubscribes( user.getUserInfo(LuteceUser.BUSINESS_INFO_ONLINE_EMAIL) );
+        AnnounceSubscriptionService.getInstance( ).createSubscription( subscription );
     }
 
     /**
@@ -399,11 +395,11 @@ public class AnnounceSubscriptionProvider implements ISubscriptionProviderServic
     {
         SubscriptionFilter filter = new SubscriptionFilter( user.getName(), getProviderName( ), strSubscriptionKey,
                 strIdResource );
-        List<Subscription> listSubscriptions = SubscriptionService.getInstance( ).findByFilter( filter );
+        List<AnnounceSubscribtionDTO> listSubscriptions = AnnounceSubscriptionService.getInstance( ).findByFilter( filter );
 
-        for ( Subscription subscription : listSubscriptions )
+        for ( AnnounceSubscribtionDTO subscription : listSubscriptions )
         {
-            SubscriptionService.getInstance( ).removeSubscription( subscription, false );
+            AnnounceSubscriptionService.getInstance( ).removeSubscription( subscription, false );
         }
     }
 
@@ -455,7 +451,7 @@ public class AnnounceSubscriptionProvider implements ISubscriptionProviderServic
     {
         SubscriptionFilter filter = new SubscriptionFilter( user.getName(), getProviderName( ), strSubscriptionKey,
                 strIdResource );
-        List<Subscription> listSubscription = SubscriptionService.getInstance( ).findByFilter( filter );
+        List<AnnounceSubscribtionDTO> listSubscription = AnnounceSubscriptionService.getInstance( ).findByFilter( filter );
 
         return ( listSubscription != null ) && ( listSubscription.size( ) > 0 );
     }
@@ -465,7 +461,7 @@ public class AnnounceSubscriptionProvider implements ISubscriptionProviderServic
      * 
      * @return The list of subscriptions to users
      */
-    public List<Subscription> getSubscriptionsToUsers( )
+    public List<AnnounceSubscribtionDTO> getSubscriptionsToUsers( )
     {
         return getSubscriptionsToResource( SUBSCRIPTION_USER );
     }
@@ -475,7 +471,7 @@ public class AnnounceSubscriptionProvider implements ISubscriptionProviderServic
      * 
      * @return The list of subscriptions to categories
      */
-    public List<Subscription> getsubscriptionsToCategories( )
+    public List<AnnounceSubscribtionDTO> getsubscriptionsToCategories( )
     {
         return getSubscriptionsToResource( SUBSCRIPTION_CATEGORY );
     }
@@ -485,7 +481,7 @@ public class AnnounceSubscriptionProvider implements ISubscriptionProviderServic
      * 
      * @return The list of subscriptions to filters
      */
-    public List<Subscription> getSubscriptionsToFilters( )
+    public List<AnnounceSubscribtionDTO> getSubscriptionsToFilters( )
     {
         return getSubscriptionsToResource( SUBSCRIPTION_FILTER );
     }
@@ -497,12 +493,17 @@ public class AnnounceSubscriptionProvider implements ISubscriptionProviderServic
      *            The type of subscriptions to get
      * @return The list of subscriptions of the given type
      */
-    public List<Subscription> getSubscriptionsToResource( String strSubscriptionKey )
+    public List<AnnounceSubscribtionDTO> getSubscriptionsToResource(String strSubscriptionKey )
     {
         SubscriptionFilter filter = new SubscriptionFilter( );
         filter.setSubscriptionKey( strSubscriptionKey );
         filter.setSubscriptionProvider( getProviderName( ) );
 
-        return SubscriptionService.getInstance( ).findByFilter( filter );
+        return AnnounceSubscriptionService.getInstance( ).findByFilter( filter );
+    }
+
+    public List<AnnounceSubscribtionDTO> getSubscriptionsByAnnounce(String userId, String categoryId, String numberOfAnnounceToNotify )
+    {
+        return AnnounceSubscriptionService.getInstance( ).findByFilterOr( userId, categoryId, numberOfAnnounceToNotify);
     }
 }

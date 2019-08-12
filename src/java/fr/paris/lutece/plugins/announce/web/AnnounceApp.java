@@ -33,30 +33,14 @@
  */
 package fr.paris.lutece.plugins.announce.web;
 
-import com.mchange.lang.DoubleUtils;
-import fr.paris.lutece.plugins.announce.business.Announce;
-import fr.paris.lutece.plugins.announce.business.AnnounceDTO;
-import fr.paris.lutece.plugins.announce.business.AnnounceHome;
-import fr.paris.lutece.plugins.announce.business.AnnounceSearchFilter;
-import fr.paris.lutece.plugins.announce.business.AnnounceSearchFilterHome;
-import fr.paris.lutece.plugins.announce.business.AnnounceSort;
-import fr.paris.lutece.plugins.announce.business.Category;
-import fr.paris.lutece.plugins.announce.business.CategoryHome;
-import fr.paris.lutece.plugins.announce.business.Sector;
-import fr.paris.lutece.plugins.announce.business.SectorHome;
+import fr.paris.lutece.plugins.announce.business.*;
 import fr.paris.lutece.plugins.announce.service.AnnounceService;
 import fr.paris.lutece.plugins.announce.service.AnnounceSubscriptionProvider;
 import fr.paris.lutece.plugins.announce.service.announcesearch.AnnounceSearchService;
 import fr.paris.lutece.plugins.announce.service.upload.AnnounceAsynchronousUploadHandler;
 import fr.paris.lutece.plugins.announce.utils.AnnounceUtils;
-import fr.paris.lutece.plugins.genericattributes.business.Entry;
-import fr.paris.lutece.plugins.genericattributes.business.EntryFilter;
-import fr.paris.lutece.plugins.genericattributes.business.EntryHome;
-import fr.paris.lutece.plugins.genericattributes.business.Field;
-import fr.paris.lutece.plugins.genericattributes.business.GenericAttributeError;
-import fr.paris.lutece.plugins.genericattributes.business.Response;
-import fr.paris.lutece.plugins.genericattributes.business.ResponseHome;
-import fr.paris.lutece.plugins.subscribe.business.Subscription;
+import fr.paris.lutece.plugins.genericattributes.business.*;
+import fr.paris.lutece.plugins.module.announce.subscribe.business.AnnounceSubscribtionDTO;
 import fr.paris.lutece.plugins.subscribe.web.SubscribeApp;
 import fr.paris.lutece.portal.business.mailinglist.Recipient;
 import fr.paris.lutece.portal.service.captcha.CaptchaSecurityService;
@@ -68,7 +52,6 @@ import fr.paris.lutece.portal.service.message.SiteMessageException;
 import fr.paris.lutece.portal.service.message.SiteMessageService;
 import fr.paris.lutece.portal.service.portal.PortalService;
 import fr.paris.lutece.portal.service.security.LuteceUser;
-import fr.paris.lutece.portal.service.security.LuteceUserService;
 import fr.paris.lutece.portal.service.security.SecurityService;
 import fr.paris.lutece.portal.service.security.UserNotSignedException;
 import fr.paris.lutece.portal.service.spring.SpringContextService;
@@ -91,21 +74,13 @@ import fr.paris.lutece.util.file.FileUtil;
 import fr.paris.lutece.util.html.HtmlTemplate;
 import fr.paris.lutece.util.html.Paginator;
 import fr.paris.lutece.util.url.UrlItem;
-
 import org.apache.commons.lang.StringUtils;
 
+import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.text.DateFormat;
 import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-
-import javax.servlet.http.HttpServletRequest;
+import java.util.*;
 
 /**
  * This class manages Announce page.
@@ -122,7 +97,7 @@ public class AnnounceApp extends MVCApplication
     /**
      * The default path of pages of this application
      */
-    public static final String PROPERTY_PAGE_PATH = "announce.page_announce.pagePathLabel";
+    public static final String PROPERTY_PAGE_PATH = "announce.page_announce.pageFPathLabel";
     private static final long serialVersionUID = 3586318619582357870L;
     private static final String PARAMETER_USERNAME = "username";
 
@@ -881,12 +856,12 @@ public class AnnounceApp extends MVCApplication
     {
         String strUserName = request.getParameter( PARAMETER_USERNAME );
 
-        List<Subscription> listSubs = AnnounceSubscriptionProvider.getService( ).getSubscriptionsToUsers( );
+        List<AnnounceSubscribtionDTO> listSubs = AnnounceSubscriptionProvider.getService( ).getSubscriptionsToUsers( );
         List<Announce> listAnn = AnnounceHome.getAnnouncesForUser( strUserName, AnnounceSort.DEFAULT_SORT );
 
         if ( listSubs != null && !listSubs.isEmpty( ) && listAnn != null && !listAnn.isEmpty( ) )
         {
-            for ( Subscription sub : listSubs )
+            for ( AnnounceSubscribtionDTO sub : listSubs )
                 for ( Announce ann : listAnn )
                 {
                     if ( sub.getUserId( ).compareTo( ann.getContactInformation( ) ) == 0 )

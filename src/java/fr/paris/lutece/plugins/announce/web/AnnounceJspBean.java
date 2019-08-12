@@ -33,11 +33,7 @@
  */
 package fr.paris.lutece.plugins.announce.web;
 
-import fr.paris.lutece.plugins.announce.business.Announce;
-import fr.paris.lutece.plugins.announce.business.AnnounceHome;
-import fr.paris.lutece.plugins.announce.business.AnnounceSort;
-import fr.paris.lutece.plugins.announce.business.Category;
-import fr.paris.lutece.plugins.announce.business.CategoryHome;
+import fr.paris.lutece.plugins.announce.business.*;
 import fr.paris.lutece.plugins.announce.service.AnnounceResourceIdService;
 import fr.paris.lutece.plugins.announce.utils.AnnounceUtils;
 import fr.paris.lutece.plugins.genericattributes.business.Entry;
@@ -382,11 +378,15 @@ public class AnnounceJspBean extends PluginAdminPageJspBean
         {
             int nIdAnnounce = Integer.parseInt( strAnnounceId );
             Announce announce = AnnounceHome.findByPrimaryKey( nIdAnnounce );
+            if (announce.getDatePublication().getTime() == new Timestamp(0).getTime()) {
+                AnnounceNotify announceNotify = new AnnounceNotify();
+                announceNotify.setIdAnnounce(announce.getId());
+                AnnounceNotifyHome.create(announceNotify);
+            }
             announce.setDateCreation( new Timestamp( GregorianCalendar.getInstance( ).getTimeInMillis( ) ) );
             announce.setPublished( bPublished );
             AnnounceHome.setPublished( announce );
         }
-
         // if the operation occurred well, redirects towards the list
         return JSP_REDIRECT_TO_MANAGE_ANNOUNCES;
     }
