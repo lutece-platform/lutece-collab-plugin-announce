@@ -1,15 +1,7 @@
 <#if entry.fields?has_content>
-	<#list entry.fields as field>
-		<#if field.title?has_content>
-			<#if field.title == "X">
-				<#assign xField = field />
-			<#elseif field.title == "Y">
-				<#assign yField = field />
-			<#elseif field.title == "address">
-				<#assign addressField = field />
-			</#if>
-		</#if>
-	</#list>
+	<#assign addressField = getFieldValueByCode( entry, "address" )>
+	<#assign xField = getFieldValueByCode( entry, "X" )>
+	<#assign yField = getFieldValueByCode( entry, "Y" )>
 </#if>
 <div class="form-group">
 	<label class="control-label col-xs-12 col-sm-12 col-md-3" for="form${entry.idEntry}_address" id="attribute${entry.idEntry}">${entry.title}<#if entry.mandatory>	*</#if></label>

@@ -10,26 +10,28 @@ ${entry.CSSClass!}
 	<label class="control-label col-xs-12 col-sm-12 col-md-3" for="form${entry.idEntry}" id="form${entry.idEntry}">${entry.title}<#if entry.mandatory> *</#if></label>
 	<div class="col-xs-12 col-sm-12 col-md-9">
     <#list entry.fields as field>
-		<div class="radio<#if entry.fieldInLine>-inline</#if>">
-			<label for="attribute${entry.idEntry}_${field.idField}" <#if field.comment?? && field.comment != ''>title="${field.comment}"</#if>> 
-				<input type="radio" class="" id="attribute${entry.idEntry}_${field.idField}" name="attribute${entry.idEntry}" value="${field.idField}"
-				<#if list_responses??>
-					<#list list_responses as response>
-						<#if response.entry.idEntry == entry.idEntry && response.field??>
-							<#if response.field.idField == field.idField>checked="checked"<#break></#if>
-						</#if>
-					</#list>
-				<#else>
-					<#if field.defaultValue>checked="checked"</#if>
+    	<#if field.code == 'answer_choice'>
+			<div class="radio<#if entry.fieldInLine>-inline</#if>">
+				<label for="attribute${entry.idEntry}_${field.idField}" <#if field.comment?? && field.comment != ''>title="${field.comment}"</#if>> 
+					<input type="radio" class="" id="attribute${entry.idEntry}_${field.idField}" name="attribute${entry.idEntry}" value="${field.idField}"
+					<#if list_responses??>
+						<#list list_responses as response>
+							<#if response.entry.idEntry == entry.idEntry && response.field??>
+								<#if response.field.idField == field.idField>checked="checked"<#break></#if>
+							</#if>
+						</#list>
+					<#else>
+						<#if field.defaultValue>checked="checked"</#if>
+					</#if>
+						onclick="${hide} <#if field.conditionalQuestions?exists&&field.conditionalQuestions?size!=0>doDisplay(${field.idField});</#if>
+					 "/>
+					 <#if !field.noDisplayTitle>
+						${field.title}
+					 </#if>
+				</label>
+			   <#if !entry.fieldInLine && entry.helpMessage?exists && entry.helpMessage != ''>
+					<p class="help-block">${entry.helpMessage}</p>
 				</#if>
-					onclick="${hide} <#if field.conditionalQuestions?exists&&field.conditionalQuestions?size!=0>doDisplay(${field.idField});</#if>
-				 "/>
-				 <#if !field.noDisplayTitle>
-					${field.title}
-				 </#if>
-			</label>
-		   <#if !entry.fieldInLine && entry.helpMessage?exists && entry.helpMessage != ''>
-				<p class="help-block">${entry.helpMessage}</p>
 			</#if>
 		</#list>
 	</div>

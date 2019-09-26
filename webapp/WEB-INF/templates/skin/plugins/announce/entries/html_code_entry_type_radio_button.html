@@ -10,6 +10,7 @@ ${entry.CSSClass!}
 	<label class="col-sm-2 control-label" for="form${entry.idEntry}" id="form${entry.idEntry}">${entry.title}<#if entry.mandatory> *</#if></label>
 	<div class="col-sm-10">
     <#list entry.fields as field>
+    	<#if field.code == 'answer_choice'>
 			<label class="radio <#if entry.fieldInLine>inline</#if>" for="attribute${entry.idEntry}_${field.idField}" <#if field.comment?? && field.comment != ''>title="${field.comment}"</#if> > 
 			<input type="radio" class="" id="attribute${entry.idEntry}_${field.idField}" name="attribute${entry.idEntry}" value="${field.idField}"
 			<#if list_responses??>
@@ -29,6 +30,7 @@ ${entry.CSSClass!}
 			</label>
 		   <#if !entry.fieldInLine && entry.helpMessage?exists && entry.helpMessage != ''>
 				<p class="help-block">${entry.helpMessage}</p>
+			</#if>
 			</#if>
 		</#list>
 	</div>

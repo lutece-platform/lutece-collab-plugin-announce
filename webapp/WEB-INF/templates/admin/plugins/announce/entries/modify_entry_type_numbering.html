@@ -15,10 +15,7 @@
 					</div>
 				</div>
 				<#if entry.fields?? && entry.fields?has_content>
-				<#assign prefix = "">
-				<#if entry.fields[0].title??>
-						<#assign prefix = entry.fields[0].title>
-				</#if>
+				<#assign prefix = getFieldValueByCode( entry, 'prefix') >
 			 	<div class="form-group">
 					<label class="control-label col-xs-12 col-sm-12 col-md-3" for="prefix">#i18n{announce.createEntry.labelPrefix}</label>
 					<div class="col-xs-12 col-sm-12 col-md-6">

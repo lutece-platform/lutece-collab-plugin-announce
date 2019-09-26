@@ -39,18 +39,14 @@
 						</div>
 					</div>
 				</div>
-				<#list entry.fields as field>
-					<#if !field.title??>
-						<div class="form-group">
-							<label class="control-label col-xs-12 col-sm-12 col-md-3" for="width">#i18n{announce.createEntry.labelWidth} * </label>
-							<div class="col-xs-12 col-sm-12 col-md-6">
-								<input  type="text" name="width" id="width" value="${field.width}" class="form-control" >
-							</div>
-						</div>
-						<#assign id_field=field.idField>
-						<#break>
-					</#if> 
-				</#list>
+				<#assign field=getFieldByCode(entry, "file_config")>
+				<div class="form-group">
+					<label class="control-label col-xs-12 col-sm-12 col-md-3" for="width">#i18n{announce.createEntry.labelWidth} * </label>
+					<div class="col-xs-12 col-sm-12 col-md-6">
+						<input  type="text" name="width" id="width" value="${field.width}" class="form-control" >
+					</div>
+				</div>
+				<#assign id_field=field.idField>
 				<div class="form-group">
 					<label class="control-label col-xs-12 col-sm-12 col-md-3" for="file_max_size">#i18n{announce.createEntry.labelFileMaxSize} * </label>
 					<div class="col-xs-12 col-sm-12 col-md-6">

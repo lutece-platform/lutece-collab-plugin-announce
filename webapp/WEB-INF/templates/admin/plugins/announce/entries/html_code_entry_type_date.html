@@ -1,6 +1,6 @@
 <div class="form-group">
 <label class="control-label col-xs-12 col-sm-12 col-md-3" for="attribute${entry.idEntry}">${entry.title}<#if entry.mandatory> *</#if></label>	
-<#list entry.fields as field>
+ <#assign field = getFieldByCode( entry, "default_date_value" ) >
 	<div class="col-xs-12 col-sm-12 col-md-9">
 		<div class="input-group">
 			<span class="input-group-add-on">
@@ -15,7 +15,6 @@
 			</#list>
 		<#else>
 			<#if field.valueTypeDate?exists>" value="${field.valueTypeDate}" <#else>" value="" 	</#if></#if>/>
-		</#list>
 		</div>
 		<#if entry.helpMessage?exists&&entry.helpMessage!=''>
 		<p class="help-block">${entry.helpMessage}</p>

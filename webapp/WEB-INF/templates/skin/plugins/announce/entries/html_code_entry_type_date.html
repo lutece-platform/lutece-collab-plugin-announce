@@ -1,6 +1,6 @@
 <div class="form-group">
 <label class="col-sm-2 control-label" for="attribute${entry.idEntry}">${entry.title}<#if entry.mandatory> *</#if></label>	
-<#list entry.fields as field>
+ <#assign field = getFieldByCode( entry, "default_date_value" ) >
 	<div class="col-sm-10">
 		<div class="input-prepend">
 			<span class="add-on"><i class="icon-calendar"></i></span>
@@ -13,7 +13,6 @@
 			</#list>
 		<#else>
 			<#if field.valueTypeDate?exists>" value="${field.valueTypeDate}" <#else>" value="" 	</#if></#if>/>
-		</#list>
 		</div>
 		<#if entry.helpMessage?exists&&entry.helpMessage!=''>
 		<p class="help-block">${entry.helpMessage}</p>
