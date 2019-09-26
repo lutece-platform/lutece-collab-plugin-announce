@@ -50,7 +50,6 @@ public class AnnounceSort
      */
     public static final String SORT_DATE_PUBLICATION = "publication_time";
 
-
     /**
      * Sort by modification date
      */
@@ -123,8 +122,9 @@ public class AnnounceSort
      */
     public static AnnounceSort getAnnounceSort( String strSort, boolean bSortAsc )
     {
-        if ( StringUtils.equals( SORT_DATE_CREATION, strSort ) || StringUtils.equals( SORT_DATE_PUBLICATION, strSort ) || StringUtils.equals( SORT_DATE_MODIFICATION, strSort )
-                || StringUtils.equals( SORT_TITLE, strSort ) || StringUtils.equals( SORT_DESCRIPTION, strSort ) || StringUtils.equals( SORT_PRICE, strSort ) )
+        if ( StringUtils.equals( SORT_DATE_CREATION, strSort ) || StringUtils.equals( SORT_DATE_PUBLICATION, strSort )
+                || StringUtils.equals( SORT_DATE_MODIFICATION, strSort ) || StringUtils.equals( SORT_TITLE, strSort )
+                || StringUtils.equals( SORT_DESCRIPTION, strSort ) || StringUtils.equals( SORT_PRICE, strSort ) )
         {
             return new AnnounceSort( strSort, bSortAsc );
         }

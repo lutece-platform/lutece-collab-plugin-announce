@@ -118,7 +118,7 @@ public class EntryTypeImage extends AbstractEntryTypeFile
         if ( request instanceof MultipartHttpServletRequest )
         {
 
-            String strIdEntry = Integer.toString(entry.getIdEntry());
+            String strIdEntry = Integer.toString( entry.getIdEntry( ) );
             String strAttributePrefix = "attribute" + strIdEntry;
 
             List<FileItem> asynchronousFileItem = getFileSources( request, strAttributePrefix );

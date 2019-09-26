@@ -70,7 +70,6 @@ public class AnnounceSubscriptionDaemon extends Daemon
 
     private static final String PROPERTY_BASE_URL = "lutece.base.url";
 
-
     /**
      * {@inheritDoc}
      */
@@ -78,48 +77,50 @@ public class AnnounceSubscriptionDaemon extends Daemon
     public void run( )
     {
 
-        String numberOfAnnounceToNotify = AppPropertiesService.getProperty(PROPERTY_SUBSCRIPTION_NOTIFICATION_NUMBER);
-        List<AnnounceNotify> listAnnounceToNotify = AnnounceNotifyHome.slecteAll();
+        String numberOfAnnounceToNotify = AppPropertiesService.getProperty( PROPERTY_SUBSCRIPTION_NOTIFICATION_NUMBER );
+        List<AnnounceNotify> listAnnounceToNotify = AnnounceNotifyHome.slecteAll( );
 
-        if (  listAnnounceToNotify != null  )
+        if ( listAnnounceToNotify != null )
         {
-            for (AnnounceNotify announceNotify : listAnnounceToNotify) {
-                Announce announce = AnnounceHome.findByPrimaryKey(announceNotify.getIdAnnounce());
-                if (announce != null) {
-                    List<AnnounceSubscribtionDTO> listSubscriptions = AnnounceSubscriptionProvider.getService( )
-                            .getSubscriptionsByAnnounce(Integer.toString(announce.getCategory().getId()), announce.getUserName(), numberOfAnnounceToNotify );
-                    listSubscriptions = ofNullable(listSubscriptions).
-                            map(lst -> lst.stream()
-                                    .filter(e -> e.getEmailSubscribes()!= null && !e.getEmailSubscribes().isEmpty())
-                                    .collect(Collectors.toList())).orElse(null);
+            for ( AnnounceNotify announceNotify : listAnnounceToNotify )
+            {
+                Announce announce = AnnounceHome.findByPrimaryKey( announceNotify.getIdAnnounce( ) );
+                if ( announce != null )
+                {
+                    List<AnnounceSubscribtionDTO> listSubscriptions = AnnounceSubscriptionProvider.getService( ).getSubscriptionsByAnnounce(
+                            Integer.toString( announce.getCategory( ).getId( ) ), announce.getUserName( ), numberOfAnnounceToNotify );
+                    listSubscriptions = ofNullable( listSubscriptions ).map(
+                            lst -> lst.stream( ).filter( e -> e.getEmailSubscribes( ) != null && !e.getEmailSubscribes( ).isEmpty( ) )
+                                    .collect( Collectors.toList( ) ) ).orElse( null );
 
                     if ( listSubscriptions != null )
                     {
                         String strSubject = AppPropertiesService.getProperty( PROPERTY_SUBSCRIPTION_NOTIFICATION_SUBJECT );
                         String strSenderName = MailService.getNoReplyEmail( );
                         String strSenderEmail = strSenderName;
-                        StringBuilder emailSubscribes = new StringBuilder("");
+                        StringBuilder emailSubscribes = new StringBuilder( "" );
 
                         int countElst = 1;
-                        int sizeLstSubNotify = listSubscriptions.size();
+                        int sizeLstSubNotify = listSubscriptions.size( );
                         for ( AnnounceSubscribtionDTO subscription : listSubscriptions )
                         {
-                            if (subscription != null) {
-                                emailSubscribes.append(subscription.getEmailSubscribes());
+                            if ( subscription != null )
+                            {
+                                emailSubscribes.append( subscription.getEmailSubscribes( ) );
                             }
-                            if (sizeLstSubNotify > countElst) {
+                            if ( sizeLstSubNotify > countElst )
+                            {
                                 countElst++;
-                                emailSubscribes.append(";");
+                                emailSubscribes.append( ";" );
                             }
                         }
-                        notifyUser( announce, strSubject, strSenderName, strSenderEmail, emailSubscribes.toString() );
-                        AnnounceNotifyHome.delete(announceNotify.getId());
+                        notifyUser( announce, strSubject, strSenderName, strSenderEmail, emailSubscribes.toString( ) );
+                        AnnounceNotifyHome.delete( announceNotify.getId( ) );
                     }
                 }
             }
         }
     }
-
 
     /**
      * Notify a user that announces ha has subscribed to have been published
@@ -127,7 +128,7 @@ public class AnnounceSubscriptionDaemon extends Daemon
      * @param strUserName
      *            The name of the user to notify
      * @param announcesToNotify
-     *             published announce
+     *            published announce
      * @param strSubject
      *            The subject of the email to send
      * @param strSenderName
@@ -135,27 +136,23 @@ public class AnnounceSubscriptionDaemon extends Daemon
      * @param strSenderEmail
      *            The email address of the sender of the email
      */
-    private String strBaseUrl = AppPropertiesService.getProperty(PROPERTY_BASE_URL)
-            + "/"
-            + AppPathService.getPortalUrl()
-            + "?";
+    private String strBaseUrl = AppPropertiesService.getProperty( PROPERTY_BASE_URL ) + "/" + AppPathService.getPortalUrl( ) + "?";
 
-    private void notifyUser( Announce announcesToNotify, String strSubject, String strSenderName, String strSenderEmail, String strUserEmail)
+    private void notifyUser( Announce announcesToNotify, String strSubject, String strSenderName, String strSenderEmail, String strUserEmail )
     {
 
         Map<String, Object> model = new HashMap<String, Object>( );
-        model.put(MARK_ANNOUNCE, announcesToNotify );
+        model.put( MARK_ANNOUNCE, announcesToNotify );
 
-        model.put( MARK_PROD_URL, strBaseUrl
-                + MARK_QUERY_SPECIFIC_ANNOUNCE);
-        model.put(MARK_CATEGORY, CategoryHome.findByPrimaryKey(announcesToNotify.getCategory().getId()));
-        model.put(MARK_URL_SUBSCRIPTION, strBaseUrl+MARK_QUERY_URL_SUBSCRIPTION);
+        model.put( MARK_PROD_URL, strBaseUrl + MARK_QUERY_SPECIFIC_ANNOUNCE );
+        model.put( MARK_CATEGORY, CategoryHome.findByPrimaryKey( announcesToNotify.getCategory( ).getId( ) ) );
+        model.put( MARK_URL_SUBSCRIPTION, strBaseUrl + MARK_QUERY_URL_SUBSCRIPTION );
 
         HtmlTemplate template = AppTemplateService.getTemplate( TEMPLATE_EMAIL_ANNOUNCES, Locale.getDefault( ), model );
 
-        if ( !strSenderEmail.equals(" ") )
+        if ( !strSenderEmail.equals( " " ) )
         {
-            MailService.sendMailHtml((String)null, (String)null, strUserEmail, strSenderName, strSenderEmail, strSubject, template.getHtml( ) );
+            MailService.sendMailHtml( (String) null, (String) null, strUserEmail, strSenderName, strSenderEmail, strSubject, template.getHtml( ) );
         }
 
     }

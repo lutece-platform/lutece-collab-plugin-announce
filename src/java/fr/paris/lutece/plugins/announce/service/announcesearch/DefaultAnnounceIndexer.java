@@ -289,11 +289,11 @@ public class DefaultAnnounceIndexer implements IAnnounceSearchIndexer
                 DateTools.Resolution.DAY );
         doc.add( new Field( AnnounceSearchItem.FIELD_DATE, strDate, TextField.TYPE_STORED ) );
 
-        if (announce.getPrice() != 0.0)
+        if ( announce.getPrice( ) != 0.0 )
         {
-                double dPrice = announce.getPrice();
-                // Add the price of the announce
-                doc.add( new Field( AnnounceSearchItem.FIELD_PRICE, AnnounceSearchService.formatPriceForIndexer( dPrice ), TextField.TYPE_STORED ) );
+            double dPrice = announce.getPrice( );
+            // Add the price of the announce
+            doc.add( new Field( AnnounceSearchItem.FIELD_PRICE, AnnounceSearchService.formatPriceForIndexer( dPrice ), TextField.TYPE_STORED ) );
         }
 
         String strContentToIndex = getContentToIndex( announce, plugin );

@@ -378,10 +378,11 @@ public class AnnounceJspBean extends PluginAdminPageJspBean
         {
             int nIdAnnounce = Integer.parseInt( strAnnounceId );
             Announce announce = AnnounceHome.findByPrimaryKey( nIdAnnounce );
-            if (announce.getDatePublication().getTime() == new Timestamp(0).getTime()) {
-                AnnounceNotify announceNotify = new AnnounceNotify();
-                announceNotify.setIdAnnounce(announce.getId());
-                AnnounceNotifyHome.create(announceNotify);
+            if ( announce.getDatePublication( ).getTime( ) == new Timestamp( 0 ).getTime( ) )
+            {
+                AnnounceNotify announceNotify = new AnnounceNotify( );
+                announceNotify.setIdAnnounce( announce.getId( ) );
+                AnnounceNotifyHome.create( announceNotify );
             }
             announce.setDateCreation( new Timestamp( GregorianCalendar.getInstance( ).getTimeInMillis( ) ) );
             announce.setPublished( bPublished );

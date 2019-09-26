@@ -7,12 +7,13 @@ import fr.paris.lutece.portal.service.spring.SpringContextService;
 
 import java.util.List;
 
-public final class AnnounceNotifyHome {
+public final class AnnounceNotifyHome
+{
     // Static variable pointed at the DAO instance
     private static IAnnounceNotifyDAO _dao = SpringContextService.getBean( "announce.announceNotifyDAO" );
     private static Plugin _plugin = PluginService.getPlugin( AnnouncePlugin.PLUGIN_NAME );
 
-    private AnnounceNotifyHome ()
+    private AnnounceNotifyHome( )
     {
     }
 
@@ -21,11 +22,13 @@ public final class AnnounceNotifyHome {
         _dao.insert( announce, _plugin );
     }
 
-    public static void delete (int nIdAnnounceNotify){
-        _dao.delete(nIdAnnounceNotify, _plugin);
+    public static void delete( int nIdAnnounceNotify )
+    {
+        _dao.delete( nIdAnnounceNotify, _plugin );
     }
 
-    public static List<AnnounceNotify> slecteAll() {
-       return _dao.load(_plugin);
+    public static List<AnnounceNotify> slecteAll( )
+    {
+        return _dao.load( _plugin );
     }
 }

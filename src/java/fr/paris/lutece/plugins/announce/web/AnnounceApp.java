@@ -1010,11 +1010,11 @@ public class AnnounceApp extends MVCApplication
         String strDescriptionAnnounce = request.getParameter( PARAMETER_DESCRIPTION_ANNOUNCE );
         String strContactInformation = request.getParameter( PARAMETER_CONTACT_INFORMATION );
         String strTags = request.getParameter( PARAMETER_TAGS );
-        Double nPriceAnnounce = ( request.getParameter( PARAMETER_PRICE_ANNOUNCE ) == null ) ? 0.0 : Double.parseDouble(request
-                .getParameter( PARAMETER_PRICE_ANNOUNCE ));
+        Double nPriceAnnounce = ( request.getParameter( PARAMETER_PRICE_ANNOUNCE ) == null ) ? 0.0 : Double.parseDouble( request
+                .getParameter( PARAMETER_PRICE_ANNOUNCE ) );
 
         if ( StringUtils.isEmpty( strTitleAnnounce ) || StringUtils.isEmpty( strDescriptionAnnounce ) || StringUtils.isEmpty( strContactInformation )
-                || ( category.getDisplayPrice( ) && category.getPriceMandatory( ) && ( nPriceAnnounce == 0.0) ) )
+                || ( category.getDisplayPrice( ) && category.getPriceMandatory( ) && ( nPriceAnnounce == 0.0 ) ) )
         {
             SiteMessageService.setMessage( request, Messages.MANDATORY_FIELDS, SiteMessage.TYPE_STOP );
 
@@ -1141,11 +1141,11 @@ public class AnnounceApp extends MVCApplication
         String strDescriptionAnnounce = request.getParameter( PARAMETER_DESCRIPTION_ANNOUNCE );
         String strContactInformation = request.getParameter( PARAMETER_CONTACT_INFORMATION );
         String strTags = request.getParameter( PARAMETER_TAGS );
-        Double nPriceAnnounce = ( request.getParameter( PARAMETER_PRICE_ANNOUNCE ) == null ) ? 0.0 : Double.parseDouble(request
-                .getParameter( PARAMETER_PRICE_ANNOUNCE ));
+        Double nPriceAnnounce = ( request.getParameter( PARAMETER_PRICE_ANNOUNCE ) == null ) ? 0.0 : Double.parseDouble( request
+                .getParameter( PARAMETER_PRICE_ANNOUNCE ) );
 
         if ( StringUtils.isEmpty( strTitleAnnounce ) || StringUtils.isEmpty( strDescriptionAnnounce ) || StringUtils.isEmpty( strContactInformation )
-                || ( category.getDisplayPrice( ) && category.getPriceMandatory( ) && (nPriceAnnounce == 0.0 ) ) )
+                || ( category.getDisplayPrice( ) && category.getPriceMandatory( ) && ( nPriceAnnounce == 0.0 ) ) )
         {
             SiteMessageService.setMessage( request, Messages.MANDATORY_FIELDS, SiteMessage.TYPE_STOP );
 
