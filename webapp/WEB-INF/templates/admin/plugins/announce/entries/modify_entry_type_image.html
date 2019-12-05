@@ -39,7 +39,15 @@
 						</div>
 					</div>
 				</div>
-				<#assign field=getFieldByCode(entry, "file_config")>
+					<#if entry??>
+						<#list entry.fields as key>
+							<#if key??>
+								<#if key.code=="file_config">
+									<#assign field=key>
+								</#if>
+							</#if>
+						</#list>
+					</#if>
 				<div class="form-group">
 					<label class="control-label col-xs-12 col-sm-12 col-md-3" for="width">#i18n{announce.createEntry.labelWidth} * </label>
 					<div class="col-xs-12 col-sm-12 col-md-6">
