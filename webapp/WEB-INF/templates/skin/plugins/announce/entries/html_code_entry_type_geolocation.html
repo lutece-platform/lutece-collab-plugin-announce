@@ -9,7 +9,7 @@
     <#if list_responses??>
 		<#list list_responses as response>
 			<#if response.entry.idEntry == entry.idEntry && response.toStringValueResponse??>
-				
+				<#if response.field.title??>
 					<#if response.field.title == "X">
 						<#assign lat = response.toStringValueResponse />
 						<input type="hidden" name="${entry.idEntry}_x" id="${entry.idEntry}_x" value="${response.toStringValueResponse!}"/>
@@ -21,6 +21,7 @@
 					<#else>
 						<input type="text" name="${entry.idEntry}_address" id="${entry.idEntry}_address" size="50" <#if response.entry.error??>class="error"<#else>class="${entry.CSSClass!}"</#if> value="${response.toStringValueResponse!}" />
 					</#if>
+				</#if>
 			</#if>
 		</#list>
 	<#else>
