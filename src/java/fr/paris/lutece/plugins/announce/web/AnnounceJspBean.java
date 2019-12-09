@@ -207,7 +207,7 @@ public class AnnounceJspBean extends PluginAdminPageJspBean
         model.put( MARK_NB_ITEMS_PER_PAGE, Integer.toString( _nItemsPerPage ) );
         model.put( MARK_PAGINATOR, paginator );
         //model.put( MARK_ANNOUNCE_LIST, paginator.getPageItems( ).stream().sorted((o1,o2)-> o2.getDateModification().compareTo(o1.getDateModification())).collect(Collectors.toList()) );
-        model.put( MARK_ANNOUNCE_LIST, paginator.getPageItems( ).stream().sorted(Comparator.comparing(Announce::getDateModification).reversed()).collect(Collectors.toList()) );
+        model.put( MARK_ANNOUNCE_LIST, paginator.getPageItems( ) );
 
         model.put( MARK_RIGHT_DELETE,
                 RBACService.isAuthorized( Announce.RESOURCE_TYPE, RBAC.WILDCARD_RESOURCES_ID, AnnounceResourceIdService.PERMISSION_DELETE, user ) );

@@ -73,7 +73,7 @@ public class AnnounceSort
     /**
      * Default sort to use
      */
-    public static final AnnounceSort DEFAULT_SORT = new AnnounceSort( SORT_DATE_PUBLICATION, false );
+    public static final AnnounceSort DEFAULT_SORT = new AnnounceSort( SORT_DATE_MODIFICATION, false );
     private final String _strSortColumn;
     private final boolean _bSortAsc;
 
