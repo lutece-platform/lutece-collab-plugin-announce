@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002-2018, Mairie de Paris
+ * Copyright (c) 2002-2020, City of Paris
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -186,7 +186,7 @@ public class EntryTypeImage extends AbstractEntryTypeFile
                         formError.setMandatoryError( false );
 
                         Object [ ] args = {
-                            ( fileItem != null ) ? fileItem.getName( ) : StringUtils.EMPTY
+                                ( fileItem != null ) ? fileItem.getName( ) : StringUtils.EMPTY
                         };
                         formError.setErrorMessage( I18nService.getLocalizedString( MESSAGE_ERROR_NOT_AN_IMAGE, args, request.getLocale( ) ) );
                         formError.setTitleQuestion( entry.getTitle( ) );

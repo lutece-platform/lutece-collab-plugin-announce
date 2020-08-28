@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002-2018, Mairie de Paris
+ * Copyright (c) 2002-2020, City of Paris
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -267,8 +267,9 @@ public class AnnounceApp extends MVCApplication
 
         AnnounceSearchFilter filter = getAnnounceFilterFromRequest( request );
 
-        int nCurrentPageIndex = ( StringUtils.isNotEmpty( _strCurrentPageIndex ) && StringUtils.isNumeric( _strCurrentPageIndex ) ) ? Integer
-                .parseInt( _strCurrentPageIndex ) : 1;
+        int nCurrentPageIndex = ( StringUtils.isNotEmpty( _strCurrentPageIndex ) && StringUtils.isNumeric( _strCurrentPageIndex ) )
+                ? Integer.parseInt( _strCurrentPageIndex )
+                : 1;
         List<Announce> listAnnouncesResults = new ArrayList<Announce>( );
 
         // -------------------------SORT---------------------------------
@@ -766,9 +767,9 @@ public class AnnounceApp extends MVCApplication
             strUserInfo = listAnnounces.get( 0 ).getUserLastName( ) + " " + listAnnounces.get( 0 ).getUserSecondName( );
         }
 
-        Paginator<Announce> paginator = new Paginator<Announce>( listAnnounces, _nItemsPerPage, JSP_PORTAL + "?" + PARAMETER_PAGE + "="
-                + AnnounceUtils.PARAMETER_PAGE_ANNOUNCE + "&" + MVCUtils.PARAMETER_ACTION + "=" + ACTION_MY_ANNOUNCES, PARAMETER_PAGE_INDEX,
-                _strCurrentPageIndex );
+        Paginator<Announce> paginator = new Paginator<Announce>( listAnnounces, _nItemsPerPage,
+                JSP_PORTAL + "?" + PARAMETER_PAGE + "=" + AnnounceUtils.PARAMETER_PAGE_ANNOUNCE + "&" + MVCUtils.PARAMETER_ACTION + "=" + ACTION_MY_ANNOUNCES,
+                PARAMETER_PAGE_INDEX, _strCurrentPageIndex );
 
         Map<String, Object> model = new HashMap<String, Object>( );
         model.put( MARK_NB_ITEMS_PER_PAGE, "" + _nItemsPerPage );
@@ -1010,8 +1011,8 @@ public class AnnounceApp extends MVCApplication
         String strDescriptionAnnounce = request.getParameter( PARAMETER_DESCRIPTION_ANNOUNCE );
         String strContactInformation = request.getParameter( PARAMETER_CONTACT_INFORMATION );
         String strTags = request.getParameter( PARAMETER_TAGS );
-        Double nPriceAnnounce = ( request.getParameter( PARAMETER_PRICE_ANNOUNCE ) == null ) ? 0.0 : Double.parseDouble( request
-                .getParameter( PARAMETER_PRICE_ANNOUNCE ) );
+        Double nPriceAnnounce = ( request.getParameter( PARAMETER_PRICE_ANNOUNCE ) == null ) ? 0.0
+                : Double.parseDouble( request.getParameter( PARAMETER_PRICE_ANNOUNCE ) );
 
         if ( StringUtils.isEmpty( strTitleAnnounce ) || StringUtils.isEmpty( strDescriptionAnnounce ) || StringUtils.isEmpty( strContactInformation )
                 || ( category.getDisplayPrice( ) && category.getPriceMandatory( ) && ( nPriceAnnounce == 0.0 ) ) )
@@ -1141,8 +1142,8 @@ public class AnnounceApp extends MVCApplication
         String strDescriptionAnnounce = request.getParameter( PARAMETER_DESCRIPTION_ANNOUNCE );
         String strContactInformation = request.getParameter( PARAMETER_CONTACT_INFORMATION );
         String strTags = request.getParameter( PARAMETER_TAGS );
-        Double nPriceAnnounce = ( request.getParameter( PARAMETER_PRICE_ANNOUNCE ) == null ) ? 0.0 : Double.parseDouble( request
-                .getParameter( PARAMETER_PRICE_ANNOUNCE ) );
+        Double nPriceAnnounce = ( request.getParameter( PARAMETER_PRICE_ANNOUNCE ) == null ) ? 0.0
+                : Double.parseDouble( request.getParameter( PARAMETER_PRICE_ANNOUNCE ) );
 
         if ( StringUtils.isEmpty( strTitleAnnounce ) || StringUtils.isEmpty( strDescriptionAnnounce ) || StringUtils.isEmpty( strContactInformation )
                 || ( category.getDisplayPrice( ) && category.getPriceMandatory( ) && ( nPriceAnnounce == 0.0 ) ) )

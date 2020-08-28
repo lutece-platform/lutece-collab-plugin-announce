@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002-2018, Mairie de Paris
+ * Copyright (c) 2002-2020, City of Paris
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -206,7 +206,8 @@ public class AnnounceJspBean extends PluginAdminPageJspBean
 
         model.put( MARK_NB_ITEMS_PER_PAGE, Integer.toString( _nItemsPerPage ) );
         model.put( MARK_PAGINATOR, paginator );
-        //model.put( MARK_ANNOUNCE_LIST, paginator.getPageItems( ).stream().sorted((o1,o2)-> o2.getDateModification().compareTo(o1.getDateModification())).collect(Collectors.toList()) );
+        // model.put( MARK_ANNOUNCE_LIST, paginator.getPageItems( ).stream().sorted((o1,o2)->
+        // o2.getDateModification().compareTo(o1.getDateModification())).collect(Collectors.toList()) );
         model.put( MARK_ANNOUNCE_LIST, paginator.getPageItems( ) );
 
         model.put( MARK_RIGHT_DELETE,
@@ -283,10 +284,8 @@ public class AnnounceJspBean extends PluginAdminPageJspBean
 
         if ( ( category.getIdWorkflow( ) > 0 ) && WorkflowService.getInstance( ).isAvailable( ) )
         {
-            model.put(
-                    MARK_RESOURCE_HISTORY,
-                    WorkflowService.getInstance( ).getDisplayDocumentHistory( nIdAnnounce, Announce.RESOURCE_TYPE, category.getIdWorkflow( ), request,
-                            getLocale( ) ) );
+            model.put( MARK_RESOURCE_HISTORY, WorkflowService.getInstance( ).getDisplayDocumentHistory( nIdAnnounce, Announce.RESOURCE_TYPE,
+                    category.getIdWorkflow( ), request, getLocale( ) ) );
         }
 
         HtmlTemplate template = AppTemplateService.getTemplate( TEMPLATE_PREVIEW_ANNOUNCE, getLocale( ), model );
@@ -310,8 +309,8 @@ public class AnnounceJspBean extends PluginAdminPageJspBean
 
         if ( !RBACService.isAuthorized( Announce.RESOURCE_TYPE, strAnnounceId, AnnounceResourceIdService.PERMISSION_DELETE, adminUser ) )
         {
-            throw new AccessDeniedException( "User '" + adminUser.getFirstName( ) + " " + adminUser.getLastName( )
-                    + "' is not authorized to remove announce with id " + strAnnounceId );
+            throw new AccessDeniedException(
+                    "User '" + adminUser.getFirstName( ) + " " + adminUser.getLastName( ) + "' is not authorized to remove announce with id " + strAnnounceId );
         }
 
         int nIdAnnounce = Integer.parseInt( strAnnounceId );
@@ -338,8 +337,8 @@ public class AnnounceJspBean extends PluginAdminPageJspBean
 
         if ( !RBACService.isAuthorized( Announce.RESOURCE_TYPE, strAnnounceId, AnnounceResourceIdService.PERMISSION_DELETE, adminUser ) )
         {
-            throw new AccessDeniedException( "User '" + adminUser.getFirstName( ) + " " + adminUser.getLastName( )
-                    + "' is not authorized to remove announce with id " + strAnnounceId );
+            throw new AccessDeniedException(
+                    "User '" + adminUser.getFirstName( ) + " " + adminUser.getLastName( ) + "' is not authorized to remove announce with id " + strAnnounceId );
         }
 
         int nIdAnnounce = Integer.parseInt( strAnnounceId );

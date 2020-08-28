@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002-2018, Mairie de Paris
+ * Copyright (c) 2002-2020, City of Paris
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -64,8 +64,8 @@ public class AnnounceExpirationDaemon extends Daemon
         int nNbDaysBeforeAnnouncesRemoval = AppPropertiesService.getPropertyInt( PROPERTY_NB_DAYS_BEFORE_ANNOUNCES_REMOVAL,
                 DEFAULT_NB_DAYS_BEFORE_ANNOUNCES_REMOVAL );
         int nNbDaysBeforeAnnouncesNotify = nNbDaysBeforeAnnouncesRemoval + 7;
-        String email, strSenderName = "strSenderName", strSenderEmail = MailService.getNoReplyEmail( ), strSubject = "Suppression d'annouce", strMessage = "Bonjour, "
-                + "\nL'annouce : ";
+        String email, strSenderName = "strSenderName", strSenderEmail = MailService.getNoReplyEmail( ), strSubject = "Suppression d'annouce",
+                strMessage = "Bonjour, " + "\nL'annouce : ";
 
         calendar.add( Calendar.DATE, -1 * nNbDaysBeforeAnnouncesRemoval );
         calendarNotification.add( Calendar.DATE, -1 * nNbDaysBeforeAnnouncesNotify );

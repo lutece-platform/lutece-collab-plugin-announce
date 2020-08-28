@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002-2018, Mairie de Paris
+ * Copyright (c) 2002-2020, City of Paris
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -241,8 +241,9 @@ public class AnnounceSubscriptionProvider implements ISubscriptionProviderServic
     {
         if ( StringUtils.equals( SUBSCRIPTION_FILTER, strSubscriptionKey ) )
         {
-            int nIdFilter = ( StringUtils.isNotEmpty( strIdSubscribedResource ) && StringUtils.isNumeric( strIdSubscribedResource ) ) ? Integer
-                    .parseInt( strIdSubscribedResource ) : 0;
+            int nIdFilter = ( StringUtils.isNotEmpty( strIdSubscribedResource ) && StringUtils.isNumeric( strIdSubscribedResource ) )
+                    ? Integer.parseInt( strIdSubscribedResource )
+                    : 0;
 
             if ( nIdFilter > 0 )
             {
@@ -257,8 +258,9 @@ public class AnnounceSubscriptionProvider implements ISubscriptionProviderServic
             else
                 if ( StringUtils.equals( SUBSCRIPTION_CATEGORY, strSubscriptionKey ) )
                 {
-                    int nIdCategory = ( StringUtils.isNotEmpty( strIdSubscribedResource ) && StringUtils.isNumeric( strIdSubscribedResource ) ) ? Integer
-                            .parseInt( strIdSubscribedResource ) : 0;
+                    int nIdCategory = ( StringUtils.isNotEmpty( strIdSubscribedResource ) && StringUtils.isNumeric( strIdSubscribedResource ) )
+                            ? Integer.parseInt( strIdSubscribedResource )
+                            : 0;
 
                     return AnnounceApp.getUrlViewCategory( LocalVariables.getRequest( ), nIdCategory );
                 }

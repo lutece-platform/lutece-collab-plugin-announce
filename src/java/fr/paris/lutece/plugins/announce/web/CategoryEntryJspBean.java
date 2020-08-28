@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002-2018, Mairie de Paris
+ * Copyright (c) 2002-2020, City of Paris
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -456,7 +456,7 @@ public class CategoryEntryJspBean extends MVCAdminJspBean
             {
                 String strCause = AdminMessageService.getFormattedList( listErrors, getLocale( ) );
                 Object [ ] args = {
-                    strCause
+                        strCause
                 };
 
                 return AdminMessageService.getMessageUrl( request, MESSAGE_CANT_REMOVE_ENTRY, args, AdminMessage.TYPE_STOP );
@@ -582,7 +582,7 @@ public class CategoryEntryJspBean extends MVCAdminJspBean
             Entry entry = EntryHome.findByPrimaryKey( nIdEntry );
 
             Object [ ] tabEntryTileCopy = {
-                entry.getTitle( )
+                    entry.getTitle( )
             };
             String strTitleCopyEntry = I18nService.getLocalizedString( PROPERTY_COPY_ENTRY_TITLE, tabEntryTileCopy, getLocale( ) );
 

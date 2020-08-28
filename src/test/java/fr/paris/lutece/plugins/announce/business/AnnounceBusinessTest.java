@@ -31,37 +31,15 @@
  *
  * License 1.0
  */
-package fr.paris.lutece.plugins.announce.service.announcesearch;
+package fr.paris.lutece.plugins.announce.business;
 
-import fr.paris.lutece.plugins.announce.business.Announce;
-import fr.paris.lutece.plugins.announce.business.AnnounceSearchFilter;
-import fr.paris.lutece.plugins.announce.business.AnnounceSort;
-import fr.paris.lutece.portal.service.plugin.Plugin;
-import fr.paris.lutece.portal.service.search.SearchResult;
+import fr.paris.lutece.test.LuteceTestCase;
 
-import java.util.List;
-
-/**
- * SearchEngine
- */
-public interface IAnnounceSearchEngine
+public class AnnounceBusinessTest extends LuteceTestCase
 {
-    /**
-     * Get list of record key return by the search. Only results of the current page are returned by this function
-     * 
-     * @param filter
-     *            The search filter
-     * @param plugin
-     *            the plugin
-     * @param listSearchResult
-     *            The list of search results
-     * @param nPage
-     *            The number of the current page
-     * @param nItemsPerPage
-     *            The number of items per page. 0 to ignore the pagination
-     * @return The total number of results found
-     */
-    int getSearchResults( AnnounceSearchFilter filter, Plugin plugin, List<SearchResult> listSearchResult, int nPage, int nItemsPerPage );
 
-    int getSearchResultsBis( AnnounceSearchFilter filter, Plugin plugin, List<Announce> listSearchResult, int nPage, int nItemsPerPage, AnnounceSort anSort );
+    public void testCRUD( )
+    {
+
+    }
 }

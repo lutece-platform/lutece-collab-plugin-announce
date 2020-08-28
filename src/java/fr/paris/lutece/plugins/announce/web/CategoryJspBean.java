@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002-2018, Mairie de Paris
+ * Copyright (c) 2002-2020, City of Paris
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -630,7 +630,7 @@ public class CategoryJspBean extends PluginAdminPageJspBean
         int nIdCategory = Integer.parseInt( strIdCategory );
         Category category = CategoryHome.findByPrimaryKey( nIdCategory );
         Object [ ] strTitleCategory = {
-            category.getLabel( )
+                category.getLabel( )
         };
         String strTitleCopyCategory = I18nService.getLocalizedString( MESSAGE_COPY_TITLE, strTitleCategory, getLocale( ) );
         category.setLabel( strTitleCopyCategory );

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002-2018, Mairie de Paris
+ * Copyright (c) 2002-2020, City of Paris
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -107,8 +107,8 @@ public class DefaultAnnounceIndexer implements IAnnounceSearchIndexer
      * @throws InterruptedException
      *             If the indexer is interrupted
      */
-    private void indexListAnnounce( IndexWriter indexWriter, List<Integer> listIdAnounce, Plugin plugin ) throws CorruptIndexException, IOException,
-            InterruptedException
+    private void indexListAnnounce( IndexWriter indexWriter, List<Integer> listIdAnounce, Plugin plugin )
+            throws CorruptIndexException, IOException, InterruptedException
     {
         String strPortalUrl = AppPathService.getPortalUrl( );
         Iterator<Integer> it = listIdAnounce.iterator( );
@@ -130,8 +130,8 @@ public class DefaultAnnounceIndexer implements IAnnounceSearchIndexer
      * {@inheritDoc}
      */
     @Override
-    public synchronized void processIndexing( IndexWriter indexWriter, boolean bCreate, StringBuffer sbLogs ) throws IOException, InterruptedException,
-            SiteMessageException
+    public synchronized void processIndexing( IndexWriter indexWriter, boolean bCreate, StringBuffer sbLogs )
+            throws IOException, InterruptedException, SiteMessageException
     {
         Plugin plugin = PluginService.getPlugin( AnnouncePlugin.PLUGIN_NAME );
         List<Integer> listIdAnnounce = new ArrayList<Integer>( );
@@ -146,7 +146,7 @@ public class DefaultAnnounceIndexer implements IAnnounceSearchIndexer
 
                 Term term = new Term( AnnounceSearchItem.FIELD_ID_ANNOUNCE, Integer.toString( action.getIdAnnounce( ) ) );
                 Term [ ] terms = {
-                    term
+                        term
                 };
 
                 indexWriter.deleteDocuments( terms );
@@ -160,7 +160,7 @@ public class DefaultAnnounceIndexer implements IAnnounceSearchIndexer
 
                 Term term = new Term( AnnounceSearchItem.FIELD_ID_ANNOUNCE, Integer.toString( action.getIdAnnounce( ) ) );
                 Term [ ] terms = {
-                    term
+                        term
                 };
 
                 indexWriter.deleteDocuments( terms );

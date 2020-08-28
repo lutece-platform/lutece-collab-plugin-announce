@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002-2018, Mairie de Paris
+ * Copyright (c) 2002-2020, City of Paris
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -183,9 +183,9 @@ public class AnnounceLuceneSearchEngine implements IAnnounceSearchEngine
             {
                 int nPriceMin = ( filter.getPriceMin( ) > 0 ) ? filter.getPriceMin( ) : 0;
                 int nPriceMax = ( filter.getPriceMax( ) > 0 ) ? filter.getPriceMax( ) : Integer.MAX_VALUE;
-                Query queryRangePrice = new TermRangeQuery( AnnounceSearchItem.FIELD_PRICE, new BytesRef(
-                        AnnounceSearchService.formatPriceForIndexer( nPriceMin ) ), new BytesRef( AnnounceSearchService.formatPriceForIndexer( nPriceMax ) ),
-                        true, true );
+                Query queryRangePrice = new TermRangeQuery( AnnounceSearchItem.FIELD_PRICE,
+                        new BytesRef( AnnounceSearchService.formatPriceForIndexer( nPriceMin ) ),
+                        new BytesRef( AnnounceSearchService.formatPriceForIndexer( nPriceMax ) ), true, true );
                 queries.add( queryRangePrice.toString( ) );
                 sectors.add( AnnounceSearchItem.FIELD_PRICE );
                 flags.add( BooleanClause.Occur.MUST );
@@ -331,9 +331,9 @@ public class AnnounceLuceneSearchEngine implements IAnnounceSearchEngine
             {
                 int nPriceMin = ( filter.getPriceMin( ) > 0 ) ? filter.getPriceMin( ) : 0;
                 int nPriceMax = ( filter.getPriceMax( ) > 0 ) ? filter.getPriceMax( ) : Integer.MAX_VALUE;
-                Query queryRangePrice = new TermRangeQuery( AnnounceSearchItem.FIELD_PRICE, new BytesRef(
-                        AnnounceSearchService.formatPriceForIndexer( nPriceMin ) ), new BytesRef( AnnounceSearchService.formatPriceForIndexer( nPriceMax ) ),
-                        true, true );
+                Query queryRangePrice = new TermRangeQuery( AnnounceSearchItem.FIELD_PRICE,
+                        new BytesRef( AnnounceSearchService.formatPriceForIndexer( nPriceMin ) ),
+                        new BytesRef( AnnounceSearchService.formatPriceForIndexer( nPriceMax ) ), true, true );
                 queries.add( queryRangePrice.toString( ) );
                 sectors.add( AnnounceSearchItem.FIELD_PRICE );
                 flags.add( BooleanClause.Occur.MUST );

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002-2018, Mairie de Paris
+ * Copyright (c) 2002-2020, City of Paris
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -89,9 +89,9 @@ public class AnnounceSubscriptionDaemon extends Daemon
                 {
                     List<AnnounceSubscribtionDTO> listSubscriptions = AnnounceSubscriptionProvider.getService( ).getSubscriptionsByAnnounce(
                             Integer.toString( announce.getCategory( ).getId( ) ), announce.getUserName( ), numberOfAnnounceToNotify );
-                    listSubscriptions = ofNullable( listSubscriptions ).map(
-                            lst -> lst.stream( ).filter( e -> e.getEmailSubscribes( ) != null && !e.getEmailSubscribes( ).isEmpty( ) )
-                                    .collect( Collectors.toList( ) ) ).orElse( null );
+                    listSubscriptions = ofNullable( listSubscriptions ).map( lst -> lst.stream( )
+                            .filter( e -> e.getEmailSubscribes( ) != null && !e.getEmailSubscribes( ).isEmpty( ) ).collect( Collectors.toList( ) ) )
+                            .orElse( null );
 
                     if ( listSubscriptions != null )
                     {
