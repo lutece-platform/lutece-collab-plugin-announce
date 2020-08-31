@@ -33,6 +33,8 @@
  */
 package fr.paris.lutece.plugins.announce.business;
 
+import java.util.List;
+
 import fr.paris.lutece.plugins.announce.service.AnnounceCacheService;
 import fr.paris.lutece.plugins.announce.service.AnnouncePlugin;
 import fr.paris.lutece.plugins.genericattributes.business.Entry;
@@ -43,10 +45,6 @@ import fr.paris.lutece.portal.service.plugin.PluginService;
 import fr.paris.lutece.portal.service.spring.SpringContextService;
 import fr.paris.lutece.portal.service.util.AppException;
 import fr.paris.lutece.util.ReferenceList;
-import fr.paris.lutece.util.sql.TransactionManager;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * the Home class for category

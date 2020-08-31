@@ -33,6 +33,29 @@
  */
 package fr.paris.lutece.plugins.announce.service.announcesearch;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
+import org.apache.lucene.document.DateTools;
+import org.apache.lucene.document.Document;
+import org.apache.lucene.document.Field;
+import org.apache.lucene.document.StoredField;
+import org.apache.lucene.document.StringField;
+import org.apache.lucene.document.TextField;
+import org.apache.lucene.index.IndexWriter;
+import org.apache.lucene.index.Term;
+import org.apache.tika.exception.TikaException;
+import org.apache.tika.metadata.Metadata;
+import org.apache.tika.parser.ParseContext;
+import org.apache.tika.parser.html.HtmlParser;
+import org.apache.tika.sax.BodyContentHandler;
+import org.xml.sax.ContentHandler;
+import org.xml.sax.SAXException;
+
 import fr.paris.lutece.plugins.announce.business.Announce;
 import fr.paris.lutece.plugins.announce.business.AnnounceHome;
 import fr.paris.lutece.plugins.announce.business.AnnounceSort;
@@ -44,30 +67,11 @@ import fr.paris.lutece.portal.service.message.SiteMessageException;
 import fr.paris.lutece.portal.service.plugin.Plugin;
 import fr.paris.lutece.portal.service.plugin.PluginService;
 import fr.paris.lutece.portal.service.search.IndexationService;
+import fr.paris.lutece.portal.service.search.SearchItem;
 import fr.paris.lutece.portal.service.util.AppException;
 import fr.paris.lutece.portal.service.util.AppPathService;
 import fr.paris.lutece.portal.service.util.AppPropertiesService;
 import fr.paris.lutece.util.url.UrlItem;
-import org.apache.lucene.document.*;
-import org.apache.lucene.index.CorruptIndexException;
-import org.apache.lucene.index.IndexWriter;
-import org.apache.lucene.index.Term;
-import org.apache.tika.exception.TikaException;
-import org.apache.tika.metadata.Metadata;
-import org.apache.tika.parser.ParseContext;
-import org.apache.tika.parser.html.HtmlParser;
-import org.apache.tika.sax.BodyContentHandler;
-import org.xml.sax.ContentHandler;
-import org.xml.sax.SAXException;
-
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-
-//import org.apache.lucene.demo.html.HTMLParser;
 
 /**
  * DefaultAnnounceIndexer
@@ -100,15 +104,10 @@ public class DefaultAnnounceIndexer implements IAnnounceSearchIndexer
      *            The list of id announce
      * @param plugin
      *            the plugin
-     * @throws CorruptIndexException
-     *             If the index is corrupted
      * @throws IOException
      *             If an IO Exception occurred
-     * @throws InterruptedException
-     *             If the indexer is interrupted
      */
-    private void indexListAnnounce( IndexWriter indexWriter, List<Integer> listIdAnounce, Plugin plugin )
-            throws CorruptIndexException, IOException, InterruptedException
+    private void indexListAnnounce( IndexWriter indexWriter, List<Integer> listIdAnounce, Plugin plugin ) throws IOException
     {
         String strPortalUrl = AppPathService.getPortalUrl( );
         Iterator<Integer> it = listIdAnounce.iterator( );
@@ -134,7 +133,7 @@ public class DefaultAnnounceIndexer implements IAnnounceSearchIndexer
             throws IOException, InterruptedException, SiteMessageException
     {
         Plugin plugin = PluginService.getPlugin( AnnouncePlugin.PLUGIN_NAME );
-        List<Integer> listIdAnnounce = new ArrayList<Integer>( );
+        List<Integer> listIdAnnounce = new ArrayList<>( );
 
         if ( !bCreate )
         {
@@ -172,7 +171,7 @@ public class DefaultAnnounceIndexer implements IAnnounceSearchIndexer
 
             this.indexListAnnounce( indexWriter, listIdAnnounce, plugin );
 
-            listIdAnnounce = new ArrayList<Integer>( );
+            listIdAnnounce = new ArrayList<>( );
 
             // add all record which must be added
             for ( IndexerAction action : AnnounceSearchService.getInstance( ).getAllIndexerActionByTask( IndexerAction.TASK_CREATE, plugin ) )
@@ -214,14 +213,10 @@ public class DefaultAnnounceIndexer implements IAnnounceSearchIndexer
      * @return The list of lucene documents
      * @throws IOException
      *             If an IO Exception occurred
-     * @throws InterruptedException
-     *             If the indexer is interrupted
-     * @throws SiteMessageException
-     *             the exception
      */
-    public static List<Document> getDocuments( String strDocument ) throws IOException, InterruptedException, SiteMessageException
+    public static List<Document> getDocuments( String strDocument ) throws IOException
     {
-        List<org.apache.lucene.document.Document> listDocs = new ArrayList<org.apache.lucene.document.Document>( );
+        List<org.apache.lucene.document.Document> listDocs = new ArrayList<>( );
         String strPortalUrl = AppPathService.getPortalUrl( );
         Plugin plugin = PluginService.getPlugin( AnnouncePlugin.PLUGIN_NAME );
 
@@ -256,11 +251,9 @@ public class DefaultAnnounceIndexer implements IAnnounceSearchIndexer
      *            the plugin
      * @throws IOException
      *             If an IO Exception occurred
-     * @throws InterruptedException
-     *             If the indexer is interrupted
      * @return the document
      */
-    public static org.apache.lucene.document.Document getDocument( Announce announce, String strUrl, Plugin plugin ) throws IOException, InterruptedException
+    public static org.apache.lucene.document.Document getDocument( Announce announce, String strUrl, Plugin plugin ) throws IOException
     {
         // make a new, empty document
         org.apache.lucene.document.Document doc = new org.apache.lucene.document.Document( );
@@ -273,13 +266,13 @@ public class DefaultAnnounceIndexer implements IAnnounceSearchIndexer
 
         // Add the url as a field named "url". Use an UnIndexed field, so
         // that the url is just stored with the question/answer, but is not searchable.
-        doc.add( new Field( AnnounceSearchItem.FIELD_URL, strUrl, TextField.TYPE_STORED ) );
+        doc.add( new Field( SearchItem.FIELD_URL, strUrl, TextField.TYPE_STORED ) );
 
         // Add the uid as a field, so that index can be incrementally maintained.
         // This field is not stored with question/answer, it is indexed, but it is not
         // tokenized prior to indexing.
         String strIdAnnounce = String.valueOf( announce.getId( ) );
-        doc.add( new Field( AnnounceSearchItem.FIELD_UID, strIdAnnounce, TextField.TYPE_STORED ) );
+        doc.add( new Field( SearchItem.FIELD_UID, strIdAnnounce, TextField.TYPE_STORED ) );
 
         // Add the last modified date of the file a field named "modified".
         // Use a field that is indexed (i.e. searchable), but don't tokenize
@@ -287,7 +280,7 @@ public class DefaultAnnounceIndexer implements IAnnounceSearchIndexer
         String strDate = DateTools.dateToString(
                 ( announce.getTimePublication( ) > 0 ) ? new Timestamp( announce.getTimePublication( ) ) : announce.getDateCreation( ),
                 DateTools.Resolution.DAY );
-        doc.add( new Field( AnnounceSearchItem.FIELD_DATE, strDate, TextField.TYPE_STORED ) );
+        doc.add( new Field( SearchItem.FIELD_DATE, strDate, TextField.TYPE_STORED ) );
 
         if ( announce.getPrice( ) != 0.0 )
         {
@@ -296,18 +289,7 @@ public class DefaultAnnounceIndexer implements IAnnounceSearchIndexer
             doc.add( new Field( AnnounceSearchItem.FIELD_PRICE, AnnounceSearchService.formatPriceForIndexer( dPrice ), TextField.TYPE_STORED ) );
         }
 
-        String strContentToIndex = getContentToIndex( announce, plugin );
-
-        /*
-         * StringReader readerPage = new StringReader( strContentToIndex ); HTMLParser parser = new HTMLParser( readerPage );
-         * 
-         * //the content of the question/answer is recovered in the parser because this one //had replaced the encoded characters (as &eacute;) by the
-         * corresponding special character (as ?) Reader reader = parser.getReader( ); int c; StringBuffer sb = new StringBuffer( );
-         * 
-         * while ( ( c = reader.read( ) ) != -1 ) { sb.append( String.valueOf( (char) c ) ); }
-         * 
-         * reader.close( );
-         */
+        String strContentToIndex = getContentToIndex( announce );
 
         // NOUVEAU
         ContentHandler handler = new BodyContentHandler( );
@@ -317,11 +299,7 @@ public class DefaultAnnounceIndexer implements IAnnounceSearchIndexer
         {
             new HtmlParser( ).parse( new ByteArrayInputStream( strContentToIndex.getBytes( ) ), handler, metadata, new ParseContext( ) );
         }
-        catch( SAXException e )
-        {
-            throw new AppException( "Error during announce parsing." );
-        }
-        catch( TikaException e )
+        catch( SAXException | TikaException e )
         {
             throw new AppException( "Error during announce parsing." );
         }
@@ -330,13 +308,13 @@ public class DefaultAnnounceIndexer implements IAnnounceSearchIndexer
 
         // Add the tag-stripped contents as a Reader-valued Text field so it will
         // get tokenized and indexed.
-        doc.add( new Field( AnnounceSearchItem.FIELD_CONTENTS, strContent, TextField.TYPE_NOT_STORED ) );
+        doc.add( new Field( SearchItem.FIELD_CONTENTS, strContent, TextField.TYPE_NOT_STORED ) );
 
         // Add the subject name as a separate Text field, so that it can be searched
         // separately.
-        doc.add( new StoredField( AnnounceSearchItem.FIELD_TITLE, announce.getTitle( ) ) );
+        doc.add( new StoredField( SearchItem.FIELD_TITLE, announce.getTitle( ) ) );
 
-        doc.add( new Field( AnnounceSearchItem.FIELD_TYPE, AnnouncePlugin.PLUGIN_NAME, StringField.TYPE_STORED ) );
+        doc.add( new Field( SearchItem.FIELD_TYPE, AnnouncePlugin.PLUGIN_NAME, StringField.TYPE_STORED ) );
 
         // return the document
         return doc;
@@ -351,7 +329,7 @@ public class DefaultAnnounceIndexer implements IAnnounceSearchIndexer
      *            The {@link Plugin}
      * @return The content to index
      */
-    private static String getContentToIndex( Announce announce, Plugin plugin )
+    private static String getContentToIndex( Announce announce )
     {
         StringBuffer sbContentToIndex = new StringBuffer( );
         // Do not index question here

@@ -33,6 +33,15 @@
  */
 package fr.paris.lutece.plugins.announce.web;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+
+import org.apache.commons.lang.StringUtils;
+
 import fr.paris.lutece.plugins.announce.business.Category;
 import fr.paris.lutece.plugins.announce.business.CategoryHome;
 import fr.paris.lutece.plugins.announce.business.SectorHome;
@@ -55,25 +64,16 @@ import fr.paris.lutece.portal.service.plugin.Plugin;
 import fr.paris.lutece.portal.service.rbac.RBACService;
 import fr.paris.lutece.portal.service.spring.SpringContextService;
 import fr.paris.lutece.portal.service.template.AppTemplateService;
-import fr.paris.lutece.portal.service.util.AppLogService;
 import fr.paris.lutece.portal.service.util.AppPathService;
 import fr.paris.lutece.portal.service.util.AppPropertiesService;
 import fr.paris.lutece.portal.service.workflow.WorkflowService;
 import fr.paris.lutece.portal.web.admin.PluginAdminPageJspBean;
 import fr.paris.lutece.portal.web.constants.Messages;
 import fr.paris.lutece.util.ReferenceList;
+import fr.paris.lutece.util.html.AbstractPaginator;
 import fr.paris.lutece.util.html.HtmlTemplate;
 import fr.paris.lutece.util.html.Paginator;
 import fr.paris.lutece.util.url.UrlItem;
-
-import org.apache.commons.lang.StringUtils;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.servlet.http.HttpServletRequest;
 
 /**
  * This class provides the user interface to manage category features ( manage, create, modify, remove )
@@ -89,11 +89,11 @@ public class CategoryJspBean extends PluginAdminPageJspBean
     /* Misc */
     private static final String REGEX_ID = "^[\\d]+$";
     private static final String ANCHOR_NAME = "entry_list";
+    private static final String UNAUTHORIZED = "Unauthorized";
 
     // Parameters
     private static final String PARAMETER_PAGE_INDEX = "page_index";
     private static final String PARAMETER_CATEGORY_ID = "category_id";
-    private static final String PARAMETER_CATEGORY_ID_DUP = "category_id_dup";
     private static final String PARAMETER_CATEGORY_LABEL = "category_label";
     private static final String PARAMETER_CATEGORY_SECTOR_ID = "category_sector_id";
     private static final String PARAMETER_CATEGORY_ANNOUNCES_VALIDATION = "category_announces_validation";
@@ -106,7 +106,6 @@ public class CategoryJspBean extends PluginAdminPageJspBean
     private static final String PROPERTY_PAGE_TITLE_MANAGE_CATEGORIES = "announce.manage_categories.pageTitle";
     private static final String PROPERTY_PAGE_TITLE_CREATE_CATEGORY = "announce.create_category.pageTitle";
     private static final String PROPERTY_PAGE_TITLE_MODIFY_CATEGORY = "announce.modify_category.pageTitle";
-    private static final String PROPERTY_PAGE_TITLE_DUPLICATE_CATEGORY = "announce.duplicate_category.pageTitle";
     private static final String PROPERTY_DEFAULT_LIST_CATEGORY_PER_PAGE = "announce.category.itemsPerPage";
     private static final String PROPERTY_GLOBAL_PARAMETER = "announce.globalParameter";
     private static final String PROPERTY_CREATE_CATEGORY_YES = "announce.create_category_yes";
@@ -120,7 +119,6 @@ public class CategoryJspBean extends PluginAdminPageJspBean
     private static final String TEMPLATE_MANAGE_CATEGORIES = "admin/plugins/announce/manage_categories.html";
     private static final String TEMPLATE_CREATE_CATEGORY = "admin/plugins/announce/create_category.html";
     private static final String TEMPLATE_MODIFY_CATEGORY = "admin/plugins/announce/modify_category.html";
-    // private static final String TEMPLATE_DUPLICATE_CATEGORY = "admin/plugins/announce/duplicate_category.html";
 
     /* Jsp Definition */
     private static final String JSP_DO_REMOVE_CATEGORY = "jsp/admin/plugins/announce/DoRemoveCategory.jsp";
@@ -157,7 +155,6 @@ public class CategoryJspBean extends PluginAdminPageJspBean
 
     /* Variables */
     private AnnounceService _announceService = SpringContextService.getBean( AnnounceService.BEAN_NAME );
-    private int _nDefaultItemsPerPage;
     private String _strCurrentPageIndex;
     private int _nItemsPerPage;
 
@@ -188,16 +185,15 @@ public class CategoryJspBean extends PluginAdminPageJspBean
     {
         setPageTitleProperty( PROPERTY_PAGE_TITLE_MANAGE_CATEGORIES );
 
-        _strCurrentPageIndex = Paginator.getPageIndex( request, Paginator.PARAMETER_PAGE_INDEX, _strCurrentPageIndex );
-        _nDefaultItemsPerPage = AppPropertiesService.getPropertyInt( PROPERTY_DEFAULT_LIST_CATEGORY_PER_PAGE, 50 );
-        _nItemsPerPage = Paginator.getItemsPerPage( request, Paginator.PARAMETER_ITEMS_PER_PAGE, _nItemsPerPage, _nDefaultItemsPerPage );
+        _strCurrentPageIndex = AbstractPaginator.getPageIndex( request, AbstractPaginator.PARAMETER_PAGE_INDEX, _strCurrentPageIndex );
+        int defaultItemsPerPage = AppPropertiesService.getPropertyInt( PROPERTY_DEFAULT_LIST_CATEGORY_PER_PAGE, 50 );
+        _nItemsPerPage = AbstractPaginator.getItemsPerPage( request, AbstractPaginator.PARAMETER_ITEMS_PER_PAGE, _nItemsPerPage, defaultItemsPerPage );
 
         List<Category> listCategories = CategoryHome.findAll( );
 
-        // listCategories = AdminWorkgroupService.getAuthorizedCollection( listCategories, getUser( ) );
-        Paginator<Category> paginator = new Paginator<Category>( listCategories, _nItemsPerPage, getUrlPage( ), PARAMETER_PAGE_INDEX, _strCurrentPageIndex );
+        Paginator<Category> paginator = new Paginator<>( listCategories, _nItemsPerPage, getUrlPage( ), PARAMETER_PAGE_INDEX, _strCurrentPageIndex );
 
-        Map<String, Object> model = new HashMap<String, Object>( );
+        Map<String, Object> model = new HashMap<>( );
 
         model.put( MARK_NB_ITEMS_PER_PAGE, "" + _nItemsPerPage );
         model.put( MARK_PAGINATOR, paginator );
@@ -221,7 +217,7 @@ public class CategoryJspBean extends PluginAdminPageJspBean
     {
         if ( !RBACService.isAuthorized( Category.RESOURCE_TYPE, RBAC.WILDCARD_RESOURCES_ID, CategoryResourceIdService.PERMISSION_CREATE, getUser( ) ) )
         {
-            throw new AccessDeniedException( );
+            throw new AccessDeniedException( UNAUTHORIZED );
         }
 
         setPageTitleProperty( PROPERTY_PAGE_TITLE_CREATE_CATEGORY );
@@ -234,14 +230,14 @@ public class CategoryJspBean extends PluginAdminPageJspBean
 
         ReferenceList listSectors = SectorHome.findLocaleReferenceList( request.getLocale( ) );
 
-        ReferenceList listCatDup = CategoryHome.findCategoriesReferenceList( );// SectorHome.findLocaleReferenceList( request.getLocale( ) );
+        ReferenceList listCatDup = CategoryHome.findCategoriesReferenceList( );
 
         ReferenceList listAnnouncesValidation = new ReferenceList( );
         listAnnouncesValidation.addItem( 0, I18nService.getLocalizedString( PROPERTY_GLOBAL_PARAMETER, request.getLocale( ) ) );
         listAnnouncesValidation.addItem( 1, I18nService.getLocalizedString( PROPERTY_CREATE_CATEGORY_YES, request.getLocale( ) ) );
         listAnnouncesValidation.addItem( 2, I18nService.getLocalizedString( PROPERTY_CREATE_CATEGORY_NO, request.getLocale( ) ) );
 
-        HashMap<String, Object> model = new HashMap<String, Object>( );
+        HashMap<String, Object> model = new HashMap<>( );
         model.put( MARK_LIST_FIELDS, listSectors );
 
         model.put( MARK_LIST_CAT_DUP, listCatDup );
@@ -269,7 +265,7 @@ public class CategoryJspBean extends PluginAdminPageJspBean
     {
         if ( !RBACService.isAuthorized( Category.RESOURCE_TYPE, RBAC.WILDCARD_RESOURCES_ID, CategoryResourceIdService.PERMISSION_CREATE, getUser( ) ) )
         {
-            throw new AccessDeniedException( );
+            throw new AccessDeniedException( UNAUTHORIZED );
         }
 
         String strCategoryLabel = request.getParameter( PARAMETER_CATEGORY_LABEL );
@@ -293,15 +289,7 @@ public class CategoryJspBean extends PluginAdminPageJspBean
         category.setIdMailingList( nIdMailingList );
         category.setAnnouncesValidation( nAnnouncesValidation );
         category.setIdWorkflow( nIdWorkflow );
-
-        if ( strDisplayPrice != null )
-        {
-            category.setDisplayPrice( true );
-        }
-        else
-        {
-            category.setDisplayPrice( false );
-        }
+        category.setDisplayPrice( strDisplayPrice != null );
 
         category.setPriceMandatory( category.getDisplayPrice( ) && bPriceMandatory );
         category.setDisplayCaptcha( bDisplayCaptcha );
@@ -347,9 +335,9 @@ public class CategoryJspBean extends PluginAdminPageJspBean
         entryFilter.setFieldDependNull( EntryFilter.FILTER_TRUE );
 
         List<Entry> listEntryFirstLevel = EntryHome.getEntryList( entryFilter );
-        List<Entry> listEntry = new ArrayList<Entry>( listEntryFirstLevel.size( ) );
+        List<Entry> listEntry = new ArrayList<>( listEntryFirstLevel.size( ) );
 
-        List<Integer> listOrderFirstLevel = new ArrayList<Integer>( listEntryFirstLevel.size( ) );
+        List<Integer> listOrderFirstLevel = new ArrayList<>( listEntryFirstLevel.size( ) );
 
         entryFilter = new EntryFilter( );
         entryFilter.setIdResource( category.getId( ) );
@@ -362,7 +350,7 @@ public class CategoryJspBean extends PluginAdminPageJspBean
             // If the entry is a group, we add entries associated with this group
             listOrderFirstLevel.add( listEntry.size( ) );
 
-            if ( entry.getEntryType( ).getGroup( ) )
+            if ( Boolean.TRUE.equals( entry.getEntryType( ).getGroup( ) ) )
             {
                 entryFilter.setIdEntryParent( entry.getIdEntry( ) );
 
@@ -372,7 +360,7 @@ public class CategoryJspBean extends PluginAdminPageJspBean
             }
         }
 
-        Map<String, Object> model = new HashMap<String, Object>( );
+        Map<String, Object> model = new HashMap<>( );
         model.put( MARK_GROUP_ENTRY_LIST, getRefListGroups( category.getId( ) ) );
         model.put( MARK_ENTRY_TYPE_LIST, EntryTypeService.getInstance( ).getEntryTypeReferenceList( ) );
         model.put( MARK_ENTRY_LIST, listEntry );
@@ -428,15 +416,7 @@ public class CategoryJspBean extends PluginAdminPageJspBean
         category.setIdMailingList( nIdMailingList );
         category.setIdWorkflow( nIdWorkflow );
         category.setDisplayCaptcha( bDisplayCaptcha );
-
-        if ( strDisplayPrice != null )
-        {
-            category.setDisplayPrice( true );
-        }
-        else
-        {
-            category.setDisplayPrice( false );
-        }
+        category.setDisplayPrice( strDisplayPrice != null );
 
         category.setPriceMandatory( category.getDisplayPrice( ) && bPriceMandatory );
 
@@ -547,7 +527,7 @@ public class CategoryJspBean extends PluginAdminPageJspBean
 
         if ( ( strIdCategory == null ) || !strIdCategory.matches( REGEX_ID ) )
         {
-            throw new AccessDeniedException( );
+            throw new AccessDeniedException( UNAUTHORIZED );
         }
 
         int nIdCategory = Integer.parseInt( strIdCategory );
@@ -555,7 +535,7 @@ public class CategoryJspBean extends PluginAdminPageJspBean
 
         if ( ( category == null ) || !RBACService.isAuthorized( Category.RESOURCE_TYPE, String.valueOf( category.getId( ) ), strPermissionType, getUser( ) ) )
         {
-            throw new AccessDeniedException( );
+            throw new AccessDeniedException( UNAUTHORIZED );
         }
 
         return category;

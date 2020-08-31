@@ -78,7 +78,7 @@ public class LastAnnouncesPortletJspBean extends PortletJspBean
     {
         String strPageId = request.getParameter( PARAMETER_PAGE_ID );
         String strPortletTypeId = request.getParameter( PARAMETER_PORTLET_TYPE_ID );
-        Map<String, Object> model = new HashMap<String, Object>( );
+        Map<String, Object> model = new HashMap<>( );
         model.put( MARK_DEFAULT_NB_ANNOUNCES_TO_DISPLAY, AppPropertiesService.getProperty( PROPERTY_DEFAULT_NB_ANNOUNCES_TO_DISPLAY ) );
 
         HtmlTemplate template = getCreateTemplate( strPageId, strPortletTypeId, model );
@@ -96,7 +96,7 @@ public class LastAnnouncesPortletJspBean extends PortletJspBean
         int nPortletId = Integer.parseInt( strPortletId );
         LastAnnouncesPortlet portlet = (LastAnnouncesPortlet) PortletHome.findByPrimaryKey( nPortletId );
 
-        Map<String, Object> model = new HashMap<String, Object>( );
+        Map<String, Object> model = new HashMap<>( );
         model.put( MARK_PORTLET, portlet );
 
         HtmlTemplate template = getModifyTemplate( portlet, model );

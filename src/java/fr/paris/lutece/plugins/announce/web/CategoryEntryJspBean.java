@@ -177,7 +177,7 @@ public class CategoryEntryJspBean extends MVCAdminJspBean
         Category category = CategoryHome.findByPrimaryKey( nIdCategory );
 
         // Default Values
-        Map<String, Object> model = new HashMap<String, Object>( );
+        Map<String, Object> model = new HashMap<>( );
         model.put( MARK_ENTRY, entry );
         model.put( MARK_CATEGORY, category );
         model.put( MARK_WEBAPP_URL, AppPathService.getBaseUrl( request ) );
@@ -295,7 +295,7 @@ public class CategoryEntryJspBean extends MVCAdminJspBean
 
             Entry entry = EntryHome.findByPrimaryKey( nIdEntry );
 
-            List<Field> listField = new ArrayList<Field>( entry.getFields( ).size( ) );
+            List<Field> listField = new ArrayList<>( entry.getFields( ).size( ) );
 
             for ( Field field : entry.getFields( ) )
             {
@@ -307,7 +307,7 @@ public class CategoryEntryJspBean extends MVCAdminJspBean
 
             IEntryTypeService entryTypeService = EntryTypeServiceManager.getEntryTypeService( entry );
 
-            Map<String, Object> model = new HashMap<String, Object>( );
+            Map<String, Object> model = new HashMap<>( );
             model.put( MARK_ENTRY, entry );
             model.put( MARK_CATEGORY, CategoryHome.findByPrimaryKey( entry.getIdResource( ) ) );
 
@@ -450,7 +450,7 @@ public class CategoryEntryJspBean extends MVCAdminJspBean
 
             Entry entry = EntryHome.findByPrimaryKey( nIdEntry );
 
-            List<String> listErrors = new ArrayList<String>( );
+            List<String> listErrors = new ArrayList<>( );
 
             if ( !_entryService.checkForRemoval( strIdEntry, listErrors, getLocale( ) ) )
             {

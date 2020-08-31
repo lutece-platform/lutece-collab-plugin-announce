@@ -33,9 +33,6 @@
  */
 package fr.paris.lutece.plugins.announce.service;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import javax.servlet.http.HttpServletRequest;
 
 import fr.paris.lutece.plugins.announce.business.Announce;

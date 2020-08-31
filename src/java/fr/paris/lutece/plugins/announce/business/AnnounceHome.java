@@ -314,7 +314,6 @@ public final class AnnounceHome
     {
         _dao.setHasNotifed( announce, _plugin );
 
-        // AnnounceCacheService.getService( ).removeKey( AnnounceCacheService.getListIdPublishedAnnouncesCacheKey( ) );
         AnnounceCacheService.getService( ).removeKey( AnnounceCacheService.getAnnounceCacheKey( announce.getId( ) ) );
     }
 
@@ -445,7 +444,7 @@ public final class AnnounceHome
     public static List<Response> findListResponse( int nIdAnnounce, boolean bLoadFiles )
     {
         List<Integer> listIdResponse = findListIdResponse( nIdAnnounce );
-        List<Response> listResponse = new ArrayList<Response>( listIdResponse.size( ) );
+        List<Response> listResponse = new ArrayList<>( listIdResponse.size( ) );
 
         for ( Integer nIdResponse : listIdResponse )
         {

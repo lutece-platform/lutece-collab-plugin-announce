@@ -121,7 +121,7 @@ public class AnnounceIndexer implements SearchIndexer
     @Override
     public List<String> getListType( )
     {
-        List<String> listType = new ArrayList<String>( );
+        List<String> listType = new ArrayList<>( );
         listType.add( AnnouncePlugin.PLUGIN_NAME );
 
         return listType;

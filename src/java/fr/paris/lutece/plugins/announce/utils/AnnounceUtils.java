@@ -90,7 +90,7 @@ public final class AnnounceUtils
      */
     public static String buildRequetteWithFilter( String strSelect, List<String> listStrFilter, String strOrder )
     {
-        StringBuffer strBuffer = new StringBuffer( );
+        StringBuilder strBuffer = new StringBuilder( );
         strBuffer.append( strSelect );
 
         int nCount = 0;

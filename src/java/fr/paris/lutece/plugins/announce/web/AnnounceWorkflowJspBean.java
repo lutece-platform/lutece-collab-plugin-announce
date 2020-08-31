@@ -102,7 +102,7 @@ public class AnnounceWorkflowJspBean extends MVCAdminJspBean
                 String strHtmlTasksForm = WorkflowService.getInstance( ).getDisplayTasksForm( nIdAnnounce, Announce.RESOURCE_TYPE, nIdAction, request,
                         getLocale( ) );
 
-                Map<String, Object> model = new HashMap<String, Object>( );
+                Map<String, Object> model = new HashMap<>( );
 
                 model.put( MARK_TASKS_FORM, strHtmlTasksForm );
                 model.put( PARAMETER_ID_ACTION, nIdAction );

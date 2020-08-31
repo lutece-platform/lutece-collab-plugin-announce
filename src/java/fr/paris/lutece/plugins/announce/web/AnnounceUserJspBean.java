@@ -33,6 +33,14 @@
  */
 package fr.paris.lutece.plugins.announce.web;
 
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+
+import javax.servlet.http.HttpServletRequest;
+
+import org.apache.commons.lang.StringUtils;
+
 import fr.paris.lutece.plugins.announce.utils.AnnounceUtils;
 import fr.paris.lutece.portal.service.admin.AccessDeniedException;
 import fr.paris.lutece.portal.service.plugin.Plugin;
@@ -42,18 +50,11 @@ import fr.paris.lutece.portal.service.template.AppTemplateService;
 import fr.paris.lutece.portal.service.util.AppPropertiesService;
 import fr.paris.lutece.portal.web.admin.PluginAdminPageJspBean;
 import fr.paris.lutece.portal.web.constants.Parameters;
+import fr.paris.lutece.util.html.AbstractPaginator;
 import fr.paris.lutece.util.html.HtmlTemplate;
 import fr.paris.lutece.util.html.Paginator;
 import fr.paris.lutece.util.sort.AttributeComparator;
 import fr.paris.lutece.util.url.UrlItem;
-
-import org.apache.commons.lang.StringUtils;
-
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-
-import javax.servlet.http.HttpServletRequest;
 
 /**
  * Announce User Jsp Bean
@@ -123,11 +124,11 @@ public class AnnounceUserJspBean extends PluginAdminPageJspBean
         Boolean nameFound = false;
         Boolean noUsers = false;
 
-        HashMap<String, Object> model = new HashMap<String, Object>( );
+        HashMap<String, Object> model = new HashMap<>( );
 
         setPageTitleProperty( PROPERTY_PAGE_TITLE_LIST_USERS );
-        _strCurrentPageIndex = Paginator.getPageIndex( request, Paginator.PARAMETER_PAGE_INDEX, _strCurrentPageIndex );
-        _nItemsPerPage = Paginator.getItemsPerPage( request, Paginator.PARAMETER_ITEMS_PER_PAGE, _nItemsPerPage, _nDefaultItemsPerPage );
+        _strCurrentPageIndex = AbstractPaginator.getPageIndex( request, AbstractPaginator.PARAMETER_PAGE_INDEX, _strCurrentPageIndex );
+        _nItemsPerPage = AbstractPaginator.getItemsPerPage( request, AbstractPaginator.PARAMETER_ITEMS_PER_PAGE, _nItemsPerPage, _nDefaultItemsPerPage );
 
         List<LuteceUser> listUsers = (List<LuteceUser>) SecurityService.getInstance( ).getUsers( );
 
@@ -161,7 +162,7 @@ public class AnnounceUserJspBean extends PluginAdminPageJspBean
             Collections.sort( listUsers, _attributeComparator );
         }
 
-        Paginator<LuteceUser> paginator = new Paginator<LuteceUser>( listUsers, _nItemsPerPage, getUrlPage( ), PARAMETER_PAGE_INDEX, _strCurrentPageIndex );
+        Paginator<LuteceUser> paginator = new Paginator<>( listUsers, _nItemsPerPage, getUrlPage( ), PARAMETER_PAGE_INDEX, _strCurrentPageIndex );
 
         model.put( MARK_NAME_FOUND, nameFound );
         model.put( MARK_NO_USERS, noUsers );

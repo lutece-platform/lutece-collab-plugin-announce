@@ -65,6 +65,7 @@ import fr.paris.lutece.portal.util.mvc.utils.MVCUtils;
 import fr.paris.lutece.util.html.HtmlTemplate;
 import fr.paris.lutece.util.url.UrlItem;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.fileupload.FileItem;
 
 import java.io.Serializable;
@@ -134,7 +135,7 @@ public class AnnounceService implements Serializable
      */
     public String getHtmlAnnounceForm( Announce announce, Category category, Locale locale, boolean bDisplayFront, HttpServletRequest request )
     {
-        Map<String, Object> model = new HashMap<String, Object>( );
+        Map<String, Object> model = new HashMap<>( );
         StringBuffer strBuffer = new StringBuffer( );
         EntryFilter filter = new EntryFilter( );
         filter.setIdResource( category.getId( ) );
@@ -175,7 +176,7 @@ public class AnnounceService implements Serializable
 
                     if ( listResponse == null )
                     {
-                        listResponse = new ArrayList<Response>( );
+                        listResponse = new ArrayList<>( );
                         mapResponsesByIdEntry.put( response.getEntry( ).getIdEntry( ), listResponse );
                     }
 
@@ -221,12 +222,12 @@ public class AnnounceService implements Serializable
      */
     public void getHtmlEntry( AnnounceDTO announce, int nIdEntry, StringBuffer stringBuffer, Locale locale, boolean bDisplayFront, HttpServletRequest request )
     {
-        Map<String, Object> model = new HashMap<String, Object>( );
-        StringBuffer strConditionalQuestionStringBuffer = null;
+        Map<String, Object> model = new HashMap<>( );
+        StringBuilder strConditionalQuestionStringBuffer = null;
         HtmlTemplate template;
         Entry entry = EntryHome.findByPrimaryKey( nIdEntry );
 
-        if ( entry.getEntryType( ).getGroup( ) )
+        if ( Boolean.TRUE.equals( entry.getEntryType( ).getGroup( ) ) )
         {
             StringBuffer strGroupStringBuffer = new StringBuffer( );
 
@@ -250,11 +251,11 @@ public class AnnounceService implements Serializable
 
         if ( entry.getNumberConditionalQuestion( ) != 0 )
         {
-            strConditionalQuestionStringBuffer = new StringBuffer( );
+            strConditionalQuestionStringBuffer = new StringBuilder( );
 
             for ( Field field : entry.getFields( ) )
             {
-                if ( field.getConditionalQuestions( ).size( ) != 0 )
+                if ( CollectionUtils.isNotEmpty( field.getConditionalQuestions( ) ) )
                 {
                     StringBuffer strGroupStringBuffer = new StringBuffer( );
 
@@ -297,16 +298,14 @@ public class AnnounceService implements Serializable
             List<Response> listResponses = announce.getMapResponsesByIdEntry( ).get( entry.getIdEntry( ) );
             if ( listResponses != null )
             {
-
                 for ( Response response : listResponses )
                 {
-
                     for ( Field filed : entry.getFields( ) )
                     {
-
                         if ( response.getField( ) != null && filed.getIdField( ) == response.getField( ).getIdField( ) )
-
+                        {
                             response.setField( filed );
+                        }
                     }
                 }
             }
@@ -344,7 +343,7 @@ public class AnnounceService implements Serializable
      */
     public List<GenericAttributeError> getResponseEntry( HttpServletRequest request, int nIdEntry, Locale locale, AnnounceDTO announce )
     {
-        List<Response> listResponse = new ArrayList<Response>( );
+        List<Response> listResponse = new ArrayList<>( );
         announce.getMapResponsesByIdEntry( ).put( nIdEntry, listResponse );
 
         return getResponseEntry( request, nIdEntry, listResponse, false, locale, announce );
@@ -371,10 +370,10 @@ public class AnnounceService implements Serializable
     private List<GenericAttributeError> getResponseEntry( HttpServletRequest request, int nIdEntry, List<Response> listResponse, boolean bResponseNull,
             Locale locale, AnnounceDTO announce )
     {
-        List<GenericAttributeError> listFormErrors = new ArrayList<GenericAttributeError>( );
+        List<GenericAttributeError> listFormErrors = new ArrayList<>( );
         Entry entry = EntryHome.findByPrimaryKey( nIdEntry );
 
-        List<Field> listField = new ArrayList<Field>( );
+        List<Field> listField = new ArrayList<>( );
 
         for ( Field field : entry.getFields( ) )
         {
@@ -384,18 +383,18 @@ public class AnnounceService implements Serializable
 
         entry.setFields( listField );
 
-        if ( entry.getEntryType( ).getGroup( ) )
+        if ( Boolean.TRUE.equals( entry.getEntryType( ).getGroup( ) ) )
         {
             for ( Entry entryChild : entry.getChildren( ) )
             {
-                List<Response> listResponseChild = new ArrayList<Response>( );
+                List<Response> listResponseChild = new ArrayList<>( );
                 announce.getMapResponsesByIdEntry( ).put( entryChild.getIdEntry( ), listResponseChild );
 
                 listFormErrors.addAll( getResponseEntry( request, entryChild.getIdEntry( ), listResponseChild, false, locale, announce ) );
             }
         }
         else
-            if ( !entry.getEntryType( ).getComment( ) )
+            if ( !Boolean.TRUE.equals( entry.getEntryType( ).getComment( ) ) )
             {
                 GenericAttributeError formError = null;
 
@@ -429,7 +428,7 @@ public class AnnounceService implements Serializable
 
                         for ( Entry conditionalEntry : field.getConditionalQuestions( ) )
                         {
-                            List<Response> listResponseChild = new ArrayList<Response>( );
+                            List<Response> listResponseChild = new ArrayList<>( );
                             announce.getMapResponsesByIdEntry( ).put( conditionalEntry.getIdEntry( ), listResponseChild );
 
                             listFormErrors.addAll(
@@ -494,7 +493,7 @@ public class AnnounceService implements Serializable
      */
     public void convertMapResponseToList( AnnounceDTO announce )
     {
-        List<Response> listResponse = new ArrayList<Response>( );
+        List<Response> listResponse = new ArrayList<>( );
 
         for ( List<Response> listResponseByEntry : announce.getMapResponsesByIdEntry( ).values( ) )
         {

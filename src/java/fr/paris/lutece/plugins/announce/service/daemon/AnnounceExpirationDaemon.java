@@ -33,17 +33,16 @@
  */
 package fr.paris.lutece.plugins.announce.service.daemon;
 
-import fr.paris.lutece.plugins.announce.business.Announce;
-import fr.paris.lutece.plugins.announce.business.AnnounceHome;
-import fr.paris.lutece.plugins.announce.business.AnnounceSort;
-import fr.paris.lutece.portal.service.daemon.Daemon;
-import fr.paris.lutece.portal.service.mail.MailService;
-import fr.paris.lutece.portal.service.util.AppPropertiesService;
-
 import java.sql.Timestamp;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.List;
+
+import fr.paris.lutece.plugins.announce.business.Announce;
+import fr.paris.lutece.plugins.announce.business.AnnounceHome;
+import fr.paris.lutece.portal.service.daemon.Daemon;
+import fr.paris.lutece.portal.service.mail.MailService;
+import fr.paris.lutece.portal.service.util.AppPropertiesService;
 
 /**
  * Daemon to remove expired announces
@@ -64,8 +63,11 @@ public class AnnounceExpirationDaemon extends Daemon
         int nNbDaysBeforeAnnouncesRemoval = AppPropertiesService.getPropertyInt( PROPERTY_NB_DAYS_BEFORE_ANNOUNCES_REMOVAL,
                 DEFAULT_NB_DAYS_BEFORE_ANNOUNCES_REMOVAL );
         int nNbDaysBeforeAnnouncesNotify = nNbDaysBeforeAnnouncesRemoval + 7;
-        String email, strSenderName = "strSenderName", strSenderEmail = MailService.getNoReplyEmail( ), strSubject = "Suppression d'annouce",
-                strMessage = "Bonjour, " + "\nL'annouce : ";
+        String email;
+        String strSenderName = "strSenderName";
+        String strSenderEmail = MailService.getNoReplyEmail( );
+        String strSubject = "Suppression d'annouce";
+        String strMessage = "Bonjour, " + "\nL'annouce : ";
 
         calendar.add( Calendar.DATE, -1 * nNbDaysBeforeAnnouncesRemoval );
         calendarNotification.add( Calendar.DATE, -1 * nNbDaysBeforeAnnouncesNotify );

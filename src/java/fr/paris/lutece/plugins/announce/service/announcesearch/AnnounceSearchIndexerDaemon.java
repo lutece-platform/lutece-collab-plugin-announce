@@ -49,7 +49,7 @@ public class AnnounceSearchIndexerDaemon extends Daemon
     @Override
     public void run( )
     {
-        boolean bTotalIndexing = Boolean.valueOf( AppPropertiesService.getProperty( PROPERTY_INDEXER_PARAM_TOTAL, "true" ) );
+        boolean bTotalIndexing = Boolean.parseBoolean( AppPropertiesService.getProperty( PROPERTY_INDEXER_PARAM_TOTAL, "true" ) );
         setLastRunLogs( AnnounceSearchService.getInstance( ).processIndexing( bTotalIndexing ) );
     }
 }

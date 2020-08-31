@@ -44,9 +44,9 @@ public class AnnounceNotify
         return _nId;
     }
 
-    public void setId( Integer _nId )
+    public void setId( Integer nId )
     {
-        this._nId = _nId;
+        this._nId = nId;
     }
 
     public Integer getIdAnnounce( )
@@ -54,8 +54,8 @@ public class AnnounceNotify
         return _nIdAnnounce;
     }
 
-    public void setIdAnnounce( Integer _nIdAnnounce )
+    public void setIdAnnounce( Integer nIdAnnounce )
     {
-        this._nIdAnnounce = _nIdAnnounce;
+        this._nIdAnnounce = nIdAnnounce;
     }
 }

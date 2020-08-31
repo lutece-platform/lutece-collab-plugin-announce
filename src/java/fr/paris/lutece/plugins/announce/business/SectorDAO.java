@@ -33,15 +33,15 @@
  */
 package fr.paris.lutece.plugins.announce.business;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Locale;
+
 import fr.paris.lutece.portal.service.i18n.I18nService;
 import fr.paris.lutece.portal.service.plugin.Plugin;
 import fr.paris.lutece.util.ReferenceItem;
 import fr.paris.lutece.util.ReferenceList;
 import fr.paris.lutece.util.sql.DAOUtil;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Locale;
 
 /**
  * DAO implementation to manage sectors
@@ -74,21 +74,16 @@ public final class SectorDAO implements ISectorDAO
      */
     private int newPrimaryKey( Plugin plugin )
     {
-        DAOUtil daoUtil = new DAOUtil( SQL_QUERY_NEWPK, plugin );
-        daoUtil.executeQuery( );
-
-        int nKey;
-
-        if ( !daoUtil.next( ) )
+        int nKey = 1;
+        try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_NEWPK, plugin ) )
         {
-            // if the table is empty
-            nKey = 1;
+            daoUtil.executeQuery( );
+
+            if ( daoUtil.next( ) )
+            {
+                nKey = daoUtil.getInt( 1 ) + 1;
+            }
         }
-
-        nKey = daoUtil.getInt( 1 ) + 1;
-
-        daoUtil.free( );
-
         return nKey;
     }
 
@@ -98,17 +93,18 @@ public final class SectorDAO implements ISectorDAO
     @Override
     public void insert( Sector sector, Plugin plugin )
     {
-        DAOUtil daoUtil = new DAOUtil( SQL_QUERY_INSERT, plugin );
-        sector.setId( newPrimaryKey( plugin ) );
-        daoUtil.setInt( 1, sector.getId( ) );
-        daoUtil.setString( 2, sector.getLabel( ) );
-        daoUtil.setString( 3, sector.getDescription( ) );
-        daoUtil.setBoolean( 4, sector.getAnnouncesValidation( ) );
-        daoUtil.setInt( 5, selectMaxOrder( plugin ) + 1 );
-        daoUtil.setString( 6, sector.getTags( ) );
+        try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_INSERT, plugin ) )
+        {
+            sector.setId( newPrimaryKey( plugin ) );
+            daoUtil.setInt( 1, sector.getId( ) );
+            daoUtil.setString( 2, sector.getLabel( ) );
+            daoUtil.setString( 3, sector.getDescription( ) );
+            daoUtil.setBoolean( 4, sector.getAnnouncesValidation( ) );
+            daoUtil.setInt( 5, selectMaxOrder( plugin ) + 1 );
+            daoUtil.setString( 6, sector.getTags( ) );
 
-        daoUtil.executeUpdate( );
-        daoUtil.free( );
+            daoUtil.executeUpdate( );
+        }
     }
 
     /**
@@ -117,25 +113,25 @@ public final class SectorDAO implements ISectorDAO
     @Override
     public Sector load( int nIdFIeld, Plugin plugin )
     {
-        DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECT, plugin );
-        daoUtil.setInt( 1, nIdFIeld );
-        daoUtil.executeQuery( );
-
         Sector sector = null;
-
-        if ( daoUtil.next( ) )
+        try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECT, plugin ) )
         {
-            sector = new Sector( );
-            sector.setId( daoUtil.getInt( 1 ) );
-            sector.setLabel( daoUtil.getString( 2 ) );
-            sector.setDescription( daoUtil.getString( 3 ) );
-            sector.setAnnouncesValidation( daoUtil.getBoolean( 4 ) );
-            sector.setOrder( daoUtil.getInt( 5 ) );
-            sector.setTags( daoUtil.getString( 6 ) );
-            sector.setNumberCategories( countCategoriesForSector( sector, plugin ) );
-        }
+            daoUtil.setInt( 1, nIdFIeld );
+            daoUtil.executeQuery( );
 
-        daoUtil.free( );
+            if ( daoUtil.next( ) )
+            {
+                sector = new Sector( );
+                sector.setId( daoUtil.getInt( 1 ) );
+                sector.setLabel( daoUtil.getString( 2 ) );
+                sector.setDescription( daoUtil.getString( 3 ) );
+                sector.setAnnouncesValidation( daoUtil.getBoolean( 4 ) );
+                sector.setOrder( daoUtil.getInt( 5 ) );
+                sector.setTags( daoUtil.getString( 6 ) );
+                sector.setNumberCategories( countCategoriesForSector( sector, plugin ) );
+            }
+
+        }
 
         return sector;
     }
@@ -146,10 +142,11 @@ public final class SectorDAO implements ISectorDAO
     @Override
     public void delete( Sector sector, Plugin plugin )
     {
-        DAOUtil daoUtil = new DAOUtil( SQL_QUERY_DELETE, plugin );
-        daoUtil.setInt( 1, sector.getId( ) );
-        daoUtil.executeUpdate( );
-        daoUtil.free( );
+        try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_DELETE, plugin ) )
+        {
+            daoUtil.setInt( 1, sector.getId( ) );
+            daoUtil.executeUpdate( );
+        }
     }
 
     /**
@@ -158,17 +155,18 @@ public final class SectorDAO implements ISectorDAO
     @Override
     public void store( Sector sector, Plugin plugin )
     {
-        DAOUtil daoUtil = new DAOUtil( SQL_QUERY_UPDATE, plugin );
+        try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_UPDATE, plugin ) )
+        {
 
-        daoUtil.setString( 1, sector.getLabel( ) );
-        daoUtil.setString( 2, sector.getDescription( ) );
-        daoUtil.setBoolean( 3, sector.getAnnouncesValidation( ) );
-        daoUtil.setString( 4, sector.getTags( ) );
+            daoUtil.setString( 1, sector.getLabel( ) );
+            daoUtil.setString( 2, sector.getDescription( ) );
+            daoUtil.setBoolean( 3, sector.getAnnouncesValidation( ) );
+            daoUtil.setString( 4, sector.getTags( ) );
 
-        daoUtil.setInt( 5, sector.getId( ) );
+            daoUtil.setInt( 5, sector.getId( ) );
 
-        daoUtil.executeUpdate( );
-        daoUtil.free( );
+            daoUtil.executeUpdate( );
+        }
     }
 
     /**
@@ -177,25 +175,26 @@ public final class SectorDAO implements ISectorDAO
     @Override
     public Collection<Sector> selectAll( Plugin plugin )
     {
-        Collection<Sector> listSectors = new ArrayList<Sector>( );
-        DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECTALL, plugin );
-        daoUtil.executeQuery( );
-
-        while ( daoUtil.next( ) )
+        Collection<Sector> listSectors = new ArrayList<>( );
+        try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECTALL, plugin ) )
         {
-            Sector sector = new Sector( );
-            sector.setId( daoUtil.getInt( 1 ) );
-            sector.setLabel( daoUtil.getString( 2 ) );
-            sector.setDescription( daoUtil.getString( 3 ) );
-            sector.setAnnouncesValidation( daoUtil.getBoolean( 4 ) );
-            sector.setOrder( daoUtil.getInt( 5 ) );
-            sector.setTags( daoUtil.getString( 6 ) );
-            sector.setNumberCategories( countCategoriesForSector( sector, plugin ) );
+            daoUtil.executeQuery( );
 
-            listSectors.add( sector );
+            while ( daoUtil.next( ) )
+            {
+                Sector sector = new Sector( );
+                sector.setId( daoUtil.getInt( 1 ) );
+                sector.setLabel( daoUtil.getString( 2 ) );
+                sector.setDescription( daoUtil.getString( 3 ) );
+                sector.setAnnouncesValidation( daoUtil.getBoolean( 4 ) );
+                sector.setOrder( daoUtil.getInt( 5 ) );
+                sector.setTags( daoUtil.getString( 6 ) );
+                sector.setNumberCategories( countCategoriesForSector( sector, plugin ) );
+
+                listSectors.add( sector );
+            }
+
         }
-
-        daoUtil.free( );
 
         return listSectors;
     }
@@ -208,19 +207,20 @@ public final class SectorDAO implements ISectorDAO
     {
         ReferenceList listSectors = new ReferenceList( );
 
-        DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECTALL, plugin );
-        daoUtil.executeQuery( );
-
-        while ( daoUtil.next( ) )
+        try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECTALL, plugin ) )
         {
-            ReferenceItem item = new ReferenceItem( );
-            item.setCode( daoUtil.getString( 1 ) );
-            item.setName( daoUtil.getString( 2 ) );
+            daoUtil.executeQuery( );
 
-            listSectors.add( item );
+            while ( daoUtil.next( ) )
+            {
+                ReferenceItem item = new ReferenceItem( );
+                item.setCode( daoUtil.getString( 1 ) );
+                item.setName( daoUtil.getString( 2 ) );
+
+                listSectors.add( item );
+            }
+
         }
-
-        daoUtil.free( );
 
         return listSectors;
     }
@@ -252,18 +252,17 @@ public final class SectorDAO implements ISectorDAO
     private int countCategoriesForSector( Sector sector, Plugin plugin )
     {
         int nNumberCategories = 0;
-        DAOUtil daoUtil = new DAOUtil( SQL_QUERY_COUNT_CATEGORIES_FOR_FIELD, plugin );
-
-        daoUtil.setInt( 1, sector.getId( ) );
-        daoUtil.executeQuery( );
-
-        if ( daoUtil.next( ) )
+        try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_COUNT_CATEGORIES_FOR_FIELD, plugin ) )
         {
-            nNumberCategories = daoUtil.getInt( 1 );
+
+            daoUtil.setInt( 1, sector.getId( ) );
+            daoUtil.executeQuery( );
+
+            if ( daoUtil.next( ) )
+            {
+                nNumberCategories = daoUtil.getInt( 1 );
+            }
         }
-
-        daoUtil.free( );
-
         return nNumberCategories;
     }
 
@@ -276,11 +275,12 @@ public final class SectorDAO implements ISectorDAO
     @Override
     public void storeOrder( int nNewOrder, int nId, Plugin plugin )
     {
-        DAOUtil daoUtil = new DAOUtil( SQL_QUERY_UPDATE_FIELD_ORDER, plugin );
-        daoUtil.setInt( 1, nNewOrder );
-        daoUtil.setInt( 2, nId );
-        daoUtil.executeUpdate( );
-        daoUtil.free( );
+        try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_UPDATE_FIELD_ORDER, plugin ) )
+        {
+            daoUtil.setInt( 1, nNewOrder );
+            daoUtil.setInt( 2, nId );
+            daoUtil.executeUpdate( );
+        }
     }
 
     /**
@@ -289,23 +289,18 @@ public final class SectorDAO implements ISectorDAO
     @Override
     public int selectIdByOrder( int nOrder, Plugin plugin )
     {
-        DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECT_FIELD_ID_BY_ORDER, plugin );
-        int nResult = 0;
-        daoUtil.setInt( 1, nOrder );
-        daoUtil.executeQuery( );
-
-        if ( !daoUtil.next( ) )
+        int nResult = 1;
+        try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECT_FIELD_ID_BY_ORDER, plugin ) )
         {
-            // If number order doesn't exist
-            nResult = 1;
-        }
-        else
-        {
-            nResult = daoUtil.getInt( 1 );
-        }
 
-        daoUtil.free( );
+            daoUtil.setInt( 1, nOrder );
+            daoUtil.executeQuery( );
 
+            if ( daoUtil.next( ) )
+            {
+                nResult = daoUtil.getInt( 1 );
+            }
+        }
         return nResult;
     }
 
@@ -315,23 +310,17 @@ public final class SectorDAO implements ISectorDAO
     @Override
     public int selectOrderById( int nId, Plugin plugin )
     {
-        DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECT_FIELD_ORDER_BY_ID, plugin );
-        int nResult = 0;
-        daoUtil.setInt( 1, nId );
-        daoUtil.executeQuery( );
-
-        if ( !daoUtil.next( ) )
+        int nResult = 1;
+        try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECT_FIELD_ORDER_BY_ID, plugin ) )
         {
-            // If number order doesn't exist
-            nResult = 1;
-        }
-        else
-        {
-            nResult = daoUtil.getInt( 1 );
-        }
+            daoUtil.setInt( 1, nId );
+            daoUtil.executeQuery( );
 
-        daoUtil.free( );
-
+            if ( daoUtil.next( ) )
+            {
+                nResult = daoUtil.getInt( 1 );
+            }
+        }
         return nResult;
     }
 
@@ -342,16 +331,15 @@ public final class SectorDAO implements ISectorDAO
     public int selectMaxOrder( Plugin plugin )
     {
         int nOrder = 0;
-        DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECT_MAX_ORDER, plugin );
-        daoUtil.executeQuery( );
-
-        if ( daoUtil.next( ) )
+        try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECT_MAX_ORDER, plugin ) )
         {
-            nOrder = daoUtil.getInt( 1 );
+            daoUtil.executeQuery( );
+
+            if ( daoUtil.next( ) )
+            {
+                nOrder = daoUtil.getInt( 1 );
+            }
         }
-
-        daoUtil.free( );
-
         return nOrder;
     }
 }

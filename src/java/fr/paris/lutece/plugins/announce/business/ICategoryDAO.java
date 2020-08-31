@@ -138,7 +138,5 @@ public interface ICategoryDAO
      */
     int countPublishedAnnouncesForCategory( Category category, Plugin plugin );
 
-    // int newPrimaryKey( Plugin plugin );
-
     int copyCategory( Category category, Plugin plugin );
 }

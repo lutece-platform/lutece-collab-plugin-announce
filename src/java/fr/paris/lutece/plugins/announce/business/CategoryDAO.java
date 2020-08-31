@@ -66,21 +66,16 @@ public final class CategoryDAO implements ICategoryDAO
      */
     public int newPrimaryKey( Plugin plugin )
     {
-        DAOUtil daoUtil = new DAOUtil( SQL_QUERY_NEWPK, plugin );
-        daoUtil.executeQuery( );
-
-        int nKey;
-
-        if ( !daoUtil.next( ) )
+        int nKey = 1;
+        try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_NEWPK, plugin ) )
         {
-            // if the table is empty
-            nKey = 1;
+            daoUtil.executeQuery( );
+
+            if ( daoUtil.next( ) )
+            {
+                nKey = daoUtil.getInt( 1 ) + 1;
+            }
         }
-
-        nKey = daoUtil.getInt( 1 ) + 1;
-
-        daoUtil.free( );
-
         return nKey;
     }
 
@@ -90,41 +85,43 @@ public final class CategoryDAO implements ICategoryDAO
     @Override
     public void insert( Category category, Plugin plugin )
     {
-        DAOUtil daoUtil = new DAOUtil( SQL_QUERY_INSERT, plugin );
-        category.setId( newPrimaryKey( plugin ) );
+        try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_INSERT, plugin ) )
+        {
+            category.setId( newPrimaryKey( plugin ) );
 
-        int nIndex = 1;
-        daoUtil.setInt( nIndex++, category.getId( ) );
-        daoUtil.setInt( nIndex++, category.getIdSector( ) );
-        daoUtil.setString( nIndex++, category.getLabel( ) );
-        daoUtil.setBoolean( nIndex++, category.getDisplayPrice( ) );
-        daoUtil.setBoolean( nIndex++, category.getPriceMandatory( ) );
-        daoUtil.setInt( nIndex++, category.getAnnouncesValidation( ) );
-        daoUtil.setInt( nIndex++, category.getIdMailingList( ) );
-        daoUtil.setBoolean( nIndex++, category.getDisplayCaptcha( ) );
-        daoUtil.setInt( nIndex, category.getIdWorkflow( ) );
-        daoUtil.executeUpdate( );
-        daoUtil.free( );
+            int nIndex = 1;
+            daoUtil.setInt( nIndex++, category.getId( ) );
+            daoUtil.setInt( nIndex++, category.getIdSector( ) );
+            daoUtil.setString( nIndex++, category.getLabel( ) );
+            daoUtil.setBoolean( nIndex++, category.getDisplayPrice( ) );
+            daoUtil.setBoolean( nIndex++, category.getPriceMandatory( ) );
+            daoUtil.setInt( nIndex++, category.getAnnouncesValidation( ) );
+            daoUtil.setInt( nIndex++, category.getIdMailingList( ) );
+            daoUtil.setBoolean( nIndex++, category.getDisplayCaptcha( ) );
+            daoUtil.setInt( nIndex, category.getIdWorkflow( ) );
+            daoUtil.executeUpdate( );
+        }
     }
 
     @Override
     public int copyCategory( Category category, Plugin plugin )
     {
-        DAOUtil daoUtil = new DAOUtil( SQL_QUERY_INSERT, plugin );
-        category.setId( newPrimaryKey( plugin ) );
+        try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_INSERT, plugin ) )
+        {
+            category.setId( newPrimaryKey( plugin ) );
 
-        int nIndex = 1;
-        daoUtil.setInt( nIndex++, category.getId( ) );
-        daoUtil.setInt( nIndex++, category.getIdSector( ) );
-        daoUtil.setString( nIndex++, category.getLabel( ) );
-        daoUtil.setBoolean( nIndex++, category.getDisplayPrice( ) );
-        daoUtil.setBoolean( nIndex++, category.getPriceMandatory( ) );
-        daoUtil.setInt( nIndex++, category.getAnnouncesValidation( ) );
-        daoUtil.setInt( nIndex++, category.getIdMailingList( ) );
-        daoUtil.setBoolean( nIndex++, category.getDisplayCaptcha( ) );
-        daoUtil.setInt( nIndex, category.getIdWorkflow( ) );
-        daoUtil.executeUpdate( );
-        daoUtil.free( );
+            int nIndex = 1;
+            daoUtil.setInt( nIndex++, category.getId( ) );
+            daoUtil.setInt( nIndex++, category.getIdSector( ) );
+            daoUtil.setString( nIndex++, category.getLabel( ) );
+            daoUtil.setBoolean( nIndex++, category.getDisplayPrice( ) );
+            daoUtil.setBoolean( nIndex++, category.getPriceMandatory( ) );
+            daoUtil.setInt( nIndex++, category.getAnnouncesValidation( ) );
+            daoUtil.setInt( nIndex++, category.getIdMailingList( ) );
+            daoUtil.setBoolean( nIndex++, category.getDisplayCaptcha( ) );
+            daoUtil.setInt( nIndex, category.getIdWorkflow( ) );
+            daoUtil.executeUpdate( );
+        }
         return category.getId( );
     }
 
@@ -134,31 +131,29 @@ public final class CategoryDAO implements ICategoryDAO
     @Override
     public Category load( int nCategoryId, Plugin plugin )
     {
-        DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECT, plugin );
-        daoUtil.setInt( 1, nCategoryId );
-        daoUtil.executeQuery( );
-
         Category category = null;
-
-        if ( daoUtil.next( ) )
+        try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECT, plugin ) )
         {
-            category = new Category( );
+            daoUtil.setInt( 1, nCategoryId );
+            daoUtil.executeQuery( );
 
-            int nIndex = 1;
-            category.setId( daoUtil.getInt( nIndex++ ) );
-            category.setIdSector( daoUtil.getInt( nIndex++ ) );
-            category.setLabel( daoUtil.getString( nIndex++ ) );
-            category.setDisplayPrice( daoUtil.getBoolean( nIndex++ ) );
-            category.setPriceMandatory( daoUtil.getBoolean( nIndex++ ) );
-            category.setAnnouncesValidation( daoUtil.getInt( nIndex++ ) );
-            category.setIdMailingList( daoUtil.getInt( nIndex++ ) );
-            category.setIdWorkflow( daoUtil.getInt( nIndex++ ) );
-            category.setDisplayCaptcha( daoUtil.getBoolean( nIndex++ ) );
-            category.setNumberAnnounces( countAnnouncesForCategory( category, plugin ) );
+            if ( daoUtil.next( ) )
+            {
+                category = new Category( );
+
+                int nIndex = 1;
+                category.setId( daoUtil.getInt( nIndex++ ) );
+                category.setIdSector( daoUtil.getInt( nIndex++ ) );
+                category.setLabel( daoUtil.getString( nIndex++ ) );
+                category.setDisplayPrice( daoUtil.getBoolean( nIndex++ ) );
+                category.setPriceMandatory( daoUtil.getBoolean( nIndex++ ) );
+                category.setAnnouncesValidation( daoUtil.getInt( nIndex++ ) );
+                category.setIdMailingList( daoUtil.getInt( nIndex++ ) );
+                category.setIdWorkflow( daoUtil.getInt( nIndex++ ) );
+                category.setDisplayCaptcha( daoUtil.getBoolean( nIndex++ ) );
+                category.setNumberAnnounces( countAnnouncesForCategory( category, plugin ) );
+            }
         }
-
-        daoUtil.free( );
-
         return category;
     }
 
@@ -168,10 +163,11 @@ public final class CategoryDAO implements ICategoryDAO
     @Override
     public void delete( Category category, Plugin plugin )
     {
-        DAOUtil daoUtil = new DAOUtil( SQL_QUERY_DELETE, plugin );
-        daoUtil.setInt( 1, category.getId( ) );
-        daoUtil.executeUpdate( );
-        daoUtil.free( );
+        try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_DELETE, plugin ) )
+        {
+            daoUtil.setInt( 1, category.getId( ) );
+            daoUtil.executeUpdate( );
+        }
     }
 
     /**
@@ -180,19 +176,20 @@ public final class CategoryDAO implements ICategoryDAO
     @Override
     public void store( Category category, Plugin plugin )
     {
-        DAOUtil daoUtil = new DAOUtil( SQL_QUERY_UPDATE, plugin );
-        int nIndex = 1;
-        daoUtil.setInt( nIndex++, category.getIdSector( ) );
-        daoUtil.setString( nIndex++, category.getLabel( ) );
-        daoUtil.setBoolean( nIndex++, category.getDisplayPrice( ) );
-        daoUtil.setBoolean( nIndex++, category.getPriceMandatory( ) );
-        daoUtil.setInt( nIndex++, category.getAnnouncesValidation( ) );
-        daoUtil.setInt( nIndex++, category.getIdMailingList( ) );
-        daoUtil.setInt( nIndex++, category.getIdWorkflow( ) );
-        daoUtil.setBoolean( nIndex++, category.getDisplayCaptcha( ) );
-        daoUtil.setInt( nIndex, category.getId( ) );
-        daoUtil.executeUpdate( );
-        daoUtil.free( );
+        try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_UPDATE, plugin ) )
+        {
+            int nIndex = 1;
+            daoUtil.setInt( nIndex++, category.getIdSector( ) );
+            daoUtil.setString( nIndex++, category.getLabel( ) );
+            daoUtil.setBoolean( nIndex++, category.getDisplayPrice( ) );
+            daoUtil.setBoolean( nIndex++, category.getPriceMandatory( ) );
+            daoUtil.setInt( nIndex++, category.getAnnouncesValidation( ) );
+            daoUtil.setInt( nIndex++, category.getIdMailingList( ) );
+            daoUtil.setInt( nIndex++, category.getIdWorkflow( ) );
+            daoUtil.setBoolean( nIndex++, category.getDisplayCaptcha( ) );
+            daoUtil.setInt( nIndex, category.getId( ) );
+            daoUtil.executeUpdate( );
+        }
     }
 
     /**
@@ -201,24 +198,23 @@ public final class CategoryDAO implements ICategoryDAO
     @Override
     public List<Category> selectAll( Plugin plugin )
     {
-        List<Category> listCategories = new ArrayList<Category>( );
-        DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECTALL, plugin );
-        daoUtil.executeQuery( );
-
-        while ( daoUtil.next( ) )
+        List<Category> listCategories = new ArrayList<>( );
+        try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECTALL, plugin ) )
         {
-            Category category = new Category( );
-            category.setId( daoUtil.getInt( 1 ) );
-            category.setIdSector( daoUtil.getInt( 2 ) );
-            category.setLabel( daoUtil.getString( 3 ) );
-            category.setLabelSector( daoUtil.getString( 4 ) );
-            category.setNumberAnnounces( countAnnouncesForCategory( category, plugin ) );
+            daoUtil.executeQuery( );
 
-            listCategories.add( category );
+            while ( daoUtil.next( ) )
+            {
+                Category category = new Category( );
+                category.setId( daoUtil.getInt( 1 ) );
+                category.setIdSector( daoUtil.getInt( 2 ) );
+                category.setLabel( daoUtil.getString( 3 ) );
+                category.setLabelSector( daoUtil.getString( 4 ) );
+                category.setNumberAnnounces( countAnnouncesForCategory( category, plugin ) );
+
+                listCategories.add( category );
+            }
         }
-
-        daoUtil.free( );
-
         return listCategories;
     }
 
@@ -234,17 +230,16 @@ public final class CategoryDAO implements ICategoryDAO
     private int countAnnouncesForCategory( Category category, Plugin plugin )
     {
         int nNumberAnnounces = 0;
-        DAOUtil daoUtil = new DAOUtil( SQL_QUERY_COUNT_ANNOUNCES_FOR_CATEORY, plugin );
-        daoUtil.setInt( 1, category.getId( ) );
-        daoUtil.executeQuery( );
-
-        if ( daoUtil.next( ) )
+        try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_COUNT_ANNOUNCES_FOR_CATEORY, plugin ) )
         {
-            nNumberAnnounces = daoUtil.getInt( 1 );
+            daoUtil.setInt( 1, category.getId( ) );
+            daoUtil.executeQuery( );
+
+            if ( daoUtil.next( ) )
+            {
+                nNumberAnnounces = daoUtil.getInt( 1 );
+            }
         }
-
-        daoUtil.free( );
-
         return nNumberAnnounces;
     }
 
@@ -255,17 +250,16 @@ public final class CategoryDAO implements ICategoryDAO
     public int countPublishedAnnouncesForCategory( Category category, Plugin plugin )
     {
         int nNumberAnnounces = 0;
-        DAOUtil daoUtil = new DAOUtil( SQL_QUERY_COUNT_PUBLISHED_ANNOUNCES_FOR_CATEORY, plugin );
-        daoUtil.setInt( 1, category.getId( ) );
-        daoUtil.executeQuery( );
-
-        if ( daoUtil.next( ) )
+        try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_COUNT_PUBLISHED_ANNOUNCES_FOR_CATEORY, plugin ) )
         {
-            nNumberAnnounces = daoUtil.getInt( 1 );
+            daoUtil.setInt( 1, category.getId( ) );
+            daoUtil.executeQuery( );
+
+            if ( daoUtil.next( ) )
+            {
+                nNumberAnnounces = daoUtil.getInt( 1 );
+            }
         }
-
-        daoUtil.free( );
-
         return nNumberAnnounces;
     }
 
@@ -276,17 +270,16 @@ public final class CategoryDAO implements ICategoryDAO
     public int countEntriesForCategory( Category category, Plugin plugin )
     {
         int nNumberEntries = 0;
-        DAOUtil daoUtil = new DAOUtil( SQL_QUERY_COUNT_ENTRIES_FOR_CATEGORY, plugin );
-        daoUtil.setInt( 1, category.getId( ) );
-        daoUtil.executeQuery( );
-
-        if ( daoUtil.next( ) )
+        try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_COUNT_ENTRIES_FOR_CATEGORY, plugin ) )
         {
-            nNumberEntries = daoUtil.getInt( 1 );
+            daoUtil.setInt( 1, category.getId( ) );
+            daoUtil.executeQuery( );
+
+            if ( daoUtil.next( ) )
+            {
+                nNumberEntries = daoUtil.getInt( 1 );
+            }
         }
-
-        daoUtil.free( );
-
         return nNumberEntries;
     }
 
@@ -296,24 +289,23 @@ public final class CategoryDAO implements ICategoryDAO
     @Override
     public List<Category> selectCategoriesForSector( Sector sector, Plugin plugin )
     {
-        List<Category> listCategories = new ArrayList<Category>( );
-        DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECT_CATEGORIES_FOR_FIELD, plugin );
-        daoUtil.setInt( 1, sector.getId( ) );
-        daoUtil.executeQuery( );
-
-        while ( daoUtil.next( ) )
+        List<Category> listCategories = new ArrayList<>( );
+        try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECT_CATEGORIES_FOR_FIELD, plugin ) )
         {
-            Category category = new Category( );
-            category.setId( daoUtil.getInt( 1 ) );
-            category.setIdSector( daoUtil.getInt( 2 ) );
-            category.setLabel( daoUtil.getString( 3 ) );
-            category.setNumberAnnounces( countPublishedAnnouncesForCategory( category, plugin ) );
+            daoUtil.setInt( 1, sector.getId( ) );
+            daoUtil.executeQuery( );
 
-            listCategories.add( category );
+            while ( daoUtil.next( ) )
+            {
+                Category category = new Category( );
+                category.setId( daoUtil.getInt( 1 ) );
+                category.setIdSector( daoUtil.getInt( 2 ) );
+                category.setLabel( daoUtil.getString( 3 ) );
+                category.setNumberAnnounces( countPublishedAnnouncesForCategory( category, plugin ) );
+
+                listCategories.add( category );
+            }
         }
-
-        daoUtil.free( );
-
         return listCategories;
     }
 
@@ -324,16 +316,15 @@ public final class CategoryDAO implements ICategoryDAO
     public ReferenceList selectCategoriesReferenceList( Plugin plugin )
     {
         ReferenceList listCategories = new ReferenceList( );
-        DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECT_CATEGORIES_REFERENCELIST, plugin );
-        daoUtil.executeQuery( );
-
-        while ( daoUtil.next( ) )
+        try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECT_CATEGORIES_REFERENCELIST, plugin ) )
         {
-            listCategories.addItem( daoUtil.getInt( 1 ), daoUtil.getString( 2 ) );
+            daoUtil.executeQuery( );
+
+            while ( daoUtil.next( ) )
+            {
+                listCategories.addItem( daoUtil.getInt( 1 ), daoUtil.getString( 2 ) );
+            }
         }
-
-        daoUtil.free( );
-
         return listCategories;
     }
 }

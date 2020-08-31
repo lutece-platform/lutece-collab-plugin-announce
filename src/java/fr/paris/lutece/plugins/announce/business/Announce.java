@@ -33,17 +33,19 @@
  */
 package fr.paris.lutece.plugins.announce.business;
 
-import fr.paris.lutece.plugins.genericattributes.business.Response;
-import fr.paris.lutece.plugins.announce.service.AnnounceResponseImageResourceProvider;
-import fr.paris.lutece.plugins.workflowcore.business.action.Action;
-import fr.paris.lutece.portal.service.rbac.RBACResource;
-import fr.paris.lutece.portal.service.resource.IExtendableResource;
-import fr.paris.lutece.portal.service.util.AppLogService;
-
 import java.io.Serializable;
 import java.sql.Timestamp;
 import java.util.Collection;
 import java.util.List;
+
+import org.apache.commons.collections.CollectionUtils;
+
+import fr.paris.lutece.plugins.announce.service.AnnounceResponseImageResourceProvider;
+import fr.paris.lutece.plugins.genericattributes.business.Response;
+import fr.paris.lutece.plugins.workflowcore.business.action.Action;
+import fr.paris.lutece.portal.service.rbac.RBACResource;
+import fr.paris.lutece.portal.service.resource.IExtendableResource;
+import fr.paris.lutece.portal.service.util.AppLogService;
 
 /**
  * This is the business class for the object Announce
@@ -521,7 +523,7 @@ public class Announce implements Serializable, IExtendableResource, RBACResource
     @Override
     public String getExtendableResourceImageUrl( )
     {
-        if ( getHasPictures( ) && ( getListIdImageResponse( ) != null ) && ( getListIdImageResponse( ).size( ) > 0 ) )
+        if ( getHasPictures( ) && CollectionUtils.isNotEmpty( getListIdImageResponse( ) ) )
         {
             return AnnounceResponseImageResourceProvider.getUrlDownloadImageResponse( getListIdImageResponse( ).get( 0 ) );
         }

@@ -48,7 +48,7 @@ public class AnnounceDTO extends Announce
      * Serial version UID
      */
     private static final long serialVersionUID = -8507335801957930807L;
-    private Map<Integer, List<Response>> _mapResponsesByIdEntry = new HashMap<Integer, List<Response>>( );
+    private Map<Integer, List<Response>> _mapResponsesByIdEntry = new HashMap<>( );
 
     /**
      * Default constructor

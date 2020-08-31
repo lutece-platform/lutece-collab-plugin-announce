@@ -89,7 +89,7 @@ public class EntryService extends RemovalListenerService implements Serializable
 
             List<Entry> listEntryFirstLevel = EntryHome.findEntriesWithoutParent( entryToChangeOrder.getIdResource( ), entryToChangeOrder.getResourceType( ) );
 
-            List<Integer> orderFirstLevel = new ArrayList<Integer>( );
+            List<Integer> orderFirstLevel = new ArrayList<>( );
             initOrderFirstLevel( listEntryFirstLevel, orderFirstLevel );
 
             Integer nbChildEntryToChangeOrder = 0;
@@ -190,7 +190,7 @@ public class EntryService extends RemovalListenerService implements Serializable
         {
             filter.setEntryParentNull( EntryFilter.FILTER_TRUE );
 
-            List<Integer> orderFirstLevel = new ArrayList<Integer>( );
+            List<Integer> orderFirstLevel = new ArrayList<>( );
 
             int nNbChild = 0;
             int nNewOrder = nOrderToSet;

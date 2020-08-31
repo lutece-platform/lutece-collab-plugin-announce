@@ -33,6 +33,15 @@
  */
 package fr.paris.lutece.plugins.announce.web;
 
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+
+import org.apache.commons.lang.StringUtils;
+
 import fr.paris.lutece.plugins.announce.business.Sector;
 import fr.paris.lutece.plugins.announce.business.SectorHome;
 import fr.paris.lutece.plugins.announce.service.SectorResourceIdService;
@@ -48,18 +57,10 @@ import fr.paris.lutece.portal.service.util.AppPropertiesService;
 import fr.paris.lutece.portal.web.admin.PluginAdminPageJspBean;
 import fr.paris.lutece.portal.web.constants.Messages;
 import fr.paris.lutece.util.ReferenceList;
+import fr.paris.lutece.util.html.AbstractPaginator;
 import fr.paris.lutece.util.html.HtmlTemplate;
 import fr.paris.lutece.util.html.Paginator;
 import fr.paris.lutece.util.url.UrlItem;
-
-import org.apache.commons.lang.StringUtils;
-
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.servlet.http.HttpServletRequest;
 
 /**
  * This class provides the user interface to manage sector features ( manage, create, modify, remove )
@@ -81,6 +82,7 @@ public class SectorJspBean extends PluginAdminPageJspBean
     private static final String CHECKBOX_ON = "on";
     private static final String PARAMETER_FIELD_ORDER = "sector_order";
     private static final String PARAMETER_TAGS = "tags";
+    private static final String UNAUTHORIZED = "Unauthorized";
 
     /* properties */
     private static final String PROPERTY_PAGE_TITLE_MANAGE_FIELDS = "announce.manage_sector.pageTitle";
@@ -113,7 +115,6 @@ public class SectorJspBean extends PluginAdminPageJspBean
     private static final String REGEX_ID = "^[\\d]+$";
 
     /* Variables */
-    private int _nDefaultItemsPerPage;
     private String _strCurrentPageIndex;
     private int _nItemsPerPage;
 
@@ -144,17 +145,15 @@ public class SectorJspBean extends PluginAdminPageJspBean
     {
         setPageTitleProperty( PROPERTY_PAGE_TITLE_MANAGE_FIELDS );
 
-        _strCurrentPageIndex = Paginator.getPageIndex( request, Paginator.PARAMETER_PAGE_INDEX, _strCurrentPageIndex );
-        _nDefaultItemsPerPage = AppPropertiesService.getPropertyInt( PROPERTY_DEFAULT_LIST_FIELD_PER_PAGE, 50 );
-        _nItemsPerPage = Paginator.getItemsPerPage( request, Paginator.PARAMETER_ITEMS_PER_PAGE, _nItemsPerPage, _nDefaultItemsPerPage );
+        _strCurrentPageIndex = AbstractPaginator.getPageIndex( request, AbstractPaginator.PARAMETER_PAGE_INDEX, _strCurrentPageIndex );
+        int defaultItemsPerPage = AppPropertiesService.getPropertyInt( PROPERTY_DEFAULT_LIST_FIELD_PER_PAGE, 50 );
+        _nItemsPerPage = AbstractPaginator.getItemsPerPage( request, AbstractPaginator.PARAMETER_ITEMS_PER_PAGE, _nItemsPerPage, defaultItemsPerPage );
 
         Collection<Sector> listSectors = SectorHome.findAll( );
 
-        // listSectors = AdminWorkgroupService.getAuthorizedCollection( listSectors, getUser( ) );
-        Paginator<Sector> paginator = new Paginator<Sector>( (List<Sector>) listSectors, _nItemsPerPage, getUrlPage( ), PARAMETER_PAGE_INDEX,
-                _strCurrentPageIndex );
+        Paginator<Sector> paginator = new Paginator<>( (List<Sector>) listSectors, _nItemsPerPage, getUrlPage( ), PARAMETER_PAGE_INDEX, _strCurrentPageIndex );
 
-        Map<String, Object> model = new HashMap<String, Object>( );
+        Map<String, Object> model = new HashMap<>( );
 
         model.put( MARK_NB_ITEMS_PER_PAGE, "" + _nItemsPerPage );
         model.put( MARK_PAGINATOR, paginator );
@@ -179,14 +178,14 @@ public class SectorJspBean extends PluginAdminPageJspBean
     {
         if ( !RBACService.isAuthorized( Sector.RESOURCE_TYPE, RBAC.WILDCARD_RESOURCES_ID, SectorResourceIdService.PERMISSION_CREATE, getUser( ) ) )
         {
-            throw new AccessDeniedException( );
+            throw new AccessDeniedException( UNAUTHORIZED );
         }
 
         setPageTitleProperty( PROPERTY_PAGE_TITLE_CREATE_FIELD );
 
         Collection<Sector> listSectors = SectorHome.findAll( );
 
-        HashMap<String, Object> model = new HashMap<String, Object>( );
+        HashMap<String, Object> model = new HashMap<>( );
         model.put( MARK_LIST_FIELDS, listSectors );
 
         HtmlTemplate template = AppTemplateService.getTemplate( TEMPLATE_CREATE_FIELD, getLocale( ), model );
@@ -207,7 +206,7 @@ public class SectorJspBean extends PluginAdminPageJspBean
     {
         if ( !RBACService.isAuthorized( Sector.RESOURCE_TYPE, RBAC.WILDCARD_RESOURCES_ID, SectorResourceIdService.PERMISSION_CREATE, getUser( ) ) )
         {
-            throw new AccessDeniedException( );
+            throw new AccessDeniedException( UNAUTHORIZED );
         }
 
         String strSectorLabel = request.getParameter( PARAMETER_FIELD_LABEL );
@@ -257,7 +256,7 @@ public class SectorJspBean extends PluginAdminPageJspBean
         setPageTitleProperty( PROPERTY_PAGE_TITLE_MODIFY_FIELD );
 
         Sector sector = getAuthorizedSector( request, SectorResourceIdService.PERMISSION_MODIFY );
-        HashMap<String, Object> model = new HashMap<String, Object>( );
+        HashMap<String, Object> model = new HashMap<>( );
         model.put( MARK_FIELD, sector );
 
         HtmlTemplate template = AppTemplateService.getTemplate( TEMPLATE_MODIFY_FIELD, getLocale( ), model );
@@ -455,7 +454,7 @@ public class SectorJspBean extends PluginAdminPageJspBean
 
         if ( ( strIdSector == null ) || !strIdSector.matches( REGEX_ID ) )
         {
-            throw new AccessDeniedException( );
+            throw new AccessDeniedException( UNAUTHORIZED );
         }
 
         int nIdSector = Integer.parseInt( strIdSector );
@@ -463,7 +462,7 @@ public class SectorJspBean extends PluginAdminPageJspBean
 
         if ( ( sector == null ) || !RBACService.isAuthorized( Sector.RESOURCE_TYPE, String.valueOf( sector.getId( ) ), strPermissionType, getUser( ) ) )
         {
-            throw new AccessDeniedException( );
+            throw new AccessDeniedException( UNAUTHORIZED );
         }
 
         return sector;

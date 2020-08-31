@@ -33,43 +33,6 @@
  */
 package fr.paris.lutece.plugins.announce.service.announcesearch;
 
-import fr.paris.lutece.plugins.announce.business.Announce;
-import fr.paris.lutece.plugins.announce.business.AnnounceHome;
-import fr.paris.lutece.plugins.announce.business.AnnounceSearchFilter;
-import fr.paris.lutece.plugins.announce.business.AnnounceSort;
-import fr.paris.lutece.plugins.announce.service.AnnouncePlugin;
-import fr.paris.lutece.portal.service.plugin.Plugin;
-import fr.paris.lutece.portal.service.search.IndexationService;
-import fr.paris.lutece.portal.service.search.SearchItem;
-import fr.paris.lutece.portal.service.search.SearchResult;
-import fr.paris.lutece.portal.service.util.AppLogService;
-
-import org.apache.commons.lang.StringUtils;
-import org.apache.lucene.document.DateTools;
-import org.apache.lucene.document.Document;
-import org.apache.lucene.index.DirectoryReader;
-import org.apache.lucene.index.IndexReader;
-import org.apache.lucene.index.Term;
-
-//import org.apache.lucene.queryParser.MultiFieldQueryParser;
-import org.apache.lucene.queryparser.classic.MultiFieldQueryParser;
-import org.apache.lucene.queryparser.surround.parser.QueryParser;
-import org.apache.lucene.search.BooleanClause;
-import org.apache.lucene.search.BooleanQuery;
-import org.apache.lucene.search.IndexSearcher;
-import org.apache.lucene.search.PhraseQuery;
-import org.apache.lucene.search.Query;
-import org.apache.lucene.search.ScoreDoc;
-
-//import org.apache.lucene.search.Searcher;//
-import org.apache.lucene.search.TermQuery;
-import org.apache.lucene.search.TermRangeQuery;
-import org.apache.lucene.search.TopDocs;
-import org.apache.lucene.store.NIOFSDirectory;
-import org.apache.lucene.util.BytesRef;
-import org.apache.lucene.util.Version;
-
-import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -78,6 +41,31 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
+import org.apache.commons.lang.StringUtils;
+import org.apache.lucene.document.DateTools;
+import org.apache.lucene.document.Document;
+import org.apache.lucene.index.Term;
+import org.apache.lucene.queryparser.classic.MultiFieldQueryParser;
+import org.apache.lucene.search.BooleanClause;
+import org.apache.lucene.search.IndexSearcher;
+import org.apache.lucene.search.PhraseQuery;
+import org.apache.lucene.search.Query;
+import org.apache.lucene.search.ScoreDoc;
+import org.apache.lucene.search.TermQuery;
+import org.apache.lucene.search.TermRangeQuery;
+import org.apache.lucene.search.TopDocs;
+import org.apache.lucene.util.BytesRef;
+
+import fr.paris.lutece.plugins.announce.business.Announce;
+import fr.paris.lutece.plugins.announce.business.AnnounceHome;
+import fr.paris.lutece.plugins.announce.business.AnnounceSearchFilter;
+import fr.paris.lutece.plugins.announce.business.AnnounceSort;
+import fr.paris.lutece.plugins.announce.service.AnnouncePlugin;
+import fr.paris.lutece.portal.service.plugin.Plugin;
+import fr.paris.lutece.portal.service.search.SearchItem;
+import fr.paris.lutece.portal.service.search.SearchResult;
+import fr.paris.lutece.portal.service.util.AppLogService;
+
 /**
  * LuceneSearchEngine
  */
@@ -85,7 +73,7 @@ public class AnnounceLuceneSearchEngine implements IAnnounceSearchEngine
 {
     private static final int NO_CATEGORY = 0;
     private static final int NO_SECTOR = 0;
-    private static final SimpleDateFormat DAY_FORMAT = new SimpleDateFormat( "yyyyMMdd", Locale.US );
+    private final SimpleDateFormat _dayFormat = new SimpleDateFormat( "yyyyMMdd", Locale.US );
 
     /**
      * {@inheritDoc}
@@ -93,21 +81,18 @@ public class AnnounceLuceneSearchEngine implements IAnnounceSearchEngine
     @Override
     public int getSearchResults( AnnounceSearchFilter filter, Plugin plugin, List<SearchResult> listSearchResult, int nPage, int nItemsPerPage )
     {
-        ArrayList<SearchItem> listResults = new ArrayList<SearchItem>( );
+        ArrayList<SearchItem> listResults = new ArrayList<>( );
         IndexSearcher searcher;
 
-        // Searcher searcher = null;
-        Date dateMinToSearch;
-        Date dateMaxToSearch;
         int nNbResults = 0;
 
         try
         {
             searcher = AnnounceSearchService.getInstance( ).getSearcher( );
 
-            Collection<String> queries = new ArrayList<String>( );
-            Collection<String> sectors = new ArrayList<String>( );
-            Collection<BooleanClause.Occur> flags = new ArrayList<BooleanClause.Occur>( );
+            Collection<String> queries = new ArrayList<>( );
+            Collection<String> sectors = new ArrayList<>( );
+            Collection<BooleanClause.Occur> flags = new ArrayList<>( );
 
             // Category id
             if ( filter.getIdCategory( ) != NO_CATEGORY )
@@ -131,50 +116,44 @@ public class AnnounceLuceneSearchEngine implements IAnnounceSearchEngine
             PhraseQuery.Builder queryTypeBuilder = new PhraseQuery.Builder( );
             // add character "e" to TYPE because field is not analyzed when added to lucene document, but it's analyzed then in MultiFieldQueryParser.parse
             // method
-            queryTypeBuilder.add( new Term( AnnounceSearchItem.FIELD_TYPE, AnnouncePlugin.PLUGIN_NAME + "e" ) );
+            queryTypeBuilder.add( new Term( SearchItem.FIELD_TYPE, AnnouncePlugin.PLUGIN_NAME + "e" ) );
             queries.add( queryTypeBuilder.build( ).toString( ) );
-            sectors.add( AnnounceSearchItem.FIELD_TYPE );
+            sectors.add( SearchItem.FIELD_TYPE );
             flags.add( BooleanClause.Occur.MUST );
 
             // Keywords in title or description
             if ( StringUtils.isNotBlank( filter.getKeywords( ) ) )
             {
                 PhraseQuery.Builder queryContentBuilder = new PhraseQuery.Builder( );
-                queryContentBuilder.add( new Term( AnnounceSearchItem.FIELD_CONTENTS, filter.getKeywords( ) ) );
+                queryContentBuilder.add( new Term( SearchItem.FIELD_CONTENTS, filter.getKeywords( ) ) );
                 queries.add( queryContentBuilder.build( ).toString( ) );
-                sectors.add( AnnounceSearchItem.FIELD_CONTENTS );
+                sectors.add( SearchItem.FIELD_CONTENTS );
                 flags.add( BooleanClause.Occur.MUST );
             }
 
             // contains range date
             if ( ( filter.getDateMin( ) != null ) || ( filter.getDateMax( ) != null ) )
             {
-                if ( filter.getDateMin( ) == null )
-                {
-                    dateMinToSearch = new Date( 0L );
-                }
-                else
+                Date dateMinToSearch = new Date( 0L );
+                Date dateMaxToSearch = new Date( );
+                if ( filter.getDateMin( ) != null )
                 {
                     dateMinToSearch = filter.getDateMin( );
                 }
 
-                if ( filter.getDateMax( ) == null )
-                {
-                    dateMaxToSearch = new Date( );
-                }
-                else
+                if ( filter.getDateMax( ) != null )
                 {
                     dateMaxToSearch = filter.getDateMax( );
                 }
 
                 // String stringDateMin = DateUtil.
-                String strLowerTerm = DAY_FORMAT.format( dateMinToSearch );
-                String strUpperTerm = DAY_FORMAT.format( dateMaxToSearch );
+                String strLowerTerm = _dayFormat.format( dateMinToSearch );
+                String strUpperTerm = _dayFormat.format( dateMaxToSearch );
                 BytesRef bRLowerTerm = new BytesRef( strLowerTerm );
                 BytesRef bRUpperTerm = new BytesRef( strUpperTerm );
-                Query queryRangeDate = new TermRangeQuery( AnnounceSearchItem.FIELD_DATE, bRLowerTerm, bRUpperTerm, true, true );
+                Query queryRangeDate = new TermRangeQuery( SearchItem.FIELD_DATE, bRLowerTerm, bRUpperTerm, true, true );
                 queries.add( queryRangeDate.toString( ) );
-                sectors.add( AnnounceSearchItem.FIELD_DATE );
+                sectors.add( SearchItem.FIELD_DATE );
                 flags.add( BooleanClause.Occur.MUST );
             }
 
@@ -225,10 +204,6 @@ public class AnnounceLuceneSearchEngine implements IAnnounceSearchEngine
         {
             AppLogService.error( e.getMessage( ), e );
         }
-
-        /*
-         * finally { if ( searcher != null ) { try { searcher.close( ); } catch ( IOException e ) { AppLogService.error( e.getMessage( ), e ); } } }
-         */
         convertList( listResults, listSearchResult );
 
         return nNbResults;
@@ -241,11 +216,10 @@ public class AnnounceLuceneSearchEngine implements IAnnounceSearchEngine
     public int getSearchResultsBis( AnnounceSearchFilter filter, Plugin plugin, List<Announce> listAnnouncesResult, int nPage, int nItemsPerPage,
             AnnounceSort anSort )
     {
-        ArrayList<SearchItem> listResults = new ArrayList<SearchItem>( );
-        List<Integer> listIdAnnounces = new ArrayList<Integer>( );
+        ArrayList<SearchItem> listResults = new ArrayList<>( );
+        List<Integer> listIdAnnounces = new ArrayList<>( );
         IndexSearcher searcher;
 
-        // Searcher searcher = null;
         Date dateMinToSearch;
         Date dateMaxToSearch;
         int nNbResults = 0;
@@ -253,9 +227,9 @@ public class AnnounceLuceneSearchEngine implements IAnnounceSearchEngine
         {
             searcher = AnnounceSearchService.getInstance( ).getSearcher( );
 
-            Collection<String> queries = new ArrayList<String>( );
-            Collection<String> sectors = new ArrayList<String>( );
-            Collection<BooleanClause.Occur> flags = new ArrayList<BooleanClause.Occur>( );
+            Collection<String> queries = new ArrayList<>( );
+            Collection<String> sectors = new ArrayList<>( );
+            Collection<BooleanClause.Occur> flags = new ArrayList<>( );
 
             // Category id
             if ( filter.getIdCategory( ) != NO_CATEGORY )
@@ -279,18 +253,18 @@ public class AnnounceLuceneSearchEngine implements IAnnounceSearchEngine
             PhraseQuery.Builder queryTypeBuilder = new PhraseQuery.Builder( );
             // add character "e" to TYPE because field is not analyzed when added to lucene document, but it's analyzed then in MultiFieldQueryParser.parse
             // method
-            queryTypeBuilder.add( new Term( AnnounceSearchItem.FIELD_TYPE, AnnouncePlugin.PLUGIN_NAME + "e" ) );
+            queryTypeBuilder.add( new Term( SearchItem.FIELD_TYPE, AnnouncePlugin.PLUGIN_NAME + "e" ) );
             queries.add( queryTypeBuilder.build( ).toString( ) );
-            sectors.add( AnnounceSearchItem.FIELD_TYPE );
+            sectors.add( SearchItem.FIELD_TYPE );
             flags.add( BooleanClause.Occur.MUST );
 
             // Keywords in title or description
             if ( StringUtils.isNotBlank( filter.getKeywords( ) ) )
             {
                 PhraseQuery.Builder queryContentBuilder = new PhraseQuery.Builder( );
-                queryContentBuilder.add( new Term( AnnounceSearchItem.FIELD_CONTENTS, filter.getKeywords( ) ) );
+                queryContentBuilder.add( new Term( SearchItem.FIELD_CONTENTS, filter.getKeywords( ) ) );
                 queries.add( queryContentBuilder.build( ).toString( ) );
-                sectors.add( AnnounceSearchItem.FIELD_CONTENTS );
+                sectors.add( SearchItem.FIELD_CONTENTS );
                 flags.add( BooleanClause.Occur.MUST );
             }
 
@@ -316,13 +290,13 @@ public class AnnounceLuceneSearchEngine implements IAnnounceSearchEngine
                 }
 
                 // String stringDateMin = DateUtil.
-                String strLowerTerm = DAY_FORMAT.format( dateMinToSearch );
-                String strUpperTerm = DAY_FORMAT.format( dateMaxToSearch );
+                String strLowerTerm = _dayFormat.format( dateMinToSearch );
+                String strUpperTerm = _dayFormat.format( dateMaxToSearch );
                 BytesRef bRLowerTerm = new BytesRef( strLowerTerm );
                 BytesRef bRUpperTerm = new BytesRef( strUpperTerm );
-                Query queryRangeDate = new TermRangeQuery( AnnounceSearchItem.FIELD_DATE, bRLowerTerm, bRUpperTerm, true, true );
+                Query queryRangeDate = new TermRangeQuery( SearchItem.FIELD_DATE, bRLowerTerm, bRUpperTerm, true, true );
                 queries.add( queryRangeDate.toString( ) );
-                sectors.add( AnnounceSearchItem.FIELD_DATE );
+                sectors.add( SearchItem.FIELD_DATE );
                 flags.add( BooleanClause.Occur.MUST );
             }
 
@@ -390,10 +364,6 @@ public class AnnounceLuceneSearchEngine implements IAnnounceSearchEngine
         {
             AppLogService.error( e.getMessage( ), e );
         }
-
-        /*
-         * finally { if ( searcher != null ) { try { searcher.close( ); } catch ( IOException e ) { AppLogService.error( e.getMessage( ), e ); } } }
-         */
 
         return nNbResults;
     }

@@ -52,62 +52,60 @@ public class AnnounceNotifyDAO implements IAnnounceNotifyDAO
     public void insert( AnnounceNotify announce, Plugin plugin )
     {
 
-        DAOUtil daoUtil = new DAOUtil( SQL_QUERY_INSERT, plugin );
+        try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_INSERT, plugin ) )
+        {
+            daoUtil.setInt( 1, newPrimaryKey( plugin ) );
+            daoUtil.setInt( 2, announce.getIdAnnounce( ) );
 
-        daoUtil.setInt( 1, newPrimaryKey( plugin ) );
-        daoUtil.setInt( 2, announce.getIdAnnounce( ) );
-
-        daoUtil.executeUpdate( );
-        daoUtil.free( );
+            daoUtil.executeUpdate( );
+        }
     }
 
     @Override
     public void delete( int nIdAnnounce, Plugin plugin )
     {
-        DAOUtil daoUtil = new DAOUtil( SQL_QUERY_DELETE, plugin );
-        daoUtil.setInt( 1, nIdAnnounce );
-        daoUtil.executeUpdate( );
-        daoUtil.free( );
+        try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_DELETE, plugin ) )
+        {
+            daoUtil.setInt( 1, nIdAnnounce );
+            daoUtil.executeUpdate( );
+        }
     }
 
     @Override
     public List<AnnounceNotify> load( Plugin plugin )
     {
 
-        List<AnnounceNotify> announceList = new ArrayList<AnnounceNotify>( );
-        DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECT_ALL, plugin );
-        daoUtil.executeQuery( );
-
-        AnnounceNotify announceNotify;
-        while ( daoUtil.next( ) )
+        List<AnnounceNotify> announceList = new ArrayList<>( );
+        try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECT_ALL, plugin ) )
         {
-            announceNotify = new AnnounceNotify( );
-            announceNotify.setId( daoUtil.getInt( 1 ) );
-            announceNotify.setIdAnnounce( daoUtil.getInt( 2 ) );
-            announceList.add( announceNotify );
-        }
+            daoUtil.executeQuery( );
 
-        daoUtil.free( );
+            AnnounceNotify announceNotify;
+            while ( daoUtil.next( ) )
+            {
+                announceNotify = new AnnounceNotify( );
+                announceNotify.setId( daoUtil.getInt( 1 ) );
+                announceNotify.setIdAnnounce( daoUtil.getInt( 2 ) );
+                announceList.add( announceNotify );
+            }
+
+        }
 
         return announceList;
     }
 
     public int newPrimaryKey( Plugin plugin )
     {
-        DAOUtil daoUtil = new DAOUtil( SQL_QUERY_NEW_PK, plugin );
-        daoUtil.executeQuery( );
-
-        int nKey;
-
-        if ( !daoUtil.next( ) )
+        int nKey = 1;
+        try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_NEW_PK, plugin ) )
         {
-            // if the table is empty
-            nKey = 1;
+            daoUtil.executeQuery( );
+
+            if ( daoUtil.next( ) )
+            {
+                nKey = daoUtil.getInt( 1 ) + 1;
+            }
         }
-
-        nKey = daoUtil.getInt( 1 ) + 1;
-        daoUtil.free( );
-
         return nKey;
     }
 }

@@ -33,8 +33,30 @@
  */
 package fr.paris.lutece.plugins.announce.service.announcesearch;
 
+import java.io.IOException;
+import java.nio.file.Paths;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
+import org.apache.commons.lang.StringUtils;
+import org.apache.lucene.analysis.Analyzer;
+import org.apache.lucene.analysis.miscellaneous.LimitTokenCountAnalyzer;
+import org.apache.lucene.index.DirectoryReader;
+import org.apache.lucene.index.IndexReader;
+import org.apache.lucene.index.IndexWriter;
+import org.apache.lucene.index.IndexWriterConfig;
+import org.apache.lucene.index.IndexWriterConfig.OpenMode;
+import org.apache.lucene.index.LogDocMergePolicy;
+import org.apache.lucene.index.LogMergePolicy;
+import org.apache.lucene.search.IndexSearcher;
+import org.apache.lucene.store.Directory;
+import org.apache.lucene.store.FSDirectory;
+import org.apache.lucene.store.NIOFSDirectory;
+
 import fr.paris.lutece.plugins.announce.business.Announce;
-import fr.paris.lutece.plugins.announce.business.AnnounceHome;
 import fr.paris.lutece.plugins.announce.business.AnnounceSearchFilter;
 import fr.paris.lutece.plugins.announce.business.AnnounceSort;
 import fr.paris.lutece.plugins.announce.business.IndexerAction;
@@ -50,32 +72,6 @@ import fr.paris.lutece.portal.service.util.AppLogService;
 import fr.paris.lutece.portal.service.util.AppPathService;
 import fr.paris.lutece.portal.service.util.AppPropertiesService;
 
-import org.apache.commons.lang.StringUtils;
-import org.apache.lucene.analysis.Analyzer;
-import org.apache.lucene.analysis.miscellaneous.LimitTokenCountAnalyzer;
-import org.apache.lucene.index.DirectoryReader;
-import org.apache.lucene.index.IndexReader;
-import org.apache.lucene.index.IndexWriter;
-import org.apache.lucene.index.IndexWriterConfig;
-import org.apache.lucene.index.IndexWriterConfig.OpenMode;
-import org.apache.lucene.index.LogDocMergePolicy;
-import org.apache.lucene.index.LogMergePolicy;
-import org.apache.lucene.search.IndexSearcher;
-
-//import org.apache.lucene.search.Searcher;
-import org.apache.lucene.store.Directory;
-import org.apache.lucene.store.NIOFSDirectory;
-import org.apache.lucene.util.Version;
-
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Paths;
-import java.text.DecimalFormat;
-import java.text.NumberFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-
 /**
  * AnnounceSearchService
  */
@@ -86,7 +82,6 @@ public final class AnnounceSearchService
     private static final String PROPERTY_WRITER_MERGE_FACTOR = "announce.internalIndexer.lucene.writer.mergeFactor";
     private static final String PROPERTY_WRITER_MAX_FIELD_LENGTH = "announce.internalIndexer.lucene.writer.maxSectorLength";
     private static final String PROPERTY_ANALYSER_CLASS_NAME = "announce.internalIndexer.lucene.analyser.className";
-    private static final String PROPERTY_MAX_SKIPPED_INDEXATION = "announce.indexer.maxSkipedIndexation";
     private static final String PROPERTY_INDEXER_PRICE_FORMAT = "announce.indexer.priceFormat";
 
     // Constants
@@ -101,7 +96,6 @@ public final class AnnounceSearchService
 
     // Constants corresponding to the variables defined in the lutece.properties file
     private static volatile AnnounceSearchService _singleton;
-    private static int _nSkipedIndexations;
     private static String _strPriceFormat;
     private volatile String _strIndex;
     private Analyzer _analyzer;
@@ -132,7 +126,7 @@ public final class AnnounceSearchService
             throw new AppException( "Analyser class name not found in announce.properties", null );
         }
 
-        _indexer = (IAnnounceSearchIndexer) SpringContextService.getBean( "announce.announceIndexer" );
+        _indexer = SpringContextService.getBean( "announce.announceIndexer" );
 
         try
         {
@@ -179,7 +173,7 @@ public final class AnnounceSearchService
         try
         {
             IAnnounceSearchEngine engine = SpringContextService.getBean( BEAN_SEARCH_ENGINE );
-            List<SearchResult> listResults = new ArrayList<SearchResult>( );
+            List<SearchResult> listResults = new ArrayList<>( );
             nNbItems = engine.getSearchResults( filter, PluginService.getPlugin( AnnouncePlugin.PLUGIN_NAME ), listResults, nPageNumber, nItemsPerPage );
 
             for ( SearchResult searchResult : listResults )
@@ -202,7 +196,6 @@ public final class AnnounceSearchService
 
     public int getSearchResultsBis( AnnounceSearchFilter filter, int nPageNumber, int nItemsPerPage, List<Announce> listAnnouncesResults, AnnounceSort anSort )
     {
-        // List<Integer> listIdAnnounces = new ArrayList<Integer>( );
         int nNbItems = 0;
 
         try
@@ -227,48 +220,18 @@ public final class AnnounceSearchService
      * 
      * @return searcher
      */
-
-    /*
-     * public Searcher getSearcher( ) { Directory dir = null; Searcher searcher = null;
-     * 
-     * try { dir = NIOFSDirectory.open( new File( getIndex( ) ) ); searcher = new IndexSearcher( dir, true ); } catch ( IOException e ) { AppLogService.error(
-     * e.getMessage( ), e );
-     * 
-     * if ( dir != null ) { try { dir.close( ); } catch ( IOException e1 ) { AppLogService.error( e1.getMessage( ), e ); } } }
-     * 
-     * return searcher; }
-     */
-
-    /**
-     * return searcher
-     * 
-     * @return searcher
-     */
     public IndexSearcher getSearcher( )
     {
-        IndexReader dir = null;
         IndexSearcher searcher = null;
 
         try
         {
-            IndexReader ir = DirectoryReader.open( NIOFSDirectory.open( Paths.get( getIndex( ) ) ) );
+            IndexReader ir = DirectoryReader.open( FSDirectory.open( Paths.get( getIndex( ) ) ) );
             searcher = new IndexSearcher( ir );
         }
         catch( IOException e )
         {
             AppLogService.error( e.getMessage( ), e );
-
-            if ( dir != null )
-            {
-                try
-                {
-                    dir.close( );
-                }
-                catch( IOException e1 )
-                {
-                    AppLogService.error( e1.getMessage( ), e );
-                }
-            }
         }
 
         return searcher;
@@ -291,7 +254,7 @@ public final class AnnounceSearchService
         {
             sbLogs.append( "\r\nIndexing all contents ...\r\n" );
 
-            Directory dir = NIOFSDirectory.open( Paths.get( getIndex( ) ) );
+            Directory dir = FSDirectory.open( Paths.get( getIndex( ) ) );
 
             // Nouveau
             if ( !DirectoryReader.indexExists( dir ) )
@@ -308,21 +271,6 @@ public final class AnnounceSearchService
 
             if ( !bIsLocked )
             {
-                /*
-                 * writer = new IndexWriter( dir, _analyzer, bCreateIndex, IndexWriter.MaxFieldLength.UNLIMITED ); writer.setMergeFactor( _nWriterMergeFactor );
-                 * writer.setMaxFieldLength( _nWriterMaxSectorLength );
-                 * 
-                 * Date start = new Date( );
-                 * 
-                 * sbLogs.append( "\r\n<strong>Indexer : " ); sbLogs.append( _indexer.getName( ) ); sbLogs.append( " - " ); sbLogs.append(
-                 * _indexer.getDescription( ) ); sbLogs.append( "</strong>\r\n" ); _indexer.processIndexing( writer, bCreateIndex, sbLogs );
-                 * 
-                 * Date end = new Date( );
-                 * 
-                 * sbLogs.append( "Duration of the treatment : " ); sbLogs.append( end.getTime( ) - start.getTime( ) ); sbLogs.append( " milliseconds\r\n" );
-                 * 
-                 * writer.optimize( );
-                 */
                 Date start = new Date( );
 
                 IndexWriterConfig conf = new IndexWriterConfig( new LimitTokenCountAnalyzer( _analyzer, _nWriterMaxSectorLength ) );

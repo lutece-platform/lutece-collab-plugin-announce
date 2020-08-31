@@ -80,7 +80,7 @@ public final class EntryTypeService
      */
     public Map<Integer, EntryType> getMapEntryTypes( )
     {
-        return new HashMap<Integer, EntryType>( _mapEntryTypes );
+        return new HashMap<>( _mapEntryTypes );
     }
 
     /**
@@ -100,7 +100,7 @@ public final class EntryTypeService
      */
     private void initMapEntryTypes( )
     {
-        _mapEntryTypes = new HashMap<Integer, EntryType>( );
+        _mapEntryTypes = new HashMap<>( );
 
         for ( EntryType entryType : EntryTypeHome.getList( AnnouncePlugin.PLUGIN_NAME ) )
         {

@@ -47,18 +47,7 @@ public class LastAnnouncesPortletHome extends PortletHome
     private static ILastAnnouncesPortletDAO _dao = SpringContextService.getBean( "announce.lastAnnouncesPortletDAO" );
 
     /* This class implements the Singleton design pattern. */
-    private static volatile LastAnnouncesPortletHome _singleton;
-
-    /**
-     * Constructor
-     */
-    public LastAnnouncesPortletHome( )
-    {
-        if ( _singleton == null )
-        {
-            _singleton = this;
-        }
-    }
+    private static LastAnnouncesPortletHome _singleton;
 
     /**
      * Returns the identifier of the portlet type
@@ -69,9 +58,7 @@ public class LastAnnouncesPortletHome extends PortletHome
     public String getPortletTypeId( )
     {
         String strCurrentClassName = this.getClass( ).getName( );
-        String strPortletTypeId = PortletTypeHome.getPortletTypeId( strCurrentClassName );
-
-        return strPortletTypeId;
+        return PortletTypeHome.getPortletTypeId( strCurrentClassName );
     }
 
     /**

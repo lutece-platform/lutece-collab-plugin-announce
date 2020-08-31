@@ -46,6 +46,8 @@ import fr.paris.lutece.portal.service.spring.SpringContextService;
 import fr.paris.lutece.portal.service.template.AppTemplateService;
 import fr.paris.lutece.portal.web.LocalVariables;
 import fr.paris.lutece.util.html.HtmlTemplate;
+
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 
 import java.util.HashMap;
@@ -119,7 +121,7 @@ public class AnnounceSubscriptionProvider implements ISubscriptionProviderServic
     {
         if ( StringUtils.equals( SUBSCRIPTION_USER, strSubscriptionKey ) )
         {
-            Map<String, Object> model = new HashMap<String, Object>( );
+            Map<String, Object> model = new HashMap<>( );
             LuteceUser subscribedUser = LuteceUserService.getLuteceUserFromName( strIdSubscribedResource );
 
             model.put( MARK_USER_NAME, strIdSubscribedResource );
@@ -132,7 +134,7 @@ public class AnnounceSubscriptionProvider implements ISubscriptionProviderServic
         else
             if ( StringUtils.equals( SUBSCRIPTION_CATEGORY, strSubscriptionKey ) )
             {
-                Map<String, Object> model = new HashMap<String, Object>( );
+                Map<String, Object> model = new HashMap<>( );
 
                 int nIdCategory = Integer.parseInt( strIdSubscribedResource );
 
@@ -146,7 +148,7 @@ public class AnnounceSubscriptionProvider implements ISubscriptionProviderServic
                 if ( StringUtils.equals( SUBSCRIPTION_FILTER, strSubscriptionKey ) )
                 {
                     AnnounceSearchFilter filter = AnnounceSearchFilterHome.findByPrimaryKey( Integer.parseInt( strIdSubscribedResource ) );
-                    Map<String, Object> model = new HashMap<String, Object>( );
+                    Map<String, Object> model = new HashMap<>( );
                     model.put( MARK_FILTER, filter );
 
                     if ( filter.getIdCategory( ) > 0 )
@@ -170,7 +172,7 @@ public class AnnounceSubscriptionProvider implements ISubscriptionProviderServic
     {
         if ( StringUtils.equals( SUBSCRIPTION_USER, strSubscriptionKey ) )
         {
-            Map<String, Object> model = new HashMap<String, Object>( );
+            Map<String, Object> model = new HashMap<>( );
 
             List<Announce> listAnn = AnnounceHome.findAllPublished( AnnounceSort.DEFAULT_SORT );
             String strUserSub = "";
@@ -193,7 +195,7 @@ public class AnnounceSubscriptionProvider implements ISubscriptionProviderServic
         else
             if ( StringUtils.equals( SUBSCRIPTION_CATEGORY, strSubscriptionKey ) )
             {
-                Map<String, Object> model = new HashMap<String, Object>( );
+                Map<String, Object> model = new HashMap<>( );
 
                 int nIdCategory = Integer.parseInt( strIdSubscribedResource );
 
@@ -207,7 +209,7 @@ public class AnnounceSubscriptionProvider implements ISubscriptionProviderServic
                 if ( StringUtils.equals( SUBSCRIPTION_FILTER, strSubscriptionKey ) )
                 {
                     AnnounceSearchFilter filter = AnnounceSearchFilterHome.findByPrimaryKey( Integer.parseInt( strIdSubscribedResource ) );
-                    Map<String, Object> model = new HashMap<String, Object>( );
+                    Map<String, Object> model = new HashMap<>( );
                     model.put( MARK_FILTER, filter );
 
                     if ( filter.getIdCategory( ) > 0 )
@@ -453,7 +455,7 @@ public class AnnounceSubscriptionProvider implements ISubscriptionProviderServic
         SubscriptionFilter filter = new SubscriptionFilter( user.getName( ), getProviderName( ), strSubscriptionKey, strIdResource );
         List<AnnounceSubscribtionDTO> listSubscription = AnnounceSubscriptionService.getInstance( ).findByFilter( filter );
 
-        return ( listSubscription != null ) && ( listSubscription.size( ) > 0 );
+        return CollectionUtils.isNotEmpty( listSubscription );
     }
 
     /**

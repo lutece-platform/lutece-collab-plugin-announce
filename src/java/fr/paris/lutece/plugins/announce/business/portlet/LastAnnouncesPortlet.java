@@ -103,7 +103,7 @@ public class LastAnnouncesPortlet extends PortletHtmlContent
             String strContent = AnnounceApp.getAnnounceListById( request, ( getNbAnnouncesToDisplay( ) > listAllIdAnnounces.size( ) ) ? listAllIdAnnounces
                     : listAllIdAnnounces.subList( 0, getNbAnnouncesToDisplay( ) ), announceSort );
 
-            Map<String, Object> model = new HashMap<String, Object>( );
+            Map<String, Object> model = new HashMap<>( );
             model.put( MARK_PORTLET, this );
             model.put( MARK_CONTENT, strContent );
 

@@ -33,7 +33,25 @@
  */
 package fr.paris.lutece.plugins.announce.web;
 
-import fr.paris.lutece.plugins.announce.business.*;
+import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+
+import org.apache.commons.lang.StringUtils;
+
+import fr.paris.lutece.plugins.announce.business.Announce;
+import fr.paris.lutece.plugins.announce.business.AnnounceHome;
+import fr.paris.lutece.plugins.announce.business.AnnounceNotify;
+import fr.paris.lutece.plugins.announce.business.AnnounceNotifyHome;
+import fr.paris.lutece.plugins.announce.business.AnnounceSort;
+import fr.paris.lutece.plugins.announce.business.Category;
+import fr.paris.lutece.plugins.announce.business.CategoryHome;
 import fr.paris.lutece.plugins.announce.service.AnnounceResourceIdService;
 import fr.paris.lutece.plugins.announce.utils.AnnounceUtils;
 import fr.paris.lutece.plugins.genericattributes.business.Entry;
@@ -55,18 +73,10 @@ import fr.paris.lutece.portal.service.workflow.WorkflowService;
 import fr.paris.lutece.portal.web.admin.PluginAdminPageJspBean;
 import fr.paris.lutece.portal.web.constants.Parameters;
 import fr.paris.lutece.portal.web.util.LocalizedDelegatePaginator;
+import fr.paris.lutece.util.html.AbstractPaginator;
 import fr.paris.lutece.util.html.HtmlTemplate;
 import fr.paris.lutece.util.html.Paginator;
 import fr.paris.lutece.util.url.UrlItem;
-
-import org.apache.commons.lang.StringUtils;
-
-import java.sql.Timestamp;
-import java.util.*;
-import java.util.stream.Collector;
-import java.util.stream.Collectors;
-
-import javax.servlet.http.HttpServletRequest;
 
 /**
  * This class provides the user interface to manage announce features ( manage, create, modify, remove )
@@ -145,14 +155,14 @@ public class AnnounceJspBean extends PluginAdminPageJspBean
     {
         setPageTitleProperty( PROPERTY_PAGE_TITLE_MANAGE_ANNOUNCES );
 
-        _strCurrentPageIndex = Paginator.getPageIndex( request, Paginator.PARAMETER_PAGE_INDEX, _strCurrentPageIndex );
+        _strCurrentPageIndex = AbstractPaginator.getPageIndex( request, AbstractPaginator.PARAMETER_PAGE_INDEX, _strCurrentPageIndex );
 
         if ( _nDefaultItemsPerPage == 0 )
         {
             _nDefaultItemsPerPage = AppPropertiesService.getPropertyInt( PROPERTY_DEFAULT_LIST_ANNOUNCE_PER_PAGE, 50 );
         }
 
-        _nItemsPerPage = Paginator.getItemsPerPage( request, Paginator.PARAMETER_ITEMS_PER_PAGE, _nItemsPerPage, _nDefaultItemsPerPage );
+        _nItemsPerPage = AbstractPaginator.getItemsPerPage( request, AbstractPaginator.PARAMETER_ITEMS_PER_PAGE, _nItemsPerPage, _nDefaultItemsPerPage );
 
         String strSort = request.getParameter( Parameters.SORTED_ATTRIBUTE_NAME );
         boolean bSortAsc = Boolean.parseBoolean( request.getParameter( Parameters.SORTED_ASC ) );
@@ -175,7 +185,7 @@ public class AnnounceJspBean extends PluginAdminPageJspBean
 
         List<Integer> listIdAnnounces = AnnounceHome.findAll( announceSort );
 
-        Paginator<Integer> paginatorId = new Paginator<Integer>( listIdAnnounces, _nItemsPerPage, StringUtils.EMPTY, Paginator.PARAMETER_PAGE_INDEX,
+        Paginator<Integer> paginatorId = new Paginator<>( listIdAnnounces, _nItemsPerPage, StringUtils.EMPTY, AbstractPaginator.PARAMETER_PAGE_INDEX,
                 _strCurrentPageIndex );
 
         AdminUser user = AdminUserService.getAdminUser( request );
@@ -199,15 +209,13 @@ public class AnnounceJspBean extends PluginAdminPageJspBean
             }
         }
 
-        Map<String, Object> model = new HashMap<String, Object>( );
+        Map<String, Object> model = new HashMap<>( );
 
-        LocalizedDelegatePaginator<Announce> paginator = new LocalizedDelegatePaginator<Announce>( listAnnounces, _nItemsPerPage,
-                getURLManageAnnounces( request ), Paginator.PARAMETER_PAGE_INDEX, _strCurrentPageIndex, listIdAnnounces.size( ), getLocale( ) );
+        LocalizedDelegatePaginator<Announce> paginator = new LocalizedDelegatePaginator<>( listAnnounces, _nItemsPerPage, getURLManageAnnounces( request ),
+                AbstractPaginator.PARAMETER_PAGE_INDEX, _strCurrentPageIndex, listIdAnnounces.size( ), getLocale( ) );
 
         model.put( MARK_NB_ITEMS_PER_PAGE, Integer.toString( _nItemsPerPage ) );
         model.put( MARK_PAGINATOR, paginator );
-        // model.put( MARK_ANNOUNCE_LIST, paginator.getPageItems( ).stream().sorted((o1,o2)->
-        // o2.getDateModification().compareTo(o1.getDateModification())).collect(Collectors.toList()) );
         model.put( MARK_ANNOUNCE_LIST, paginator.getPageItems( ) );
 
         model.put( MARK_RIGHT_DELETE,
@@ -236,14 +244,11 @@ public class AnnounceJspBean extends PluginAdminPageJspBean
 
         int nIdAnnounce = Integer.parseInt( request.getParameter( PARAMETER_ANNOUNCE_ID ) );
         Announce announce = AnnounceHome.findByPrimaryKey( nIdAnnounce );
-        Collection<Entry> listGeolocalisation = new ArrayList<Entry>( );
+        Collection<Entry> listGeolocalisation = new ArrayList<>( );
 
         Collection<Response> listResponses = AnnounceHome.findListResponse( announce.getId( ), false );
         for ( Response response : listResponses )
         {
-            // IEntryTypeService entryTypeService = EntryTypeServiceManager.getEntryTypeService( response.getEntry( ) );
-            // response.setToStringValueResponse( entryTypeService.getResponseValueForRecap( response.getEntry( ),
-            // request, response, request.getLocale( ) ) );
 
             if ( response.getEntry( ) != null && response.getEntry( ).getEntryType( ) != null
                     && "announce.entryTypeGeolocation".equals( response.getEntry( ).getEntryType( ).getBeanName( ) ) )
@@ -253,8 +258,9 @@ public class AnnounceJspBean extends PluginAdminPageJspBean
                 {
 
                     if ( response.getField( ) != null && filed.getIdField( ) == response.getField( ).getIdField( ) )
-
+                    {
                         response.setField( filed );
+                    }
                 }
 
                 boolean bool = true;
@@ -274,7 +280,7 @@ public class AnnounceJspBean extends PluginAdminPageJspBean
 
         }
 
-        HashMap<String, Object> model = new HashMap<String, Object>( );
+        HashMap<String, Object> model = new HashMap<>( );
         model.put( MARK_ENTRY_LIST_GEOLOCATION, listGeolocalisation );
         model.put( MARK_LIST_RESPONSES, listResponses );
         model.put( MARK_ANNOUNCE, announce );
@@ -381,7 +387,7 @@ public class AnnounceJspBean extends PluginAdminPageJspBean
                 announceNotify.setIdAnnounce( announce.getId( ) );
                 AnnounceNotifyHome.create( announceNotify );
             }
-            announce.setDateCreation( new Timestamp( GregorianCalendar.getInstance( ).getTimeInMillis( ) ) );
+            announce.setDateCreation( new Timestamp( Calendar.getInstance( ).getTimeInMillis( ) ) );
             announce.setPublished( bPublished );
             AnnounceHome.setPublished( announce );
         }

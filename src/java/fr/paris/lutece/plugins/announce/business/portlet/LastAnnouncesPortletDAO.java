@@ -53,14 +53,15 @@ public final class LastAnnouncesPortletDAO implements ILastAnnouncesPortletDAO
     @Override
     public void insert( Portlet portlet )
     {
-        DAOUtil daoUtil = new DAOUtil( SQL_QUERY_INSERT, AnnouncePlugin.getPlugin( ) );
-        LastAnnouncesPortlet lastAnnouncesPortlet = (LastAnnouncesPortlet) portlet;
-        int nIndex = 1;
-        daoUtil.setInt( nIndex++, lastAnnouncesPortlet.getId( ) );
-        daoUtil.setInt( nIndex, lastAnnouncesPortlet.getNbAnnouncesToDisplay( ) );
+        try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_INSERT, AnnouncePlugin.getPlugin( ) ) )
+        {
+            LastAnnouncesPortlet lastAnnouncesPortlet = (LastAnnouncesPortlet) portlet;
+            int nIndex = 1;
+            daoUtil.setInt( nIndex++, lastAnnouncesPortlet.getId( ) );
+            daoUtil.setInt( nIndex, lastAnnouncesPortlet.getNbAnnouncesToDisplay( ) );
 
-        daoUtil.executeUpdate( );
-        daoUtil.free( );
+            daoUtil.executeUpdate( );
+        }
     }
 
     /**
@@ -69,10 +70,11 @@ public final class LastAnnouncesPortletDAO implements ILastAnnouncesPortletDAO
     @Override
     public void delete( int nPortletId )
     {
-        DAOUtil daoUtil = new DAOUtil( SQL_QUERY_DELETE, AnnouncePlugin.getPlugin( ) );
-        daoUtil.setInt( 1, nPortletId );
-        daoUtil.executeUpdate( );
-        daoUtil.free( );
+        try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_DELETE, AnnouncePlugin.getPlugin( ) ) )
+        {
+            daoUtil.setInt( 1, nPortletId );
+            daoUtil.executeUpdate( );
+        }
     }
 
     /**
@@ -81,14 +83,15 @@ public final class LastAnnouncesPortletDAO implements ILastAnnouncesPortletDAO
     @Override
     public void store( Portlet portlet )
     {
-        DAOUtil daoUtil = new DAOUtil( SQL_QUERY_UPDATE, AnnouncePlugin.getPlugin( ) );
-        LastAnnouncesPortlet lastAnnouncesPortlet = (LastAnnouncesPortlet) portlet;
-        int nIndex = 1;
-        daoUtil.setInt( nIndex++, lastAnnouncesPortlet.getNbAnnouncesToDisplay( ) );
-        daoUtil.setInt( nIndex, lastAnnouncesPortlet.getId( ) );
+        try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_UPDATE, AnnouncePlugin.getPlugin( ) ) )
+        {
+            LastAnnouncesPortlet lastAnnouncesPortlet = (LastAnnouncesPortlet) portlet;
+            int nIndex = 1;
+            daoUtil.setInt( nIndex++, lastAnnouncesPortlet.getNbAnnouncesToDisplay( ) );
+            daoUtil.setInt( nIndex, lastAnnouncesPortlet.getId( ) );
 
-        daoUtil.executeUpdate( );
-        daoUtil.free( );
+            daoUtil.executeUpdate( );
+        }
     }
 
     /**
@@ -97,18 +100,17 @@ public final class LastAnnouncesPortletDAO implements ILastAnnouncesPortletDAO
     @Override
     public Portlet load( int nIdPortlet )
     {
-        DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECT, AnnouncePlugin.getPlugin( ) );
-        daoUtil.setInt( 1, nIdPortlet );
-        daoUtil.executeQuery( );
-
         LastAnnouncesPortlet portlet = new LastAnnouncesPortlet( );
-        portlet.setId( nIdPortlet );
-
-        if ( daoUtil.next( ) )
+        try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECT, AnnouncePlugin.getPlugin( ) ) )
         {
-            portlet.setNbAnnouncesToDisplay( daoUtil.getInt( 1 ) );
+            daoUtil.setInt( 1, nIdPortlet );
+            portlet.setId( nIdPortlet );
+
+            if ( daoUtil.next( ) )
+            {
+                portlet.setNbAnnouncesToDisplay( daoUtil.getInt( 1 ) );
+            }
         }
-        daoUtil.free( );
         return portlet;
     }
 }
