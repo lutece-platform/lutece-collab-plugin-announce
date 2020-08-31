@@ -2,39 +2,65 @@
 <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
 
 <beans>
-    
-    <!--                      Search Engine                    -->  
-    <bean id="announce.announceSearchEngine" class="fr.paris.lutece.plugins.announce.service.announcesearch.AnnounceLuceneSearchEngine" />
-    <bean id="announce.announceIndexerActionDAO"  class="fr.paris.lutece.plugins.announce.business.IndexerActionDAO" />
-        
-    <bean id="announce.sectorDAO"  class="fr.paris.lutece.plugins.announce.business.SectorDAO" />
-    <bean id="announce.categoryDAO"  class="fr.paris.lutece.plugins.announce.business.CategoryDAO" />
-    <bean id="announce.announceDAO"  class="fr.paris.lutece.plugins.announce.business.AnnounceDAO" />
-    <bean id="announce.announceNotifyDAO"  class="fr.paris.lutece.plugins.announce.business.AnnounceNotifyDAO" />
-    <bean id="announce.myAnnouncesPortletDAO" class="fr.paris.lutece.plugins.announce.business.portlet.MyAnnouncesPortletDAO" />
-    <bean id="announce.lastAnnouncesPortletDAO" class="fr.paris.lutece.plugins.announce.business.portlet.LastAnnouncesPortletDAO" />
-    <bean id="announce.announceSearchFilterDAO" class="fr.paris.lutece.plugins.announce.business.AnnounceSearchFilterDAO" />
-    
-    <bean id="announce.entryService" class="fr.paris.lutece.plugins.announce.service.EntryService" />    
-    <bean id="announce.entryTypeCheckBox" class="fr.paris.lutece.plugins.announce.service.entrytype.EntryTypeCheckBox" />
-	<bean id="announce.entryTypeComment" class="fr.paris.lutece.plugins.announce.service.entrytype.EntryTypeComment" />
-	<bean id="announce.entryTypeDate" class="fr.paris.lutece.plugins.announce.service.entrytype.EntryTypeDate" />
-	<bean id="announce.entryTypeGeolocation" class="fr.paris.lutece.plugins.announce.service.entrytype.EntryTypeGeolocation" />
-	<bean id="announce.entryTypeGroup" class="fr.paris.lutece.plugins.announce.service.entrytype.EntryTypeGroup" />
-	<bean id="announce.entryTypeNumbering" class="fr.paris.lutece.plugins.announce.service.entrytype.EntryTypeNumbering" />
-	<bean id="announce.entryTypeRadioButton" class="fr.paris.lutece.plugins.announce.service.entrytype.EntryTypeRadioButton" />
-	<bean id="announce.entryTypeSelect" class="fr.paris.lutece.plugins.announce.service.entrytype.EntryTypeSelect" />
-	<bean id="announce.entryTypeText" class="fr.paris.lutece.plugins.announce.service.entrytype.EntryTypeText" />
-	<bean id="announce.entryTypeTextArea" class="fr.paris.lutece.plugins.announce.service.entrytype.EntryTypeTextArea" />
-	<bean id="announce.entryTypeImage" class="fr.paris.lutece.plugins.announce.service.entrytype.EntryTypeImage" />
-	
-	<bean id="announce.announceService" class="fr.paris.lutece.plugins.announce.service.AnnounceService" />
-	
-    <bean id="announce.announceIndexer" class="fr.paris.lutece.plugins.announce.service.announcesearch.DefaultAnnounceIndexer" />
-    
-    <bean id="announce.announceAsynchronousUploadHandler" class="fr.paris.lutece.plugins.announce.service.upload.AnnounceAsynchronousUploadHandler" />
-    
-    <bean id="announce.announceSubscriptionProvider" class="fr.paris.lutece.plugins.announce.service.AnnounceSubscriptionProvider" />
-	<bean id="announce.announceExtendableResourceService" class="fr.paris.lutece.plugins.announce.service.AnnounceExtendableResourceService" />
-	
+
+    <!-- Search Engine -->
+    <bean id="announce.announceSearchEngine"
+        class="fr.paris.lutece.plugins.announce.service.announcesearch.AnnounceLuceneSearchEngine" />
+    <bean id="announce.announceIndexerActionDAO"
+        class="fr.paris.lutece.plugins.announce.business.IndexerActionDAO" />
+
+    <bean id="announce.sectorDAO"
+        class="fr.paris.lutece.plugins.announce.business.SectorDAO" />
+    <bean id="announce.categoryDAO"
+        class="fr.paris.lutece.plugins.announce.business.CategoryDAO" />
+    <bean id="announce.announceDAO"
+        class="fr.paris.lutece.plugins.announce.business.AnnounceDAO" />
+    <bean id="announce.announceNotifyDAO"
+        class="fr.paris.lutece.plugins.announce.business.AnnounceNotifyDAO" />
+    <bean id="announce.myAnnouncesPortletDAO"
+        class="fr.paris.lutece.plugins.announce.business.portlet.MyAnnouncesPortletDAO" />
+    <bean id="announce.lastAnnouncesPortletDAO"
+        class="fr.paris.lutece.plugins.announce.business.portlet.LastAnnouncesPortletDAO" />
+    <bean id="announce.announceSearchFilterDAO"
+        class="fr.paris.lutece.plugins.announce.business.AnnounceSearchFilterDAO" />
+
+    <bean id="announce.entryService"
+        class="fr.paris.lutece.plugins.announce.service.EntryService" />
+    <bean id="announce.entryTypeCheckBox"
+        class="fr.paris.lutece.plugins.announce.service.entrytype.EntryTypeCheckBox" />
+    <bean id="announce.entryTypeComment"
+        class="fr.paris.lutece.plugins.announce.service.entrytype.EntryTypeComment" />
+    <bean id="announce.entryTypeDate"
+        class="fr.paris.lutece.plugins.announce.service.entrytype.EntryTypeDate" />
+    <bean id="announce.entryTypeGeolocation"
+        class="fr.paris.lutece.plugins.announce.service.entrytype.EntryTypeGeolocation" />
+    <bean id="announce.entryTypeGroup"
+        class="fr.paris.lutece.plugins.announce.service.entrytype.EntryTypeGroup" />
+    <bean id="announce.entryTypeNumbering"
+        class="fr.paris.lutece.plugins.announce.service.entrytype.EntryTypeNumbering" />
+    <bean id="announce.entryTypeRadioButton"
+        class="fr.paris.lutece.plugins.announce.service.entrytype.EntryTypeRadioButton" />
+    <bean id="announce.entryTypeSelect"
+        class="fr.paris.lutece.plugins.announce.service.entrytype.EntryTypeSelect" />
+    <bean id="announce.entryTypeText"
+        class="fr.paris.lutece.plugins.announce.service.entrytype.EntryTypeText" />
+    <bean id="announce.entryTypeTextArea"
+        class="fr.paris.lutece.plugins.announce.service.entrytype.EntryTypeTextArea" />
+    <bean id="announce.entryTypeImage"
+        class="fr.paris.lutece.plugins.announce.service.entrytype.EntryTypeImage" />
+
+    <bean id="announce.announceService"
+        class="fr.paris.lutece.plugins.announce.service.AnnounceService" />
+
+    <bean id="announce.announceIndexer"
+        class="fr.paris.lutece.plugins.announce.service.announcesearch.DefaultAnnounceIndexer" />
+
+    <bean id="announce.announceAsynchronousUploadHandler"
+        class="fr.paris.lutece.plugins.announce.service.upload.AnnounceAsynchronousUploadHandler" />
+
+    <bean id="announce.announceSubscriptionProvider"
+        class="fr.paris.lutece.plugins.announce.service.AnnounceSubscriptionProvider" />
+    <bean id="announce.announceExtendableResourceService"
+        class="fr.paris.lutece.plugins.announce.service.AnnounceExtendableResourceService" />
+
 </beans>

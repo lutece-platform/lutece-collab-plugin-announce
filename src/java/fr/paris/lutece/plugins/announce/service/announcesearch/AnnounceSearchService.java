@@ -54,7 +54,6 @@ import org.apache.lucene.index.LogMergePolicy;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
-import org.apache.lucene.store.NIOFSDirectory;
 
 import fr.paris.lutece.plugins.announce.business.Announce;
 import fr.paris.lutece.plugins.announce.business.AnnounceSearchFilter;
@@ -429,8 +428,8 @@ public final class AnnounceSearchService
      */
     public static String getFormatedPriceString( String strPrice )
     {
-        return strPrice.replaceAll( CONSTANT_BLANK_SPACE, StringUtils.EMPTY ).replace( CONSTANT_COMA, CONSTANT_POINT )
-                .replaceAll( CONSTANT_EURO, StringUtils.EMPTY ).trim( );
+        return strPrice.replace( CONSTANT_BLANK_SPACE, StringUtils.EMPTY ).replace( CONSTANT_COMA, CONSTANT_POINT )
+                .replace( CONSTANT_EURO, StringUtils.EMPTY ).trim( );
     }
 
     /**

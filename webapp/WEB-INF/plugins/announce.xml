@@ -1,6 +1,8 @@
-<?xml version="1.0" encoding="UTF-8"?><plug-in>
+<?xml version="1.0" encoding="UTF-8"?>
+<plug-in>
     <name>announce</name>
-    <class>fr.paris.lutece.plugins.announce.service.AnnouncePlugin</class>
+    <class>fr.paris.lutece.plugins.announce.service.AnnouncePlugin
+    </class>
     <version>2.1.1-SNAPSHOT</version>
     <description>announce.plugin.description</description>
     <provider>announce.plugin.provider</provider>
@@ -9,10 +11,11 @@
     <copyright>Copyright (c) 2001-2014 Mairie de Paris</copyright>
     <core-version-dependency>
         <min-core-version>4.1.0</min-core-version>
-        <max-core-version/>
+        <max-core-version />
     </core-version-dependency>
 
-    <!-- if the plugin must have a connection pool with parameter : 1 - yes, 0 - no -->
+    <!-- if the plugin must have a connection pool with parameter : 1 - yes, 
+        0 - no -->
     <db-pool-required>1</db-pool-required>
 
     <!-- Specific plugin CSS -->
@@ -23,33 +26,41 @@
     <!-- Specific plugin JAVASCRIPT -->
     <javascript-files>
         <javascript-files-scope>portal</javascript-files-scope>
-        <javascript-file>announce/jquery.poptrox.min.js</javascript-file>
+        <javascript-file>announce/jquery.poptrox.min.js
+        </javascript-file>
         <javascript-file>announce/announce.js</javascript-file>
-		<javascript-file>announce/uploadify/jquery.uploadify.v2.1.4.min.js</javascript-file>
-		<javascript-file>announce/uploadify/swfobject.js</javascript-file>
-	
+        <javascript-file>announce/uploadify/jquery.uploadify.v2.1.4.min.js
+        </javascript-file>
+        <javascript-file>announce/uploadify/swfobject.js
+        </javascript-file>
+
     </javascript-files>
-    
+
     <admin-features>
         <admin-feature>
             <feature-id>ANNOUNCE_MANAGEMENT</feature-id>
             <feature-title>announce.adminFeature.title</feature-title>
-            <feature-description>announce.adminFeature.description</feature-description>
+            <feature-description>announce.adminFeature.description
+            </feature-description>
             <feature-level>1</feature-level>
-            <feature-url>jsp/admin/plugins/announce/ManageAnnounces.jsp</feature-url>
+            <feature-url>jsp/admin/plugins/announce/ManageAnnounces.jsp
+            </feature-url>
         </admin-feature>
     </admin-features>
 
     <!-- RBAC Resources -->
     <rbac-resource-types>
         <rbac-resource-type>
-            <rbac-resource-type-class>fr.paris.lutece.plugins.announce.service.CategoryResourceIdService</rbac-resource-type-class>
+            <rbac-resource-type-class>fr.paris.lutece.plugins.announce.service.CategoryResourceIdService
+            </rbac-resource-type-class>
         </rbac-resource-type>
         <rbac-resource-type>
-            <rbac-resource-type-class>fr.paris.lutece.plugins.announce.service.SectorResourceIdService</rbac-resource-type-class>
+            <rbac-resource-type-class>fr.paris.lutece.plugins.announce.service.SectorResourceIdService
+            </rbac-resource-type-class>
         </rbac-resource-type>
         <rbac-resource-type>
-            <rbac-resource-type-class>fr.paris.lutece.plugins.announce.service.AnnounceResourceIdService</rbac-resource-type-class>
+            <rbac-resource-type-class>fr.paris.lutece.plugins.announce.service.AnnounceResourceIdService
+            </rbac-resource-type-class>
         </rbac-resource-type>
     </rbac-resource-types>
 
@@ -57,28 +68,38 @@
     <daemons>
         <daemon>
             <daemon-id>announceSearchIndexer</daemon-id>
-            <daemon-name>announce.daemon.announceSearchIndexer.name</daemon-name>
-            <daemon-description>announce.daemon.announceSearchIndexer.description</daemon-description>
-            <daemon-class>fr.paris.lutece.plugins.announce.service.announcesearch.AnnounceSearchIndexerDaemon</daemon-class>
+            <daemon-name>announce.daemon.announceSearchIndexer.name
+            </daemon-name>
+            <daemon-description>announce.daemon.announceSearchIndexer.description
+            </daemon-description>
+            <daemon-class>fr.paris.lutece.plugins.announce.service.announcesearch.AnnounceSearchIndexerDaemon
+            </daemon-class>
         </daemon>
         <daemon>
             <daemon-id>announceExpirationDaemon</daemon-id>
-            <daemon-name>announce.daemon.announceExpirationDaemon.name</daemon-name>
-            <daemon-description>announce.daemon.announceExpirationDaemon.description</daemon-description>
-            <daemon-class>fr.paris.lutece.plugins.announce.service.daemon.AnnounceExpirationDaemon</daemon-class>
+            <daemon-name>announce.daemon.announceExpirationDaemon.name
+            </daemon-name>
+            <daemon-description>announce.daemon.announceExpirationDaemon.description
+            </daemon-description>
+            <daemon-class>fr.paris.lutece.plugins.announce.service.daemon.AnnounceExpirationDaemon
+            </daemon-class>
         </daemon>
         <daemon>
             <daemon-id>announceSubscriptionDaemon</daemon-id>
-            <daemon-name>announce.daemon.announceSubscriptionDaemon.name</daemon-name>
-            <daemon-description>announce.daemon.announceSubscriptionDaemon.description</daemon-description>
-            <daemon-class>fr.paris.lutece.plugins.announce.service.daemon.AnnounceSubscriptionDaemon</daemon-class>
+            <daemon-name>announce.daemon.announceSubscriptionDaemon.name
+            </daemon-name>
+            <daemon-description>announce.daemon.announceSubscriptionDaemon.description
+            </daemon-description>
+            <daemon-class>fr.paris.lutece.plugins.announce.service.daemon.AnnounceSubscriptionDaemon
+            </daemon-class>
         </daemon>
     </daemons>
 
     <!-- Search Indexer Service -->
     <search-indexers>
         <search-indexer>
-            <search-indexer-class>fr.paris.lutece.plugins.announce.service.search.AnnounceIndexer</search-indexer-class>
+            <search-indexer-class>fr.paris.lutece.plugins.announce.service.search.AnnounceIndexer
+            </search-indexer-class>
         </search-indexer>
     </search-indexers>
 
@@ -86,55 +107,74 @@
     <applications>
         <application>
             <application-id>announce</application-id>
-            <application-class>fr.paris.lutece.plugins.announce.web.AnnounceApp</application-class>
+            <application-class>fr.paris.lutece.plugins.announce.web.AnnounceApp
+            </application-class>
         </application>
-		<application>
-			<application-id>announce-subscribe</application-id>
-			<application-class>fr.paris.lutece.plugins.announce.web.AnnounceSubscribeApp</application-class>
-		</application>
+        <application>
+            <application-id>announce-subscribe</application-id>
+            <application-class>fr.paris.lutece.plugins.announce.web.AnnounceSubscribeApp
+            </application-class>
+        </application>
     </applications>
-    
+
     <portlets>
-		<portlet>
-			<portlet-class>fr.paris.lutece.plugins.announce.business.portlet.MyAnnouncesPortletHome</portlet-class>
-			<portlet-type-id>ANNOUNCE_MYDASHBOARD_PORTLET</portlet-type-id>
-			<portlet-type-name>announce.portlet.MyAnnouncesPortlet.name</portlet-type-name>
-			<portlet-creation-url>plugins/announce/portlet/CreatePortletMyAnnounces.jsp</portlet-creation-url>
-			<portlet-update-url>plugins/announce/portlet/ModifyPortletMyAnnounces.jsp</portlet-update-url>
-			<portlet-create-action-url>plugins/announce/portlet/DoCreatePortletMyAnnounces.jsp</portlet-create-action-url>
-			<portlet-modify-action-url>plugins/announce/portlet/DoModifyPortletMyAnnounces.jsp</portlet-modify-action-url>
-		    <!-- optional entries -->
-	        <portlet-create-script-template>/admin/portlet/script_create_portlet.html</portlet-create-script-template>
-	        <portlet-modify-script-template>/admin/portlet/script_modify_portlet.html</portlet-modify-script-template>
-	        <portlet-create-specific-template>/admin/plugins/announce/portlet/create_portletmyannounces.html</portlet-create-specific-template>
-	        <portlet-modify-specific-template>/admin/plugins/announce/portlet/modify_portletmyannounces.html</portlet-modify-specific-template>
-	        <portlet-create-specific-form-template/>
-	        <portlet-modify-specific-form-template/> 
-		</portlet>
-		<portlet>
-			<portlet-class>fr.paris.lutece.plugins.announce.business.portlet.LastAnnouncesPortletHome</portlet-class>
-			<portlet-type-id>ANNOUNCE_LASTANNOUNCE_PORTLET</portlet-type-id>
-			<portlet-type-name>announce.portlet.LastAnnouncesPortlet.name</portlet-type-name>
-			<portlet-creation-url>plugins/announce/portlet/CreatePortletLastAnnounces.jsp</portlet-creation-url>
-			<portlet-update-url>plugins/announce/portlet/ModifyPortletLastAnnounces.jsp</portlet-update-url>
-			<portlet-create-action-url>plugins/announce/portlet/DoCreatePortletLastAnnounces.jsp</portlet-create-action-url>
-			<portlet-modify-action-url>plugins/announce/portlet/DoModifyPortletLastAnnounces.jsp</portlet-modify-action-url>
-		    <!-- optional entries -->
-	        <portlet-create-script-template>/admin/portlet/script_create_portlet.html</portlet-create-script-template>
-	        <portlet-modify-script-template>/admin/portlet/script_modify_portlet.html</portlet-modify-script-template>
-	        <portlet-create-specific-template>/admin/plugins/announce/portlet/create_portletlastannounces.html</portlet-create-specific-template>
-	        <portlet-modify-specific-template>/admin/plugins/announce/portlet/modify_portletlastannounces.html</portlet-modify-specific-template>
-	        <portlet-create-specific-form-template/>
-	        <portlet-modify-specific-form-template/> 
-		</portlet>
-	</portlets>
-	<!-- 
-	<page-include-services>
-        <page-include-service>
-            <page-include-service-id>announce.include.announceMenu.name</page-include-service-id>
-            <page-include-service-class>fr.paris.lutece.plugins.announce.web.includes.AnnounceMenuPageInclude</page-include-service-class>
-        </page-include-service>
-    </page-include-services>
-     -->
+        <portlet>
+            <portlet-class>fr.paris.lutece.plugins.announce.business.portlet.MyAnnouncesPortletHome
+            </portlet-class>
+            <portlet-type-id>ANNOUNCE_MYDASHBOARD_PORTLET
+            </portlet-type-id>
+            <portlet-type-name>announce.portlet.MyAnnouncesPortlet.name
+            </portlet-type-name>
+            <portlet-creation-url>plugins/announce/portlet/CreatePortletMyAnnounces.jsp
+            </portlet-creation-url>
+            <portlet-update-url>plugins/announce/portlet/ModifyPortletMyAnnounces.jsp
+            </portlet-update-url>
+            <portlet-create-action-url>plugins/announce/portlet/DoCreatePortletMyAnnounces.jsp
+            </portlet-create-action-url>
+            <portlet-modify-action-url>plugins/announce/portlet/DoModifyPortletMyAnnounces.jsp
+            </portlet-modify-action-url>
+            <!-- optional entries -->
+            <portlet-create-script-template>/admin/portlet/script_create_portlet.html
+            </portlet-create-script-template>
+            <portlet-modify-script-template>/admin/portlet/script_modify_portlet.html
+            </portlet-modify-script-template>
+            <portlet-create-specific-template>/admin/plugins/announce/portlet/create_portletmyannounces.html
+            </portlet-create-specific-template>
+            <portlet-modify-specific-template>/admin/plugins/announce/portlet/modify_portletmyannounces.html
+            </portlet-modify-specific-template>
+            <portlet-create-specific-form-template />
+            <portlet-modify-specific-form-template />
+        </portlet>
+        <portlet>
+            <portlet-class>fr.paris.lutece.plugins.announce.business.portlet.LastAnnouncesPortletHome
+            </portlet-class>
+            <portlet-type-id>ANNOUNCE_LASTANNOUNCE_PORTLET
+            </portlet-type-id>
+            <portlet-type-name>announce.portlet.LastAnnouncesPortlet.name
+            </portlet-type-name>
+            <portlet-creation-url>plugins/announce/portlet/CreatePortletLastAnnounces.jsp
+            </portlet-creation-url>
+            <portlet-update-url>plugins/announce/portlet/ModifyPortletLastAnnounces.jsp
+            </portlet-update-url>
+            <portlet-create-action-url>plugins/announce/portlet/DoCreatePortletLastAnnounces.jsp
+            </portlet-create-action-url>
+            <portlet-modify-action-url>plugins/announce/portlet/DoModifyPortletLastAnnounces.jsp
+            </portlet-modify-action-url>
+            <!-- optional entries -->
+            <portlet-create-script-template>/admin/portlet/script_create_portlet.html
+            </portlet-create-script-template>
+            <portlet-modify-script-template>/admin/portlet/script_modify_portlet.html
+            </portlet-modify-script-template>
+            <portlet-create-specific-template>/admin/plugins/announce/portlet/create_portletlastannounces.html
+            </portlet-create-specific-template>
+            <portlet-modify-specific-template>/admin/plugins/announce/portlet/modify_portletlastannounces.html
+            </portlet-modify-specific-template>
+            <portlet-create-specific-form-template />
+            <portlet-modify-specific-form-template />
+        </portlet>
+    </portlets>
+    <!-- <page-include-services> <page-include-service> <page-include-service-id>announce.include.announceMenu.name</page-include-service-id> 
+        <page-include-service-class>fr.paris.lutece.plugins.announce.web.includes.AnnounceMenuPageInclude</page-include-service-class> 
+        </page-include-service> </page-include-services> -->
 
 </plug-in>
