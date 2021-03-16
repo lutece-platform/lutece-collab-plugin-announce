@@ -42,6 +42,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang.StringUtils;
 
+import fr.paris.lutece.api.user.User;
 import fr.paris.lutece.plugins.announce.business.Category;
 import fr.paris.lutece.plugins.announce.business.CategoryHome;
 import fr.paris.lutece.plugins.announce.business.SectorHome;
@@ -215,7 +216,9 @@ public class CategoryJspBean extends PluginAdminPageJspBean
      */
     public String getCreateCategory( HttpServletRequest request ) throws AccessDeniedException
     {
-        if ( !RBACService.isAuthorized( Category.RESOURCE_TYPE, RBAC.WILDCARD_RESOURCES_ID, CategoryResourceIdService.PERMISSION_CREATE, getUser( ) ) )
+    	User user = getUser( );
+    	
+        if ( !RBACService.isAuthorized( Category.RESOURCE_TYPE, RBAC.WILDCARD_RESOURCES_ID, CategoryResourceIdService.PERMISSION_CREATE, user ) )
         {
             throw new AccessDeniedException( UNAUTHORIZED );
         }
@@ -244,7 +247,7 @@ public class CategoryJspBean extends PluginAdminPageJspBean
 
         model.put( MARK_MAILING_LIST_LIST, refMailingList );
         model.put( MARK_LIST_ANNOUNCES_VALIDATION, listAnnouncesValidation );
-        model.put( MARK_LIST_WORKFLOWS, WorkflowService.getInstance( ).getWorkflowsEnabled( getUser( ), getLocale( ) ) );
+        model.put( MARK_LIST_WORKFLOWS, WorkflowService.getInstance( ).getWorkflowsEnabled( user, getLocale( ) ) );
         model.put( MARK_IS_CAPTCHA_ENABLED, _captchaSecurityService.isAvailable( ) );
 
         HtmlTemplate template = AppTemplateService.getTemplate( TEMPLATE_CREATE_CATEGORY, getLocale( ), model );
@@ -263,7 +266,9 @@ public class CategoryJspBean extends PluginAdminPageJspBean
      */
     public String doCreateCategory( HttpServletRequest request ) throws AccessDeniedException
     {
-        if ( !RBACService.isAuthorized( Category.RESOURCE_TYPE, RBAC.WILDCARD_RESOURCES_ID, CategoryResourceIdService.PERMISSION_CREATE, getUser( ) ) )
+    	User user = getUser( );
+    	
+        if ( !RBACService.isAuthorized( Category.RESOURCE_TYPE, RBAC.WILDCARD_RESOURCES_ID, CategoryResourceIdService.PERMISSION_CREATE, user ) )
         {
             throw new AccessDeniedException( UNAUTHORIZED );
         }
@@ -360,12 +365,13 @@ public class CategoryJspBean extends PluginAdminPageJspBean
             }
         }
 
+    	User user = getUser( );
         Map<String, Object> model = new HashMap<>( );
         model.put( MARK_GROUP_ENTRY_LIST, getRefListGroups( category.getId( ) ) );
         model.put( MARK_ENTRY_TYPE_LIST, EntryTypeService.getInstance( ).getEntryTypeReferenceList( ) );
         model.put( MARK_ENTRY_LIST, listEntry );
         model.put( MARK_LIST_ORDER_FIRST_LEVEL, listOrderFirstLevel );
-        model.put( MARK_LIST_WORKFLOWS, WorkflowService.getInstance( ).getWorkflowsEnabled( getUser( ), getLocale( ) ) );
+        model.put( MARK_LIST_WORKFLOWS, WorkflowService.getInstance( ).getWorkflowsEnabled( user, getLocale( ) ) );
         model.put( MARK_IS_CAPTCHA_ENABLED, _captchaSecurityService.isAvailable( ) );
 
         UrlItem url = new UrlItem( JSP_URL_MODIFY );
@@ -523,6 +529,7 @@ public class CategoryJspBean extends PluginAdminPageJspBean
      */
     private Category getAuthorizedCategory( HttpServletRequest request, String strPermissionType ) throws AccessDeniedException
     {
+    	User user = getUser( );
         String strIdCategory = request.getParameter( PARAMETER_CATEGORY_ID );
 
         if ( ( strIdCategory == null ) || !strIdCategory.matches( REGEX_ID ) )
@@ -533,7 +540,7 @@ public class CategoryJspBean extends PluginAdminPageJspBean
         int nIdCategory = Integer.parseInt( strIdCategory );
         Category category = CategoryHome.findByPrimaryKey( nIdCategory );
 
-        if ( ( category == null ) || !RBACService.isAuthorized( Category.RESOURCE_TYPE, String.valueOf( category.getId( ) ), strPermissionType, getUser( ) ) )
+        if ( ( category == null ) || !RBACService.isAuthorized( Category.RESOURCE_TYPE, String.valueOf( category.getId( ) ), strPermissionType, user ) )
         {
             throw new AccessDeniedException( UNAUTHORIZED );
         }

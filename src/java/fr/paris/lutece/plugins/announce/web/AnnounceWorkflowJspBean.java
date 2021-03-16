@@ -33,6 +33,7 @@
  */
 package fr.paris.lutece.plugins.announce.web;
 
+import fr.paris.lutece.api.user.User;
 import fr.paris.lutece.plugins.announce.business.Announce;
 import fr.paris.lutece.plugins.announce.business.AnnounceHome;
 import fr.paris.lutece.portal.service.util.AppPathService;
@@ -90,17 +91,18 @@ public class AnnounceWorkflowJspBean extends MVCAdminJspBean
     {
         String strIdAction = request.getParameter( PARAMETER_ID_ACTION );
         String strIdAnnounce = request.getParameter( PARAMETER_ID_ANNOUNCE );
-
+        
         if ( StringUtils.isNotEmpty( strIdAction ) && StringUtils.isNumeric( strIdAction ) && StringUtils.isNotEmpty( strIdAnnounce )
                 && StringUtils.isNumeric( strIdAnnounce ) )
         {
             int nIdAction = Integer.parseInt( strIdAction );
             int nIdAnnounce = Integer.parseInt( strIdAnnounce );
+            User user = getUser( );
 
             if ( WorkflowService.getInstance( ).isDisplayTasksForm( nIdAction, getLocale( ) ) )
             {
                 String strHtmlTasksForm = WorkflowService.getInstance( ).getDisplayTasksForm( nIdAnnounce, Announce.RESOURCE_TYPE, nIdAction, request,
-                        getLocale( ) );
+                        getLocale( ), user );
 
                 Map<String, Object> model = new HashMap<>( );
 
@@ -135,6 +137,7 @@ public class AnnounceWorkflowJspBean extends MVCAdminJspBean
         {
             int nIdAction = Integer.parseInt( strIdAction );
             int nIdAnnounce = Integer.parseInt( strIdAnnounce );
+            User user = getUser( );
 
             Announce announce = AnnounceHome.findByPrimaryKey( nIdAnnounce );
 
@@ -143,7 +146,7 @@ public class AnnounceWorkflowJspBean extends MVCAdminJspBean
                 if ( WorkflowService.getInstance( ).isDisplayTasksForm( nIdAction, getLocale( ) ) )
                 {
                     String strError = WorkflowService.getInstance( ).doSaveTasksForm( nIdAnnounce, Announce.RESOURCE_TYPE, nIdAction,
-                            announce.getCategory( ).getId( ), request, getLocale( ) );
+                            announce.getCategory( ).getId( ), request, getLocale( ), user );
 
                     if ( strError != null )
                     {
@@ -152,7 +155,7 @@ public class AnnounceWorkflowJspBean extends MVCAdminJspBean
                 }
 
                 WorkflowService.getInstance( ).doProcessAction( nIdAnnounce, Announce.RESOURCE_TYPE, nIdAction, announce.getCategory( ).getId( ), request,
-                        getLocale( ), false );
+                        getLocale( ), false, user );
             }
         }
 

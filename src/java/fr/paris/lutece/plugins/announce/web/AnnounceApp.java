@@ -1130,7 +1130,7 @@ public class AnnounceApp extends MVCApplication
         if ( category.getIdWorkflow( ) > 0 )
         {
             WorkflowService.getInstance( ).getState( announce.getId( ), Announce.RESOURCE_TYPE, category.getIdWorkflow( ), category.getId( ) );
-            WorkflowService.getInstance( ).executeActionAutomatic( announce.getId( ), Announce.RESOURCE_TYPE, category.getIdWorkflow( ), category.getId( ) );
+            WorkflowService.getInstance( ).executeActionAutomatic( announce.getId( ), Announce.RESOURCE_TYPE, category.getIdWorkflow( ), category.getId( ), user );
         }
 
         // send mail notification only if announce is not published
