@@ -464,7 +464,7 @@ public class AnnounceApp extends MVCApplication
             }
             else
             {
-                AnnounceAsynchronousUploadHandler.getHandler( ).removeSessionFiles( request.getSession( ).getId( ) );
+                AnnounceAsynchronousUploadHandler.getHandler( ).removeSessionFiles( request.getSession( ) );
             }
 
             model.put( MARK_ANNOUNCE, announce );
@@ -476,7 +476,7 @@ public class AnnounceApp extends MVCApplication
             return page;
         }
 
-        AnnounceAsynchronousUploadHandler.getHandler( ).removeSessionFiles( request.getSession( ).getId( ) );
+        AnnounceAsynchronousUploadHandler.getHandler( ).removeSessionFiles( request.getSession( ) );
 
         Collection<Announce> listAnnounces = AnnounceHome.getAnnouncesForUser( user, AnnounceSort.DEFAULT_SORT );
 
@@ -530,7 +530,7 @@ public class AnnounceApp extends MVCApplication
         }
         else
         {
-            AnnounceAsynchronousUploadHandler.getHandler( ).removeSessionFiles( request.getSession( ).getId( ) );
+            AnnounceAsynchronousUploadHandler.getHandler( ).removeSessionFiles( request.getSession( ) );
         }
 
         Category category = CategoryHome.findByPrimaryKey( announce.getCategory( ).getId( ) );
@@ -1139,7 +1139,7 @@ public class AnnounceApp extends MVCApplication
             sendAnnounceNotification( request, announce );
         }
 
-        AnnounceAsynchronousUploadHandler.getHandler( ).removeSessionFiles( request.getSession( ).getId( ) );
+        AnnounceAsynchronousUploadHandler.getHandler( ).removeSessionFiles( request.getSession( ) );
 
         return new ArrayList<>( );
     }
