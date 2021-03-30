@@ -42,6 +42,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang.StringUtils;
 
+import fr.paris.lutece.api.user.User;
 import fr.paris.lutece.plugins.announce.business.Sector;
 import fr.paris.lutece.plugins.announce.business.SectorHome;
 import fr.paris.lutece.plugins.announce.service.SectorResourceIdService;
@@ -176,7 +177,9 @@ public class SectorJspBean extends PluginAdminPageJspBean
      */
     public String getCreateSector( HttpServletRequest request ) throws AccessDeniedException
     {
-        if ( !RBACService.isAuthorized( Sector.RESOURCE_TYPE, RBAC.WILDCARD_RESOURCES_ID, SectorResourceIdService.PERMISSION_CREATE, getUser( ) ) )
+    	User user = getUser( );
+    	
+        if ( !RBACService.isAuthorized( Sector.RESOURCE_TYPE, RBAC.WILDCARD_RESOURCES_ID, SectorResourceIdService.PERMISSION_CREATE, user ) )
         {
             throw new AccessDeniedException( UNAUTHORIZED );
         }
@@ -204,7 +207,9 @@ public class SectorJspBean extends PluginAdminPageJspBean
      */
     public String doCreateSector( HttpServletRequest request ) throws AccessDeniedException
     {
-        if ( !RBACService.isAuthorized( Sector.RESOURCE_TYPE, RBAC.WILDCARD_RESOURCES_ID, SectorResourceIdService.PERMISSION_CREATE, getUser( ) ) )
+    	User user = getUser( );
+    	
+        if ( !RBACService.isAuthorized( Sector.RESOURCE_TYPE, RBAC.WILDCARD_RESOURCES_ID, SectorResourceIdService.PERMISSION_CREATE, user ) )
         {
             throw new AccessDeniedException( UNAUTHORIZED );
         }
@@ -457,10 +462,11 @@ public class SectorJspBean extends PluginAdminPageJspBean
             throw new AccessDeniedException( UNAUTHORIZED );
         }
 
+    	User user = getUser( );    	
         int nIdSector = Integer.parseInt( strIdSector );
         Sector sector = SectorHome.findByPrimaryKey( nIdSector );
 
-        if ( ( sector == null ) || !RBACService.isAuthorized( Sector.RESOURCE_TYPE, String.valueOf( sector.getId( ) ), strPermissionType, getUser( ) ) )
+        if ( ( sector == null ) || !RBACService.isAuthorized( Sector.RESOURCE_TYPE, String.valueOf( sector.getId( ) ), strPermissionType, user ) )
         {
             throw new AccessDeniedException( UNAUTHORIZED );
         }

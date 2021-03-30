@@ -59,13 +59,12 @@ public class AnnounceSessionListener implements HttpSessionListener
     @Override
     public void sessionDestroyed( HttpSessionEvent se )
     {
-        String strSessionId = se.getSession( ).getId( );
 
         if ( AppLogService.isDebugEnabled( ) )
         {
-            AppLogService.debug( "FormSessionListener removing " + strSessionId );
+            AppLogService.debug( "FormSessionListener removing " + se.getSession( ).getId( ) );
         }
 
-        AnnounceAsynchronousUploadHandler.getHandler( ).removeSessionFiles( strSessionId );
+        AnnounceAsynchronousUploadHandler.getHandler( ).removeSessionFiles( se.getSession( ) );
     }
 }
