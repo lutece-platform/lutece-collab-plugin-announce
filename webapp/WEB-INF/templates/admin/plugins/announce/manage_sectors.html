@@ -1,51 +1,52 @@
 <#include "/admin/plugins/announce/announce_tabs.html" />
 
 <@row>
-    <@columns>
-        <@box>
-            <@boxHeader title='#i18n{announce.manage_sectors.pageTitle}'>
-				<@aButton href='jsp/admin/plugins/announce/CreateSector.jsp' title='#i18n{announce.manage_sectors.buttonCreateSector}' buttonIcon='plus' color='primary' />
+	<@columns>
+		<@box>
+			<@boxHeader title='#i18n{announce.manage_sectors.pageTitle}'>
+				<@aButton href='jsp/admin/plugins/announce/CreateSector.jsp' title='#i18n{announce.manage_sectors.buttonCreateSector}' buttonIcon='plus-square' color='primary' />
 			</@boxHeader>						
 			<@boxBody>
-				<@mytabs tab="sectors" />
+				<@mytabs tab='sectors' />
 				<@tform method='post' action='jsp/admin/plugins/announce/ManageSectors.jsp'>
-                    <@paginationAdmin paginator=paginator form=0 combo=1 showcount=0 />
-                </@tform>
-                <@table hover=true >
-                	<@tr>    
+                    			<@paginationAdmin paginator=paginator form=0 combo=1 showcount=0 />
+                		</@tform>
+                		<@table hover=true>
+                			<@tr>    
 						<@th>#i18n{announce.sector.label}</@th>
 						<@th>#i18n{announce.sector.description}</@th>
 						<@th>#i18n{announce.sector.numberCategories}</@th>
 						<@th>#i18n{announce.order}</@th>
 						<@th>#i18n{announce.actions}</@th>  
-	                </@tr>
+	                		</@tr>
 	                
-	                <#list list_sectors as sector>
-	                	<@tr>
-	                	
-							<@td>${sector.label}</@td>
-							<@td>${sector.description}</@td>
-							<@td>${sector.numberCategories}</@td>	                		
-	                		<@td>
-                			 	<@tform method='post' action='jsp/admin/plugins/announce/DoModifySectorOrder.jsp'>
-									<@input type='hidden' id='sector_id' name='sector_id' value='${sector.id}'/>
-									<@inputGroup>	
-										<@select name='sector_order' items=sector_order_list default_value='${sector.order}' sort=true size='sm' />
-										<@button type='submit' name='#i18n{announce.manage_sectors.buttonChangeOrder}' buttonIcon='check' color='success' size='sm' hideTitle=['all']/>
-					                </@inputGroup>				                
-								</@tform>								
-	                  		</@td>	
-	                  		<@td>
-	                  			<@aButton href='jsp/admin/plugins/announce/ModifySector.jsp?sector_id=${sector.id}' buttonIcon='pencil' color='success' size='sm' hideTitle=['all']/>										
-								<@aButton href='jsp/admin/plugins/announce/RemoveSector.jsp?sector_id=${sector.id}' buttonIcon='trash' color='danger' size='sm' hideTitle=['all']/>								
-							</@td>       	
-	                    </@tr>
-	                </#list>
+					<#list list_sectors as sector>
+	                		<@tr>
+						<@td>${sector.label}</@td>
+						<@td>${sector.description}</@td>
+						<@td>${sector.numberCategories}</@td>	                		
+	                			<@td>
+                			 		<@tform method='post' action='jsp/admin/plugins/announce/DoModifySectorOrder.jsp'>
+								<@input type='hidden' id='sector_id' name='sector_id' value='${sector.id}' />
+								<@inputGroup>	
+									<@select name='sector_order' items=sector_order_list default_value='${sector.order}' sort=true size='sm' />
+									<@inputGroupItem>
+										<@button type='submit' name='#i18n{announce.manage_sectors.buttonChangeOrder}' buttonIcon='check' color='success' size='sm' hideTitle=['all'] />
+									</@inputGroupItem>
+								</@inputGroup>				                
+							</@tform>								
+	                  			</@td>	
+	                  			<@td>
+	                  				<@aButton href='jsp/admin/plugins/announce/ModifySector.jsp?sector_id=${sector.id}' buttonIcon='pencil' color='success' size='sm' hideTitle=['all'] />										
+							<@aButton href='jsp/admin/plugins/announce/RemoveSector.jsp?sector_id=${sector.id}' buttonIcon='trash' color='danger' size='sm' hideTitle=['all'] />								
+						</@td>       	
+	                    		</@tr>
+					</#list>
 				</@table>
-                <@tform method='post' action='jsp/admin/plugins/announce/ManageSectors.jsp'>
+                		<@tform method='post' action='jsp/admin/plugins/announce/ManageSectors.jsp'>
 					<@paginationAdmin paginator=paginator form=0 combo=1 showcount=0 />
 				</@tform>				
-            </@boxBody>
-        </@box>
-    </@columns>
+			</@boxBody>
+		</@box>
+	</@columns>
 </@row>
