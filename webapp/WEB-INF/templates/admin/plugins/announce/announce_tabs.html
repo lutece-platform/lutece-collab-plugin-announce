@@ -1,20 +1,19 @@
 <#macro mytabs tab>
-	<#if tab = "announces" >
-		<#assign bannounces=true/>         
-    </#if>
+	<#if tab = "announces">
+		<#assign bannounces=true />         
+    	</#if>
    	<#if tab = "categories">
-       	<#assign bcategories=true/>
-    </#if>
-    <#if tab = "sectors">
-     	<#assign bsectors=true/>
-    </#if>   	
+       		<#assign bcategories=true />
+    	</#if>
+	<#if tab = "sectors">
+		<#assign bsectors=true />
+	</#if>   	
     
 	<@tabs>
-    	<@tabList>
-	        <@tabLink href='jsp/admin/plugins/announce/ManageAnnounces.jsp' active=bannounces title='#i18n{announce.manage_announces.pageTitle}' />
-	        <@tabLink href='jsp/admin/plugins/announce/ManageSectors.jsp' active=bsectors title='#i18n{announce.manage_sectors.pageTitle}' />
-	        <@tabLink href='jsp/admin/plugins/announce/ManageCategories.jsp' active=bcategories title='#i18n{announce.manage_categories.pageTitle}' />
-        </@tabList>
-       
+		<@tabList>
+			<@tabLink href='jsp/admin/plugins/announce/ManageAnnounces.jsp' active=bannounces title='#i18n{announce.manage_announces.pageTitle}' />
+			<@tabLink href='jsp/admin/plugins/announce/ManageSectors.jsp' active=bsectors title='#i18n{announce.manage_sectors.pageTitle}' />
+			<@tabLink href='jsp/admin/plugins/announce/ManageCategories.jsp' active=bcategories title='#i18n{announce.manage_categories.pageTitle}' />
+		</@tabList>
 	</@tabs>
 </#macro>
