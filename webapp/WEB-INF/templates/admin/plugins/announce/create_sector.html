@@ -1,34 +1,33 @@
 <@row>
-    <@columns>
-        <@box>
-            <@boxHeader title='#i18n{announce.create_sector.pageTitle}'/>
+	<@columns>
+		<@box>
+			<@boxHeader title='#i18n{announce.create_sector.pageTitle}' />
 			<@boxBody>  
-            	<@tform method='post' name='' id='' action='jsp/admin/plugins/announce/DoCreateSector.jsp'>   
-					<@formGroup labelKey='#i18n{announce.sector.label}' helpKey='#i18n{announce.sector.label}' mandatory=true >
-						<@input name='sector_label' type='text'  value='' maxlength=50  />
+				<@tform method='post' name='' id='' action='jsp/admin/plugins/announce/DoCreateSector.jsp'>   
+					<@formGroup labelKey='#i18n{announce.sector.label}' helpKey='#i18n{announce.sector.label}' mandatory=true>
+						<@input name='sector_label' type='text' value='' maxlength=50 />
 					</@formGroup>
 					
-					<@formGroup labelKey='#i18n{announce.sector.description}' helpKey='#i18n{announce.sector.description}' mandatory=true >
-						<@input name='sector_description' type='text'  value='' maxlength=50  />
+					<@formGroup labelKey='#i18n{announce.sector.description}' helpKey='#i18n{announce.sector.description}' mandatory=true>
+						<@input name='sector_description' type='text' value='' maxlength=50 />
 					</@formGroup>
 					
-					<@formGroup labelKey='#i18n{announce.sector.tags}' helpKey='#i18n{announce.sector.tags.helper}' mandatory=true >
-						<@input name='tags' type='text'  value='' maxlength=50  />
+					<@formGroup labelKey='#i18n{announce.sector.tags}' helpKey='#i18n{announce.sector.tags.helper}' mandatory=true>
+						<@input name='tags' type='text' value='' maxlength=50 />
 					</@formGroup>
 									
-					<@formGroup  helpKey='' >
-						<@checkBox name='sector_announces_validation' id='sector_announces_validation' value="true"  checked=false labelKey='#i18n{announce.sector.announcesValidation}' />
+					<@formGroup helpKey=''>
+						<@checkBox labelFor='sector_announces_validation' labelKey='#i18n{announce.sector.announcesValidation}' name='sector_announces_validation' id='sector_announces_validation' value='true' checked=false />
 					</@formGroup>
 							
 					<@formGroup>
-						<@button type='submit' title='#i18n{announce.create_sector.buttonValidate}' hideTitle=['xs','ms'] buttonIcon='check' />
-						<@aButton href='jsp/admin/plugins/announce/ManageSectors.jsp' title='#i18n{portal.util.labelBack}' buttonIcon='times' color='Cancel' />
+						<@button type='submit' title='#i18n{announce.create_sector.buttonValidate}' hideTitle=['xs','sm'] buttonIcon='check' />
+						<@aButton href='jsp/admin/plugins/announce/ManageSectors.jsp' title='#i18n{portal.util.labelBack}' buttonIcon='times' color='default' />
 					</@formGroup>
 				</@tform>
-
-            </@boxBody>
-        </@box>
-    </@columns>
+			</@boxBody>
+		</@box>
+	</@columns>
 </@row>
 
 <link rel="stylesheet" type="text/css" href="js/jquery/plugins/tagit/jquery.tagit.css">
