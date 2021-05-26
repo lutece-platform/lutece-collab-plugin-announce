@@ -1,47 +1,41 @@
 <#include "/admin/plugins/announce/announce_tabs.html" />
 
 <@row>
-    <@columns>
-        <@box>
-            <@boxHeader title='#i18n{announce.manage_categories.pageTitle}'>
-				<@aButton href='jsp/admin/plugins/announce/CreateCategory.jsp' title='#i18n{announce.manage_categories.buttonCreateCategory}' buttonIcon='plus' color='primary'  />
+	<@columns>
+		<@box>
+			<@boxHeader title='#i18n{announce.manage_categories.pageTitle}'>
+				<@aButton href='jsp/admin/plugins/announce/CreateCategory.jsp' title='#i18n{announce.manage_categories.buttonCreateCategory}' buttonIcon='plus-square' color='primary'  />
 			</@boxHeader>						
 			<@boxBody>
-				<@mytabs tab="categories" />
+				<@mytabs tab='categories' />
 				<@tform method='post' action='jsp/admin/plugins/announce/ManageCategories.jsp'>
-                    <@paginationAdmin paginator=paginator form=0 combo=1 showcount=0 />
-                </@tform>
-				<@table hover=true >
-                	<@tr>                 
-	                    <@th>#i18n{announce.category.label}</@th>
+                    			<@paginationAdmin paginator=paginator form=0 combo=1 showcount=0 />
+                		</@tform>
+				<@table hover=true>
+					<@tr>                 
+						<@th>#i18n{announce.category.label}</@th>
 						<@th>#i18n{announce.category.numberAnnounces}</@th>
 						<@th>#i18n{announce.actions}</@th>
-	                </@tr>
+					</@tr>
 	                
-	                <#list list_categories as category>
-                		<@tr>
-	                  		<@td>${category.labelSector} > ${category.label}</@td>
-	                  		<@td>${category.numberAnnounces}</@td>
-	                		
-	                		<@td>
-	                  			<@aButton href='jsp/admin/plugins/announce/ModifyCategory.jsp?category_id=${category.id}' title='#i18n{portal.util.labelModify}' buttonIcon='pencil' color='primary' size='sm' hideTitle=['all']/>
-															
-	                  			<@aButton href='jsp/admin/plugins/announce/ViewFormExample.jsp?category_id=${category.id}' title='#i18n{announce.manage_categories.formPreview}' buttonIcon='eye' color='primary' size='sm' hideTitle=['all']/>
-									
-	                  			<@aButton href='jsp/admin/plugins/announce/DoDuplicateCategory.jsp?category_id=${category.id}' title='#i18n{announce.manage_categories.duplicateCategory}' buttonIcon='copy' color='primary' size='sm' hideTitle=['all']/>
-									
-	                  			<@aButton href='jsp/admin/plugins/announce/RemoveCategory.jsp?category_id=${category.id}' title='#i18n{announce.manage_categories.removeCategoryTitle}' buttonIcon='trash' color='danger' size='sm' hideTitle=['all']/>
-									
-	                  		</@td>	                  	
-	                    </@tr>
-	                </#list>
-	                
+					<#list list_categories as category>
+					<@tr>
+						<@td>${category.labelSector} > ${category.label}</@td>
+	                  			<@td>${category.numberAnnounces}</@td>
+						<@td>
+	                  				<@aButton href='jsp/admin/plugins/announce/ModifyCategory.jsp?category_id=${category.id}' title='#i18n{portal.util.labelModify}' buttonIcon='pencil' color='primary' size='sm' hideTitle=['all'] />
+							<@aButton href='jsp/admin/plugins/announce/ViewFormExample.jsp?category_id=${category.id}' title='#i18n{announce.manage_categories.formPreview}' buttonIcon='eye' color='primary' size='sm' hideTitle=['all'] />
+							<@aButton href='jsp/admin/plugins/announce/DoDuplicateCategory.jsp?category_id=${category.id}' title='#i18n{announce.manage_categories.duplicateCategory}' buttonIcon='copy' color='primary' size='sm' hideTitle=['all'] />
+							<@aButton href='jsp/admin/plugins/announce/RemoveCategory.jsp?category_id=${category.id}' title='#i18n{announce.manage_categories.removeCategoryTitle}' buttonIcon='trash' color='danger' size='sm' hideTitle=['all'] />
+						</@td>	                  	
+					</@tr>
+					</#list>
 				</@table>
 
 				<@tform method='post' action='jsp/admin/plugins/announce/ManageCategories.jsp'>
 					<@paginationAdmin paginator=paginator form=0 combo=1 showcount=0 />
 				</@tform>	
 			</@boxBody>
-        </@box>
-    </@columns>
+		</@box>
+	</@columns>
 </@row>
