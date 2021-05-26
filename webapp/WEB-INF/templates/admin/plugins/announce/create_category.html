@@ -1,50 +1,50 @@
 <@row>
-    <@columns>
-        <@box>
-            <@boxHeader title='#i18n{announce.create_category.pageTitle}'/>
+	<@columns>
+		<@box>
+			<@boxHeader title='#i18n{announce.create_category.pageTitle}' />
 			<@boxBody>  
-            	<@tform method='post' name='' id='' action='jsp/admin/plugins/announce/DoCreateCategory.jsp'>   
-					<@formGroup labelKey='#i18n{announce.category.label}' helpKey='#i18n{announce.category.label}' mandatory=true >
-						<@input name='category_label' type='text'  value='' maxlength=50  />
+				<@tform method='post' name='' id='' action='jsp/admin/plugins/announce/DoCreateCategory.jsp'>   
+					<@formGroup labelKey='#i18n{announce.category.label}' helpKey='#i18n{announce.category.label}' mandatory=true>
+						<@input name='category_label' type='text' value='' maxlength=50  />
 					</@formGroup>
-					
-					<@formGroup labelKey='#i18n{announce.category.sector}' mandatory=true >
+
+					<@formGroup labelKey='#i18n{announce.category.sector}' mandatory=true>
 						<@select name='category_sector_id' items=list_sectors default_value='0' />
 					</@formGroup>
-					
-					<@formGroup labelKey='#i18n{announce.category.announcesValidation}' mandatory=true >
+
+					<@formGroup labelKey='#i18n{announce.category.announcesValidation}' mandatory=true>
 						<@select name='category_announces_validation' items=list_announces_validation default_value='0' />
 					</@formGroup>
-					
+
 					<@formGroup labelKey='#i18n{announce.category.mailingList}' helpKey='#i18n{announce.category.mailingList.helper}'>
 						<@select name='mailing_list_id' items=mailing_list_list default_value='0' />
 					</@formGroup>
-					
-					<@formGroup  helpKey='#i18n{announce.category.displayPrice.helper}' >
-						<@checkBox name='display_price' value="true"  checked=false labelKey='#i18n{announce.category.displayPrice}' />
+
+					<@formGroup helpKey='#i18n{announce.category.displayPrice.helper}'>
+						<@checkBox labelFor='display_price' labelKey='#i18n{announce.category.displayPrice}' name='display_price' value='true' checked=false />
 					</@formGroup>
-					
-					<@formGroup  helpKey='#i18n{announce.category.priceMandatory.helper}' >
-						<@checkBox name='price_mandatory' value="true"  checked=false labelKey='#i18n{announce.category.priceMandatory}' />
+
+					<@formGroup helpKey='#i18n{announce.category.priceMandatory.helper}'>
+						<@checkBox labelFor='price_mandatory' labelKey='#i18n{announce.category.priceMandatory}' name='price_mandatory' value='true' checked=false />
 					</@formGroup>
-					
+
 					<#if isCaptchaEnabled?? && isCaptchaEnabled>
-						<@formGroup >
-							<@checkBox name='display_captcha' value="true" checked=false labelKey='#i18n{announce.category.displayCaptcha}' />
+						<@formGroup>
+							<@checkBox labelFor='display_captcha' labelKey='#i18n{announce.category.displayCaptcha}' name='display_captcha' value='true' checked=false />
 						</@formGroup>						
 					</#if>	
-					
+
 					<#if listWorkflows??>
-						<@formGroup labelKey='#i18n{announce.create_category.labelWorkflow}' >
+						<@formGroup labelKey='#i18n{announce.create_category.labelWorkflow}'>
 							<@select name='id_workflow' items=listWorkflows default_value='0' />
 						</@formGroup>						
 					</#if>					
-				</@tform>      
+				</@tform>
 				<@formGroup>
-					<@button type='submit' title='#i18n{announce.create_category.buttonValidate}' hideTitle=['xs','ms'] buttonIcon='check' />
-					<@aButton href='jsp/admin/plugins/announce/ManageCategories.jsp' title='#i18n{portal.util.labelCancel}' buttonIcon='times' color='Cancel' />
-				</@formGroup>	
-            </@boxBody>
-        </@box>
-    </@columns>
+					<@button type='submit' title='#i18n{announce.create_category.buttonValidate}' hideTitle=['xs','sm'] buttonIcon='check' />
+					<@aButton href='jsp/admin/plugins/announce/ManageCategories.jsp' title='#i18n{portal.util.labelCancel}' buttonIcon='times' color='default' />
+				</@formGroup>
+			</@boxBody>
+		</@box>
+	</@columns>
 </@row>
