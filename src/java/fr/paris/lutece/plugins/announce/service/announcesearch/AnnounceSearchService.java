@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002-2020, City of Paris
+ * Copyright (c) 2002-2021, City of Paris
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -428,8 +428,8 @@ public final class AnnounceSearchService
      */
     public static String getFormatedPriceString( String strPrice )
     {
-        return strPrice.replace( CONSTANT_BLANK_SPACE, StringUtils.EMPTY ).replace( CONSTANT_COMA, CONSTANT_POINT )
-                .replace( CONSTANT_EURO, StringUtils.EMPTY ).trim( );
+        return strPrice.replace( CONSTANT_BLANK_SPACE, StringUtils.EMPTY ).replace( CONSTANT_COMA, CONSTANT_POINT ).replace( CONSTANT_EURO, StringUtils.EMPTY )
+                .trim( );
     }
 
     /**

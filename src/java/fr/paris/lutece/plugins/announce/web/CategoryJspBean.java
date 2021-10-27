@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002-2020, City of Paris
+ * Copyright (c) 2002-2021, City of Paris
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -216,8 +216,8 @@ public class CategoryJspBean extends PluginAdminPageJspBean
      */
     public String getCreateCategory( HttpServletRequest request ) throws AccessDeniedException
     {
-    	User user = getUser( );
-    	
+        User user = getUser( );
+
         if ( !RBACService.isAuthorized( Category.RESOURCE_TYPE, RBAC.WILDCARD_RESOURCES_ID, CategoryResourceIdService.PERMISSION_CREATE, user ) )
         {
             throw new AccessDeniedException( UNAUTHORIZED );
@@ -266,8 +266,8 @@ public class CategoryJspBean extends PluginAdminPageJspBean
      */
     public String doCreateCategory( HttpServletRequest request ) throws AccessDeniedException
     {
-    	User user = getUser( );
-    	
+        User user = getUser( );
+
         if ( !RBACService.isAuthorized( Category.RESOURCE_TYPE, RBAC.WILDCARD_RESOURCES_ID, CategoryResourceIdService.PERMISSION_CREATE, user ) )
         {
             throw new AccessDeniedException( UNAUTHORIZED );
@@ -365,7 +365,7 @@ public class CategoryJspBean extends PluginAdminPageJspBean
             }
         }
 
-    	User user = getUser( );
+        User user = getUser( );
         Map<String, Object> model = new HashMap<>( );
         model.put( MARK_GROUP_ENTRY_LIST, getRefListGroups( category.getId( ) ) );
         model.put( MARK_ENTRY_TYPE_LIST, EntryTypeService.getInstance( ).getEntryTypeReferenceList( ) );
@@ -529,7 +529,7 @@ public class CategoryJspBean extends PluginAdminPageJspBean
      */
     private Category getAuthorizedCategory( HttpServletRequest request, String strPermissionType ) throws AccessDeniedException
     {
-    	User user = getUser( );
+        User user = getUser( );
         String strIdCategory = request.getParameter( PARAMETER_CATEGORY_ID );
 
         if ( ( strIdCategory == null ) || !strIdCategory.matches( REGEX_ID ) )

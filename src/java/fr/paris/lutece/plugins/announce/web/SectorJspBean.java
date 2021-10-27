@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002-2020, City of Paris
+ * Copyright (c) 2002-2021, City of Paris
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -177,8 +177,8 @@ public class SectorJspBean extends PluginAdminPageJspBean
      */
     public String getCreateSector( HttpServletRequest request ) throws AccessDeniedException
     {
-    	User user = getUser( );
-    	
+        User user = getUser( );
+
         if ( !RBACService.isAuthorized( Sector.RESOURCE_TYPE, RBAC.WILDCARD_RESOURCES_ID, SectorResourceIdService.PERMISSION_CREATE, user ) )
         {
             throw new AccessDeniedException( UNAUTHORIZED );
@@ -207,8 +207,8 @@ public class SectorJspBean extends PluginAdminPageJspBean
      */
     public String doCreateSector( HttpServletRequest request ) throws AccessDeniedException
     {
-    	User user = getUser( );
-    	
+        User user = getUser( );
+
         if ( !RBACService.isAuthorized( Sector.RESOURCE_TYPE, RBAC.WILDCARD_RESOURCES_ID, SectorResourceIdService.PERMISSION_CREATE, user ) )
         {
             throw new AccessDeniedException( UNAUTHORIZED );
@@ -462,7 +462,7 @@ public class SectorJspBean extends PluginAdminPageJspBean
             throw new AccessDeniedException( UNAUTHORIZED );
         }
 
-    	User user = getUser( );    	
+        User user = getUser( );
         int nIdSector = Integer.parseInt( strIdSector );
         Sector sector = SectorHome.findByPrimaryKey( nIdSector );
 

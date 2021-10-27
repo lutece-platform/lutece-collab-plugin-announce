@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002-2020, City of Paris
+ * Copyright (c) 2002-2021, City of Paris
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -1130,7 +1130,8 @@ public class AnnounceApp extends MVCApplication
         if ( category.getIdWorkflow( ) > 0 )
         {
             WorkflowService.getInstance( ).getState( announce.getId( ), Announce.RESOURCE_TYPE, category.getIdWorkflow( ), category.getId( ) );
-            WorkflowService.getInstance( ).executeActionAutomatic( announce.getId( ), Announce.RESOURCE_TYPE, category.getIdWorkflow( ), category.getId( ), user );
+            WorkflowService.getInstance( ).executeActionAutomatic( announce.getId( ), Announce.RESOURCE_TYPE, category.getIdWorkflow( ), category.getId( ),
+                    user );
         }
 
         // send mail notification only if announce is not published

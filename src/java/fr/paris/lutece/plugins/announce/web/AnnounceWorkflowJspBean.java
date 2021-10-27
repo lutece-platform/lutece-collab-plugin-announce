@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002-2020, City of Paris
+ * Copyright (c) 2002-2021, City of Paris
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -91,7 +91,7 @@ public class AnnounceWorkflowJspBean extends MVCAdminJspBean
     {
         String strIdAction = request.getParameter( PARAMETER_ID_ACTION );
         String strIdAnnounce = request.getParameter( PARAMETER_ID_ANNOUNCE );
-        
+
         if ( StringUtils.isNotEmpty( strIdAction ) && StringUtils.isNumeric( strIdAction ) && StringUtils.isNotEmpty( strIdAnnounce )
                 && StringUtils.isNumeric( strIdAnnounce ) )
         {
