@@ -1,22 +1,19 @@
-<#macro tabs tab >
-   <div role="tabpanel">
-		<!-- Nav tabs -->
-        <ul class="nav nav-tabs"  role="tablist">
-            <li role="presentation" <#if tab="announces">class="active"</#if>>
-				<a href="jsp/admin/plugins/announce/ManageAnnounces.jsp" title="#i18n{announce.manage_announces.description}" aria-controls="announces" role="tab" ">
-					#i18n{announce.manage_announces.pageTitle}
-				</a>
-            </li>
-            <li role="presentation" <#if tab="sectors">class="active"</#if>>
-				<a href="jsp/admin/plugins/announce/ManageSectors.jsp" title="#i18n{announce.manage_sectors.description}" aria-controls="sectors" role="tab" >
-					#i18n{announce.manage_sectors.pageTitle}
-				</a>
-            </li>
-            <li role="presentation" <#if tab="categories">class="active"</#if>>
-				<a href="jsp/admin/plugins/announce/ManageCategories.jsp" title="#i18n{announce.manage_categories.description}"aria-controls="categories" role="tab" >
-					#i18n{announce.manage_categories.pageTitle}
-				</a>
-            </li>
-        </ul>
-    </div>
+<#macro mytabs tab>
+	<#if tab = "announces">
+		<#assign bannounces=true />         
+    	</#if>
+   	<#if tab = "categories">
+       		<#assign bcategories=true />
+    	</#if>
+	<#if tab = "sectors">
+		<#assign bsectors=true />
+	</#if>   	
+    
+	<@tabs>
+		<@tabList>
+			<@tabLink href='jsp/admin/plugins/announce/ManageAnnounces.jsp' active=bannounces title='#i18n{announce.manage_announces.pageTitle}' />
+			<@tabLink href='jsp/admin/plugins/announce/ManageSectors.jsp' active=bsectors title='#i18n{announce.manage_sectors.pageTitle}' />
+			<@tabLink href='jsp/admin/plugins/announce/ManageCategories.jsp' active=bcategories title='#i18n{announce.manage_categories.pageTitle}' />
+		</@tabList>
+	</@tabs>
 </#macro>
