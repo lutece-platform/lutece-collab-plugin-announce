@@ -263,10 +263,10 @@ public final class AnnounceSearchService
 
             boolean bIsLocked = false;
 
-            if ( IndexWriter.isLocked( dir ) )
-            {
-                sbLogs.append( "AnnounceSearchService, the index is locked. Aborting." );
-            }
+//            if ( IndexWriter.isLocked( dir ) )
+//            {
+//                sbLogs.append( "AnnounceSearchService, the index is locked. Aborting." );
+//            }
 
             if ( !bIsLocked )
             {

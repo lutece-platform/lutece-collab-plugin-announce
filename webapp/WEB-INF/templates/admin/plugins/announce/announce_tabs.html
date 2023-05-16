@@ -1,22 +1,15 @@
-<#macro tabs tab >
-   <div role="tabpanel">
-		<!-- Nav tabs -->
-        <ul class="nav nav-tabs"  role="tablist">
-            <li role="presentation" <#if tab="announces">class="active"</#if>>
-				<a href="jsp/admin/plugins/announce/ManageAnnounces.jsp" title="#i18n{announce.manage_announces.description}" aria-controls="announces" role="tab" ">
-					#i18n{announce.manage_announces.pageTitle}
-				</a>
-            </li>
-            <li role="presentation" <#if tab="sectors">class="active"</#if>>
-				<a href="jsp/admin/plugins/announce/ManageSectors.jsp" title="#i18n{announce.manage_sectors.description}" aria-controls="sectors" role="tab" >
-					#i18n{announce.manage_sectors.pageTitle}
-				</a>
-            </li>
-            <li role="presentation" <#if tab="categories">class="active"</#if>>
-				<a href="jsp/admin/plugins/announce/ManageCategories.jsp" title="#i18n{announce.manage_categories.description}"aria-controls="categories" role="tab" >
-					#i18n{announce.manage_categories.pageTitle}
-				</a>
-            </li>
-        </ul>
-    </div>
+<#macro tabs2 tab >
+	<@tabs>
+	    <@tabList>
+	       <li role="presentation" <#if tab="announces">class="active"</#if>>
+			   <@tabLink title='#i18n{announce.manage_announces.description}' href='jsp/admin/plugins/announce/ManageAnnounces.jsp' />
+	       </li>
+	       <li role="presentation" <#if tab="sectors">class="active"</#if>>
+			   <@tabLink title='#i18n{announce.manage_sectors.description}' href='jsp/admin/plugins/announce/ManageSectors.jsp' />
+	       </li>
+	       <li role="presentation" <#if tab="categories">class="active"</#if>>
+			  <@tabLink title='#i18n{announce.manage_categories.description}' href='jsp/admin/plugins/announce/ManageCategories.jsp' />	
+	       </li>
+	    </@tabList>
+	</@tabs>
 </#macro>

@@ -1,94 +1,47 @@
 <#include "/admin/plugins/announce/commons.html" />
-<div class="row">
-	<div class="col-xs-12 col-sm-12 col-md-12">
-		<div class="box box-primary">
-			<div class="box-header">
-				<h3 class="box-title">#i18n{announce.createEntry.titleQuestion}  - ${category.label}  - #i18n{announce.createEntry.labelType}  ${entry.entryType.title}</h3>
-			</div>
-			<div class="box-body">
-				<form class="form-horizontal" action="jsp/admin/plugins/announce/ManageCategoryEntries.jsp" method="post" name="" id=""  >
-				<input name="id_category" value="${category.id}" type="hidden">
-				<input name="action" value="doCreateEntry" type="hidden">
-				<input name="id_type" value="${entry.entryType.idType}" type="hidden">
-				<#if entry.fieldDepend?exists>
-					<input name="id_field" value="${entry.fieldDepend.idField}" type="hidden">
-				</#if>
-				<div class="form-group">
-				<label class="control-label col-xs-12 col-sm-12 col-md-3" for="title">#i18n{announce.createEntry.labelTitle} *</label>
-					<div class="col-xs-12 col-sm-12 col-md-6">
-						<input type="text" name="title" id="title" class="form-control" value=""  maxlength="255" >
-						<span class="help-block">#i18n{announce.createEntry.labelTitleComment}</span>
-					</div>
-				</div>
-		    	<div class="form-group">
-				<label class="control-label col-xs-12 col-sm-12 col-md-3" >  #i18n{announce.createEntry.labelHelpMessage}</label>
-					<div class="col-xs-12 col-sm-12 col-md-6">
-						<textarea  name="help_message" id="help_message" rows="5" class="form-control"></textarea>
-						<p class="help-block">#i18n{announce.createEntry.labelHelpMessageComment}</p>
-					</div>
-		     	</div>
-				<div class="form-group">
-				<label class="control-label col-xs-12 col-sm-12 col-md-3" for="comment"> #i18n{announce.createEntry.labelComment}</label>
-					<div class="col-xs-12 col-sm-12 col-md-6">						<textarea  name="comment" class="form-control" rows="2"></textarea>					</div>
-				</div>
-		       <div class="form-group">
-					<label class="control-label col-xs-12 col-sm-12 col-md-3" for=""></label>
-					<div class="col-xs-12 col-sm-12 col-md-6">
-						<div class="checkbox">
-							<label for="mandatory">
-								<input name="mandatory" id="mandatory" value="1" type="checkbox"> #i18n{announce.createEntry.labelMandatory} 
-							</label>
-						</div>
-					</div>
-				</div>
-				<div class="form-group">
-					<label class="control-label col-xs-12 col-sm-12 col-md-3" for="width">#i18n{announce.createEntry.labelWidth} * </label>
-					<div class="col-xs-12 col-sm-12 col-md-6">
-						<input  type="text" name="width" id="width" value="255" class="form-control" >
-					</div>
-				</div>
-				<div class="form-group">
-					<label class="control-label col-xs-12 col-sm-12 col-md-3" for="file_max_size">#i18n{announce.createEntry.labelFileMaxSize} * </label>
-					<div class="col-xs-12 col-sm-12 col-md-6">
-						<input type="text" name="file_max_size" id="file_max_size" value="" class="form-control" >
-					</div>
-				</div>
-				<div class="form-group">
-					<label class="control-label col-xs-12 col-sm-12 col-md-3" for="max_files">#i18n{announce.createEntry.labelMaxFiles} * </label>
-					<div class="col-xs-12 col-sm-12 col-md-6">
-						<input name="max_files" type="text" size="2" value="" maxlength="2" class="form-control" >
-					</div>
-				</div>
-				<div class="form-group">
-					<label class="control-label col-xs-12 col-sm-12 col-md-3" for=""></label>
-					<div class="col-xs-12 col-sm-12 col-md-6">	
-						<div class="checkbox">
-							<label for="export_binary">
-								<input name="export_binary" id="export_binary" value="1" type="checkbox"> #i18n{announce.createEntry.labelExportBinaryComment}
-							</label>
-						</div>
-						<p class="label label-warning"><i class="fa fa-warning"></i>&nbsp;&nbsp;#i18n{announce.createEntry.labelExportBinaryWarning}</p>
-					</div>
-				</div>
-				<div class="form-group">
-				<label class="control-label col-xs-12 col-sm-12 col-md-3" for="css_class">#i18n{announce.createEntry.labelCSSClass} </label>
-					<div class="col-xs-12 col-sm-12 col-md-6">
-						<input type="text" name="css_class" value="" maxlength="255" class="form-control">
-						<span class="help-block">#i18n{announce.createEntry.labelCSSClassComment}</span>
-					</div>
-				</div>
-				<div class="form-group">
-					<div class="col-xs-12 col-sm-12 col-md-6  col-md-offset-3">
-						<button class="btn btn-primary btn-flat" name="save" type="submit"><i class="fa fa-check"></i>&nbsp;#i18n{announce.createEntry.buttonSave}</button>
-						<button class="btn btn-default btn-flat" type="button" onclick="javascript:window.history.back();" ><i class="fa fa-remove icon-white"></i>&nbsp;#i18n{announce.createEntry.buttonCancel}</button>					</div>
-					</div>
-				</div>
-				</form>
-			</div>
-		</div>
-	</div>
-</div>
- <#include "/admin/util/editor/editor.html" />
- <@initEditor />
-
- 
+<@box>
+	<@boxHeader title='#i18n{announce.createEntry.titleQuestion}  - ${category.label}  - #i18n{announce.createEntry.labelType}  ${entry.entryType.title}' />
+	<@boxBody>
+			<@tform class="create_sector" method="post" action='jsp/admin/plugins/announce/ManageCategoryEntries.jsp'>
+			<@input name="id_category" value="${category.id}" type="hidden" />
+			<@input name="action" value="doCreateEntry" type="hidden" />
+			<@input name="id_type" value="${entry.entryType.idType}" type="hidden" />
+			<#if entry.fieldDepend?exists>
+				<@input name="id_field" value="${entry.fieldDepend.idField}" type="hidden" />
+			</#if>
+			<@formGroup labelKey='#i18n{announce.createEntry.labelTitle}' mandatory=true >
+				<@input type="text" name="title" id="title" class="form-control" value=""  max=255 />
+				<@span class="help-block">#i18n{announce.createEntry.labelTitleComment}</@span>
+			</@formGroup>
+			<@formGroup labelKey='#i18n{announce.createEntry.labelHelpMessage}' mandatory=true >
+				<@input  type='textarea' name="help_message" id="help_message" rows="5" class="form-control" />
+				<@span class="help-block">#i18n{announce.createEntry.labelHelpMessageComment}</@span>
+			</@formGroup>
+			<@formGroup labelKey='#i18n{announce.createEntry.labelComment}' mandatory=true >
+				<@input  type='textarea' name="comment" class="form-control" rows="2" />
+			</@formGroup>
+			<@formGroup >
+				<input name="mandatory" id="mandatory" value="1" type="checkbox"> #i18n{announce.createEntry.labelMandatory} 
+			</@formGroup>
+			<@formGroup labelKey='#i18n{announce.createEntry.labelWidth}' mandatory=true>
+				<@input  type="text" name="width" id="width" value="255" class="form-control" />
+			</@formGroup>
+			<@formGroup labelKey='#i18n{announce.createEntry.labelFileMaxSize}' mandatory=true>
+				<@input type="text" name="file_max_size" id="file_max_size" value="" class="form-control" />
+			</@formGroup>
+			<@formGroup labelKey='#i18n{announce.createEntry.labelMaxFiles}' mandatory=true>
+				<@input name="max_files" type="text" size="2" value="" max=2 class="form-control" />
+			</@formGroup>
+			<@formGroup>
+				<input name="export_binary" id="export_binary" value="1" type="checkbox"> #i18n{announce.createEntry.labelExportBinaryComment} <br>
+				<@span class="label label-warning"><@icon class="fa fa-warning"></@icon>&nbsp;&nbsp;#i18n{announce.createEntry.labelExportBinaryWarning}</@span>
+			</@formGroup> 
+			
+			<@formGroup labelKey='#i18n{announce.createEntry.labelCSSClass}' mandatory=true>
+				<@input type="text" name="css_class" value="" max=255 class="form-control" />
+				<@span class="help-block">#i18n{announce.createEntry.labelCSSClassComment}</@span>
+			</@formGroup>
+			<@actionButtons button1Name='' url2='jsp/admin/plugins/announce/ModifyCategory.jsp?category_id=${category.id}' icon1='save' icon2='times'/>
+		</@tform>
+	</@boxBody>
+</@box> 
