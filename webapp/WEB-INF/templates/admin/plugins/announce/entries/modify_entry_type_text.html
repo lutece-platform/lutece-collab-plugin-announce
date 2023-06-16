@@ -1,155 +1,106 @@
-<div class="row">
-	<div class="col-xs-12 col-sm-12 col-md-12">
-		<div class="box box-primary">
-			<div class="box-header">
-				<h3 class="box-title">#i18n{announce.modifyEntry.titleQuestion}  - ${category.label} - #i18n{announce.createEntry.labelType}  ${entry.entryType.title}</h3>
-			</div>
-			<div class="box-body">
-				<#assign config=getFieldByCode( entry, "text_config")>
-				<form class="form-horizontal" action="jsp/admin/plugins/announce/ManageCategoryEntries.jsp" method="post" name="" id="">
-				<input name="id_entry" value="${entry.idEntry}" type="hidden">
-				<input name="action" value="doModifyEntry" type="hidden">
-				<div class="form-group">
-					<label class="control-label col-xs-12 col-sm-12 col-md-3" for="title">#i18n{announce.createEntry.labelTitle} *</label>
-			    	<div class="col-xs-12 col-sm-12 col-md-6">
-						<input type="text" name="title" id="title" class="form-control" value="${entry.title}" maxlength="255">
-						<span class="help-block">#i18n{announce.createEntry.labelTitleComment}</span>
-					</div>
-				</div>
-			    <div class="form-group">
-					<label class="control-label col-xs-12 col-sm-12 col-md-3" >#i18n{announce.createEntry.labelHelpMessage}</label>
-					<div class="col-xs-12 col-sm-12 col-md-6">
-						<textarea  name="help_message" id="help_message" rows="5" class="form-control">${entry.helpMessage}</textarea>
-						<span class="help-block">#i18n{announce.createEntry.labelHelpMessageComment}</span>
-					</div>
-			    </div>
-				<div class="form-group">
-					<label class="control-label col-xs-12 col-sm-12 col-md-3" for="comment"> #i18n{announce.createEntry.labelComment} </label>
-					<div class="col-xs-12 col-sm-12 col-md-6">
-						<textarea  name="comment" class="form-control" rows="2">${entry.comment!}</textarea>
-					</div>
-			    </div>
-			    <div class="form-group">
-					<label class="control-label col-xs-12 col-sm-12 col-md-3" for="value">#i18n{announce.createEntry.labelValueDefault} </label>
-					<div class="col-xs-12 col-sm-12 col-md-6">
-						<input type="text" name="value" id="value" class="form-control" value="${config.value!}">
-					</div>
-				</div>
-				<div class="form-group">
-					<label class="control-label col-xs-12 col-sm-12 col-md-3" for=""></label>
-			   		<div class="col-xs-12 col-sm-12 col-md-6">
-						<div class="checkbox">
-							<label for="mandatory">
-								<input name="mandatory" id="mandatory" value="1" type="checkbox" <#if entry.mandatory>checked="checked" </#if>>#i18n{announce.createEntry.labelMandatory}
-							</label>
-						</div>
-					</div>
-				</div>
-				<div class="form-group">
-					<label class="control-label col-xs-12 col-sm-12 col-md-3" for="errorMessage"> #i18n{announce.createEntry.labelMandatoryErrorMessage}</label>
-					<div class="col-xs-12 col-sm-12 col-md-6">
-						<textarea name="errorMessage" class="form-control" rows="2">${entry.errorMessage!}</textarea>
-						<span class="help-block">#i18n{announce.createEntry.labelMandatoryErrorMessageHelp}</span>
-					</div>
-				</div>
-				<div class="form-group">
-					<label class="control-label col-xs-12 col-sm-12 col-md-3" for="width">#i18n{announce.createEntry.labelWidth} *</label>
-					<div class="col-xs-12 col-sm-12 col-md-6">
-						<input type="text" name="width" id="width" value="${config.width}" class="form-control" >
-					</div>
-				</div>
-				<#assign id_field=field.idField> 
-				<div class="form-group">
-					<label class="control-label col-xs-12 col-sm-12 col-md-3" for="max_size_enter">#i18n{announce.createEntry.labelMaxSizeEnter}</label>
-						<div class="col-xs-12 col-sm-12 col-md-6">
-						<input type="text" name="max_size_enter" id="max_size_enter" value="<#if config.maxSizeEnter!=-1>${config.maxSizeEnter!}</#if>" class="form-control">
-					</div>
-				</div>
-				<div class="form-group">
-					<label class="control-label col-xs-12 col-sm-12 col-md-3" for=""></label>
-			   		<div class="col-xs-12 col-sm-12 col-md-6">
-						<div class="checkbox">
-							<label for="confirm_field">
-								<input name="confirm_field" id="confirm_field" value="1" type="checkbox" onchange="javascript:changeVisilityConfirmFieldTitle();" <#if entry.confirmField> 	checked="checked"</#if>> #i18n{announce.createEntry.labelConfirmField}
-							</label>
-						</div>
-					</div>
-				</div>
-				<div class="form-group">
-					<label class="control-label col-xs-12 col-sm-12 col-md-3" for="confirm_field_title">#i18n{announce.createEntry.labelConfirmFieldTitle} *</label>
-			   		<div class="col-xs-12 col-sm-12 col-md-6">
-						<input type="text" name="confirm_field_title" id="confirm_field_title" class="form-control" value="${entry.confirmFieldTitle!}" maxlength="255">
-					</div>
-				</div>
-				<div class="form-group">
-					<label class="control-label col-xs-12 col-sm-12 col-md-3" for="css_class">#i18n{announce.createEntry.labelCSSClass} </label>
-					<div class="col-xs-12 col-sm-12 col-md-6">
-						<input type="text" name="css_class" value="${entry.CSSClass!}" maxlength="255" class="form-control" />
-						<span class="help-block">#i18n{announce.createEntry.labelCSSClassComment}</span>
-					</div>
-				</div>
-				<div class="form-group">
-					<div class="col-xs-12 col-sm-12 col-md-6  col-md-offset-3">
-						<button class="btn btn-primary btn-flat" name="save" type="submit" ><i class="fa fa-check"></i>&nbsp;&nbsp;#i18n{announce.modifyEntry.buttonSave}</button>
-						<button class="btn btn-primary btn-flat" name="apply" type="submit" ><i class="fa fa-floppy-o"></i>&nbsp;&nbsp;#i18n{announce.modifyEntry.buttonApply}</button>
-						<button class="btn btn-default btn-flat" type="submit" name="cancel" value="cancel" >
-							<i class="fa fa-remove"></i>&nbsp;#i18n{announce.createEntry.buttonCancel}
-						</button>
-					</div>
-				</div>
-				</form>
-			</div>
-		</div>
-	</div>
-</div>
+<@box>
+	<@boxHeader title='#i18n{announce.modifyEntry.titleQuestion}  - ${category.label} - #i18n{announce.createEntry.labelType}  ${entry.entryType.title}' />
+	<@boxBody>
+		<#assign config=getFieldByCode( entry, "text_config")>
+		<@tform class='form-horizontal' action='jsp/admin/plugins/announce/ManageCategoryEntries.jsp' method='post'>
+		<@input name='id_entry' value='${entry.idEntry}' type='hidden' />
+		<@input name='action' value='doModifyEntry' type='hidden' />
+			<@formGroup labelKey='#i18n{announce.createEntry.labelTitle}' mandatory=true >
+					<@input type='text' name='title' id='title' class='form-control' value='${entry.title}' maxlength=255 />
+					<@span class='help-block'>#i18n{announce.createEntry.labelTitleComment}</@span>
+			</@formGroup>
+			<@formGroup labelKey='#i18n{announce.createEntry.labelHelpMessage}' >
+					<@input type='textarea' name='help_message' id='help_message' rows=5 class='form-control' value='${entry.helpMessage}' />
+					<@span class='help-block'>#i18n{announce.createEntry.labelHelpMessageComment}</@span>
+			</@formGroup>
+			<@formGroup labelKey='#i18n{announce.createEntry.labelComment}' >
+					<@input type='textarea' name='comment' id='comment' value='${entry.comment!}' rows=5 class='form-control' />
+			</@formGroup>
+			<@formGroup labelKey='#i18n{announce.createEntry.labelValueDefault}'>
+				<@input type='text' name='value' id='value' class='form-control' value='${config.value!}' />
+			</@formGroup>
+			<@formGroup>
+				<#if entry.mandatory>
+					<@checkBox orientation='switch' labelFor='mandatory' labelKey='#i18n{announce.createEntry.labelMandatory}' name='mandatory' id='mandatory' value='1' params='onchange="javascript:changeVisilityAnonymizePattern();"' checked=true />
+				<#else>
+					<@checkBox orientation='switch' labelFor='mandatory' labelKey='#i18n{announce.createEntry.labelMandatory}' name='mandatory' id='mandatory' value='1' params='onchange="javascript:changeVisilityAnonymizePattern();"' checked=false />
+				</#if>
+			</@formGroup>
+			<@formGroup labelKey='#i18n{announce.createEntry.labelMandatoryErrorMessage}'>
+				<@input type='textarea' name='errorMessage' class='form-control' rows=2 value='${entry.errorMessage!}' />
+				<@span class="help-block">#i18n{announce.createEntry.labelMandatoryErrorMessageHelp}</@span>
+			</@formGroup>		
+			<@formGroup labelKey='#i18n{announce.createEntry.labelWidth}' mandatory=true >
+				<@input type='number' name='width' id='width' value='${config.width}' class='form-control' />
+			</@formGroup>
+			<#assign id_field=field.idField> 
+			<@formGroup labelKey='#i18n{announce.createEntry.labelMaxSizeEnter}' >
+				<@input type='number' name='max_size_enter' id='max_size_enter' value='<#if config.maxSizeEnter!=-1>${config.maxSizeEnter!}</#if>' class='form-control' />
+			</@formGroup>
+			<@formGroup>
+				 <#if entry.confirmField>
+					<@checkBox orientation='switch' labelFor='confirm_field' labelKey='#i18n{announce.createEntry.labelConfirmField}' name='confirm_field' id='confirm_field' value='1' params='onchange="javascript:changeVisilityAnonymizePattern();"' checked=true />
+				<#else>
+					<@checkBox orientation='switch' labelFor='mandatory' labelKey='#i18n{announce.createEntry.labelConfirmField}' name='mandatory' id='mandatory' value='1' params='onchange="javascript:changeVisilityAnonymizePattern();"' checked=false />
+				</#if>
+			</@formGroup>
+			<@formGroup labelKey='#i18n{announce.createEntry.labelConfirmFieldTitle}' mandatory=true >
+				<@input type='text' name='confirm_field_title' id='confirm_field_title' class='form-control' value='${entry.confirmFieldTitle!}' maxlength=255 />
+			</@formGroup>
+			<@formGroup labelKey='#i18n{announce.createEntry.labelCSSClass}'>
+				<@input type='text' name='css_class' value='${entry.CSSClass!}' maxlength=255 class='form-control' />
+				<@span class='help-block'>#i18n{announce.createEntry.labelCSSClassComment}</@span>	
+			</@formGroup>
+			<@formGroup>
+				<@button type='submit' name='action_createQuestion' buttonIcon='save' title='#i18n{announce.createEntry.buttonSave}' hideTitle=['xs'] size='' />
+				<@button class="btn btn-primary btn-flat" name="apply" type="submit" ><i class="fa fa-floppy-o"></i>&nbsp;&nbsp;#i18n{announce.modifyEntry.buttonApply}</@button>
+				<@aButton class='btn btn-default btn-flat' title='#i18n{announce.createEntry.buttonCancel}' params='style="background-color: #ffffff; color: black;"' href='jsp/admin/plugins/announce/ModifyCategory.jsp?category_id=${category.id}' />
+			</@formGroup>
+		</@tform>
+	</@boxBody>
+</@box>
 <#if regular_expression_list?exists>
-<div class="row">
-	<div class="col-xs-12 col-sm-12 col-md-12">
-		<div class="box box-primary">
-			<div class="box-header">
-				<h3 class="box-title">#i18n{announce.createEntry.manageRegularExpression.title}</h3>
-				<div class="box-tools pull-right">
-					<form class="form-inline pull-right"  method="post"  action="jsp/admin/plugins/announce/ManageCategoryEntries.jsp#list">
-						<input name="id_field" value="${id_field}" type="hidden">
-						<input name="action" value="doInsertRegularExpression" type="hidden">
-						<label  for="id_expression">#i18n{announce.createEntry.manageRegularExpression.labelInsert}</label>
-						<div class="input-group">
-							<@select name="id_expression" items=regular_expression_list default_value="-1" params="class=\"form-control input-xs\"" />
-							<span class="input-group-btn">
-								<button class="btn btn-primary btn-xs btn-flat" type="submit">#i18n{announce.createEntry.manageRegularExpression.buttonInsert}</button>
-							</span>
-						</div>
-					</form>
-				</div>
-			</div>
-			<div class="box-body table-responsive">
-				<p>#i18n{announce.createEntry.manageRegularExpression.labelInsertComment}</p>
-				<table class="table table-hover">
-					<tr> 
-						<th>#i18n{announce.createEntry.manageRegularExpression.rowTitle}</th>
-						<th>#i18n{announce.createEntry.manageRegularExpression.rowInformationMessage}</th>
-						<th>#i18n{announce.createEntry.manageRegularExpression.rowValidExemple}</th>
-						<th>#i18n{announce.createEntry.manageField.rowActions}</th>
-					</tr>
-					<#list list as field>
-						<#list field.regularExpressionList as expression>
-							<tr>
-								<td>${expression.title}</td>
-								<td>${expression.informationMessage}</td>
-								<td>${expression.validExemple}</td>
-								<td>
-									<a class="btn btn-danger btn-xs btn-flat" href="jsp/admin/plugins/announce/ManageCategoryEntries.jsp?action=doRemoveRegularExpression&id_expression=${expression.idExpression}&id_field=${id_field}" title="#i18n{announce.createEntry.manageField.titleDelete}" >
-										<i class="fa fa-trash"></i>
-									</a>
-								</td>
-							</tr>
-						</#list>
+	<@box>
+		<@boxHeader title='#i18n{announce.createEntry.manageRegularExpression.title}' >
+			<@tform class='form-inline pull-right'  method='post'  action='jsp/admin/plugins/announce/ManageCategoryEntries.jsp#list'>
+				<@input name='id_field' value='${id_field}' type='hidden' />
+				<@input name='action' value='doInsertRegularExpression' type='hidden' />
+				<@formGroup>
+					<label>#i18n{announce.createEntry.manageRegularExpression.labelInsert}</label>
+					<@inputGroup>
+						<@select name='id_expression' items=regular_expression_list default_value="-1" params='class="form-control input-xs"' />
+						<@span class='input-group-btn'>
+							<@button class='btn btn-primary btn-xs btn-flat' type='submit' title='#i18n{announce.createEntry.manageRegularExpression.buttonInsert}' />
+						</@span>
+					</@inputGroup>
+				</@formGroup>
+			</@tform>
+		</@boxHeader>
+		<@boxBody>
+			<@span>#i18n{announce.createEntry.manageRegularExpression.labelInsertComment}</@span>
+			<@table>
+				<@tr> 
+					<@th>#i18n{announce.createEntry.manageRegularExpression.rowTitle}</@th>
+					<@th>#i18n{announce.createEntry.manageRegularExpression.rowInformationMessage}</@th>
+					<@th>#i18n{announce.createEntry.manageRegularExpression.rowValidExemple}</@th>
+					<@th>#i18n{announce.createEntry.manageField.rowActions}</@th>
+				</@tr>
+				<@tableHeadBodySeparator />	
+				<#list list as field>	
+					<#list field.regularExpressionList as expression>
+						<@tr>
+							<@td>${expression.title}</@td>
+							<@td>${expression.informationMessage}</@td>
+							<@td>${expression.validExemple}</@td>
+							<@td>
+								<@aButton href='jsp/admin/plugins/announce/ManageCategoryEntries.jsp?action=doRemoveRegularExpression&id_expression=${expression.idExpression}&id_field=${id_field}' title='#i18n{announce.createEntry.manageField.titleDelete}' buttonIcon='trash' hideTitle=['all'] color='danger'  />
+							</@td>
+						</@tr>
 					</#list>
-				</table>
-			</div>
-		</div>
-	</div>
-</div>
+				</#list>
+			</@table>
+		</@boxBody>
+	</@box>
 </#if>
 <#include "/admin/util/editor/editor.html" />
  <script type="text/javascript">

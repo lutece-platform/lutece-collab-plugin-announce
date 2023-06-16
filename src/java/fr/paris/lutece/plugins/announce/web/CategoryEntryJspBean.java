@@ -221,9 +221,10 @@ public class CategoryEntryJspBean extends MVCAdminJspBean
             int nIdType = Integer.parseInt( strIdType );
             EntryType entryType = new EntryType( );
             entryType.setIdType( nIdType );
-
+            
             Entry entry = new Entry( );
             entry.setEntryType( EntryTypeService.getInstance( ).getEntryType( nIdType ) );
+            
 
             String strIdField = request.getParameter( PARAMETER_ID_FIELD );
             int nIdField = -1;
