@@ -37,7 +37,10 @@
 					<@input type='number' name='height' id='height' value='${config.height!}' class='form-control' />
 				</@formGroup>
 				<@formGroup class='form-group' labelKey='#i18n{announce.createEntry.labelMaxSizeEnter}' >
-					<@input type='number' name='max_size_enter' id='max_size_enter' value='<#if config.maxSizeEnter &gt; -1>${config.maxSizeEnter}</#if>' class='form-control' />
+					<#if config.maxSizeEnter &gt; -1>
+						<#assign value=config.maxSizeEnter />
+						<@input type='number' name='max_size_enter' id='max_size_enter' value=value class='form-control' />
+					</#if>
 				</@formGroup>
 				<@formGroup class='form-group' labelKey='#i18n{announce.createEntry.labelCSSClass}' >
 					<@input type='text' name='css_class' value='${entry.CSSClass!}' maxlength=255 class='form-control' />

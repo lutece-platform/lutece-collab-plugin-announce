@@ -36,7 +36,10 @@
 				</@formGroup>
 				<#assign id_field=field.idField> 
 				<@formGroup labelKey='#i18n{announce.createEntry.labelMaxSizeEnter}' >
-					<@input type='number' name='max_size_enter' id='max_size_enter' value='<#if config.maxSizeEnter!=-1>${config.maxSizeEnter!}</#if>' class='form-control' />
+					<#if config.maxSizeEnter!=-1>
+						<#assign value=config.maxSizeEnter />
+						<@input type='number' name='max_size_enter' id='max_size_enter' value=value class='form-control' />
+					</#if>
 				</@formGroup>
 				<@formGroup>
 					 <#if entry.confirmField>
