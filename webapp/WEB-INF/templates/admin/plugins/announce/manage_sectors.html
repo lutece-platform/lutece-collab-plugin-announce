@@ -1,48 +1,50 @@
 <#include "announce_tabs.html" />
-<@box>
-	<@boxHeader title='#i18n{announce.manage_sectors.pageTitle}' >
-		<@tform class='form-inline pull-right' name='manage_categories' action='jsp/admin/plugins/announce/CreateSector.jsp'>
-			<@button type='submit' name='view_manageCategories' buttonIcon='plus' title='#i18n{announce.manage_sectors.buttonCreateSector}' />
-		</@tform>
-	</@boxHeader>
-	<@boxBody>
-	<@tabs2 tab="sectors" />
-		<@tform method="post"  action="jsp/admin/plugins/announce/ManageSectors.jsp">
-			<@paginationAdmin paginator=paginator form=0 combo=1 showcount=0 />
-		</@tform>
-		<@table class="table table-hover">
-		<@tr>
-			<@th>#i18n{announce.sector.label}</@th>
-			<@th>#i18n{announce.sector.description}</@th>
-			<@th>#i18n{announce.sector.numberCategories}</@th>
-			<@th>#i18n{announce.order}</@th>
-			<@th>#i18n{announce.actions}</@th>
-		</@tr>
-		<#list list_sectors as sector>
-		<@tr>
-			<@td>${sector.label}</@td>
-			<@td>${sector.description}</@td>
-			<@td>${sector.numberCategories}</@td>
-			<@td>
-				<@tform method="post" class="form-inline" action="jsp/admin/plugins/announce/DoModifySectorOrder.jsp">	
-				<@input type="hidden" name="sector_id" value="${sector.id}" />
-					<@div class="input-group">
-						<@select name="sector_order" items=sector_order_list default_value="${sector.order}" params="class=\"form-control input-xs\"" />
-							<@span class="input-group-btn" params='title="#i18n{announce.manage_sectors.buttonChangeOrder}"'>
-								<@button type='submit' class="fa fa-check" buttonIcon='check' />
-							</@span>
-					</@div>
-				</@tform>
-			</@td>
-			<@td>
-				<@aButton href='jsp/admin/plugins/announce/ModifySector.jsp?sector_id=${sector.id}' title='#i18n{portal.util.labelModify}' hideTitle=['all'] buttonIcon='pencil' />
-				<@aButton href='jsp/admin/plugins/announce/RemoveSector.jsp?sector_id=${sector.id}' title='#i18n{portal.util.labelDelete}' buttonIcon='trash' hideTitle=['all'] color='danger' />
-			</@td>
-		</@tr>
-		</#list>
-	</@table>
-		<@tform method="post"  action="jsp/admin/plugins/announce/ManageSectors.jsp">
-			<@paginationAdmin paginator=paginator form=0 combo=1 showcount=0 />
-		</@tform>
-	</@boxBody>
-</@box>
+<@row>
+	<@box>
+		<@boxHeader title='#i18n{announce.manage_sectors.pageTitle}' >
+			<@tform class='form-inline pull-right' name='manage_categories' action='jsp/admin/plugins/announce/CreateSector.jsp'>
+				<@button type='submit' name='view_manageCategories' buttonIcon='plus' title='#i18n{announce.manage_sectors.buttonCreateSector}' />
+			</@tform>
+		</@boxHeader>
+		<@boxBody>
+		<@tabs2 tab="sectors" />
+			<@tform method="post"  action="jsp/admin/plugins/announce/ManageSectors.jsp">
+				<@paginationAdmin paginator=paginator form=0 combo=1 showcount=0 />
+			</@tform>
+			<@table class="table table-hover">
+			<@tr>
+				<@th>#i18n{announce.sector.label}</@th>
+				<@th>#i18n{announce.sector.description}</@th>
+				<@th>#i18n{announce.sector.numberCategories}</@th>
+				<@th>#i18n{announce.order}</@th>
+				<@th>#i18n{announce.actions}</@th>
+			</@tr>
+			<#list list_sectors as sector>
+			<@tr>
+				<@td>${sector.label}</@td>
+				<@td>${sector.description}</@td>
+				<@td>${sector.numberCategories}</@td>
+				<@td>
+					<@tform method="post" class="form-inline" action="jsp/admin/plugins/announce/DoModifySectorOrder.jsp">	
+					<@input type="hidden" name="sector_id" value="${sector.id}" />
+						<@div class="input-group">
+							<@select name="sector_order" items=sector_order_list default_value="${sector.order}" params="class=\"form-control input-xs\"" />
+								<@span class="input-group-btn" params='title="#i18n{announce.manage_sectors.buttonChangeOrder}"'>
+									<@button type='submit' class="fa fa-check" buttonIcon='check' />
+								</@span>
+						</@div>
+					</@tform>
+				</@td>
+				<@td>
+					<@aButton href='jsp/admin/plugins/announce/ModifySector.jsp?sector_id=${sector.id}' title='#i18n{portal.util.labelModify}' hideTitle=['all'] buttonIcon='pencil' />
+					<@aButton href='jsp/admin/plugins/announce/RemoveSector.jsp?sector_id=${sector.id}' title='#i18n{portal.util.labelDelete}' buttonIcon='trash' hideTitle=['all'] color='danger' />
+				</@td>
+			</@tr>
+			</#list>
+		</@table>
+			<@tform method="post"  action="jsp/admin/plugins/announce/ManageSectors.jsp">
+				<@paginationAdmin paginator=paginator form=0 combo=1 showcount=0 />
+			</@tform>
+		</@boxBody>
+	</@box>
+</@row>

@@ -1,24 +1,26 @@
-<@box>
-	<@boxHeader title="#i18n{announce.createEntry.titleQuestion} : '${category.label}' - #i18n{announce.createEntry.labelEntryType} : ${entry.entryType.title}" />
-	<@boxBody>
-	<@tform class="form-horizontal" action="jsp/admin/plugins/announce/ManageCategoryEntries.jsp" method="post" name="" id="" >
-		<@input name='id_category' value='${category.id}' type='hidden' />
-		<@input name='action' value='doCreateEntry' type='hidden' />
-		<@input name='id_type' value='${entry.entryType.idType}' type='hidden' />
-		<#if entry.fieldDepend?exists>
-			<@input name='id_field' value='${entry.fieldDepend.idField}' type='hidden' />
-		</#if>
-		<@formGroup class='form-group' labelKey='#i18n{announce.createEntry.labelTitle}' mandatory=true>
-			<@input type='text' name='title' id='title' class='form-control' value='' maxlength=255 />
-		</@formGroup>
-		<@formGroup class='form-group' labelKey='#i18n{announce.createEntry.labelPrefix}'>
-			<@input type='text' name='prefix' id='prefix' value='' maxlength=255 class='form-control' />
-			<@span class='help-block'>#i18n{announce.createEntry.labelPrefixComment}</@span>
-		</@formGroup>
-		<@formGroup class='form-group'>
-			<@button type='submit' name='action_createQuestion' buttonIcon='save' title='#i18n{announce.createEntry.buttonSave}' hideTitle=['xs'] size='' />
-			<@aButton class='btn btn-default btn-flat' title='#i18n{announce.createEntry.buttonCancel}' params='style="background-color: #ffffff; color: black;"' href='jsp/admin/plugins/announce/ModifyCategory.jsp?category_id=${category.id}' />
-		</@formGroup>
-	</@tform>
-	</@boxBody>
-</@box>
+<@row>	
+	<@box>
+		<@boxHeader title="#i18n{announce.createEntry.titleQuestion} : '${category.label}' - #i18n{announce.createEntry.labelEntryType} : ${entry.entryType.title}" />
+		<@boxBody>
+		<@tform class="form-horizontal" action="jsp/admin/plugins/announce/ManageCategoryEntries.jsp" method="post" name="" id="" >
+			<@input name='id_category' value='${category.id}' type='hidden' />
+			<@input name='action' value='doCreateEntry' type='hidden' />
+			<@input name='id_type' value='${entry.entryType.idType}' type='hidden' />
+			<#if entry.fieldDepend?exists>
+				<@input name='id_field' value='${entry.fieldDepend.idField}' type='hidden' />
+			</#if>
+			<@formGroup class='form-group' labelKey='#i18n{announce.createEntry.labelTitle}' mandatory=true>
+				<@input type='text' name='title' id='title' class='form-control' value='' maxlength=255 />
+			</@formGroup>
+			<@formGroup class='form-group' labelKey='#i18n{announce.createEntry.labelPrefix}'>
+				<@input type='text' name='prefix' id='prefix' value='' maxlength=255 class='form-control' />
+				<@span class='help-block'>#i18n{announce.createEntry.labelPrefixComment}</@span>
+			</@formGroup>
+			<@formGroup class='form-group'>
+				<@button type='submit' name='action_createQuestion' buttonIcon='save' title='#i18n{announce.createEntry.buttonSave}' hideTitle=['xs'] size='' />
+				<@aButton class='btn btn-default btn-flat' title='#i18n{announce.createEntry.buttonCancel}' params='style="background-color: #ffffff; color: black;"' href='jsp/admin/plugins/announce/ModifyCategory.jsp?category_id=${category.id}' />
+			</@formGroup>
+		</@tform>
+		</@boxBody>
+	</@box>
+</@row>

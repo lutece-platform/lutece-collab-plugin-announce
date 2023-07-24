@@ -1,64 +1,66 @@
-<@box>
-	<@boxHeader title='#i18n{announce.createEntry.titleQuestion} - ${category.label}  - #i18n{announce.createEntry.labelType}  ${entry.entryType.title}' />
-	<@boxBody>
-		<#assign config=getFieldByCode( entry, "text_config")>
-		<@tform class='form-horizontal' action='jsp/admin/plugins/announce/ManageCategoryEntries.jsp' method='post'>
-			<@input name='id_entry' value='${entry.idEntry}' type='hidden' />
-			<@input name='action' value='doModifyEntry' type='hidden' />
-			<#if entry.fieldDepend?exists>
-				<@input name='id_field' value='${entry.fieldDepend.idField}' type='hidden' />
-			</#if>
-			<@formGroup class='form-group' labelKey='#i18n{announce.createEntry.labelTitle}' mandatory=true>
-				<@input type='text' name='title' id='title' class='form-control' value='${entry.title}' maxlength=255 />
-				<@span class='help-block'>#i18n{announce.createEntry.labelTitleComment}</@span>
-			</@formGroup>
-			<@formGroup class='form-group' labelKey='#i18n{announce.createEntry.labelHelpMessage}'>
-				<@input type='textarea' class='form-control' name='help_message' id='help_message' rows=5 value='${entry.helpMessage}' />
-				<@span class="help-block">#i18n{announce.createEntry.labelHelpMessageComment}</@span>
-			</@formGroup>
-			<@formGroup class='form-group' labelKey='#i18n{announce.createEntry.labelComment}'>
-				<@input type='textarea'  name='comment' class='form-control' rows=2 value='${entry.comment}' />
-			</@formGroup>
-			<@formGroup class='form-group' labelKey='#i18n{announce.createEntry.labelValueDefault}'>
-				<@input type='textarea'  name='value' id='value'  class="form-control" rows=2 value='${config.value}' />
-			</@formGroup>
-			<@formGroup>
-				<#if entry.mandatory>
-					<@checkBox orientation='switch' labelFor='mandatory' labelKey='#i18n{announce.createEntry.labelMandatory}' name='mandatory' id='mandatory' value='1' params='onchange="javascript:changeVisilityAnonymizePattern();"' checked=true />
-				<#else>
-					<@checkBox orientation='switch' labelFor='mandatory' labelKey='#i18n{announce.createEntry.labelMandatory}' name='mandatory' id='mandatory' value='1' params='onchange="javascript:changeVisilityAnonymizePattern();"' checked=false />
+<@row>
+	<@box>
+		<@boxHeader title='#i18n{announce.createEntry.titleQuestion} - ${category.label}  - #i18n{announce.createEntry.labelType}  ${entry.entryType.title}' />
+		<@boxBody>
+			<#assign config=getFieldByCode( entry, "text_config")>
+			<@tform class='form-horizontal' action='jsp/admin/plugins/announce/ManageCategoryEntries.jsp' method='post'>
+				<@input name='id_entry' value='${entry.idEntry}' type='hidden' />
+				<@input name='action' value='doModifyEntry' type='hidden' />
+				<#if entry.fieldDepend?exists>
+					<@input name='id_field' value='${entry.fieldDepend.idField}' type='hidden' />
 				</#if>
-			</@formGroup>
-			<@formGroup class='form-group' labelKey='#i18n{announce.createEntry.labelWidth}' mandatory=true>
-				<@input  type='number' name='width' id='width' value='>${config.width!}' class='form-control' />
-			</@formGroup>
-			<@formGroup class='form-group' labelKey='#i18n{announce.createEntry.labelHeight}' mandatory=true>
-				<@input type='number' name='height' id='height' value='${config.height!}' class='form-control' />
-			</@formGroup>
-			<@formGroup class='form-group' labelKey='#i18n{announce.createEntry.labelMaxSizeEnter}' >
-				<@input type='number' name='max_size_enter' id='max_size_enter' value="<#if config.maxSizeEnter &gt; -1>${config.maxSizeEnter}</#if>" class='form-control' />
-			</@formGroup>
-			<@formGroup class='form-group' labelKey='#i18n{announce.createEntry.labelCSSClass}' >
-				<@input type='text' name='css_class' value='${entry.CSSClass!}' maxlength=255 class='form-control' />
-				<@span class='help-block'>#i18n{announce.createEntry.labelCSSClassComment}</@span>
-			</@formGroup>
-			<@formGroup>
-				<@inputGroup>
-					<#if entry.fieldInLine>
-						<@checkBox orientation='switch' labelFor='mandatory' labelKey='#i18n{announce.createEntry.labelUseRichText}' name='useRichText' id='useRichText' value='true' params='onchange="javascript:changeVisilityAnonymizePattern();", style="display: inline; margin-right: 5px;"' checked=true />
-						<@span class='help-block' params='style="display: inline; margin-left: 6px;"'>#i18n{announce.createEntry.labelUseRichTextComment}</@span>
+				<@formGroup class='form-group' labelKey='#i18n{announce.createEntry.labelTitle}' mandatory=true>
+					<@input type='text' name='title' id='title' class='form-control' value='${entry.title}' maxlength=255 />
+					<@span class='help-block'>#i18n{announce.createEntry.labelTitleComment}</@span>
+				</@formGroup>
+				<@formGroup class='form-group' labelKey='#i18n{announce.createEntry.labelHelpMessage}'>
+					<@input type='textarea' class='form-control' name='help_message' id='help_message' rows=5 value='${entry.helpMessage}' />
+					<@span class='help-block'>#i18n{announce.createEntry.labelHelpMessageComment}</@span>
+				</@formGroup>
+				<@formGroup class='form-group' labelKey='#i18n{announce.createEntry.labelComment}'>
+					<@input type='textarea'  name='comment' class='form-control' rows=2 value='${entry.comment}' />
+				</@formGroup>
+				<@formGroup class='form-group' labelKey='#i18n{announce.createEntry.labelValueDefault}'>
+					<@input type='textarea'  name='value' id='value'  class='form-control' rows=2 value='${config.value}' />
+				</@formGroup>
+				<@formGroup>
+					<#if entry.mandatory>
+						<@checkBox orientation='switch' labelFor='mandatory' labelKey='#i18n{announce.createEntry.labelMandatory}' name='mandatory' id='mandatory' value='1' params='onchange="javascript:changeVisilityAnonymizePattern();"' checked=true />
 					<#else>
-						<@checkBox orientation='switch' labelFor='mandatory' labelKey='#i18n{announce.createEntry.labelUseRichText}' name='useRichText' id='useRichText' value='true' params='onchange="javascript:changeVisilityAnonymizePattern();", style="display: inline; margin-right: 5px;"' checked=false />
-						<@span class='help-block' params='style="display: inline; margin-left: 6px;"'>#i18n{announce.createEntry.labelUseRichTextComment}</@span>
+						<@checkBox orientation='switch' labelFor='mandatory' labelKey='#i18n{announce.createEntry.labelMandatory}' name='mandatory' id='mandatory' value='1' params='onchange="javascript:changeVisilityAnonymizePattern();"' checked=false />
 					</#if>
-				</@inputGroup>
-			</@formGroup>
-			<@formGroup>
-				<@button type='submit' name='action_modifyQuestion' buttonIcon='save' title='#i18n{announce.modifyEntry.buttonSave}' hideTitle=['xs'] size='' />	
-				<@aButton class='btn btn-default btn-flat' title='#i18n{announce.createEntry.buttonCancel}' params='style="background-color: #ffffff; color: black;"' href='jsp/admin/plugins/announce/ModifyCategory.jsp?category_id=${category.id}' />
-			</@formGroup>
-		</@tform>
-	</@boxBody>
-</@box>
+				</@formGroup>
+				<@formGroup class='form-group' labelKey='#i18n{announce.createEntry.labelWidth}' mandatory=true>
+					<@input  type='number' name='width' id='width' value='>${config.width!}' class='form-control' />
+				</@formGroup>
+				<@formGroup class='form-group' labelKey='#i18n{announce.createEntry.labelHeight}' mandatory=true>
+					<@input type='number' name='height' id='height' value='${config.height!}' class='form-control' />
+				</@formGroup>
+				<@formGroup class='form-group' labelKey='#i18n{announce.createEntry.labelMaxSizeEnter}' >
+					<@input type='number' name='max_size_enter' id='max_size_enter' value='<#if config.maxSizeEnter &gt; -1>${config.maxSizeEnter}</#if>' class='form-control' />
+				</@formGroup>
+				<@formGroup class='form-group' labelKey='#i18n{announce.createEntry.labelCSSClass}' >
+					<@input type='text' name='css_class' value='${entry.CSSClass!}' maxlength=255 class='form-control' />
+					<@span class='help-block'>#i18n{announce.createEntry.labelCSSClassComment}</@span>
+				</@formGroup>
+				<@formGroup>
+					<@inputGroup>
+						<#if entry.fieldInLine>
+							<@checkBox orientation='switch' labelFor='mandatory' labelKey='#i18n{announce.createEntry.labelUseRichText}' name='useRichText' id='useRichText' value='true' params='onchange="javascript:changeVisilityAnonymizePattern();", style="display: inline; margin-right: 5px;"' checked=true />
+							<@span class='help-block' params='style="display: inline; margin-left: 6px;"'>#i18n{announce.createEntry.labelUseRichTextComment}</@span>
+						<#else>
+							<@checkBox orientation='switch' labelFor='mandatory' labelKey='#i18n{announce.createEntry.labelUseRichText}' name='useRichText' id='useRichText' value='true' params='onchange="javascript:changeVisilityAnonymizePattern();", style="display: inline; margin-right: 5px;"' checked=false />
+							<@span class='help-block' params='style="display: inline; margin-left: 6px;"'>#i18n{announce.createEntry.labelUseRichTextComment}</@span>
+						</#if>
+					</@inputGroup>
+				</@formGroup>
+				<@formGroup>
+					<@button type='submit' name='action_modifyQuestion' buttonIcon='save' title='#i18n{announce.modifyEntry.buttonSave}' hideTitle=['xs'] size='' />	
+					<@aButton class='btn btn-default btn-flat' title='#i18n{announce.createEntry.buttonCancel}' params='style="background-color: #ffffff; color: black;"' href='jsp/admin/plugins/announce/ModifyCategory.jsp?category_id=${category.id}' />
+				</@formGroup>
+			</@tform>
+		</@boxBody>
+	</@box>
+</@row>
  <#include "/admin/util/editor/editor.html" />
  <@initEditor />

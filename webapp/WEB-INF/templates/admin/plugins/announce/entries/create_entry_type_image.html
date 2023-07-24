@@ -1,49 +1,51 @@
 <#include '/admin/plugins/announce/commons.html' />
-<@box>
-	<@boxHeader title='#i18n{announce.createEntry.titleQuestion}  - ${category.label}  - #i18n{announce.createEntry.labelType}  ${entry.entryType.title}' />
-	<@boxBody>
-		<@tform class='create_sector' method='post' action='jsp/admin/plugins/announce/ManageCategoryEntries.jsp'>
-			<@input name='id_category' value='${category.id}' type='hidden' />
-			<@input name='action' value='doCreateEntry' type='hidden' />
-			<@input name='id_type' value='${entry.entryType.idType}' type='hidden' />
-			<#if entry.fieldDepend?exists>
-				<@input name='id_field' value='${entry.fieldDepend.idField}' type='hidden' />
-			</#if>
-			<@formGroup labelKey='#i18n{announce.createEntry.labelTitle}' mandatory=true >
-				<@input type='text' name='title' id='title' class='form-control' value=''  max=255 />
-				<@span class='help-block'>#i18n{announce.createEntry.labelTitleComment}</@span>
-			</@formGroup>
-			<@formGroup labelKey='#i18n{announce.createEntry.labelHelpMessage}' >
-				<@input  type='textarea' name='help_message' id='help_message' rows='5' class='form-control' />
-				<@span class='help-block'>#i18n{announce.createEntry.labelHelpMessageComment}</@span>
-			</@formGroup>
-			<@formGroup labelKey='#i18n{announce.createEntry.labelComment}'>
-				<@input  type='textarea' name='comment' class='form-control' rows='2' />
-			</@formGroup>
-			<@formGroup >
-				<@checkBox orientation='switch' labelFor='mandatory' labelKey='#i18n{announce.createEntry.labelMandatory}' name='mandatory' id='mandatory' value='1' params='onchange="javascript:changeVisilityAnonymizePattern();"' />
-			</@formGroup>
-			<@formGroup labelKey='#i18n{announce.createEntry.labelWidth}' mandatory=true>
-				<@input  type='text' name='width' id='width' value='255' class='form-control' />
-			</@formGroup>
-			<@formGroup labelKey='#i18n{announce.createEntry.labelFileMaxSize}' mandatory=true>
-				<@input type='text' name='file_max_size' id='file_max_size' value='' class='form-control' />
-			</@formGroup>
-			<@formGroup labelKey='#i18n{announce.createEntry.labelMaxFiles}' mandatory=true>
-				<@input name='max_files' type='text' size='2' value='' max=2 class='form-control' />
-			</@formGroup>
-			<@formGroup>
-				<@checkBox orientation='switch' labelFor='export_binary' labelKey='#i18n{announce.createEntry.labelExportBinaryComment}' name='export_binary' id='export_binary' value='1' params='onchange="javascript:changeVisilityAnonymizePattern();"' />
-				<@span class='label label-warning'><@icon class='fa fa-warning'></@icon>&nbsp;&nbsp;#i18n{announce.createEntry.labelExportBinaryWarning}</@span>
-			</@formGroup> 
-			<@formGroup labelKey='#i18n{announce.createEntry.labelCSSClass}' mandatory=true>
-				<@input type='text' name='css_class' value='' max=255 class='form-control' />
-				<@span class='help-block'>#i18n{announce.createEntry.labelCSSClassComment}</@span>
-			</@formGroup>
-			<@formGroup>
-                <@button type='submit' name='action_createQuestion' buttonIcon='save' title='#i18n{announce.createEntry.buttonSave}' hideTitle=['xs'] size='' />
-				<@aButton class='btn btn-default btn-flat' title='#i18n{announce.createEntry.buttonCancel}' params='style="background-color: #ffffff; color: black;"' href='jsp/admin/plugins/announce/ModifyCategory.jsp?category_id=${category.id}' />
-            </@formGroup>
-		</@tform>
-	</@boxBody>
-</@box> 
+<@row>
+	<@box>
+		<@boxHeader title='#i18n{announce.createEntry.titleQuestion}  - ${category.label}  - #i18n{announce.createEntry.labelType}  ${entry.entryType.title}' />
+		<@boxBody>
+			<@tform class='create_sector' method='post' action='jsp/admin/plugins/announce/ManageCategoryEntries.jsp'>
+				<@input name='id_category' value='${category.id}' type='hidden' />
+				<@input name='action' value='doCreateEntry' type='hidden' />
+				<@input name='id_type' value='${entry.entryType.idType}' type='hidden' />
+				<#if entry.fieldDepend?exists>
+					<@input name='id_field' value='${entry.fieldDepend.idField}' type='hidden' />
+				</#if>
+				<@formGroup labelKey='#i18n{announce.createEntry.labelTitle}' mandatory=true >
+					<@input type='text' name='title' id='title' class='form-control' value=''  max=255 />
+					<@span class='help-block'>#i18n{announce.createEntry.labelTitleComment}</@span>
+				</@formGroup>
+				<@formGroup labelKey='#i18n{announce.createEntry.labelHelpMessage}' >
+					<@input  type='textarea' name='help_message' id='help_message' rows='5' class='form-control' />
+					<@span class='help-block'>#i18n{announce.createEntry.labelHelpMessageComment}</@span>
+				</@formGroup>
+				<@formGroup labelKey='#i18n{announce.createEntry.labelComment}'>
+					<@input  type='textarea' name='comment' class='form-control' rows='2' />
+				</@formGroup>
+				<@formGroup >
+					<@checkBox orientation='switch' labelFor='mandatory' labelKey='#i18n{announce.createEntry.labelMandatory}' name='mandatory' id='mandatory' value='1' params='onchange="javascript:changeVisilityAnonymizePattern();"' />
+				</@formGroup>
+				<@formGroup labelKey='#i18n{announce.createEntry.labelWidth}' mandatory=true>
+					<@input  type='text' name='width' id='width' value='255' class='form-control' />
+				</@formGroup>
+				<@formGroup labelKey='#i18n{announce.createEntry.labelFileMaxSize}' mandatory=true>
+					<@input type='text' name='file_max_size' id='file_max_size' value='' class='form-control' />
+				</@formGroup>
+				<@formGroup labelKey='#i18n{announce.createEntry.labelMaxFiles}' mandatory=true>
+					<@input name='max_files' type='text' size='2' value='' max=2 class='form-control' />
+				</@formGroup>
+				<@formGroup>
+					<@checkBox orientation='switch' labelFor='export_binary' labelKey='#i18n{announce.createEntry.labelExportBinaryComment}' name='export_binary' id='export_binary' value='1' params='onchange="javascript:changeVisilityAnonymizePattern();"' />
+					<@span class='label label-warning'><@iconStack class='fa fa-warning'></@iconStack>&nbsp;&nbsp;#i18n{announce.createEntry.labelExportBinaryWarning}</@span>
+				</@formGroup> 
+				<@formGroup labelKey='#i18n{announce.createEntry.labelCSSClass}' mandatory=true>
+					<@input type='text' name='css_class' value='' max=255 class='form-control' />
+					<@span class='help-block'>#i18n{announce.createEntry.labelCSSClassComment}</@span>
+				</@formGroup>
+				<@formGroup>
+	                <@button type='submit' name='action_createQuestion' buttonIcon='save' title='#i18n{announce.createEntry.buttonSave}' hideTitle=['xs'] size='' />
+					<@aButton class='btn btn-default btn-flat' title='#i18n{announce.createEntry.buttonCancel}' params='style="background-color: #ffffff; color: black;"' href='jsp/admin/plugins/announce/ModifyCategory.jsp?category_id=${category.id}' />
+	            </@formGroup>
+			</@tform>
+		</@boxBody>
+	</@box> 
+</@row>

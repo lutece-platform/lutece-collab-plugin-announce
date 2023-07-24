@@ -1,11 +1,11 @@
-<@div params='style="display: grid; grid-template-columns: 1fr 1fr; grid-gap: 20px;"'>
-  <@div class='first_box' params='style="padding: 20px;"'>
+<@row>
+  <@div class='col-xs-12 col-sm-4 col-md-4'>
 	<@box>
-		<@boxHeader title="'${category.label}'  - #i18n{announce.createEntry.labelType}  ${entry.entryType.title}" />
+		<@boxHeader title='"${category.label}" - #i18n{announce.createEntry.labelType}  ${entry.entryType.title}' />
 		<@boxBody>
-			<@tform class="form-horizontal" action="jsp/admin/plugins/announce/ManageCategoryEntries.jsp" method="post" name="" id="">
-				<@input name="id_entry" value="${entry.idEntry}" type="hidden" />
-				<@input name="action" value="doModifyEntry" type="hidden" />
+			<@tform class='form-horizontal' action='jsp/admin/plugins/announce/ManageCategoryEntries.jsp' method='post' name='' id=''>
+				<@input name='id_entry' value='${entry.idEntry}' type='hidden' />
+				<@input name='action' value='doModifyEntry' type='hidden' />
 					<@formGroup class='form-group' labelKey='#i18n{announce.createEntry.labelTitle}' mandatory=true>
 						<@input type='text' name='title' id='title' class='form-control' value='${entry.title}'  maxlength=255 />
 						<@span class='help-block'>#i18n{announce.createEntry.labelTitleComment}</@span>
@@ -18,9 +18,9 @@
 						<@input type='textarea' name='comment' id='comment' class='form-control' rows=2 />
 					</@formGroup>
 					<@formGroup class='form-group' labelKey='#i18n{announce.createEntry.labelPresentation}' >
-						<@select id="field_in_line" name="field_in_line" class="form-control" >
-								<option value="1" <#if entry.fieldInLine >selected="selected" </#if> >#i18n{announce.createEntry.selectPresentationInLine}</option>
-								<option value="0" <#if !entry.fieldInLine >selected="selected" </#if> >#i18n{announce.createEntry.selectPresentationNotInLine}</option>
+						<@select id='field_in_line' name='field_in_line' class='form-control' >
+								<option value='1' <#if entry.fieldInLine >selected='selected' </#if> >#i18n{announce.createEntry.selectPresentationInLine}</option>
+								<option value='0' <#if !entry.fieldInLine >selected='selected' </#if> >#i18n{announce.createEntry.selectPresentationNotInLine}</option>
 						</@select>
 					</@formGroup>
 					<@formGroup>
@@ -36,14 +36,14 @@
 					</@formGroup>
 					<@formGroup>
 						<@button type='submit' name='action_modifyQuestion' buttonIcon='save' title='#i18n{announce.modifyEntry.buttonSave}' hideTitle=['xs'] size='' />
-						<@button class='btn btn-primary btn-flat' name='apply' type='submit' ><@icon class='fa fa-floppy-o'></@icon>&nbsp;#i18n{announce.modifyEntry.buttonApply}</@button>
+ 						<@button class='btn btn-primary btn-flat' name='apply' type='submit' buttonIcon='apply' title='#i18n{announce.modifyEntry.buttonApply}' />
 						<@aButton class='btn btn-default btn-flat' title='#i18n{announce.modifyEntry.buttonCancel}' params='style="background-color: #ffffff; color: black;"' href='jsp/admin/plugins/announce/ModifyCategory.jsp?category_id=${category.id}' />
 					</@formGroup>
 			</@tform>
 		</@boxBody>
 	</@box>
   </@div>
-  <@div class='second_box' params='style="padding: 20px;"'>
+  <@div class='col-xs-12 col-sm-8 col-md-8'>
   		<@box>
   			<@boxHeader title='#i18n{announce.createEntry.manageField.title}' > 
 	  			<@tform action='jsp/admin/plugins/announce/ManageCategoryFields.jsp?view=getCreateField&id_entry=${entry.idEntry}'>
@@ -56,7 +56,7 @@
 						<@th>#i18n{announce.createEntry.manageField.rowTitle}</@th>
 						<@th>#i18n{announce.createEntry.manageField.rowValue}</@th>
 						<@th></@th>
-						<@th><@icon class="fa fa-help" title="#i18n{announce.createEntry.manageField.rowConditionalQuestion}"></@icon>&nbsp;</@th>
+						<@th><@icon style='question' params='style="font-size: 24px; font-weight: bold;"' title='#i18n{announce.createEntry.manageField.rowConditionalQuestion}' />&nbsp;</@th>
 						<@th>#i18n{announce.createEntry.manageField.rowActions}</@th>
 					</@tr>
 					<@tableHeadBodySeparator />
@@ -66,7 +66,7 @@
 						<@tr>
 							<@td>${field.title}</@td>
 							<@td>${field.value}</@td>
-							<@td><#if field.defaultValue><span class="label label-success"><i class="fa fa-check" title="#i18n{announce.createEntry.manageField.rowDefaultValue}"></i></span></#if></@td>
+							<@td><#if field.defaultValue><@span class='label label-success'><@iconStack class='fa fa-check' params='title="#i18n{announce.createEntry.manageField.rowDefaultValue}"'></@iconStack></@span></#if></@td>
 							<@td>
 								<#if field.conditionalQuestions?exists>
 									<#list field.conditionalQuestions as entry>
@@ -94,6 +94,6 @@
   			</@boxBody>
   		</@box>
    </@div>	
-</@div>
- <#include "/admin/util/editor/editor.html" />
- <@initEditor />
+</@row>
+<#include "/admin/util/editor/editor.html" />
+<@initEditor />

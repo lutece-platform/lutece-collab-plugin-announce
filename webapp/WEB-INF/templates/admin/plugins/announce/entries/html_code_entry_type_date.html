@@ -1,39 +1,50 @@
-<div class="form-group">
-<label class="control-label col-xs-12 col-sm-12 col-md-3" for="attribute${entry.idEntry}">${entry.title}<#if entry.mandatory> *</#if></label>	
- <#assign field = getFieldByCode( entry, "default_date_value" ) >
-	<div class="col-xs-12 col-sm-12 col-md-9">
-		<div class="input-group">
-			<span class="input-group-add-on">
-				<i class="fa fa-calendar"></i>
-			</span>
-			<input type="text" name="attribute${entry.idEntry}" id="attribute${entry.idEntry}" class="form-control ${entry.CSSClass!} 
-			<#if list_responses??>
+<#if getError( list_responses, entry )?? >
+  <#assign error = getError( list_responses, entry ) >
+</#if>
+<#if entry.helpMessage?exists&&entry.helpMessage!=''>
+	<#assign helpKey = entry.helpMessage />
+<#else>
+	<#assign helpKey = '' />
+</#if>
+<@formGroup labelFor='attribute${entry.idEntry}' labelKey='${entry.title}' helpKey=helpKey mandatory=entry.mandatory htmlRequired=false >
+	<#assign field = '12/08/2023' >
+	<@inputGroup>
+		<#assign value=''>
+		<#if list_responses??>
 			<#list list_responses as response>
 				<#if response.entry.idEntry == entry.idEntry>
-					<#if response.entry.error??>error</#if>" <#if response.toStringValueResponse??>value="${response.toStringValueResponse}"</#if>
+					<#if response.entry.error??>
+						 error
+					</#if>
+					<#if response.toStringValueResponse??>
+						<#assign value='${response.toStringValueResponse}'>
+					</#if>
 				</#if>
 			</#list>
 		<#else>
-			<#if field.valueTypeDate?exists>" value="${field.valueTypeDate}" <#else>" value="" 	</#if></#if>/>
-		</div>
-		<#if entry.helpMessage?exists&&entry.helpMessage!=''>
-		<p class="help-block">${entry.helpMessage}</p>
-		</#if>	
-		<#if list_responses??>
-			<#list list_responses as response>
-				<#if response.entry.idEntry == entry.idEntry && response.entry.error??>
-					<div class="alert alert-error">
-						<#assign error = response.entry.error>
-						<#if error.mandatoryError>
-							#i18n{announce.message.mandatory.entry}
-						<#else>
-							${error.errorMessage}
-						</#if>
-					</div>
+				<#if field.valueTypeDate??>
+					<#assign value=field.valueTypeDate?iso_local>
+				<#else>
+					<#assign value=''> 	
 				</#if>
-			</#list>
 		</#if>
-	</div>
-</div>
-
-<@getDatePickerBootstrap idField="attribute${entry.idEntry}" language=locale />
+		<@inputGroupItem type='text'>
+			<@iconStack class='fa fa-calendar' />
+		</@inputGroupItem>	
+		<@input type='date' name='attribute${entry.idEntry}' id='attribute${entry.idEntry}' class='${entry.CSSClass!}' value=value />
+	</@inputGroup>
+	<#if list_responses??>
+		<#list list_responses as response>
+			<#if response.entry.idEntry == entry.idEntry && response.entry.error??>
+				<@alert color='danger'>
+				  <#assign error = response.entry.error>
+				  <#if error.mandatoryError>
+					#i18n{announce.message.mandatory.entry}
+				  <#else>
+					${error.errorMessage}
+				  </#if>
+				</@alert>
+			</#if>
+		</#list>
+	</#if>
+</@formGroup>

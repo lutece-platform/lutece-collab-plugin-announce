@@ -1,19 +1,21 @@
-<@box>
+<@row>
+  <@box>
 	<@boxHeader title='#i18n{announce.taskFormWorkflow.pageTitle}' />
 	<@boxBody>
-		<@tform class="form-horizontal" action="jsp/admin/plugins/announce/ManageAnnounceWorkflow.jsp" method="post" enctype="multipart/form-data" >
-			<@input name="action" value="doProcessWorkflowAction" type="hidden" />
-			<@input name="id_action" value="${id_action}" type="hidden" />
-			<@input name="id_announce" value="${id_announce}" type="hidden" />
-			${tasks_form}
+		<@tform class='form-horizontal' action='jsp/admin/plugins/announce/ManageAnnounceWorkflow.jsp' method='post' enctype='multipart/form-data' >
+			<@input name='action' value='doProcessWorkflowAction' type='hidden' />
+			<@input name='id_action' value='${id_action}' type='hidden' />
+			<@input name='id_announce' value='${id_announce}' type='hidden' />
+				${tasks_form}
 			<@formGroup>
-				<@button class="btn btn-xs btn-flat btn-primary" type="submit" name="save">
-					<@icon class="icon-ok icon-white"></@icon>&nbsp;#i18n{workflow.tasks_form_test_workflow.button_save}
+				<@button class='btn btn-xs btn-flat btn-primary' type='submit' name='save'>
+					<@icon class='icon-ok icon-white'></@icon>&nbsp;#i18n{workflow.tasks_form_test_workflow.button_save}
 				</@button>
-				<@button class="btn btn-default btn-xs btn-flat" type="submit" name="back" value="back" params='style="background-color: #ffffff; color: black;"'>
-					<@icon class="fa fa-remove"></@icon>&nbsp;#i18n{workflow.tasks_form_test_workflow.button_cancel}
+				<@button class='btn btn-default btn-xs btn-flat' type='submit' name='back' value='back' params='style="background-color: #ffffff; color: black;"'>
+					<@icon class='fa fa-remove'></@icon>&nbsp;#i18n{workflow.tasks_form_test_workflow.button_cancel}
 				</@button>							
 			</@formGroup>
 		</@tform>
 	</@boxBody>
-</@box>
+  </@box>
+</@row>

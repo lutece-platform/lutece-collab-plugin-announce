@@ -1,101 +1,115 @@
 <#include "announce_tabs.html" />
-<@box>
-	<@boxHeader title='#i18n{announce.manage_announces.pageTitle}' />
-	<@boxBody>
-	<@tabs2 tab="announces" />
-				<@tform method="post" action="jsp/admin/plugins/announce/ManageAnnounces.jsp">
+<@row>
+	<@box>
+		<@boxHeader title='#i18n{announce.manage_announces.pageTitle}' />
+		<@boxBody>
+		<@tabs2 tab="announces" />
+					<@tform method="post" action="jsp/admin/plugins/announce/ManageAnnounces.jsp">
+						<@paginationAdmin paginator=paginator form=0 combo=1 showcount=0 />
+					</@tform>
+					<@table class="table table-hover">
+						<@tr>
+							<@th>
+								#i18n{announce.manage_announces.columnTitleTitle}
+								<@sort jsp_url="jsp/admin/plugins/announce/ManageAnnounces.jsp" attribute="title_announce" />
+							</@th>
+							<@th>
+								#i18n{announce.manage_announces.columnTitleDescription}
+								<@sort jsp_url="jsp/admin/plugins/announce/ManageAnnounces.jsp" attribute="description_announce" />
+							</@th>
+							<@th>
+								#i18n{announce.manage_announces.columnTitleCategory}
+							</@th>
+							<@th>
+								#i18n{announce.manage_announces.columnTitleCreationDate}
+								<@sort jsp_url="jsp/admin/plugins/announce/ManageAnnounces.jsp" attribute="date_creation" />
+							</@th>
+							<@th>
+								#i18n{announce.manage_announces.columnTitleModificationDate}
+								<@sort jsp_url="jsp/admin/plugins/announce/ManageAnnounces.jsp" attribute="date_modification" />
+							</@th>
+							<@th>#i18n{announce.manage_announces.columnTitleSuspend}</@th>
+							<@th>
+								<@div params='style="text-align: center;"'>
+									#i18n{announce.manage_announces.columnTitleActions}
+								</@div>
+							</@th>
+						</@tr>
+						<#list list_announces as announce>
+							<@tr>
+								<@td>
+									<@span params='style="font-size: 1em;font-weight: bold;"' >${announce.title}</@span> <br/>
+									<#if announce.published>
+										<@span class="label label-success"><@iconStack class='fa fa-check' />&nbsp;#i18n{announce.sector.published}</@span>
+									<#else>
+										<@span class="label label-important"><@icon style='remove' params='style="font-size: 24px; font-weight: bold;"'/>&nbsp;#i18n{announce.my_announces.statusUnPublished}</@span>
+									</#if>
+								</@td>
+								<@td class="col-md-4">${announce.description}</@td>
+								<@td><@span class="label">${announce.category.label}</@span></@td>
+								<@td>${announce.dateCreation}</@td>
+								<@td>${announce.dateModification}</@td>
+								<@td>
+									<#if announce.suspended>
+										<@span class='label label-important' params='title="#i18n{portal.util.labelDisabled}"'><@icon style='remove' params='style="font-size: 24px; font-weight: bold;"'/></@span>
+									<#else>
+										<@span class='label label-success'  params='title="#i18n{portal.util.labelEnabled}"'><@iconStack class='fa fa-check' /></@span>
+									</#if>
+									<#if announce.suspendedByUser>
+										<@span class='label label-warning' params='title="#i18n{announce.manage_announces.suspendedByUser}"'>
+											<@iconStack class='fa fa-user-times' />
+										</@span>	
+									</#if>
+								</@td>
+								<@td>
+									<@div params='style="display: inline-flex; gap: 10px;"'>
+										<@aButton href='jsp/admin/plugins/announce/PreviewAnnounce.jsp?announce_id=${announce.id}' title='#i18n{announce.preview_announce.pageTitle}' hideTitle=['all'] >
+											<@iconStack class='fa fa-eye' />
+										</@aButton>
+										<#if right_publish_announce?? && right_publish_announce>
+											<#if announce.published>
+												<@aButton href='jsp/admin/plugins/announce/DoUnPublishAnnounce.jsp?announce_id=${announce.id}' title='#i18n{announce.announce.actions.unpublish}' hideTitle=['all'] >
+													<@iconStack class='fa fa-toggle-on' />
+												</@aButton>
+											<#else>
+												<@aButton href='jsp/admin/plugins/announce/DoPublishAnnounce.jsp?announce_id=${announce.id}' title='#i18n{announce.announce.actions.publish}' hideTitle=['all'] >
+													<@iconStack class='fa fa-toggle-off' />
+												</@aButton>
+											</#if>
+										</#if>
+										<#if right_execute_workflow_action?? && right_execute_workflow_action>
+											<#if announce.listWorkflowActions?? && announce.listWorkflowActions?size &gt; 0>
+												<#list announce.listWorkflowActions as action>
+													<@aButton href='jsp/admin/plugins/announce/ManageAnnounceWorkflow.jsp?view=viewWorkflowActionForm&id_action=${action.id}&amp;id_announce=${announce.id}'>
+														<#if action.icon.width!=-1>
+															<#assign width=action.icon.width/>
+														 </#if>
+														 <#if action.icon.height!=-1>
+														 	<#assign height=action.icon.height />
+														 </#if>
+														<@img url='image?resource_type=workflow_icon_img&id=${action.icon.id}' params='width=width, height=height' title='${action.name}' alt='${action.name}'/>
+													</@aButton>
+												</#list>
+											</#if>
+										</#if>
+										<#if right_suspend_announce?? && right_suspend_announce>
+											<#if announce.suspended>
+												<@aButton href='jsp/admin/plugins/announce/DoEnableAnnounce.jsp?announce_id=${announce.id}' class='btn btn-success btn-xs btn-flat' title='#i18n{announce.announce.actions.enable}' />
+											<#else>
+												<@aButton href='jsp/admin/plugins/announce/DoSuspendAnnounce.jsp?announce_id=${announce.id}' class='btn btn-danger btn-xs btn-flat' title='#i18n{announce.announce.actions.suspend}' />
+											</#if>
+										</#if>
+										<#if right_delete_announce?? && right_delete_announce>
+											<@aButton href='jsp/admin/plugins/announce/RemoveAnnounce.jsp?announce_id=${announce.id}'  title='#i18n{portal.util.labelDelete}' buttonIcon='trash' hideTitle=['all'] color='danger' />
+										</#if>
+									</@div>
+							</@td>
+						</@tr>
+					</#list>
+				</@table>
+				<@tform method='post' action='jsp/admin/plugins/announce/ManageAnnounces.jsp'>
 					<@paginationAdmin paginator=paginator form=0 combo=1 showcount=0 />
 				</@tform>
-				<@table class="table table-hover">
-					<@tr>
-						<@th>
-							#i18n{announce.manage_announces.columnTitleTitle}
-							<@sort jsp_url="jsp/admin/plugins/announce/ManageAnnounces.jsp" attribute="title_announce" />
-						</@th>
-						<@th>
-							#i18n{announce.manage_announces.columnTitleDescription}
-							<@sort jsp_url="jsp/admin/plugins/announce/ManageAnnounces.jsp" attribute="description_announce" />
-						</@th>
-						<@th>
-							#i18n{announce.manage_announces.columnTitleCategory}
-						</@th>
-						<@th>
-							#i18n{announce.manage_announces.columnTitleCreationDate}
-							<@sort jsp_url="jsp/admin/plugins/announce/ManageAnnounces.jsp" attribute="date_creation" />
-						</@th>
-						<@th>
-							#i18n{announce.manage_announces.columnTitleModificationDate}
-							<@sort jsp_url="jsp/admin/plugins/announce/ManageAnnounces.jsp" attribute="date_modification" />
-						</@th>
-						<@th>#i18n{announce.manage_announces.columnTitleSuspend}</@th>
-						<@th>#i18n{announce.manage_announces.columnTitleActions}</@th>
-					</@tr>
-					<#list list_announces as announce>
-						<@tr>
-							<@td>
-								<h4><strong>${announce.title}</strong></h4>
-								<#if announce.published>
-									<@span class="label label-success"><i class="fa fa-check"></i>&nbsp;#i18n{announce.sector.published}</@span>
-								<#else>
-									<@span class="label label-important"><i class="fa fa-remove"></i>&nbsp;#i18n{announce.my_announces.statusUnPublished}</@span>
-								</#if>
-							</@td>
-							<@td class="col-md-4">${announce.description}</@td>
-							<@td><@span class="label">${announce.category.label}</@span></@td>
-							<@td>${announce.dateCreation}</@td>
-							<@td>${announce.dateModification}</@td>
-							<@td>
-								<#if announce.suspended>
-									<@span class="label label-important" params='title="#i18n{portal.util.labelDisabled}"'><i class="fa fa-remove"></i></@span>
-								<#else>
-									<@span class="label label-success"  params='title="#i18n{portal.util.labelEnabled}"'><i class="fa fa-check"></i></@span>
-								</#if>
-								<#if announce.suspendedByUser>
-									<@span class="label label-warning" params='title="#i18n{announce.manage_announces.suspendedByUser}"'>
-										<i class="fa fa-user-times"></i>
-									</@span>	
-								</#if>
-							</@td>
-							<@td>
-							<@aButton href='jsp/admin/plugins/announce/PreviewAnnounce.jsp?announce_id=${announce.id}' title='#i18n{announce.preview_announce.pageTitle}' hideTitle=['all'] >
-								<i class="fa fa-eye"></i>
-							</@aButton>
-							<#if right_publish_announce?? && right_publish_announce>
-								<#if announce.published>
-									<@aButton href='jsp/admin/plugins/announce/DoUnPublishAnnounce.jsp?announce_id=${announce.id}' title='#i18n{announce.announce.actions.unpublish}' hideTitle=['all'] >
-										<i class="fa fa-toggle-on"></i>
-									</@aButton>
-								<#else>
-									<@aButton href='jsp/admin/plugins/announce/DoPublishAnnounce.jsp?announce_id=${announce.id}' title='#i18n{announce.announce.actions.publish}' hideTitle=['all'] >
-										<i class="fa fa-toggle-off"></i>
-									</@aButton>
-								</#if>
-							</#if>
-							<#if right_execute_workflow_action?? && right_execute_workflow_action>
-								<#if announce.listWorkflowActions?? && announce.listWorkflowActions?size &gt; 0>
-									<#list announce.listWorkflowActions as action>
-										<@aButton href='jsp/admin/plugins/announce/ManageAnnounceWorkflow.jsp?view=viewWorkflowActionForm&id_action=${action.id}&amp;id_announce=${announce.id}'>
-											<@img url='image?resource_type=workflow_icon_img&id=${action.icon.id}' params='<#if action.icon.width!=-1> width="${action.icon.width}" </#if><#if action.icon.height!=-1> height="${action.icon.height}"</#if>' title="${action.name}" alt="${action.name}"/>
-										</@aButton>
-									</#list>
-								</#if>
-							</#if>
-							<#if right_suspend_announce?? && right_suspend_announce>
-								<#if announce.suspended>
-									<@aButton href='jsp/admin/plugins/announce/DoEnableAnnounce.jsp?announce_id=${announce.id}' class="btn btn-success btn-xs btn-flat" title="#i18n{announce.announce.actions.enable}" />
-								<#else>
-									<@aButton href='jsp/admin/plugins/announce/DoSuspendAnnounce.jsp?announce_id=${announce.id}' class="btn btn-danger btn-xs btn-flat" title='#i18n{announce.announce.actions.suspend}' />
-								</#if>
-							</#if>
-							<#if right_delete_announce?? && right_delete_announce>
-								<@aButton href='jsp/admin/plugins/announce/RemoveAnnounce.jsp?announce_id=${announce.id}'  title='#i18n{portal.util.labelDelete}' buttonIcon='trash' hideTitle=['all'] color='danger' />
-							</#if>
-						</@td>
-					</@tr>
-				</#list>
-			</@table>
-			<@tform method="post" action="jsp/admin/plugins/announce/ManageAnnounces.jsp">
-				<@paginationAdmin paginator=paginator form=0 combo=1 showcount=0 />
-			</@tform>
-		</@boxBody>
-</@box>
+			</@boxBody>
+	</@box>
+</@row>

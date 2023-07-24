@@ -1,29 +1,31 @@
-<@box>
-	<@boxHeader title='#i18n{announce.view_form_example.pageTitle} - ${category.label}' />
-		<@boxBody>
-			<@tform class="create_sector" method="post" action='jsp/admin/plugins/announce/ManageAppointments.jsp'>
-				<@input name="id_category" value="${category.id}" type="hidden" />
-				<@input name="session" value="session" type="hidden" />
-				<@formGroup labelKey='#i18n{announce.create_announce_step_form.labelTitle}' mandatory=true >
-					<@input type="text" name="title_announce" class="form-control" />
-				</@formGroup>
-				<@formGroup labelKey='#i18n{announce.create_announce_step_form.labelDescription}' mandatory=true >
-					<textarea name="description_announce" class="form-control"></textarea>
-				</@formGroup>
-				${str_entry}
-				<@formGroup labelKey='#i18n{announce.create_announce_step_form.contactInformation}' mandatory=true >
-					<@input value="${contact_information!}" type="text" name="contact_information" class="form-control" />
-				</@formGroup>
-				<#if category.displayPrice>
-					<@formGroup labelKey='#i18n{announce.create_announce_step_form.labelPrice}'>
-						<@input type="text" name="price_announce" class="form-control" />
+<@row>	
+	<@box>
+		<@boxHeader title='#i18n{announce.view_form_example.pageTitle} - ${category.label}' />
+			<@boxBody>
+				<@tform class='create_sector' method='post' action='jsp/admin/plugins/announce/ManageAppointments.jsp'>
+					<@input name='id_category' value='${category.id}' type='hidden' />
+					<@input name="session" value="session" type="hidden" />
+					<@formGroup labelKey='#i18n{announce.create_announce_step_form.labelTitle}' mandatory=true >
+						<@input type="text" name="title_announce" class="form-control" />
 					</@formGroup>
-				</#if>
-				<@formGroup labelKey='#i18n{announce.create_announce_step_form.tags}' >
-					<@input value="${sector.tags!}" type="text" name="tags" id="tags" class="form-control" />
-					<@span class="help-block">#i18n{announce.create_announce_step_form.tags.helper}</@span>
-				</@formGroup>
-			    <@aButton href='jsp/admin/plugins/announce/ManageCategories.jsp' title='#i18n{portal.util.labelBack}' />
-			</@tform>
-		</@boxBody>
-</@box>
+					<@formGroup labelKey='#i18n{announce.create_announce_step_form.labelDescription}' mandatory=true >
+						<@input type='textarea' name="description_announce" class="form-control"/>
+					</@formGroup>
+					${str_entry}
+					<@formGroup labelKey='#i18n{announce.create_announce_step_form.contactInformation}' mandatory=true >
+						<@input value="${contact_information!}" type="text" name="contact_information" class="form-control" />
+					</@formGroup>
+					<#if category.displayPrice>
+						<@formGroup labelKey='#i18n{announce.create_announce_step_form.labelPrice}'>
+							<@input type="text" name="price_announce" class="form-control" />
+						</@formGroup>
+					</#if>
+					<@formGroup labelKey='#i18n{announce.create_announce_step_form.tags}' >
+						<@input value="${sector.tags!}" type="text" name="tags" id="tags" class='form-control' />
+						<@span class='help-block'>#i18n{announce.create_announce_step_form.tags.helper}</@span>
+					</@formGroup>
+				    <@aButton href='jsp/admin/plugins/announce/ManageCategories.jsp' title='#i18n{portal.util.labelBack}' />
+				</@tform>
+			</@boxBody>
+	</@box>
+</@row>

@@ -1,25 +1,27 @@
-<@box>
-	<@boxHeader title="#i18n{announce.modifyField.title} : '${field.parentEntry.title}'"/>
-	<@boxBody>
-		<@tform class='form-horizontal' method='post'name="modify_field" action='jsp/admin/plugins/announce/ManageCategoryFields.jsp'>
-			<@input type="hidden" name="action" value="doModifyField" />
-			<@input name="id_field" value='${field.idField}' type="hidden" />
-			<@formGroup labelKey='#i18n{announce.createField.labelTitle}' mandatory=true >
-				<@input type='text' name='title' id="title"  value='${field.title}' class='form-control' maxlength=255/>
-			</@formGroup>
-			<@formGroup labelKey='#i18n{announce.createField.labelValue}' mandatory=true >
-				<@input type='text' name='value' id="value"  size='80' class='form-control' value='${field.value}'/>
-			</@formGroup>
-			<@formGroup labelKey='#i18n{announce.createField.labelComment} :'>
-				<@input type='textarea' name='comment' id='comment' class='form-control' value='${field.comment!}' rows='5'/>
-			</@formGroup>
-			<@formGroup>
-				<@checkBox name='default_value' id='default_value' value='1' labelKey='#i18n{announce.createField.labelDefaultValue}' />
-			</@formGroup>
-			<@formGroup>
-				<@checkBox name='no_display_title' id='no_display_title' value='1' labelKey='#i18n{announce.createField.labelNoDisplayTitle}' /> 
-			</@formGroup>
-			<@actionButtons button1Name="action_modifyFiled" url2="jsp/admin/plugins/announce/ManageCategoryFields.jsp" />
-		</@tform>
-	</@boxBody>
-</@box>
+<@row>
+	<@box>
+		<@boxHeader title="#i18n{announce.modifyField.title} : '${field.parentEntry.title}'"/>
+		<@boxBody>
+			<@tform class='form-horizontal' method='post'name="modify_field" action='jsp/admin/plugins/announce/ManageCategoryFields.jsp'>
+				<@input type="hidden" name="action" value="doModifyField" />
+				<@input name="id_field" value='${field.idField}' type="hidden" />
+				<@formGroup labelKey='#i18n{announce.createField.labelTitle}' mandatory=true >
+					<@input type='text' name='title' id="title"  value='${field.title}' class='form-control' maxlength=255/>
+				</@formGroup>
+				<@formGroup labelKey='#i18n{announce.createField.labelValue}' mandatory=true >
+					<@input type='text' name='value' id="value"  size='80' class='form-control' value='${field.value}'/>
+				</@formGroup>
+				<@formGroup labelKey='#i18n{announce.createField.labelComment} :'>
+					<@input type='textarea' name='comment' id='comment' class='form-control' value='${field.comment!}' rows='5'/>
+				</@formGroup>
+				<@formGroup>
+					<@checkBox orientation='switch' name='default_value' id='default_value' value='1' labelKey='#i18n{announce.createField.labelDefaultValue}' params='onchange="javascript:changeVisilityAnonymizePattern();"' />
+				</@formGroup>
+				<@formGroup>
+					<@checkBox orientation='switch' name='no_display_title' id='no_display_title' value='1' labelKey='#i18n{announce.createField.labelNoDisplayTitle}' params='onchange="javascript:changeVisilityAnonymizePattern();"' /> 
+				</@formGroup>
+				<@actionButtons button1Name="action_modifyFiled" url2="jsp/admin/plugins/announce/ManageCategoryFields.jsp" />
+			</@tform>
+		</@boxBody>
+	</@box>
+</@row>

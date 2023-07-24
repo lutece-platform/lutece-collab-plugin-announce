@@ -1,21 +1,23 @@
-<@box>
-	<@boxHeader title='#i18n{announce.create_sector.pageTitle}' />
-	<@boxBody>
-		<@tform class="create_sector" method="post" action="jsp/admin/plugins/announce/DoCreateSector.jsp">
-			<@formGroup labelFor='sector_label' labelKey='#i18n{announce.sector.label}' mandatory=true>
-				<@input type='text' name='sector_label'/>
-		    </@formGroup>
-			<@formGroup labelFor='sector_description' labelKey='#i18n{announce.sector.description}' mandatory=true>
-				<@input type='text' name='sector_description'/>
-			</@formGroup>
-			<@formGroup labelFor='sector_description' labelKey='#i18n{announce.sector.tags}' mandatory=true>
-				<@input name="tags" id="tags" type="text" class="form-control" />
-				<@span class="help-block">#i18n{announce.sector.tags.helper}</@span>
-			</@formGroup>
-			<@formGroup labelFor='sector_announces_validation' labelKey='#i18n{announce.sector.announcesValidation}'>
-				<input name="sector_announces_validation" id="sector_announces_validation" type="checkbox" />
-			</@formGroup>
-			<@actionButtons button1Name="action_createSector" url2='jsp/admin/plugins/announce/ManageSectors.jsp'/>
-		</@tform>
-  </@boxBody>
-</@box>
+<@row>
+	<@box>
+		<@boxHeader title='#i18n{announce.create_sector.pageTitle}' />
+		<@boxBody>
+			<@tform class="create_sector" method="post" action="jsp/admin/plugins/announce/DoCreateSector.jsp">
+				<@formGroup labelFor='sector_label' labelKey='#i18n{announce.sector.label}' mandatory=true>
+					<@input type='text' name='sector_label'/>
+			    </@formGroup>
+				<@formGroup labelFor='sector_description' labelKey='#i18n{announce.sector.description}' mandatory=true>
+					<@input type='text' name='sector_description'/>
+				</@formGroup>
+				<@formGroup labelFor='sector_description' labelKey='#i18n{announce.sector.tags}' mandatory=true>
+					<@input name="tags" id="tags" type="text" class="form-control" />
+					<@span class="help-block">#i18n{announce.sector.tags.helper}</@span>
+				</@formGroup>
+				<@formGroup>
+					<@checkBox orientation='switch' name='sector_announces_validation' id='sector_announces_validation' value='1' labelKey='#i18n{announce.sector.announcesValidation}' params='onchange="javascript:changeVisilityAnonymizePattern();"' />
+				</@formGroup>
+				<@actionButtons button1Name="action_createSector" url2='jsp/admin/plugins/announce/ManageSectors.jsp'/>
+			</@tform>
+	  </@boxBody>
+	</@box>
+</@row>

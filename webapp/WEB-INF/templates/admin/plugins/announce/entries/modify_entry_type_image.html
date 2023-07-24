@@ -1,75 +1,76 @@
 <#include "/admin/plugins/announce/commons.html" />
-<@box>
-	<@boxHeader title="#i18n{announce.modifyEntry.titleQuestion}  - ${category.label}  - #i18n{announce.createEntry.labelType}  ${entry.entryType.title}"/>
-	<@boxBody>
-		<@tform class='form-horizontal' action='jsp/admin/plugins/announce/ManageCategoryEntries.jsp' method='post' name='' id='' >
-		<@input name="id_entry" value="${entry.idEntry}" type="hidden" />
-		<@input name="action" value="doModifyEntry" type="hidden" />
-			<@formGroup labelKey='#i18n{announce.createEntry.labelTitle}' mandatory=true >
-				<@input type="text" name="title" id="title" class="form-control" value="${entry.title}"  maxlength=255 />
-				<@span class="help-block">#i18n{announce.createEntry.labelTitleComment}</@span>
-			</@formGroup>
-			<@formGroup labelKey='#i18n{announce.createEntry.labelHelpMessage}' mandatory=true >
-				<@input type="textarea" name='help_message' id='help_message' class='form-control' value='${entry.helpMessage}' />
-				<@span class="help-block">#i18n{announce.createEntry.labelHelpMessageComment}</@span>
-			</@formGroup>
-			<@formGroup labelKey='#i18n{announce.createEntry.labelComment}' >
-				<@input type="textarea" name='comment' id='help_message' rows=5 class='form-control' value='${entry.comment}' />
-			</@formGroup>
-			<@formGroup>
-				<#if entry.mandatory>
-					<@checkBox orientation='switch' labelFor='mandatory' labelKey='#i18n{announce.createEntry.labelMandatory}' name='mandatory' id='mandatory' value='1' params='onchange="javascript:changeVisilityAnonymizePattern();"' checked=true />
-				<#else>
-					<@checkBox orientation='switch' labelFor='mandatory' labelKey='#i18n{announce.createEntry.labelMandatory}' name='mandatory' id='mandatory' value='1' params='onchange="javascript:changeVisilityAnonymizePattern();"' checked=false />
-				</#if>
-			</@formGroup>
-			<#if entry??>
-						<#list entry.fields as key>
-							<#if key??>
-								<#if key.code=="file_config">
-									<#assign field=key>
+<@row>
+	<@box>
+		<@boxHeader title="#i18n{announce.modifyEntry.titleQuestion}  - ${category.label}  - #i18n{announce.createEntry.labelType}  ${entry.entryType.title}"/>
+		<@boxBody>
+			<@tform class='form-horizontal' action='jsp/admin/plugins/announce/ManageCategoryEntries.jsp' method='post' name='' id='' >
+			<@input name="id_entry" value="${entry.idEntry}" type="hidden" />
+			<@input name="action" value="doModifyEntry" type="hidden" />
+				<@formGroup labelKey='#i18n{announce.createEntry.labelTitle}' mandatory=true >
+					<@input type="text" name="title" id="title" class="form-control" value="${entry.title}"  maxlength=255 />
+					<@span class="help-block">#i18n{announce.createEntry.labelTitleComment}</@span>
+				</@formGroup>
+				<@formGroup labelKey='#i18n{announce.createEntry.labelHelpMessage}' mandatory=true >
+					<@input type="textarea" name='help_message' id='help_message' class='form-control' value='${entry.helpMessage}' />
+					<@span class="help-block">#i18n{announce.createEntry.labelHelpMessageComment}</@span>
+				</@formGroup>
+				<@formGroup labelKey='#i18n{announce.createEntry.labelComment}' >
+					<@input type="textarea" name='comment' id='help_message' rows=5 class='form-control' value='${entry.comment}' />
+				</@formGroup>
+				<@formGroup>
+					<#if entry.mandatory>
+						<@checkBox orientation='switch' labelFor='mandatory' labelKey='#i18n{announce.createEntry.labelMandatory}' name='mandatory' id='mandatory' value='1' params='onchange="javascript:changeVisilityAnonymizePattern();"' checked=true />
+					<#else>
+						<@checkBox orientation='switch' labelFor='mandatory' labelKey='#i18n{announce.createEntry.labelMandatory}' name='mandatory' id='mandatory' value='1' params='onchange="javascript:changeVisilityAnonymizePattern();"' checked=false />
+					</#if>
+				</@formGroup>
+				<#if entry??>
+							<#list entry.fields as key>
+								<#if key??>
+									<#if key.code=="file_config">
+										<#assign field=key>
+									</#if>
 								</#if>
-							</#if>
-						</#list>
-			</#if>
-			<@formGroup labelKey='#i18n{announce.createEntry.labelWidth}' mandatory=true >
-				<@input type='text' name='width' id='width' value='${field.width}' class='form-control' />
-			</@formGroup>
-			<@formGroup labelKey='#i18n{announce.createEntry.labelFileMaxSize}' mandatory=true >
-				<@input type='text' name='file_max_size' id='file_max_size' class='form-control' value='${getFileMaxSize(entry)}' />
-			</@formGroup>
-			<@formGroup labelKey='#i18n{announce.createEntry.labelMaxFiles}' mandatory=true >
-				<@input type='text' name='max_files' size='2' class='form-control' value='${getMaxFiles(entry)}' maxlength=2 />
-			</@formGroup>
-			<@formGroup>
-				<#if exportBinary( entry )>
-					<@checkBox orientation='switch' labelFor='export_binary' labelKey=' #i18n{announce.createEntry.labelExportBinaryComment}' name='export_binary' id='export_binary' value='1' params='onchange="javascript:changeVisilityAnonymizePattern();"' checked=true />
-				<#else>
-					<@checkBox orientation='switch' labelFor='export_binary' labelKey=' #i18n{announce.createEntry.labelExportBinaryComment}' name='export_binary' id='export_binary' value='1' params='onchange="javascript:changeVisilityAnonymizePattern();"' checked=false />
+							</#list>
 				</#if>
-				<br>
-				<@span class="label label-warning"><@icon class="fa fa-warning"></@icon>&nbsp;&nbsp;#i18n{announce.createEntry.labelExportBinaryWarning}</@span>
-			</@formGroup> 
-			<@formGroup labelKey='#i18n{announce.createEntry.labelCSSClass}'>
-				<@input type='text' name='css_class' class='form-control' value='${entry.CSSClass!}' maxlength=255 />
-				<@span class="help-block">#i18n{announce.createEntry.labelCSSClassComment}</@span>
-			</@formGroup>
-			<@formGroup>
-				<@button class="btn btn-primary btn-flat" name="save" type="submit"><i class="fa fa-check"></i>&nbsp;#i18n{announce.modifyEntry.buttonSave}</@button>
-				<@button class="btn btn-primary btn-flat" name="apply" type="submit" ><i class="fa fa-floppy-o"></i>&nbsp;#i18n{announce.modifyEntry.buttonApply}</@button>				
-				<@aButton class='btn btn-default btn-flat' title='#i18n{announce.modifyEntry.buttonCancel}' params='style="background-color: #ffffff; color: black;"' href='jsp/admin/plugins/announce/ModifyCategory.jsp?category_id=${category.id}' />
-			</@formGroup>
-		</@tform>
-	</@boxBody>
-</@box>
+				<@formGroup labelKey='#i18n{announce.createEntry.labelWidth}' mandatory=true >
+					<@input type='text' name='width' id='width' value='${field.width}' class='form-control' />
+				</@formGroup>
+				<@formGroup labelKey='#i18n{announce.createEntry.labelFileMaxSize}' mandatory=true >
+					<@input type='text' name='file_max_size' id='file_max_size' class='form-control' value='${getFileMaxSize(entry)}' />
+				</@formGroup>
+				<@formGroup labelKey='#i18n{announce.createEntry.labelMaxFiles}' mandatory=true >
+					<@input type='text' name='max_files' size='2' class='form-control' value='${getMaxFiles(entry)}' maxlength=2 />
+				</@formGroup>
+				<@formGroup>
+					<#if exportBinary( entry )>
+						<@checkBox orientation='switch' labelFor='export_binary' labelKey=' #i18n{announce.createEntry.labelExportBinaryComment}' name='export_binary' id='export_binary' value='1' params='onchange="javascript:changeVisilityAnonymizePattern();"' checked=true />
+					<#else>
+						<@checkBox orientation='switch' labelFor='export_binary' labelKey=' #i18n{announce.createEntry.labelExportBinaryComment}' name='export_binary' id='export_binary' value='1' params='onchange="javascript:changeVisilityAnonymizePattern();"' checked=false />
+					</#if>
+					<br>
+					<@span class="label label-warning"><@icon style='warning' />&nbsp;&nbsp;#i18n{announce.createEntry.labelExportBinaryWarning}</@span>
+				</@formGroup> 
+				<@formGroup labelKey='#i18n{announce.createEntry.labelCSSClass}'>
+					<@input type='text' name='css_class' class='form-control' value='${entry.CSSClass!}' maxlength=255 />
+					<@span class="help-block">#i18n{announce.createEntry.labelCSSClassComment}</@span>
+				</@formGroup>
+				<@formGroup>
+					<@button class='btn btn-primary btn-flat' name='save' type='submit' buttonIcon='check' title='#i18n{announce.modifyEntry.buttonSave}' />
+					<@button class='btn btn-primary btn-flat' name='apply' type='submit' buttonIcon='apply' title='#i18n{announce.modifyEntry.buttonApply}' />				
+					<@aButton class='btn btn-default btn-flat' title='#i18n{announce.modifyEntry.buttonCancel}' params='style="background-color: #ffffff; color: black;"' href='jsp/admin/plugins/announce/ModifyCategory.jsp?category_id=${category.id}' />
+				</@formGroup>
+			</@tform>
+		</@boxBody>
+	</@box>
+</@row>
 <#if regular_expression_list?exists>
 <@box>
 	<@boxHeader title='#i18n{announce.createEntry.manageRegularExpression.title}' >
 		<@tform class='form-inline pull-right'  method='post'  action='jsp/admin/plugins/announce/ManageCategoryEntries.jsp#list'>
-		<@input name='id_field' value='${id_field}' type='hidden' />
-		<@input name='action' value='doInsertRegularExpression' type='hidden' />
-			<label  for='id_expression'>#i18n{announce.createEntry.manageRegularExpression.labelInsert}</label>
-			<@formGroup>
+			<@input name='id_field' value='${id_field}' type='hidden' />
+			<@input name='action' value='doInsertRegularExpression' type='hidden' />
+			<@formGroup labelFor='id_expression' labelKey='#i18n{announce.createEntry.manageRegularExpression.labelInsert}'>
 				<@select name='id_expression' items=regular_expression_list default_value='-1' params='class="form-control input-xs"' />
 					<@span class="input-group-btn">
 						<@button class='btn btn-primary btn-xs btn-flat' type='submit'>#i18n{announce.createEntry.manageRegularExpression.buttonInsert}</@button>

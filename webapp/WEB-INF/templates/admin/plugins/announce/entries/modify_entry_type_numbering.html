@@ -1,23 +1,25 @@
-<@box>
-	<@boxHeader title='#i18n{announce.modifyEntry.titleQuestion} : '${category.label}' - #i18n{announce.createEntry.labelEntryType} : ${entry.entryType.title}' />
-	<@boxBody>
-		<@tform class="form-horizontal" action="jsp/admin/plugins/announce/ManageCategoryEntries.jsp" method="post" name="" id="">
-				<@input name="id_entry" value="${entry.idEntry}" type="hidden" />
-				<@input name="action" value="doModifyEntry" type="hidden" />
-				<@formGroup class='form-group' labelKey='#i18n{announce.createEntry.labelTitle}' mandatory=true>
-					<@input type="text" name="title" id="title" class="form-control" value="${entry.title}" maxlength=255 />
-				</@formGroup>
-				<#if entry.fields?? && entry.fields?has_content>	
-				<#assign prefix = getFieldValueByCode( entry, 'prefix') >
-					<@formGroup class='form-group' labelKey='#i18n{announce.createEntry.labelPrefix}' >
-							<@input name="prefix" id="prefix" value="" type="text" maxlength=255 class="form-control" />
-							<@span class="help-block">#i18n{announce.createEntry.labelPrefixComment}</@span>
+<@row>
+	<@box>
+		<@boxHeader title="#i18n{announce.modifyEntry.titleQuestion} : '${category.label}' - #i18n{announce.createEntry.labelEntryType} : ${entry.entryType.title}" />
+		<@boxBody>
+			<@tform class="form-horizontal" action="jsp/admin/plugins/announce/ManageCategoryEntries.jsp" method="post" name="" id="">
+					<@input name="id_entry" value="${entry.idEntry}" type="hidden" />
+					<@input name="action" value="doModifyEntry" type="hidden" />
+					<@formGroup class='form-group' labelKey='#i18n{announce.createEntry.labelTitle}' mandatory=true>
+						<@input type="text" name="title" id="title" class="form-control" value="${entry.title}" maxlength=255 />
 					</@formGroup>
-				</#if>
-				<@formGroup>
-					<@button type='submit' name='action_modifyQuestion' buttonIcon='save' title='#i18n{announce.modifyEntry.buttonSave}' hideTitle=['xs'] size='' />
-					<@aButton class='btn btn-default btn-flat' title='#i18n{announce.createEntry.buttonCancel}' params='style="background-color: #ffffff; color: black;"' href='jsp/admin/plugins/announce/ModifyCategory.jsp?category_id=${category.id}' />
-				</@formGroup>
-		 </@tform>
-	</@boxBody>
-</@box>
+					<#if entry.fields?? && entry.fields?has_content>	
+					<#assign prefix = getFieldValueByCode( entry, 'prefix') >
+						<@formGroup class='form-group' labelKey='#i18n{announce.createEntry.labelPrefix}' >
+								<@input name="prefix" id="prefix" value="" type="text" maxlength=255 class="form-control" />
+								<@span class="help-block">#i18n{announce.createEntry.labelPrefixComment}</@span>
+						</@formGroup>
+					</#if>
+					<@formGroup>
+						<@button type='submit' name='action_modifyQuestion' buttonIcon='save' title='#i18n{announce.modifyEntry.buttonSave}' hideTitle=['xs'] size='' />
+						<@aButton class='btn btn-default btn-flat' title='#i18n{announce.createEntry.buttonCancel}' params='style="background-color: #ffffff; color: black;"' href='jsp/admin/plugins/announce/ModifyCategory.jsp?category_id=${category.id}' />
+					</@formGroup>
+			 </@tform>
+		</@boxBody>
+	</@box>
+</@row>

@@ -1,20 +1,22 @@
-<@box>
-	<@boxHeader title='#i18n{announce.modifyEntry.titleGroup} - ${category.label}  - #i18n{announce.createEntry.labelType}  ${entry.entryType.title}' />
-	<@boxBody>
-		<@tform class='form-horizontal' action='jsp/admin/plugins/announce/ManageCategoryEntries.jsp' method='post' name='' id='' >
-			<@input name='id_entry' value='${entry.idEntry}' type='hidden' />
-			<@input name='action' value='doModifyEntry' type='hidden' />
-			<@formGroup class='form-group' labelKey='#i18n{announce.createEntry.labelTitle}' mandatory=true>
-				<@input type='text' name='title' id='title' value='${entry.title}' class='form-control' maxlength=255 />
-			</@formGroup>
-			<@formGroup class='form-group' labelKey='#i18n{announce.createEntry.labelCSSClass} '>
-				<@input type='text' name='css_class' value='${entry.CSSClass!}' class='form-control' maxlength=255 />
-				<@span class='help-block'>#i18n{announce.createEntry.labelCSSClassComment}</@span>
-			</@formGroup>
-			<@formGroup class='form-group'>
-				<@button type='submit' name='action_modifyQuestion' buttonIcon='save' title='#i18n{announce.modifyEntry.buttonSave}' hideTitle=['xs'] size='' />
-				<@aButton class='btn btn-default btn-flat' title='#i18n{announce.modifyEntry.buttonCancel}' params='style="background-color: #ffffff; color: black;"' href='jsp/admin/plugins/announce/ModifyCategory.jsp?category_id=${category.id}' />
-			</@formGroup>
-		</@tform>
-	</@boxBody>
-</@box>
+<@row>
+	<@box>
+		<@boxHeader title='#i18n{announce.modifyEntry.titleGroup} - ${category.label}  - #i18n{announce.createEntry.labelType}  ${entry.entryType.title}' />
+		<@boxBody>
+			<@tform class='form-horizontal' action='jsp/admin/plugins/announce/ManageCategoryEntries.jsp' method='post' name='' id='' >
+				<@input name='id_entry' value='${entry.idEntry}' type='hidden' />
+				<@input name='action' value='doModifyEntry' type='hidden' />
+				<@formGroup class='form-group' labelKey='#i18n{announce.createEntry.labelTitle}' mandatory=true>
+					<@input type='text' name='title' id='title' value='${entry.title}' class='form-control' maxlength=255 />
+				</@formGroup>
+				<@formGroup class='form-group' labelKey='#i18n{announce.createEntry.labelCSSClass} '>
+					<@input type='text' name='css_class' value='${entry.CSSClass!}' class='form-control' maxlength=255 />
+					<@span class='help-block'>#i18n{announce.createEntry.labelCSSClassComment}</@span>
+				</@formGroup>
+				<@formGroup class='form-group'>
+					<@button type='submit' name='action_modifyQuestion' buttonIcon='save' title='#i18n{announce.modifyEntry.buttonSave}' hideTitle=['xs'] size='' />
+					<@aButton class='btn btn-default btn-flat' title='#i18n{announce.modifyEntry.buttonCancel}' params='style="background-color: #ffffff; color: black;"' href='jsp/admin/plugins/announce/ModifyCategory.jsp?category_id=${category.id}' />
+				</@formGroup>
+			</@tform>
+		</@boxBody>
+	</@box>
+</@row>

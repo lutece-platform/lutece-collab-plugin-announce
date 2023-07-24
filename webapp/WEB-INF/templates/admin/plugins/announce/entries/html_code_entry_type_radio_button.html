@@ -1,54 +1,71 @@
 <#assign hide="">
 <#list entry.fields as field>
-<#if field.conditionalQuestions?exists&&field.conditionalQuestions?size!=0>
-	<#assign hide=hide+"hide(${field.idField});">
-</#if>	
+	<#if field.conditionalQuestions?exists&&field.conditionalQuestions?size!=0>
+		<#assign hide=hide+"hide(${field.idField});">
+	</#if>	
 </#list>
-${entry.CSSClass!}
-
-<div class="form-group">
-	<label class="control-label col-xs-12 col-sm-12 col-md-3" for="form${entry.idEntry}" id="form${entry.idEntry}">${entry.title}<#if entry.mandatory> *</#if></label>
-	<div class="col-xs-12 col-sm-12 col-md-9">
-    <#list entry.fields as field>
-    	<#if field.code == 'answer_choice'>
-			<div class="radio<#if entry.fieldInLine>-inline</#if>">
-				<label for="attribute${entry.idEntry}_${field.idField}" <#if field.comment?? && field.comment != ''>title="${field.comment}"</#if>> 
-					<input type="radio" class="" id="attribute${entry.idEntry}_${field.idField}" name="attribute${entry.idEntry}" value="${field.idField}"
-					<#if list_responses??>
-						<#list list_responses as response>
-							<#if response.entry.idEntry == entry.idEntry && response.field??>
-								<#if response.field.idField == field.idField>checked="checked"<#break></#if>
-							</#if>
-						</#list>
-					<#else>
-						<#if field.defaultValue>checked="checked"</#if>
+<@formGroup class='${entry.CSSClass!}' id='form${entry.idEntry}' labelFor='form${entry.idEntry}' labelKey='${entry.title}' mandatory=entry.mandatory htmlRequired=false>
+	<#list entry.fields as field>
+	    <#if field.code == 'answer_choice'>
+			<#if entry.fieldInLine><#assign orientation='inline' /><#else><#assign orientation='vertical' /></#if>
+			<#assign isChecked = false />
+			<#if list_responses?? && list_responses?has_content>	
+				<#list list_responses as response>
+					<#if response.entry.idEntry == entry.idEntry && response.field??>
+						<#if response.field.idField == field.idField>
+							<#assign isChecked='true' >
+							<#break>
+						</#if>
 					</#if>
-						onclick="${hide} <#if field.conditionalQuestions?exists&&field.conditionalQuestions?size!=0>doDisplay(${field.idField});</#if>
-					 "/>
-					 <#if !field.noDisplayTitle>
-						${field.title}
-					 </#if>
-				</label>
-			   <#if !entry.fieldInLine && entry.helpMessage?exists && entry.helpMessage != ''>
-					<p class="help-block">${entry.helpMessage}</p>
+				</#list>
+			<#else>
+				<#if field.defaultValue>
+					<#assign isChecked = true />
 				</#if>
+			</#if>	
+			
+			<#assign params>
+				onclick="${hide} <#if field.conditionalQuestions?exists&&field.conditionalQuestions?size!=0>
+				doDisplay(${field.idField});</#if>"
+			</#assign>	
+			
+			<#if !field.noDisplayTitle>
+		       <#assign labelKey = field.title />
+			<#else>
+				<#assign labelKey = '' />
+		    </#if>
+		    
+		    <#if !entry.fieldInLine && entry.helpMessage?exists && entry.helpMessage != ''>
+				<@formHelp> entry.helpMessage </@formHelp>
 			</#if>
-		</#list>
-	</div>
- </div>	
+			
+			<#if field.comment?? && field.comment != ''>
+				<@radioButton orientation=orientation labelFor='attribute${entry.idEntry}_${field.idField}' labelKey=labelKey title='${field.comment!}' id='attribute${entry.idEntry}_${field.idField}' name='attribute${entry.idEntry}' value='${field.idField}' checked=isChecked params=params />
+			</#if>
+		
+		</#if>
+	</#list>
+</@formGroup>
+
 <#if entry.fieldInLine&&entry.helpMessage?exists&&entry.helpMessage!=''>
-<p class="help-block">${entry.helpMessage}</p>
+	<@formHelp> ${entry.helpMessage} </@formHelp>
 </#if>
+
 <#if list_responses??>
 	<#list list_responses as response>
 		<#if response.entry.idEntry == entry.idEntry && response.entry.error??>
-			<div class="alert alert-error">
-			<#assign error = response.entry.error>
-				<#if error.mandatoryError>#i18n{announce.message.mandatory.entry}<#else>${error.errorMessage}</#if>
-			</div>
+			<@alert color='danger'>
+				<#assign error = response.entry.error>
+				<#if error.mandatoryError>
+					#i18n{announce.message.mandatory.entry}
+				<#else>
+					${error.errorMessage}
+				</#if>
+			</@alert>
 		</#if>
 	</#list>
 </#if>
+
 <#if str_list_entry_children?exists>${str_list_entry_children}</#if>
 
 <#if list_responses??>

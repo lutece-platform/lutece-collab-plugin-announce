@@ -1,36 +1,38 @@
 <#include "announce_tabs.html" />
-<@box>
-	<@boxHeader title='#i18n{announce.manage_sectors.pageTitle}' >
-		<@tform class='form-inline pull-right' name='manage_categories' action='jsp/admin/plugins/announce/CreateCategory.jsp'>
-			<@button type='submit' name='view_manageCategories' buttonIcon='plus' title='#i18n{announce.manage_categories.buttonCreateCategory}' />
-		</@tform>
-	</@boxHeader>
-	<@boxBody>
-	<@tabs2 tab="categories" />
-	<@tform method="post"  action="jsp/admin/plugins/announce/ManageCategories.jsp">
-		<@paginationAdmin paginator=paginator form=0 combo=1 showcount=0 />
-	</@tform>
-	<@table class="table table-hover">
-		<@tr>
-			<@th>#i18n{announce.category.label}</@th>
-			<@th>#i18n{announce.category.numberAnnounces}</@th>
-			<@th>#i18n{announce.actions}</@th>
-		</@tr>
-		<#list list_categories as category>
-		<@tr>
-			<@td>${category.labelSector} > ${category.label}</@td>
-			<@td>${category.numberAnnounces}</@td>
-			<@td>
-				<@aButton href='jsp/admin/plugins/announce/ModifyCategory.jsp?category_id=${category.id}' title='#i18n{portal.util.labelModify}' hideTitle=['all'] buttonIcon='pencil' />
-				<@aButton href='jsp/admin/plugins/announce/ViewFormExample.jsp?category_id=${category.id}' title='#i18n{announce.manage_categories.formPreview}' hideTitle=['all'] buttonIcon='eye' />
-				<@aButton href='jsp/admin/plugins/announce/DoDuplicateCategory.jsp?category_id=${category.id}' title='#i18n{announce.manage_categories.duplicateCategory}' hideTitle=['all'] buttonIcon='copy' />
-				<@aButton href='jsp/admin/plugins/announce/RemoveCategory.jsp?category_id=${category.id}' title='#i18n{announce.manage_categories.removeCategoryTitle}' buttonIcon='trash' hideTitle=['all'] color='danger' />
-			</@td>
-		</@tr>
-		</#list>
-	</@table>	
+<@row>
+	<@box>
+		<@boxHeader title='#i18n{announce.manage_sectors.pageTitle}' >
+			<@tform class='form-inline pull-right' name='manage_categories' action='jsp/admin/plugins/announce/CreateCategory.jsp'>
+				<@button type='submit' name='view_manageCategories' buttonIcon='plus' title='#i18n{announce.manage_categories.buttonCreateCategory}' />
+			</@tform>
+		</@boxHeader>
+		<@boxBody>
+		<@tabs2 tab="categories" />
 		<@tform method="post"  action="jsp/admin/plugins/announce/ManageCategories.jsp">
 			<@paginationAdmin paginator=paginator form=0 combo=1 showcount=0 />
 		</@tform>
-	</@boxBody>
-</@box>
+		<@table>
+			<@tr>
+				<@th>#i18n{announce.category.label}</@th>
+				<@th>#i18n{announce.category.numberAnnounces}</@th>
+				<@th>#i18n{announce.actions}</@th>
+			</@tr>
+			<#list list_categories as category>
+			<@tr>
+				<@td>${category.labelSector} > ${category.label}</@td>
+				<@td>${category.numberAnnounces}</@td>
+				<@td>
+					<@aButton href='jsp/admin/plugins/announce/ModifyCategory.jsp?category_id=${category.id}' title='#i18n{portal.util.labelModify}' hideTitle=['all'] buttonIcon='pencil' />
+					<@aButton href='jsp/admin/plugins/announce/ViewFormExample.jsp?category_id=${category.id}' title='#i18n{announce.manage_categories.formPreview}' hideTitle=['all'] buttonIcon='eye' />
+					<@aButton href='jsp/admin/plugins/announce/DoDuplicateCategory.jsp?category_id=${category.id}' title='#i18n{announce.manage_categories.duplicateCategory}' hideTitle=['all'] buttonIcon='copy' />
+					<@aButton href='jsp/admin/plugins/announce/RemoveCategory.jsp?category_id=${category.id}' title='#i18n{announce.manage_categories.removeCategoryTitle}' buttonIcon='trash' hideTitle=['all'] color='danger' />
+				</@td>
+			</@tr>
+			</#list>
+		</@table>	
+			<@tform method="post"  action="jsp/admin/plugins/announce/ManageCategories.jsp">
+				<@paginationAdmin paginator=paginator form=0 combo=1 showcount=0 />
+			</@tform>
+		</@boxBody>
+	</@box>
+</@row>

@@ -1,5 +1,5 @@
 <#macro comboOrders name default_value idParent >
-		<select id="${name}" name="${name}" class="form-control input-xs">
+		<@select id="${name}" name="${name}" class="form-control input-xs">
 			<#if idParent &gt; 0 && lastGroup??>
 				<#assign start_enum = lastGroup.position + 1 >
 				<#assign nb_entries = lastGroup.position + lastGroup.children?size >
@@ -19,5 +19,5 @@
 					</#if>
 				</#list>
 			</#if>
-		</select>
+		</@select>
 </#macro>

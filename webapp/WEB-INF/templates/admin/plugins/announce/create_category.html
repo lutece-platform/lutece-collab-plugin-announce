@@ -1,36 +1,38 @@
-<@box>
-	<@boxHeader title='#i18n{announce.create_category.pageTitle}' />
-		<@boxBody>
-			<@tform class="create_sector" method="post" action='jsp/admin/plugins/announce/DoCreateCategory.jsp'>
-				<@formGroup labelKey='#i18n{announce.category.label}' helpKey='#i18n{announce.category.label}' mandatory=true >
-					<@input name='category_label' type='text'  value='' maxlength=50  />
-				</@formGroup>
-				<@formGroup labelKey='#i18n{announce.category.sector}' mandatory=true >
-					<@select name='category_sector_id' items=list_sectors default_value='0' />
-				</@formGroup>
-				<@formGroup labelKey='#i18n{announce.category.announcesValidation}' mandatory=true >
-					<@select name='category_announces_validation' items=list_announces_validation default_value='0' />
-				</@formGroup>
-				<@formGroup labelKey='#i18n{announce.category.mailingList}' helpKey='#i18n{announce.category.mailingList.helper}'>
-					<@select name='mailing_list_id' items=mailing_list_list default_value='0' />
-				</@formGroup>
-				<@formGroup  helpKey='#i18n{announce.category.displayPrice.helper}' >
-					<@checkBox name='display_price' value="true"  checked=false labelKey='#i18n{announce.category.displayPrice}' />
-				</@formGroup>
-				<@formGroup  helpKey='#i18n{announce.category.priceMandatory.helper}' >
-					<@checkBox name='price_mandatory' value="true"  checked=false labelKey='#i18n{announce.category.priceMandatory}' />
-				</@formGroup>
-			    <#if isCaptchaEnabled?? && isCaptchaEnabled>
-				   <@formGroup >
-					 <@checkBox name='display_captcha' value="true"  checked=false labelKey='#i18n{announce.category.displayCaptcha}' />
-				   </@formGroup>	
-				</#if>	
-				<#if listWorkflows??>
-				    <@formGroup labelKey='#i18n{announce.create_category.labelWorkflow}' >
-					  <@select name='id_workflow' items=listWorkflows default_value='0' />
-					</@formGroup>	
-				</#if>
-			    <@actionButtons button1Name="#i18n{announce.modify_sector.buttonValidate}" url2='jsp/admin/plugins/announce/ManageSectors.jsp'/>
-			</@tform>
-		</@boxBody>
-</@box>
+<@row>
+	<@box>
+		<@boxHeader title='#i18n{announce.create_category.pageTitle}' />
+			<@boxBody>
+				<@tform class="create_sector" method="post" action='jsp/admin/plugins/announce/DoCreateCategory.jsp'>
+					<@formGroup labelKey='#i18n{announce.category.label}' helpKey='#i18n{announce.category.label}' mandatory=true >
+						<@input name='category_label' type='text'  value='' maxlength=50  />
+					</@formGroup>
+					<@formGroup labelKey='#i18n{announce.category.sector}' mandatory=true >
+						<@select name='category_sector_id' items=list_sectors default_value='0' />
+					</@formGroup>
+					<@formGroup labelKey='#i18n{announce.category.announcesValidation}' mandatory=true >
+						<@select name='category_announces_validation' items=list_announces_validation default_value='0' />
+					</@formGroup>
+					<@formGroup labelKey='#i18n{announce.category.mailingList}' helpKey='#i18n{announce.category.mailingList.helper}'>
+						<@select name='mailing_list_id' items=mailing_list_list default_value='0' />
+					</@formGroup>
+					<@formGroup  helpKey='#i18n{announce.category.displayPrice.helper}' >
+						<@checkBox orientation='switch' name='display_price' value="true"  checked=false labelKey='#i18n{announce.category.displayPrice}' params='onchange="javascript:changeVisilityAnonymizePattern();"' />
+					</@formGroup>
+					<@formGroup  helpKey='#i18n{announce.category.priceMandatory.helper}' >
+						<@checkBox orientation='switch' name='price_mandatory' value="true"  checked=false labelKey='#i18n{announce.category.priceMandatory}' params='onchange="javascript:changeVisilityAnonymizePattern();"' />
+					</@formGroup>
+				    <#if isCaptchaEnabled?? && isCaptchaEnabled>
+					   <@formGroup >
+						 <@checkBox orientation='switch' name='display_captcha' value="true"  checked=false labelKey='#i18n{announce.category.displayCaptcha}' params='onchange="javascript:changeVisilityAnonymizePattern();"' />
+					   </@formGroup>	
+					</#if>	
+					<#if listWorkflows??>
+					    <@formGroup labelKey='#i18n{announce.create_category.labelWorkflow}' >
+						  <@select name='id_workflow' items=listWorkflows default_value='0' />
+						</@formGroup>	
+					</#if>
+				    <@actionButtons button1Name="#i18n{announce.modify_sector.buttonValidate}" url2='jsp/admin/plugins/announce/ManageSectors.jsp'/>
+				</@tform>
+			</@boxBody>
+	</@box>
+</@row>

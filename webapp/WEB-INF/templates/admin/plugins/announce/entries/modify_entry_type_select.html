@@ -1,5 +1,5 @@
-<@div params='style="display: grid; grid-template-columns: 1fr 1fr; grid-gap: 20px;"'>
-  <@div class='first_box' params='style="padding: 20px;"'>
+<@row>
+  <@div class='col-xs-12 col-sm-4 col-md-4'>
 	<@box>
 		<@boxHeader title="#i18n{announce.modifyEntry.titleQuestion}  - ${category.label}  - #i18n{announce.createEntry.labelType}  ${entry.entryType.title}" />
 		<@boxBody>
@@ -30,20 +30,21 @@
 			</@formGroup>
 			<@formGroup>
 				<@button type='submit' name='action_modifyQuestion' buttonIcon='save' title='#i18n{announce.modifyEntry.buttonSave}' hideTitle=['xs'] size='' />
-				<@button class='btn btn-primary btn-flat' name='apply' type='submit' ><@icon class='fa fa-floppy-o'></@icon>&nbsp;#i18n{announce.modifyEntry.buttonApply}</@button>
+				<@button class='btn btn-primary btn-flat' name='apply' type='submit' buttonIcon='apply' title='#i18n{announce.modifyEntry.buttonApply}'/>
 				<@aButton class='btn btn-default btn-flat' title='#i18n{announce.modifyEntry.buttonCancel}' params='style="background-color: #ffffff; color: black;"' href='jsp/admin/plugins/announce/ModifyCategory.jsp?category_id=${category.id}' />
 			</@formGroup>
 			</@tform>
 		</@boxBody>
 	</@box>
   </@div>
-  <@div class='second_box' params='style="padding: 20px;"'>
+  <@div class='col-xs-12 col-sm-8 col-md-8'>
+  	<@box>
   		<@boxHeader title='#i18n{announce.createEntry.manageField.title}' >
 	  		<@tform action='jsp/admin/plugins/announce/ManageCategoryFields.jsp?view=getCreateField&id_entry=${entry.idEntry}'>
 				<@button type='submit' name='view_createHomeWorking' buttonIcon='plus' title='#i18n{announce.createEntry.manageField.buttonInsert}' />
 			</@tform>
   		</@boxHeader>
-  		<@box>
+  		<@boxBody>
   			<@table>
   				<@tr> 
 					<@th>#i18n{announce.createEntry.manageField.rowTitle}</@th>
@@ -58,7 +59,7 @@
 					<@tr>
 						<@td>${field.title}</@td>
 						<@td>${field.value}</@td>
-						<@td><#if field.defaultValue><@span class='label label-success'><@icon class='fa fa-check'></@icon></@span></#if></@td>
+						<@td><#if field.defaultValue><@span class='label label-success'><@iconStack class='fa fa-check' params='title="#i18n{announce.createEntry.manageField.rowDefaultValue}"'></@iconStack></@span></#if></@td>
 						<@td>
 							<@aButton class='btn btn-primary btn-xs btn-flat' href='jsp/admin/plugins/announce/ManageCategoryFields.jsp?view=getModifyField&id_field=${field.idField}' title='#i18n{portal.util.labelModify}' hideTitle=['all'] buttonIcon='pencil' />					
 							<#if cpt!=1>
@@ -72,8 +73,9 @@
 					</@tr>
 				</#list>
   			</@table>
-  		</@box>
+  		</@boxBody>
+ 	</@box>
   </@div>	
-</@div>
+</@row>
 <#include "/admin/util/editor/editor.html" />
 <@initEditor />
