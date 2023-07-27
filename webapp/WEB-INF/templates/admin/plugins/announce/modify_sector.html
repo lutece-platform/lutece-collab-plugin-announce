@@ -2,16 +2,16 @@
 	<@box>
 		<@boxHeader title='#i18n{announce.modify_sector.pageTitle}' />
 			<@boxBody>
-				<@tform class=""form-horizontal" method="post" action="jsp/admin/plugins/announce/DoModifySector.jsp">
-				<@input  value="${sector.id}" type="hidden" name="sector_id" />
+				<@tform class='form-horizontal' method='post' action='jsp/admin/plugins/announce/DoModifySector.jsp'>
+				<@input  value='${sector.id}' type='hidden' name='sector_id' />
 					<@formGroup labelFor='sector_label' labelKey='#i18n{announce.sector.label}' mandatory=true>
-						<@input type="text" name="sector_label" value="${sector.label}" />
+						<@input type='text' name='sector_label' value='${sector.label}' />
 					</@formGroup>
 					<@formGroup labelFor='sector_label' labelKey='#i18n{announce.sector.description}' mandatory=true>
-						<@input type="text" name="sector_description" value="${sector.description}" />
+						<@input type='text' name='sector_description' value='${sector.description}' />
 					</@formGroup>
 					<@formGroup labelFor='sector_label' labelKey='#i18n{announce.sector.tags}' mandatory=true>
-						<@input name="tags" id="tags" value="${sector.tags}" type="text" />
+						<@input name='tags' id='tags' value='${sector.tags}' type='text' />
 						<@formHelp>#i18n{announce.sector.tags.helper}</@formHelp>
 					</@formGroup>
 					<@formGroup mandatory=true>
