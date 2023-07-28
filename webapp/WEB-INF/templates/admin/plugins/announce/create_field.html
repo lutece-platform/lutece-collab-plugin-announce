@@ -1,61 +1,27 @@
-<div class="row">
-	<div class="col-xs-12 col-sm-12 col-md-12">
-		<div class="box box-primary">
-			<div class="box-header">
-				<h3 class="box-title">#i18n{announce.createField.title} : '${field.parentEntry.title}'</h3>
-			</div>
-			<div class="box-body">
-				<form class="form-horizontal" action="jsp/admin/plugins/announce/ManageCategoryFields.jsp" method="post" name="" id=""  >
-				<input type="hidden" name="action" value="doCreateField">
-				<input type="hidden" name="id_entry" value="${field.parentEntry.idEntry}">
-				<div class="form-group">
-					<label class="control-label col-xs-12 col-sm-12 col-md-3" for="title">#i18n{announce.createField.labelTitle} * </label>
-			    	<div class="col-xs-12 col-sm-12 col-md-6">
-						<input type="text" name="title" id="title" class="form-control" value="" maxlength="255">
-					</div>
-				</div>
-			    <div class="form-group">
-					<label class="control-label col-xs-12 col-sm-12 col-md-3" for="value">#i18n{announce.createField.labelValue} *</label>
-			    	<div class="col-xs-12 col-sm-12 col-md-6">
-						<input type="text" name="value" id="value" class="form-control" value="">
-					</div>
-				</div>
-				<div class="form-group">
-					<label class="control-label col-xs-12 col-sm-12 col-md-3" for="value">#i18n{announce.createField.labelComment}</label>
-			    	<div class="col-xs-12 col-sm-12 col-md-6">
-						<textarea name="comment" id="comment" class="form-control" rows="5"></textarea>
-					</div>
-				</div>
-			    <div class="form-group">
-					<label class="control-label col-xs-12 col-sm-12 col-md-3" for=""></label>
-			    	<div class="col-xs-12 col-sm-12 col-md-6">
-						<div class="checkbox">
-							<label for="default_value">
-								<input name="default_value" id="default_value" value="1" type="checkbox" >	#i18n{announce.createField.labelDefaultValue}
-							</label>
-						</div>
-					</div>
-				</div>
-				<div class="form-group">
-					<label class="control-label col-xs-12 col-sm-12 col-md-3" for=""></label>
-					<div class="col-xs-12 col-sm-12 col-md-6">
-						<div class="checkbox">
-							<label for="no_display_title">
-								<input name="no_display_title" id="no_display_title" value="1" type="checkbox" > #i18n{announce.createField.labelNoDisplayTitle}
-							</label>
-						</div>	
-					</div>
-				</div>
-				<div class="form-group">
-					<div class="col-xs-12 col-sm-12 col-md-6 col-md-offset-3">
-						<button class="btn btn-primary btn-flat" type="submit" ><i class="fa fa-check"></i>&nbsp;#i18n{announce.createEntry.buttonSave}</button>
-						<button class="btn btn-default btn-flat" type="button" onclick="javascript:window.history.back();" ><i class="fa fa-remove"></i>&nbsp;#i18n{announce.createEntry.buttonCancel}</button>
-					</div>
-				</div>
-			</form>
-
-	</div>
-</div>
-
-
- 
+<@row>
+	<@box>
+		<@boxHeader title='#i18n{announce.createField.title} : "${field.parentEntry.title}" ' />
+		<@boxBody>
+			<@tform class='form-horizontal' action='jsp/admin/plugins/announce/ManageCategoryFields.jsp'>
+			<@input type='hidden' name='action' value='doCreateField' />
+			<@input type='hidden' name='id_entry' value='' />
+			<@formGroup labelKey='#i18n{announce.createField.labelTitle}' mandatory=true >
+				<@input type='text' name='title' id='title' class='form-control' value='' maxlength=255 />
+			</@formGroup>
+			<@formGroup labelKey='#i18n{announce.createField.labelValue}' mandatory=true >
+				<@input type="text" name="value" id="value" class="form-control" value="" />
+			</@formGroup>
+			<@formGroup labelKey='#i18n{announce.createField.labelComment}' mandatory=true >
+				<@input type='textarea' name='comment' id='comment' class='form-control' rows='5'/>
+			</@formGroup>
+			<@formGroup>
+				<@checkBox orientation='switch' name='default_value' id='default_value' value='1' labelKey='#i18n{announce.createField.labelDefaultValue}' params='onchange="javascript:changeVisilityAnonymizePattern();"' />	
+			</@formGroup>
+			<@formGroup>
+				<@checkBox orientation='switch' name='no_display_title' id='no_display_title' value='1' labelKey='#i18n{announce.createField.labelNoDisplayTitle}' params='onchange="javascript:changeVisilityAnonymizePattern();"' />
+			</@formGroup>
+			<@actionButtons button1Name="action_createCreateField" button2Name="view_manageCreateField"/>
+			</@tform>
+		</@boxBody>
+	</@box>
+</@row>

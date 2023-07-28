@@ -116,7 +116,7 @@ public class AnnounceWorkflowJspBean extends MVCAdminJspBean
             return doProcessWorkflowAction( request );
         }
 
-        return redirect( request, AppPathService.getBaseUrl( request ) + AnnounceJspBean.getURLManageAnnounces( request ) );
+        return redirect( request, AnnounceJspBean.getURLManageAnnounces( request ) );
     }
 
     /**

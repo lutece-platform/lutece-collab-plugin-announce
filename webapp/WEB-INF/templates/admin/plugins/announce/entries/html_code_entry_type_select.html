@@ -1,20 +1,22 @@
-<div class="form-group">
-	<label class="control-label col-xs-12 col-sm-12 col-md-3" for="attribute${entry.idEntry}">${entry.title} <#if entry.mandatory>*</#if></label>
-	<div class="col-xs-12 col-sm-12 col-md-9">	 
-		<select name="attribute${entry.idEntry}" id="attribute${entry.idEntry}"
-			<#if list_responses??>
-				<#list list_responses as response>
-					<#if response.entry.idEntry == entry.idEntry && response.entry.error??>
-						class="error"
-						<#break>
-					</#if>
-				</#list>
-				class="${entry.CSSClass!} form-control"</#if>>
+<#if list_responses??>
+	<#list list_responses as response>
+	  <#if response.entry.idEntry == entry.idEntry && response.entry.error??>
+		<#assign groupStyle = 'error' />
+		<#break>
+	  </#if>
+	</#list>
+	<#assign inputClass = entry.CSSClass! />
+</#if>
+<@formGroup labelFor='attribute${entry.idEntry}' labelKey='${entry.title}' mandatory=entry.mandatory htmlRequired=false>
+	<@select name='attribute${entry.idEntry}' id='attribute${entry.idEntry}' class=inputClass!''>
 		<option value="">#i18n{announce.xpage.form.noValue}</option>
 		<#list entry.fields as field>
 			<#if field.code == 'answer_choice'>
-				<option  value="${field.idField}" <#if field.comment?? && field.comment != ''>title="${field.comment}"</#if>
-					<#if list_responses??>
+				<option  value="${field.idField}" 
+					<#if field.comment?? && field.comment != ''>
+						title="${field.comment}"
+					</#if>
+					<#if list_responses?has_content>
 						<#list list_responses as response>
 							<#if response.entry.idEntry == entry.idEntry && response.field??>
 								<#if response.field.idField == field.idField>
@@ -30,26 +32,25 @@
 					</#if>
 					>
 						${field.title}
-				</option>
-			</#if>
-		</#list>
-	</select>
+					</option>
+					</#if>
+				</#list>
+	</@select>
 	<#if entry.helpMessage?exists&&entry.helpMessage!=''>
-	<p class="help-block">${entry.helpMessage}</p>
+		<@formHelp>${entry.helpMessage}</@formHelp>
 	</#if>
 	<#if list_responses??>
 		<#list list_responses as response>
 			<#if response.entry.idEntry == entry.idEntry && response.entry.error??>
-				<div class="alert alert-error">
+				<@alert color='danger'>
 					<#assign error = response.entry.error>
 					<#if error.mandatoryError>
 						#i18n{announce.message.mandatory.entry}
 					<#else>
 						${error.errorMessage}
 					</#if>
-				</div>	
-				</#if>
-			</#list>
+				</@alert>	
+			</#if>
+		</#list>
 	</#if>
-	</div>
-</div>
+</@formGroup>

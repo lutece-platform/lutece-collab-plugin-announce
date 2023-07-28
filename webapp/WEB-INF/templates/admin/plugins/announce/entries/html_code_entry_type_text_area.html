@@ -1,15 +1,6 @@
-<#macro getTextAreaContent responseContent has_error entry field>
-	<!#-- 	fieldInLine means use rich text -->
-	<#if has_error>
-		<textarea name="attribute${entry.idEntry}" id="attribute${entry.idEntry}" cols="${field.width}" rows="${field.height}" class="form-control alert alert-error<#if entry.fieldInLine> richtext</#if>">${responseContent}</textarea>
-	<#else>
-		<textarea name="attribute${entry.idEntry}" id="attribute${entry.idEntry}" cols="${field.width}" rows="${field.height}" class="form-control ${entry.CSSClass!}<#if entry.fieldInLine> richtext</#if>" >${responseContent}</textarea>
-	</#if>
-</#macro>
+<#include "getTextAreaContent_macro.html" />
 
-<div class="form-group">
-<label class="control-label col-xs-12 col-sm-12 col-md-3" for="attribute${entry.idEntry}">${entry.title}<#if entry.mandatory> *</#if></label>
-<div class="col-xs-12 col-sm-12 col-md-9">
+<@formGroup labelFor='attribute${entry.idEntry}' labelKey='${entry.title}' mandatory=entry.mandatory htmlRequired=false>
 	<#assign field=getFieldByCode( entry, "text_config")>
 	<#if list_responses??>
 		<#list list_responses as response>
@@ -22,30 +13,33 @@
 			</#if>
 		</#list>
 	<#else>
-		<#if field.value?exists>
-			<@getTextAreaContent responseContent=field.value has_error=false entry=entry field=field/>
-		<#else>
-			<@getTextAreaContent responseContent="" has_error=false entry=entry field=field/>
-		</#if>
+			<#if field.value?exists>
+				<@getTextAreaContent responseContent=field.value has_error=false entry=entry field=field/>
+			<#else>
+				<@getTextAreaContent responseContent="" has_error=false entry=entry field=field/>
+			</#if>
 	</#if>
 	<#if entry.helpMessage?exists&&entry.helpMessage!=''>
-		<p class="help-block">${entry.helpMessage}</p>
+		<@formHelp> 
+			${entry.helpMessage}
+		</@formHelp>
 	</#if>
 	<#if list_responses??>
 		<#list list_responses as response>
 			<#if response.entry.idEntry == entry.idEntry && response.entry.error??>
-				<div class="alert alert-error">
+				<@alert color='danger'>
 					<#assign error = response.entry.error>
-					<#if error.mandatoryError>#i18n{announce.message.mandatory.entry}<#else>${error.errorMessage}</#if>
-				</div>
+					<#if error.mandatoryError>
+						#i18n{announce.message.mandatory.entry}
+					<#else>
+						${error.errorMessage}
+					</#if>
+				</@alert>
 			</#if>
 		</#list>
 	</#if>
-	</div>
-</div>
-
+</@formGroup>
 <#if entry.fieldInLine>
 	<#include "/util/editor/editor.html" />
 	<@initEditor />
 </#if>
-		
