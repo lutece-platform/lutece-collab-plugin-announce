@@ -101,6 +101,7 @@ public final class AnnounceSearchService
     private IAnnounceSearchIndexer _indexer;
     private int _nWriterMergeFactor;
     private int _nWriterMaxSectorLength;
+    private static volatile IndexWriter _indexWriterInstance;
 
     /**
      * Creates a new instance of DirectorySearchService
@@ -129,7 +130,7 @@ public final class AnnounceSearchService
 
         try
         {
-            _analyzer = (Analyzer) Class.forName( strAnalyserClassName ).newInstance( );
+            _analyzer = ( Analyzer ) Class.forName( strAnalyserClassName ).newInstance( );
         }
         catch( Exception e )
         {
@@ -254,56 +255,27 @@ public final class AnnounceSearchService
             sbLogs.append( "\r\nIndexing all contents ...\r\n" );
 
             Directory dir = FSDirectory.open( Paths.get( getIndex( ) ) );
-
-            // Nouveau
             if ( !DirectoryReader.indexExists( dir ) )
-            { // init index
+            {
                 bCreateIndex = true;
             }
 
-            boolean bIsLocked = false;
+            writer = getIndexWriterInstance( bCreateIndex );
 
-            if ( IndexWriter.isLocked( dir ) )
-            {
-                sbLogs.append( "AnnounceSearchService, the index is locked. Aborting." );
-            }
+            Date start = new Date( );
 
-            if ( !bIsLocked )
-            {
-                Date start = new Date( );
+            sbLogs.append( "\r\n<strong>Indexer : " );
+            sbLogs.append( _indexer.getName( ) );
+            sbLogs.append( " - " );
+            sbLogs.append( _indexer.getDescription( ) );
+            sbLogs.append( "</strong>\r\n" );
+            _indexer.processIndexing( writer, bCreateIndex, sbLogs );
 
-                IndexWriterConfig conf = new IndexWriterConfig( new LimitTokenCountAnalyzer( _analyzer, _nWriterMaxSectorLength ) );
-                LogMergePolicy mergePolicy = new LogDocMergePolicy( );
-                mergePolicy.setMergeFactor( _nWriterMergeFactor );
+            Date end = new Date( );
 
-                conf.setMergePolicy( mergePolicy );
-
-                if ( bCreateIndex )
-                {
-                    conf.setOpenMode( OpenMode.CREATE );
-                }
-                else
-                {
-                    conf.setOpenMode( OpenMode.APPEND );
-                }
-
-                writer = new IndexWriter( dir, conf );
-
-                start = new Date( );
-
-                sbLogs.append( "\r\n<strong>Indexer : " );
-                sbLogs.append( _indexer.getName( ) );
-                sbLogs.append( " - " );
-                sbLogs.append( _indexer.getDescription( ) );
-                sbLogs.append( "</strong>\r\n" );
-                _indexer.processIndexing( writer, bCreateIndex, sbLogs );
-
-                Date end = new Date( );
-
-                sbLogs.append( "Duration of the treatment : " );
-                sbLogs.append( end.getTime( ) - start.getTime( ) );
-                sbLogs.append( " milliseconds\r\n" );
-            }
+            sbLogs.append( "Duration of the treatment : " );
+            sbLogs.append( end.getTime( ) - start.getTime( ) );
+            sbLogs.append( " milliseconds\r\n" );
         }
         catch( Exception e )
         {
@@ -318,10 +290,7 @@ public final class AnnounceSearchService
         {
             try
             {
-                if ( writer != null )
-                {
-                    writer.close( );
-                }
+                closeIndexWriterInstance( );
             }
             catch( IOException e )
             {
@@ -459,5 +428,37 @@ public final class AnnounceSearchService
         }
 
         return _strPriceFormat;
+    }
+
+    private synchronized IndexWriter getIndexWriterInstance( boolean bCreateIndex ) throws IOException
+    {
+        if ( _indexWriterInstance == null )
+        {
+            Directory dir = FSDirectory.open(Paths.get( getIndex( ) ) );
+            IndexWriterConfig conf = new IndexWriterConfig( new LimitTokenCountAnalyzer( _analyzer, _nWriterMaxSectorLength ) );
+            LogMergePolicy mergePolicy = new LogDocMergePolicy( );
+            mergePolicy.setMergeFactor( _nWriterMergeFactor );
+            conf.setMergePolicy(mergePolicy);
+            if (bCreateIndex)
+            {
+                conf.setOpenMode( OpenMode.CREATE );
+            }
+            else
+            {
+                conf.setOpenMode( OpenMode.APPEND );
+            }
+
+            _indexWriterInstance = new IndexWriter( dir, conf );
+        }
+        return _indexWriterInstance;
+    }
+
+    private synchronized void closeIndexWriterInstance( ) throws IOException
+    {
+        if ( _indexWriterInstance != null )
+        {
+            _indexWriterInstance.close( );
+            _indexWriterInstance = null;
+        }
     }
 }
