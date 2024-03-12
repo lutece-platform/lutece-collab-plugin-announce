@@ -49,6 +49,7 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.text.Normalizer;
 
 /**
  * Utility class for announce plugin
@@ -145,5 +146,16 @@ public final class AnnounceUtils
     public static Plugin getPlugin( )
     {
         return PluginService.getPlugin( AnnouncePlugin.PLUGIN_NAME );
+    }
+
+    public static String removeAccents(String text) {
+        if (text == null) {
+            return null;
+        }
+
+        String unaccentedText = Normalizer.normalize(text, Normalizer.Form.NFD)
+                .replaceAll("\\p{InCombiningDiacriticalMarks}+", "");
+
+        return unaccentedText.toLowerCase();
     }
 }
