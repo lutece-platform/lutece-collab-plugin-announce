@@ -65,7 +65,7 @@ import fr.paris.lutece.portal.service.plugin.Plugin;
 import fr.paris.lutece.portal.service.search.SearchItem;
 import fr.paris.lutece.portal.service.search.SearchResult;
 import fr.paris.lutece.portal.service.util.AppLogService;
-
+import static fr.paris.lutece.plugins.announce.utils.AnnounceUtils.removeAccents;
 /**
  * LuceneSearchEngine
  */
@@ -253,7 +253,7 @@ public class AnnounceLuceneSearchEngine implements IAnnounceSearchEngine
             PhraseQuery.Builder queryTypeBuilder = new PhraseQuery.Builder( );
             // add character "e" to TYPE because field is not analyzed when added to lucene document, but it's analyzed then in MultiFieldQueryParser.parse
             // method
-            queryTypeBuilder.add( new Term( SearchItem.FIELD_TYPE, AnnouncePlugin.PLUGIN_NAME + "e" ) );
+            queryTypeBuilder.add( new Term( SearchItem.FIELD_TYPE, AnnouncePlugin.PLUGIN_NAME  ) );
             queries.add( queryTypeBuilder.build( ).toString( ) );
             sectors.add( SearchItem.FIELD_TYPE );
             flags.add( BooleanClause.Occur.MUST );
@@ -261,9 +261,15 @@ public class AnnounceLuceneSearchEngine implements IAnnounceSearchEngine
             // Keywords in title or description
             if ( StringUtils.isNotBlank( filter.getKeywords( ) ) )
             {
-                PhraseQuery.Builder queryContentBuilder = new PhraseQuery.Builder( );
-                queryContentBuilder.add( new Term( SearchItem.FIELD_CONTENTS, filter.getKeywords( ) ) );
-                queries.add( queryContentBuilder.build( ).toString( ) );
+                if(filter.getKeywords() != null && filter.getKeywords().length() > 2)
+                {
+                    // use wildcard to search for incomplete words
+                    queries.add( SearchItem.FIELD_CONTENTS + ":" + removeAccents(filter.getKeywords( )) + "*" );
+                }
+                else
+                {
+                    queries.add( SearchItem.FIELD_CONTENTS + ":" + removeAccents(filter.getKeywords( )) );
+                }
                 sectors.add( SearchItem.FIELD_CONTENTS );
                 flags.add( BooleanClause.Occur.MUST );
             }

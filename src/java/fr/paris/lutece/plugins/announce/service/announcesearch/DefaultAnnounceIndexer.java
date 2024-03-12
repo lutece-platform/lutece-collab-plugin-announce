@@ -72,6 +72,7 @@ import fr.paris.lutece.portal.service.util.AppException;
 import fr.paris.lutece.portal.service.util.AppPathService;
 import fr.paris.lutece.portal.service.util.AppPropertiesService;
 import fr.paris.lutece.util.url.UrlItem;
+import static fr.paris.lutece.plugins.announce.utils.AnnounceUtils.removeAccents;
 
 /**
  * DefaultAnnounceIndexer
@@ -308,11 +309,11 @@ public class DefaultAnnounceIndexer implements IAnnounceSearchIndexer
 
         // Add the tag-stripped contents as a Reader-valued Text field so it will
         // get tokenized and indexed.
-        doc.add( new Field( SearchItem.FIELD_CONTENTS, strContent, TextField.TYPE_NOT_STORED ) );
+        doc.add( new Field( SearchItem.FIELD_CONTENTS, removeAccents(strContent), TextField.TYPE_NOT_STORED ) );
 
         // Add the subject name as a separate Text field, so that it can be searched
         // separately.
-        doc.add( new StoredField( SearchItem.FIELD_TITLE, announce.getTitle( ) ) );
+        doc.add( new StoredField( SearchItem.FIELD_TITLE, removeAccents(announce.getTitle( ) )) );
 
         doc.add( new Field( SearchItem.FIELD_TYPE, AnnouncePlugin.PLUGIN_NAME, StringField.TYPE_STORED ) );
 
