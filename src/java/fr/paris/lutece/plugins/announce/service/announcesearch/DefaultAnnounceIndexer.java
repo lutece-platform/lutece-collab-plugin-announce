@@ -39,7 +39,10 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.stream.Collectors;
 
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.lucene.document.DateTools;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
@@ -62,6 +65,7 @@ import fr.paris.lutece.plugins.announce.business.AnnounceSort;
 import fr.paris.lutece.plugins.announce.business.IndexerAction;
 import fr.paris.lutece.plugins.announce.service.AnnouncePlugin;
 import fr.paris.lutece.plugins.announce.utils.AnnounceUtils;
+import fr.paris.lutece.plugins.genericattributes.business.Response;
 import fr.paris.lutece.portal.service.content.XPageAppService;
 import fr.paris.lutece.portal.service.message.SiteMessageException;
 import fr.paris.lutece.portal.service.plugin.Plugin;
@@ -116,6 +120,9 @@ public class DefaultAnnounceIndexer implements IAnnounceSearchIndexer
         {
             Integer nAnnounceId = it.next( );
             Announce announce = AnnounceHome.findByPrimaryKey( nAnnounceId );
+            
+            List<Response> listResponses = AnnounceHome.findListResponse( nAnnounceId, false );
+            announce.setListResponse(listResponses);
 
             UrlItem urlAnnounce = new UrlItem( strPortalUrl );
             urlAnnounce.addParameter( XPageAppService.PARAM_XPAGE_APP, AppPropertiesService.getProperty( AnnounceUtils.PARAMETER_PAGE_ANNOUNCE ) ); // FIXME
@@ -338,6 +345,15 @@ public class DefaultAnnounceIndexer implements IAnnounceSearchIndexer
         sbContentToIndex.append( announce.getDescription( ) );
         sbContentToIndex.append( BLANK_SPACE );
         sbContentToIndex.append( announce.getTags( ) );
+        
+        if ( !CollectionUtils.isEmpty(announce.getListResponse()) )
+        {       
+        	String strAttributs = announce.getListResponse().stream()
+                .filter( response -> StringUtils.isNotBlank(response.getResponseValue()) )
+                .map( response -> BLANK_SPACE + response.getResponseValue() )
+                .collect( Collectors.joining() );
+        	sbContentToIndex.append( strAttributs );
+        }
 
         return sbContentToIndex.toString( );
     }
