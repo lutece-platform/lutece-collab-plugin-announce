@@ -449,13 +449,16 @@ public final class AnnounceHome
         for ( Integer nIdResponse : listIdResponse )
         {
             Response response = ResponseHome.findByPrimaryKey( nIdResponse );
-
-            if ( bLoadFiles && ( response.getFile( ) != null ) )
+            
+            if ( response != null )
             {
-                response.setFile( FileHome.findByPrimaryKey( response.getFile( ).getIdFile( ) ) );
-            }
+                if ( bLoadFiles && ( response.getFile( ) != null ) )
+                {
+                    response.setFile( FileHome.findByPrimaryKey( response.getFile( ).getIdFile( ) ) );
+                }
 
-            listResponse.add( response );
+                listResponse.add( response );
+            }
         }
 
         return listResponse;
