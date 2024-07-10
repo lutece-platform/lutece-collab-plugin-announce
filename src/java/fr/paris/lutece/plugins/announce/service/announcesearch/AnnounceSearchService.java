@@ -247,7 +247,6 @@ public final class AnnounceSearchService
     public String processIndexing( boolean bCreate )
     {
         StringBuffer sbLogs = new StringBuffer( );
-        IndexWriter writer = null;
         boolean bCreateIndex = bCreate;
 
         try
@@ -255,10 +254,26 @@ public final class AnnounceSearchService
             sbLogs.append( "\r\nIndexing all contents ...\r\n" );
 
             Directory dir = FSDirectory.open( Paths.get( getIndex( ) ) );
+            // check if index exists
             if ( !DirectoryReader.indexExists( dir ) )
             {
                 bCreateIndex = true;
             }
+            else
+            {
+                bCreateIndex = false;
+            }
+        }
+        catch( java.io.IOException e )
+        {
+            throw new RuntimeException( e );
+        }
+        IndexWriter writer = null;
+
+        try
+        {
+            sbLogs.append( "\r\nIndexing all contents ...\r\n" );
+
 
             writer = getIndexWriterInstance( bCreateIndex );
 

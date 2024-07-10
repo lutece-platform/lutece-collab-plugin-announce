@@ -46,9 +46,10 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.lucene.document.DateTools;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
-import org.apache.lucene.document.StoredField;
+import org.apache.lucene.document.FieldType;
 import org.apache.lucene.document.StringField;
 import org.apache.lucene.document.TextField;
+import org.apache.lucene.index.IndexOptions;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.Term;
 import org.apache.tika.exception.TikaException;
@@ -120,7 +121,7 @@ public class DefaultAnnounceIndexer implements IAnnounceSearchIndexer
         {
             Integer nAnnounceId = it.next( );
             Announce announce = AnnounceHome.findByPrimaryKey( nAnnounceId );
-            
+
             List<Response> listResponses = AnnounceHome.findListResponse( nAnnounceId, false );
             announce.setListResponse(listResponses);
 
@@ -264,37 +265,45 @@ public class DefaultAnnounceIndexer implements IAnnounceSearchIndexer
     {
         // make a new, empty document
         org.apache.lucene.document.Document doc = new org.apache.lucene.document.Document( );
-        doc.add( new Field( AnnounceSearchItem.FIELD_SECTOR_ID, String.valueOf( announce.getCategory( ).getIdSector( ) ), TextField.TYPE_STORED ) );
 
-        doc.add( new Field( AnnounceSearchItem.FIELD_CATEGORY_ID, String.valueOf( announce.getCategory( ).getId( ) ), TextField.TYPE_STORED ) );
-        doc.add( new Field( AnnounceSearchItem.FIELD_ID_ANNOUNCE, Integer.toString( announce.getId( ) ), TextField.TYPE_STORED ) );
 
-        doc.add( new Field( AnnounceSearchItem.FIELD_TAGS, announce.getTags( ), TextField.TYPE_STORED ) );
+        FieldType storedFieldType = new FieldType();
+        storedFieldType.setStored(true);
+        storedFieldType.setTokenized(true);
+        storedFieldType.setIndexOptions(IndexOptions.DOCS_AND_FREQS_AND_POSITIONS);
+         storedFieldType.freeze();
 
+        FieldType ftStoredDocs = new FieldType();
+        ftStoredDocs.setStored(true);
+        ftStoredDocs.setTokenized(false);
+        ftStoredDocs.setIndexOptions(IndexOptions.DOCS);
+        ftStoredDocs.freeze();
+
+        // Add fields to the document
+        doc.add(new StringField(AnnounceSearchItem.FIELD_SECTOR_ID, String.valueOf(announce.getCategory().getIdSector()), Field.Store.YES));
+        doc.add(new StringField(AnnounceSearchItem.FIELD_CATEGORY_ID, String.valueOf(announce.getCategory().getId()), Field.Store.YES));
+        doc.add(new Field(AnnounceSearchItem.FIELD_ID_ANNOUNCE, Integer.toString(announce.getId()), storedFieldType));
+        doc.add(new StringField(AnnounceSearchItem.FIELD_TAGS, announce.getTags(),  Field.Store.YES));
         // Add the url as a field named "url". Use an UnIndexed field, so
         // that the url is just stored with the question/answer, but is not searchable.
-        doc.add( new Field( SearchItem.FIELD_URL, strUrl, TextField.TYPE_STORED ) );
-
+        doc.add(new Field(SearchItem.FIELD_URL, strUrl, ftStoredDocs));
         // Add the uid as a field, so that index can be incrementally maintained.
-        // This field is not stored with question/answer, it is indexed, but it is not
+        // This field is stored so that the announce and query it in the database
         // tokenized prior to indexing.
-        String strIdAnnounce = String.valueOf( announce.getId( ) );
-        doc.add( new Field( SearchItem.FIELD_UID, strIdAnnounce, TextField.TYPE_STORED ) );
-
+        doc.add(new Field(SearchItem.FIELD_UID, String.valueOf(announce.getId()), ftStoredDocs));
         // Add the last modified date of the file a field named "modified".
         // Use a field that is indexed (i.e. searchable), but don't tokenize
         // the field into words.
-        String strDate = DateTools.dateToString(
-                ( announce.getTimePublication( ) > 0 ) ? new Timestamp( announce.getTimePublication( ) ) : announce.getDateCreation( ),
-                DateTools.Resolution.DAY );
-        doc.add( new Field( SearchItem.FIELD_DATE, strDate, TextField.TYPE_STORED ) );
-
+        doc.add(new Field(SearchItem.FIELD_DATE, DateTools.dateToString(
+                (announce.getTimePublication() > 0) ? new Timestamp(announce.getTimePublication()) : announce.getDateCreation(),
+                DateTools.Resolution.DAY), ftStoredDocs));
         if ( announce.getPrice( ) != 0.0 )
         {
             double dPrice = announce.getPrice( );
             // Add the price of the announce
-            doc.add( new Field( AnnounceSearchItem.FIELD_PRICE, AnnounceSearchService.formatPriceForIndexer( dPrice ), TextField.TYPE_STORED ) );
+            doc.add(new StringField( AnnounceSearchItem.FIELD_PRICE, AnnounceSearchService.formatPriceForIndexer( dPrice ),  Field.Store.YES) );
         }
+        doc.add(new StringField(SearchItem.FIELD_TYPE, AnnouncePlugin.PLUGIN_NAME, Field.Store.YES));
 
         String strContentToIndex = getContentToIndex( announce );
 
@@ -313,15 +322,23 @@ public class DefaultAnnounceIndexer implements IAnnounceSearchIndexer
 
         String strContent = handler.toString( );
 
-        // Add the tag-stripped contents as a Reader-valued Text field so it will
-        // get tokenized and indexed.
-        doc.add( new Field( SearchItem.FIELD_CONTENTS, strContent, TextField.TYPE_NOT_STORED ) );
+        // Define field types with ngram tokenization for "contents" and "title"
+        FieldType ngramType = new FieldType();
+        ngramType.setIndexOptions(IndexOptions.DOCS_AND_FREQS_AND_POSITIONS);
+        ngramType.setTokenized(true);
+        ngramType.setStored(false);
+        // Add the ngram-tokenized "contents" field
+        doc.add(new Field(SearchItem.FIELD_CONTENTS, strContent, ngramType));
 
-        // Add the subject name as a separate Text field, so that it can be searched
-        // separately.
-        doc.add( new StoredField( SearchItem.FIELD_TITLE, announce.getTitle( ) ) );
+        // Add the ngram-tokenized "title" field
+        FieldType storedNgramType = new FieldType();
+        storedNgramType.setStored(true);
+        storedNgramType.setIndexOptions(IndexOptions.DOCS);
+        storedNgramType.setTokenized(true);
+        storedNgramType.setStoreTermVectors(true);
+        storedNgramType.freeze();
+        doc.add(new Field(SearchItem.FIELD_TITLE, announce.getTitle(), storedNgramType));
 
-        doc.add( new Field( SearchItem.FIELD_TYPE, AnnouncePlugin.PLUGIN_NAME, StringField.TYPE_STORED ) );
 
         // return the document
         return doc;
@@ -345,9 +362,9 @@ public class DefaultAnnounceIndexer implements IAnnounceSearchIndexer
         sbContentToIndex.append( announce.getDescription( ) );
         sbContentToIndex.append( BLANK_SPACE );
         sbContentToIndex.append( announce.getTags( ) );
-        
+
         if ( !CollectionUtils.isEmpty(announce.getListResponse()) )
-        {       
+        {
         	String strAttributs = announce.getListResponse().stream()
                 .filter( response -> StringUtils.isNotBlank(response.getResponseValue()) )
                 .map( response -> BLANK_SPACE + response.getResponseValue() )
