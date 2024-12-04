@@ -86,7 +86,7 @@ public class SectorJspBean extends PluginAdminPageJspBean
     private static final String UNAUTHORIZED = "Unauthorized";
 
     /* properties */
-    private static final String PROPERTY_PAGE_TITLE_MANAGE_FIELDS = "announce.manage_sector.pageTitle";
+    private static final String PROPERTY_PAGE_TITLE_MANAGE_FIELDS = "announce.manage_sectors.pageTitle";
     private static final String PROPERTY_PAGE_TITLE_CREATE_FIELD = "announce.create_sector.pageTitle";
     private static final String PROPERTY_PAGE_TITLE_MODIFY_FIELD = "announce.modify_sector.pageTitle";
     private static final String PROPERTY_DEFAULT_LIST_FIELD_PER_PAGE = "announce.sector.itemsPerPage";
