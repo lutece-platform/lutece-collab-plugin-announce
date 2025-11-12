@@ -1,3 +1,6 @@
+-- liquibase formatted sql
+-- changeset announce:upgrade_advert-1.0.1-2.0.0.sql
+-- preconditions onFail:MARK_RAN onError:WARN
 DROP TABLE IF EXISTS announce_field;
 DROP TABLE IF EXISTS announce_sector;
 CREATE TABLE announce_sector(
