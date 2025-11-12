@@ -1,3 +1,6 @@
+-- liquibase formatted sql
+-- changeset announce:update_db_generic_attributes_forms_1.3.2-1.3.3.sql
+-- preconditions onFail:MARK_RAN onError:WARN
 UPDATE genatt_field f SET f.CODE = 'default_date_value'
 WHERE f.id_entry IN  (
 SELECT e.id_entry FROM genatt_entry e

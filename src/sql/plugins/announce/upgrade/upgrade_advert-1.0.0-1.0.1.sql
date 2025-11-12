@@ -1,3 +1,6 @@
+-- liquibase formatted sql
+-- changeset announce:upgrade_advert-1.0.0-1.0.1.sql
+-- preconditions onFail:MARK_RAN onError:WARN
 ALTER TABLE announce_entry_img 
 ADD
 (

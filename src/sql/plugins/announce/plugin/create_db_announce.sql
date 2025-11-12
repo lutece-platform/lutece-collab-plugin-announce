@@ -1,3 +1,6 @@
+-- liquibase formatted sql
+-- changeset announce:create_db_announce.sql
+-- preconditions onFail:MARK_RAN onError:WARN
 
 
 DROP TABLE IF EXISTS announce_sector;

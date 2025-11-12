@@ -1,3 +1,6 @@
+-- liquibase formatted sql
+-- changeset announce:init_core_announce.sql
+-- preconditions onFail:MARK_RAN onError:WARN
 /*==============================================================*/
 /*	Init  table core_admin_right								*/
 /*==============================================================*/
