@@ -1,4 +1,3 @@
-<#include "/admin/plugins/form/commons.html" />
 <#include "/skin/plugins/asynchronousupload/upload_commons.html" />
 <div class="form-group">
 	<label class="col-sm-2 control-label" for="attribute${entry.idEntry}" id="label${entry.idEntry}">${entry.title}<#if entry.mandatory>	*</#if></label>
@@ -88,3 +87,10 @@
 			<button class="btn btn-danger btn-small" name="${uploadHandler.uploadDeletePrefix}${fieldName}" value="${uploadHandler.uploadDeletePrefix}${fieldName}" type="submit" >#i18n{asynchronousupload.action.delete.name}</button>
 		</div>
 	</div>
+<script>
+	// mapFileErrors is variable set in the plugin asynchronous upload and if it's not properly set it's blocking the js script
+	if(mapFileErrors === undefined || mapFileErrors === null)
+	{
+		var mapFileErrors = new Map();
+	}
+</script>

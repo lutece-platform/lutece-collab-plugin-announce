@@ -32,7 +32,7 @@
 			</#if>
 		</#if>
 		<#assign field = getFieldValueByCode( entry, "file_config" )>
-		<input type="file" name="attribute_${entry.idEntry}" id="attribute_${entry.idEntry}" size="${field.width}"
+		<input type="file" name="attribute_${entry.idEntry}" id="attribute_${entry.idEntry}"
 		<#if list_responses??>
 			<#list list_responses as response>
 				<#if response.entry.idEntry == entry.idEntry && response.entry.error??>
@@ -59,8 +59,10 @@
 				</div>
 			</#if>
 		</#if>
+<!-- No action to support previewing the image yet
 		<button class="btn btn-primary btn-xs btn-flat" type="submit"  id="_announce_upload_submit_attribute_${entry.idEntry}" name="_announce_upload_submit_attribute_${entry.idEntry}" >#i18n{announce.action.send.name}</button>
-	</div>
+ -->
+</div>
 </div>
 
 <#-- file removing -->
@@ -71,7 +73,6 @@
 		<#assign has_files = true>
 	</#if>
 </#if>
-
 <div class="form-group" <#if !has_files>style="display:none;"</#if> id="_file_deletion_label_attribute_${entry.idEntry}">
 	<label class="control-label col-xs-12 col-sm-12 col-md-3" for="delete_${entry.idEntry}">#i18n{announce.file.uploadedFile}</label>
 	<div class="col-xs-12 col-sm-12 col-md-9" id="_file_deletion_attribute_${entry.idEntry}">
