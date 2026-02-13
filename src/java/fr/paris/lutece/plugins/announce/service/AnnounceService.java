@@ -56,6 +56,7 @@ import fr.paris.lutece.portal.business.file.FileHome;
 import fr.paris.lutece.portal.business.physicalfile.PhysicalFile;
 import fr.paris.lutece.portal.business.physicalfile.PhysicalFileHome;
 import fr.paris.lutece.portal.service.content.XPageAppService;
+import fr.paris.lutece.portal.service.spring.SpringContextService;
 import fr.paris.lutece.portal.service.security.LuteceUser;
 import fr.paris.lutece.portal.service.security.SecurityService;
 import fr.paris.lutece.portal.service.security.UserNotSignedException;
@@ -65,7 +66,7 @@ import fr.paris.lutece.portal.util.mvc.utils.MVCUtils;
 import fr.paris.lutece.util.html.HtmlTemplate;
 import fr.paris.lutece.util.url.UrlItem;
 
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.fileupload.FileItem;
 
 import java.io.Serializable;
@@ -515,5 +516,15 @@ public class AnnounceService implements Serializable
         dateFormat.setLenient( false );
 
         return dateFormat;
+    }
+
+    /**
+     * Check if the subscribe module (module-announce-subscribe) is available
+     *
+     * @return true if at least one IAnnounceSubscriptionProvider bean is deployed
+     */
+    public static boolean isSubscribeModuleAvailable( )
+    {
+        return !SpringContextService.getBeansOfType( IAnnounceSubscriptionProvider.class ).isEmpty( );
     }
 }

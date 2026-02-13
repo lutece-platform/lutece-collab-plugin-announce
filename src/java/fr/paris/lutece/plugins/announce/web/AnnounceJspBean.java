@@ -54,6 +54,7 @@ import fr.paris.lutece.plugins.announce.business.AnnounceSort;
 import fr.paris.lutece.plugins.announce.business.Category;
 import fr.paris.lutece.plugins.announce.business.CategoryHome;
 import fr.paris.lutece.plugins.announce.service.AnnounceResourceIdService;
+import fr.paris.lutece.plugins.announce.service.AnnounceService;
 import fr.paris.lutece.plugins.announce.utils.AnnounceUtils;
 import fr.paris.lutece.plugins.genericattributes.business.Entry;
 import fr.paris.lutece.plugins.genericattributes.business.EntryHome;
@@ -121,7 +122,8 @@ public class AnnounceJspBean extends PluginAdminPageJspBean
     private static final String MARK_RIGHT_SUSPEND = "right_suspend_announce";
     private static final String MARK_RIGHT_WORKFLOW_ACTION = "right_execute_workflow_action";
     private static final String MARK_ENTRY_LIST_GEOLOCATION = "admList_entryTypeGeolocation";
-
+    private static final String MARK_IS_SUBSCRIBE = "isSubscribe";
+    
     /* Variables */
     private int _nDefaultItemsPerPage;
     private String _strCurrentPageIndex;
@@ -216,7 +218,8 @@ public class AnnounceJspBean extends PluginAdminPageJspBean
         model.put( MARK_NB_ITEMS_PER_PAGE, Integer.toString( _nItemsPerPage ) );
         model.put( MARK_PAGINATOR, paginator );
         model.put( MARK_ANNOUNCE_LIST, paginator.getPageItems( ) );
-
+        model.put( MARK_IS_SUBSCRIBE, AnnounceService.isSubscribeModuleAvailable( ) );
+        
         model.put( MARK_RIGHT_DELETE,
                 RBACService.isAuthorized( Announce.RESOURCE_TYPE, RBAC.WILDCARD_RESOURCES_ID, AnnounceResourceIdService.PERMISSION_DELETE, user ) );
         model.put( MARK_RIGHT_PUBLISH,
@@ -224,7 +227,8 @@ public class AnnounceJspBean extends PluginAdminPageJspBean
         model.put( MARK_RIGHT_SUSPEND,
                 RBACService.isAuthorized( Announce.RESOURCE_TYPE, RBAC.WILDCARD_RESOURCES_ID, AnnounceResourceIdService.PERMISSION_SUSPEND, user ) );
         model.put( MARK_RIGHT_WORKFLOW_ACTION, bCanExecuteWorkflowAction );
-
+        
+        
         HtmlTemplate templateList = AppTemplateService.getTemplate( TEMPLATE_MANAGE_ANNOUNCES, getLocale( ), model );
 
         return getAdminPage( templateList.getHtml( ) );

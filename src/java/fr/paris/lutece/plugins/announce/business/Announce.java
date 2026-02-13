@@ -38,7 +38,7 @@ import java.sql.Timestamp;
 import java.util.Collection;
 import java.util.List;
 
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
 
 import fr.paris.lutece.plugins.announce.service.AnnounceResponseImageResourceProvider;
 import fr.paris.lutece.plugins.genericattributes.business.Response;

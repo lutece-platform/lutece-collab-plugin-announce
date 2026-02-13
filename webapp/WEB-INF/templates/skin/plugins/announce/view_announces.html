@@ -9,12 +9,14 @@
 				#i18n{announce.view_announces.page.title} ${owner}
 			</legend>
 			<div>
-				<#if user?? && !hasSubscribedToUser >
+				<#if user?? && (hasSubscribedToUser??) && !hasSubscribedToUser >
+					<#if isSubscribe?? && isSubscribe>
 					<div class="pull-right">
 					    <a class="btn btn-primary" href="jsp/site/Portal.jsp?page=announce-subscribe&action=doCreateUserSubscription&username=${owner_name}" title="#i18n{announce.labelCreateUsertSubscriptionTitle}">
 					    	#i18n{announce.labelCreateUserSubscription}
 					    </a>
 				    </div>
+					</#if>
 				</#if>
 				<div class="announce-result clearfix">
 					<table class="table table-striped table-condensed">

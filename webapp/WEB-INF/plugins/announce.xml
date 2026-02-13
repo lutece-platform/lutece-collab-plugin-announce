@@ -3,7 +3,7 @@
     <name>announce</name>
     <class>fr.paris.lutece.plugins.announce.service.AnnouncePlugin
     </class>
-    <version>2.1.1-SNAPSHOT</version>
+    <version>3.0.0-SNAPSHOT</version>
     <description>announce.plugin.description</description>
     <provider>announce.plugin.provider</provider>
     <provider-url>http://lutece.paris.fr</provider-url>
@@ -89,15 +89,6 @@
             <daemon-class>fr.paris.lutece.plugins.announce.service.daemon.AnnounceExpirationDaemon
             </daemon-class>
         </daemon>
-        <daemon>
-            <daemon-id>announceSubscriptionDaemon</daemon-id>
-            <daemon-name>announce.daemon.announceSubscriptionDaemon.name
-            </daemon-name>
-            <daemon-description>announce.daemon.announceSubscriptionDaemon.description
-            </daemon-description>
-            <daemon-class>fr.paris.lutece.plugins.announce.service.daemon.AnnounceSubscriptionDaemon
-            </daemon-class>
-        </daemon>
     </daemons>
 
     <!-- Search Indexer Service -->
@@ -113,11 +104,6 @@
         <application>
             <application-id>announce</application-id>
             <application-class>fr.paris.lutece.plugins.announce.web.AnnounceApp
-            </application-class>
-        </application>
-        <application>
-            <application-id>announce-subscribe</application-id>
-            <application-class>fr.paris.lutece.plugins.announce.web.AnnounceSubscribeApp
             </application-class>
         </application>
     </applications>

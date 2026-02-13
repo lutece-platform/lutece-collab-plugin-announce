@@ -47,12 +47,15 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.constraints.NotNull;
 
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 
 import fr.paris.lutece.plugins.announce.business.Announce;
 import fr.paris.lutece.plugins.announce.business.AnnounceDTO;
 import fr.paris.lutece.plugins.announce.business.AnnounceHome;
+import fr.paris.lutece.plugins.announce.business.AnnounceNotify;
+import fr.paris.lutece.plugins.announce.business.AnnounceNotifyHome;
 import fr.paris.lutece.plugins.announce.business.AnnounceSearchFilter;
 import fr.paris.lutece.plugins.announce.business.AnnounceSearchFilterHome;
 import fr.paris.lutece.plugins.announce.business.AnnounceSort;
@@ -61,7 +64,7 @@ import fr.paris.lutece.plugins.announce.business.CategoryHome;
 import fr.paris.lutece.plugins.announce.business.Sector;
 import fr.paris.lutece.plugins.announce.business.SectorHome;
 import fr.paris.lutece.plugins.announce.service.AnnounceService;
-import fr.paris.lutece.plugins.announce.service.AnnounceSubscriptionProvider;
+import fr.paris.lutece.plugins.announce.service.IAnnounceSubscriptionProvider;
 import fr.paris.lutece.plugins.announce.service.announcesearch.AnnounceSearchService;
 import fr.paris.lutece.plugins.announce.service.upload.AnnounceAsynchronousUploadHandler;
 import fr.paris.lutece.plugins.announce.utils.AnnounceUtils;
@@ -72,8 +75,6 @@ import fr.paris.lutece.plugins.genericattributes.business.Field;
 import fr.paris.lutece.plugins.genericattributes.business.GenericAttributeError;
 import fr.paris.lutece.plugins.genericattributes.business.Response;
 import fr.paris.lutece.plugins.genericattributes.business.ResponseHome;
-import fr.paris.lutece.plugins.module.announce.subscribe.business.AnnounceSubscribtionDTO;
-import fr.paris.lutece.plugins.subscribe.web.SubscribeApp;
 import fr.paris.lutece.portal.business.mailinglist.Recipient;
 import fr.paris.lutece.portal.service.captcha.CaptchaSecurityService;
 import fr.paris.lutece.portal.service.i18n.I18nService;
@@ -235,6 +236,7 @@ public class AnnounceApp extends MVCApplication
     private static final String MARK_LIST_SECTORS = "list_sectors";
     private static final String MARK_LIST_CATEGORIES = "list_sector_categories";
     private static final String MARK_ENTRY_LIST_GEOLOCATION = "list_entryTypeGeolocation";
+    private static final String MARK_IS_SUBSCRIBE = "isSubscribe";
     // Messages
     private static final String ERROR_MESSAGE_WRONG_CAPTCHA = "portal.admin.message.wrongCaptcha";
 
@@ -250,6 +252,9 @@ public class AnnounceApp extends MVCApplication
     private static final String DEFAULT_PAGE_INDEX = "1";
     private static final CaptchaSecurityService _captchaSecurityService = new CaptchaSecurityService( );
 
+    // Bean name for the optional subscription provider
+    private static final String BEAN_ANNOUNCE_SUBSCRIPTION_PROVIDER = "announce.announceSubscriptionProvider";
+
     // private fields
     private AnnounceService _announceService = SpringContextService.getBean( AnnounceService.BEAN_NAME );
     private int _nDefaultItemsPerPage;
@@ -260,6 +265,24 @@ public class AnnounceApp extends MVCApplication
      * Date format for filters
      */
     private final DateFormat _dateFormat = AnnounceService.getDateFormat( );
+
+    /**
+     * Get the optional subscription provider. Returns null if the module-announce-subscribe
+     * module is not deployed.
+     *
+     * @return The subscription provider, or null if not available
+     */
+    private IAnnounceSubscriptionProvider getSubscriptionProvider( )
+    {
+        try
+        {
+            return SpringContextService.getBean( BEAN_ANNOUNCE_SUBSCRIPTION_PROVIDER );
+        }
+        catch( Exception e )
+        {
+            return null;
+        }
+    }
 
     /**
      * Get the default page to display
@@ -365,6 +388,8 @@ public class AnnounceApp extends MVCApplication
             model.put( MARK_USER, SecurityService.getInstance( ).getRegisteredUser( request ) );
         }
 
+        model.put( MARK_IS_SUBSCRIBE, AnnounceService.isSubscribeModuleAvailable( ) );
+
         XPage page = getXPage( TEMPLATE_LIST_ANNOUNCES, request.getLocale( ), model );
         page.setTitle( I18nService.getLocalizedString( PROPERTY_PAGE_TITLE_SEARCH_RESULTS, request.getLocale( ) ) );
 
@@ -409,6 +434,8 @@ public class AnnounceApp extends MVCApplication
         {
             model.put( MARK_USER, SecurityService.getInstance( ).getRegisteredUser( request ) );
         }
+
+        model.put( MARK_IS_SUBSCRIBE, AnnounceService.isSubscribeModuleAvailable( ) );
 
         HtmlTemplate template = AppTemplateService.getTemplate( TEMPLATE_LIST_ANNOUNCES_BY_ID, request.getLocale( ), model );
 
@@ -483,6 +510,7 @@ public class AnnounceApp extends MVCApplication
         if ( listAnnounces.size( ) < AppPropertiesService.getPropertyInt( PROPERTY_MAX_AMOUNT_ANNOUNCE, 20 ) )
         {
             model.put( MARK_LIST_FIELDS, getSectorList( ) );
+            model.put( MARK_IS_SUBSCRIBE, AnnounceService.isSubscribeModuleAvailable( ) );
 
             XPage page = getXPage( TEMPLATE_PAGE_CREATE_ANNOUNCE_STEP_CATEGORY, request.getLocale( ), model );
             page.setTitle( I18nService.getLocalizedString( PROPERTY_PAGE_TITLE_CREATE_ANNOUNCE, request.getLocale( ) ) );
@@ -750,6 +778,7 @@ public class AnnounceApp extends MVCApplication
             model.put( MARK_LIST_FIELDS, getSectorList( ) );
             model.put( MARK_LOCALE, request.getLocale( ) );
             model.put( MARK_IS_EXTEND_INSTALLED, PortalService.isExtendActivated( ) );
+            model.put( MARK_IS_SUBSCRIBE, AnnounceService.isSubscribeModuleAvailable( ) );
 
             Category category = CategoryHome.findByPrimaryKey( announce.getCategory( ).getId( ) );
             announce.setCategory( category );
@@ -825,7 +854,11 @@ public class AnnounceApp extends MVCApplication
             }
         }
 
-        model.put( MARK_HAS_SUBSCRIBED_TO_USER, ( user != null ) ? AnnounceSubscriptionProvider.getService( ).hasSubscribedToUser( user, strUserName ) : null );
+        IAnnounceSubscriptionProvider subscriptionProvider = getSubscriptionProvider( );
+        model.put( MARK_HAS_SUBSCRIBED_TO_USER,
+            ( user != null && subscriptionProvider != null )
+                ? subscriptionProvider.hasSubscribedToUser( user, strUserName )
+                : false );
 
         String strUserRealName = ( strUserInfo == null ) ? strUserName : strUserInfo;
         model.put( MARK_ANNOUNCE_OWNER, StringUtils.isNotBlank( strUserRealName ) ? strUserRealName : strUserName );
@@ -833,6 +866,8 @@ public class AnnounceApp extends MVCApplication
         model.put( MARK_ANNOUNCES_PUBLISHED_AMOUNT, nNbPlublishedAnnounces );
         model.put( MARK_LIST_FIELDS, getSectorList( ) );
         model.put( MARK_LOCALE, request.getLocale( ) );
+
+        model.put( MARK_IS_SUBSCRIBE, AnnounceService.isSubscribeModuleAvailable( ) );
 
         return getXPage( TEMPLATE_VIEW_ANNOUNCES, request.getLocale( ), model );
     }
@@ -857,11 +892,18 @@ public class AnnounceApp extends MVCApplication
 
             if ( user != null )
             {
-                XPage page = getXPage( );
-                page.setTitle( I18nService.getLocalizedString( PROPERTY_PAGE_TITLE, request.getLocale( ) ) );
-                page.setContent( SubscribeApp.getSubscriptionList( request ) );
+                IAnnounceSubscriptionProvider subscriptionProvider = getSubscriptionProvider( );
 
-                return page;
+                if ( subscriptionProvider != null )
+                {
+                    XPage page = getXPage( );
+                    page.setTitle( I18nService.getLocalizedString( PROPERTY_PAGE_TITLE, request.getLocale( ) ) );
+                    page.setContent( subscriptionProvider.getSubscriptionListHtml( request ) );
+
+                    return page;
+                }
+
+                SiteMessageService.setMessage( request, PROPERTY_NOT_AUTHORIZED, SiteMessage.TYPE_STOP );
             }
         }
         else
@@ -869,29 +911,6 @@ public class AnnounceApp extends MVCApplication
             SiteMessageService.setMessage( request, PROPERTY_NOT_AUTHORIZED, SiteMessage.TYPE_STOP );
         }
         throw new UserNotSignedException( );
-    }
-
-    public String getInfoSubscrition( HttpServletRequest request )
-    {
-        String strUserName = request.getParameter( PARAMETER_USERNAME );
-
-        List<AnnounceSubscribtionDTO> listSubs = AnnounceSubscriptionProvider.getService( ).getSubscriptionsToUsers( );
-        List<Announce> listAnn = AnnounceHome.getAnnouncesForUser( strUserName, AnnounceSort.DEFAULT_SORT );
-
-        if ( listSubs != null && !listSubs.isEmpty( ) && listAnn != null && !listAnn.isEmpty( ) )
-        {
-            for ( AnnounceSubscribtionDTO sub : listSubs )
-            {
-                for ( Announce ann : listAnn )
-                {
-                    if ( sub.getUserId( ).compareTo( ann.getContactInformation( ) ) == 0 )
-                    {
-                        return ann.getUserLastName( ) + " " + ann.getUserSecondName( );
-                    }
-                }
-            }
-        }
-        return "";
     }
 
     /**
@@ -1120,6 +1139,14 @@ public class AnnounceApp extends MVCApplication
 
         AnnounceHome.create( announce );
 
+        // If announce is auto-published (no moderation), queue for subscription notification
+        if ( announce.getPublished( ) )
+        {
+            AnnounceNotify announceNotify = new AnnounceNotify( );
+            announceNotify.setIdAnnounce( announce.getId( ) );
+            AnnounceNotifyHome.create( announceNotify );
+        }
+
         for ( Response response : announceDTO.getListResponse( ) )
         {
             ResponseHome.create( response );
@@ -1306,6 +1333,7 @@ public class AnnounceApp extends MVCApplication
         model.put( MARK_SECTOR, sector );
         model.put( MARK_LIST_FIELDS, getSectorList( ) );
         model.put( MARK_LOCALE, request.getLocale( ) );
+        model.put( MARK_IS_SUBSCRIBE, AnnounceService.isSubscribeModuleAvailable( ) );
 
         if ( category.getDisplayCaptcha( ) && _captchaSecurityService.isAvailable( ) )
         {
@@ -1394,6 +1422,8 @@ public class AnnounceApp extends MVCApplication
         model.put( MARK_PAGINATOR, paginator );
         model.put( MARK_ANNOUNCES_LIST, paginator.getPageItems( ) );
         model.put( MARK_USER, user );
+
+        model.put( MARK_IS_SUBSCRIBE, AnnounceService.isSubscribeModuleAvailable( ) );
 
         HtmlTemplate template = AppTemplateService.getTemplate( TEMPLATE_MY_ANNOUNCES, request.getLocale( ), model );
 
@@ -1526,12 +1556,12 @@ public class AnnounceApp extends MVCApplication
             {
                 strPriceMin = strPriceMin.replace( CONSTANT_BLANK_SPACE, StringUtils.EMPTY ).trim( );
 
-                if ( StringUtils.contains( strPriceMin, CONSTANT_COMA ) )
+                if ( Strings.CS.contains( strPriceMin, CONSTANT_COMA ) )
                 {
                     strPriceMin = strPriceMin.substring( 0, strPriceMin.indexOf( CONSTANT_COMA ) );
                 }
 
-                if ( StringUtils.contains( strPriceMin, CONSTANT_POINT ) )
+                if ( Strings.CS.contains( strPriceMin, CONSTANT_POINT ) )
                 {
                     strPriceMin = strPriceMin.substring( 0, strPriceMin.indexOf( CONSTANT_POINT ) );
                 }
@@ -1546,12 +1576,12 @@ public class AnnounceApp extends MVCApplication
             {
                 strPriceMax = strPriceMax.replace( CONSTANT_BLANK_SPACE, StringUtils.EMPTY ).trim( );
 
-                if ( StringUtils.contains( strPriceMax, CONSTANT_COMA ) )
+                if ( Strings.CS.contains( strPriceMax, CONSTANT_COMA ) )
                 {
                     strPriceMax = strPriceMax.substring( 0, strPriceMax.indexOf( CONSTANT_COMA ) );
                 }
 
-                if ( StringUtils.contains( strPriceMax, CONSTANT_POINT ) )
+                if ( Strings.CS.contains( strPriceMax, CONSTANT_POINT ) )
                 {
                     strPriceMax = strPriceMax.substring( 0, strPriceMax.indexOf( CONSTANT_POINT ) );
                 }

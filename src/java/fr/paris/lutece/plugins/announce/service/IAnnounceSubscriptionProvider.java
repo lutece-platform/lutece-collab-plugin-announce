@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002-2014, Mairie de Paris
+ * Copyright (c) 2002-2021, City of Paris
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -31,23 +31,37 @@
  *
  * License 1.0
  */
-package fr.paris.lutece.plugins.announce.service.search;
-import org.apache.lucene.analysis.Analyzer;
-import org.apache.lucene.analysis.TokenStream;
-import org.apache.lucene.analysis.core.LowerCaseFilter;
-import org.apache.lucene.analysis.ngram.NGramTokenizer;
-import org.apache.lucene.analysis.miscellaneous.ASCIIFoldingFilter;
-/**
- * LuceneAnalyzer that uses NGramTokenizer, ASCIIFoldingFilter and LowerCaseFilter
- */
-public class LuceneAnalyzer extends Analyzer
-{
-    @Override
-    protected TokenStreamComponents createComponents(String fieldName) {
-            NGramTokenizer tokenizer = new NGramTokenizer(3, 10);
-            TokenStream tokenStream = new ASCIIFoldingFilter(tokenizer);
-            tokenStream = new LowerCaseFilter(tokenStream);
-            return new TokenStreamComponents(tokenizer, tokenStream);
-        }
+package fr.paris.lutece.plugins.announce.service;
 
+import javax.servlet.http.HttpServletRequest;
+
+import fr.paris.lutece.portal.service.security.LuteceUser;
+
+/**
+ * Interface for subscription provider services in the announce plugin.
+ * This interface allows the subscription feature to be optional:
+ * if the module-announce-subscribe module is present, it provides the implementation;
+ * otherwise, subscription features are simply not available.
+ */
+public interface IAnnounceSubscriptionProvider
+{
+    /**
+     * Check if a user has subscribed to another user
+     *
+     * @param user
+     *            The subscriber user
+     * @param strUserName
+     *            The name of the subscribed user
+     * @return True if the user has subscribed to the given user, false otherwise
+     */
+    boolean hasSubscribedToUser( LuteceUser user, String strUserName );
+
+    /**
+     * Get the HTML content displaying the list of subscriptions for the current user
+     *
+     * @param request
+     *            The HTTP request
+     * @return The HTML content of the subscription list
+     */
+    String getSubscriptionListHtml( HttpServletRequest request );
 }

@@ -14,9 +14,11 @@
                 <li>
                     <a href="jsp/site/Portal.jsp?page=announce&action=my_announces">#i18n{announce.navigation_menu.userAnnounces}</a>
                 </li>
+                <#if isSubscribe?? && isSubscribe>
                 <li>
                     <a href="jsp/site/Portal.jsp?page=announce&action=view_subscriptions">#i18n{announce.navigation_menu.usersubscriptions}</a>
                 </li>
+                </#if>
             </ul>
      
     </div>
@@ -37,9 +39,11 @@
 							<#else>
 								${category.label}
 							</#if>
+							<#if isSubscribe?? && isSubscribe>
 							<a class="btn btn-primary" href="jsp/site/Portal.jsp?page=announce-subscribe&action=doCreateCategorySubscription&id_category=${category.id}" title="#i18n{announce.navigation_menu.category_subscription_title}">
-								<i class="fa fa-rss-square">&nbsp;</i>
+								<i class="ti ti-rss">&nbsp;</i>
 							</a>
+							</#if>
                         </li>
                         </#list>
                     </ul>

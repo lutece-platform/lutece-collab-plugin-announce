@@ -60,7 +60,7 @@ public final class AnnounceNotifyHome
         _dao.delete( nIdAnnounceNotify, _plugin );
     }
 
-    public static List<AnnounceNotify> slecteAll( )
+    public static List<AnnounceNotify> selectAll( )
     {
         return _dao.load( _plugin );
     }

@@ -11,13 +11,13 @@
     #i18n{announce.notification.mail.descriptionLabel}: ${announce.description}
     <ul>
         <li>
-            <a href="${prod_url}/jsp/admin/plugins/announce/PreviewAnnounce.jsp?announce_id=${announce.id}">#i18n{announce.notification.mail.previewAnnounce}</a>
+            <a href="${prod_url!}/jsp/admin/plugins/announce/PreviewAnnounce.jsp?announce_id=${announce.id}">#i18n{announce.notification.mail.previewAnnounce}</a>
         </li>
         <li>
-            <a href="${prod_url}/jsp/admin/plugins/announce/ManageAnnounces.jsp">#i18n{announce.notification.mail.manageAnnounces}</a>
+            <a href="${prod_url!}/jsp/admin/plugins/announce/ManageAnnounces.jsp">#i18n{announce.notification.mail.manageAnnounces}</a>
         </li>
         <li>
-            <a href="${prod_url}/jsp/admin/plugins/announce/RemoveAnnounce.jsp?announce_id=${announce.id}">#i18n{announce.notification.mail.deleteWithoutPreview}</a>
+            <a href="${prod_url!}/jsp/admin/plugins/announce/RemoveAnnounce.jsp?announce_id=${announce.id}">#i18n{announce.notification.mail.deleteWithoutPreview}</a>
         </li>
     </ul>
 </body>
