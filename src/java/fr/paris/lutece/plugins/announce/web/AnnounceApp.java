@@ -72,6 +72,7 @@ import fr.paris.lutece.plugins.genericattributes.business.Entry;
 import fr.paris.lutece.plugins.genericattributes.business.EntryFilter;
 import fr.paris.lutece.plugins.genericattributes.business.EntryHome;
 import fr.paris.lutece.plugins.genericattributes.business.Field;
+import fr.paris.lutece.plugins.genericattributes.business.FieldHome;
 import fr.paris.lutece.plugins.genericattributes.business.GenericAttributeError;
 import fr.paris.lutece.plugins.genericattributes.business.Response;
 import fr.paris.lutece.plugins.genericattributes.business.ResponseHome;
@@ -124,7 +125,7 @@ public class AnnounceApp extends MVCApplication
     /**
      * The default path of pages of this application
      */
-    public static final String PROPERTY_PAGE_PATH = "announce.page_announce.pageFPathLabel";
+    public static final String PROPERTY_PAGE_PATH = "announce.page_announce.pagePathLabel";
     private static final long serialVersionUID = 3586318619582357870L;
     private static final String PARAMETER_USERNAME = "username";
 
@@ -239,6 +240,8 @@ public class AnnounceApp extends MVCApplication
     private static final String MARK_IS_SUBSCRIBE = "isSubscribe";
     // Messages
     private static final String ERROR_MESSAGE_WRONG_CAPTCHA = "portal.admin.message.wrongCaptcha";
+    private static final String ERROR_MESSAGE_MANDATORY_FIELDS = "announce.message.error.mandatory_fields";
+    private static final String ERROR_MESSAGE_INVALID_PRICE_FORMAT = "announce.message.error.invalid_price_format";
 
     // Constants
     private static final String CONSTANT_BLANK_SPACE = " ";
@@ -325,6 +328,12 @@ public class AnnounceApp extends MVCApplication
         String strSort = ( request.getParameter( PARAMETER_SORT_BY ) == null ? "" : request.getParameter( PARAMETER_SORT_BY ) );
         AnnounceSort anSort = AnnounceSort.DEFAULT_SORT;
         String strUrl = getUrlSearchAnnounceSort( request, 5 );
+
+        if ( strSort.compareTo( "date_creation" ) == 0 )
+        {
+            anSort = AnnounceSort.getAnnounceSort( AnnounceSort.SORT_DATE_CREATION, false );
+            strUrl = getUrlSearchAnnounceSort( request, 0 );
+        }
 
         if ( strSort.compareTo( "date_modification" ) == 0 )
         {
@@ -734,7 +743,8 @@ public class AnnounceApp extends MVCApplication
 
         if ( bAllowAccess )
         {
-            Collection<Response> listResponses = AnnounceHome.findListResponse( announce.getId( ), false );
+            List<Response> listResponses = AnnounceHome.findListResponse( announce.getId( ), false );
+            listResponses = sortResponsesByEntryHierarchy( listResponses, announce.getCategory( ).getId( ) );
             Collection<Entry> listGeolocalisation = new ArrayList<>( );
 
             for ( Response response : listResponses )
@@ -1054,15 +1064,41 @@ public class AnnounceApp extends MVCApplication
         String strDescriptionAnnounce = request.getParameter( PARAMETER_DESCRIPTION_ANNOUNCE );
         String strContactInformation = request.getParameter( PARAMETER_CONTACT_INFORMATION );
         String strTags = request.getParameter( PARAMETER_TAGS );
-        Double nPriceAnnounce = ( request.getParameter( PARAMETER_PRICE_ANNOUNCE ) == null ) ? 0.0
-                : Double.parseDouble( request.getParameter( PARAMETER_PRICE_ANNOUNCE ) );
+        String strPrice = request.getParameter( PARAMETER_PRICE_ANNOUNCE );
+        Double nPriceAnnounce = 0.0;
+        boolean bInvalidPriceFormat = false;
+        if ( StringUtils.isNotEmpty( strPrice ) )
+        {
+            try
+            {
+                nPriceAnnounce = Double.parseDouble( strPrice.replace( ',', '.' ) );
+            }
+            catch( NumberFormatException e )
+            {
+                bInvalidPriceFormat = true;
+            }
+        }
+
+        List<GenericAttributeError> listFormErrors = new ArrayList<>( );
 
         if ( StringUtils.isEmpty( strTitleAnnounce ) || StringUtils.isEmpty( strDescriptionAnnounce ) || StringUtils.isEmpty( strContactInformation )
-                || ( category.getDisplayPrice( ) && category.getPriceMandatory( ) && ( nPriceAnnounce == 0.0 ) ) )
+                || ( category.getDisplayPrice( ) && category.getPriceMandatory( ) && ( nPriceAnnounce == 0.0 ) && !bInvalidPriceFormat ) )
         {
-            SiteMessageService.setMessage( request, Messages.MANDATORY_FIELDS, SiteMessage.TYPE_STOP );
+            GenericAttributeError error = new GenericAttributeError( );
+            error.setErrorMessage( I18nService.getLocalizedString( ERROR_MESSAGE_MANDATORY_FIELDS, request.getLocale( ) ) );
+            listFormErrors.add( error );
+        }
 
-            return new ArrayList<>( );
+        if ( bInvalidPriceFormat )
+        {
+            GenericAttributeError error = new GenericAttributeError( );
+            error.setErrorMessage( I18nService.getLocalizedString( ERROR_MESSAGE_INVALID_PRICE_FORMAT, request.getLocale( ) ) );
+            listFormErrors.add( error );
+        }
+
+        if ( CollectionUtils.isNotEmpty( listFormErrors ) )
+        {
+            return listFormErrors;
         }
 
         switch( category.getAnnouncesValidation( ) )
@@ -1191,15 +1227,41 @@ public class AnnounceApp extends MVCApplication
         String strDescriptionAnnounce = request.getParameter( PARAMETER_DESCRIPTION_ANNOUNCE );
         String strContactInformation = request.getParameter( PARAMETER_CONTACT_INFORMATION );
         String strTags = request.getParameter( PARAMETER_TAGS );
-        Double nPriceAnnounce = ( request.getParameter( PARAMETER_PRICE_ANNOUNCE ) == null ) ? 0.0
-                : Double.parseDouble( request.getParameter( PARAMETER_PRICE_ANNOUNCE ) );
+        String strPrice = request.getParameter( PARAMETER_PRICE_ANNOUNCE );
+        Double nPriceAnnounce = 0.0;
+        boolean bInvalidPriceFormat = false;
+        if ( StringUtils.isNotEmpty( strPrice ) )
+        {
+            try
+            {
+                nPriceAnnounce = Double.parseDouble( strPrice.replace( ',', '.' ) );
+            }
+            catch( NumberFormatException e )
+            {
+                bInvalidPriceFormat = true;
+            }
+        }
+
+        List<GenericAttributeError> listFormErrors = new ArrayList<>( );
 
         if ( StringUtils.isEmpty( strTitleAnnounce ) || StringUtils.isEmpty( strDescriptionAnnounce ) || StringUtils.isEmpty( strContactInformation )
-                || ( category.getDisplayPrice( ) && category.getPriceMandatory( ) && ( nPriceAnnounce == 0.0 ) ) )
+                || ( category.getDisplayPrice( ) && category.getPriceMandatory( ) && ( nPriceAnnounce == 0.0 ) && !bInvalidPriceFormat ) )
         {
-            SiteMessageService.setMessage( request, Messages.MANDATORY_FIELDS, SiteMessage.TYPE_STOP );
+            GenericAttributeError error = new GenericAttributeError( );
+            error.setErrorMessage( I18nService.getLocalizedString( ERROR_MESSAGE_MANDATORY_FIELDS, request.getLocale( ) ) );
+            listFormErrors.add( error );
+        }
 
-            return null;
+        if ( bInvalidPriceFormat )
+        {
+            GenericAttributeError error = new GenericAttributeError( );
+            error.setErrorMessage( I18nService.getLocalizedString( ERROR_MESSAGE_INVALID_PRICE_FORMAT, request.getLocale( ) ) );
+            listFormErrors.add( error );
+        }
+
+        if ( CollectionUtils.isNotEmpty( listFormErrors ) )
+        {
+            return listFormErrors;
         }
 
         announce.setTitle( strTitleAnnounce );
@@ -1755,5 +1817,98 @@ public class AnnounceApp extends MVCApplication
         urlItem.addParameter( PARAMETER_USERNAME, strUserName );
 
         return urlItem.getUrl( );
+    }
+
+    /**
+     * Sort responses according to the hierarchical order of entries in the category form.
+     * This ensures conditional question responses appear right after their parent entry responses.
+     *
+     * @param listResponses
+     *            The flat list of responses
+     * @param nIdCategory
+     *            The id of the category to get the entry hierarchy
+     * @return The sorted list of responses
+     */
+    private static List<Response> sortResponsesByEntryHierarchy( List<Response> listResponses, int nIdCategory )
+    {
+        // Build the ordered list of entry IDs following the form hierarchy
+        List<Integer> listOrderedEntryIds = new ArrayList<>( );
+        EntryFilter filter = new EntryFilter( );
+        filter.setIdResource( nIdCategory );
+        filter.setResourceType( Category.RESOURCE_TYPE );
+        filter.setEntryParentNull( EntryFilter.FILTER_TRUE );
+        filter.setFieldDependNull( EntryFilter.FILTER_TRUE );
+
+        List<Entry> listEntryFirstLevel = EntryHome.getEntryList( filter );
+
+        for ( Entry entry : listEntryFirstLevel )
+        {
+            collectEntryIdsRecursive( entry.getIdEntry( ), listOrderedEntryIds );
+        }
+
+        // Build a map of position by entry ID
+        Map<Integer, Integer> mapEntryOrder = new HashMap<>( );
+
+        for ( int i = 0; i < listOrderedEntryIds.size( ); i++ )
+        {
+            mapEntryOrder.put( listOrderedEntryIds.get( i ), i );
+        }
+
+        // Sort responses based on the entry order
+        List<Response> sortedResponses = new ArrayList<>( listResponses );
+        sortedResponses.sort( ( r1, r2 ) ->
+        {
+            int order1 = ( r1.getEntry( ) != null ) ? mapEntryOrder.getOrDefault( r1.getEntry( ).getIdEntry( ), Integer.MAX_VALUE ) : Integer.MAX_VALUE;
+            int order2 = ( r2.getEntry( ) != null ) ? mapEntryOrder.getOrDefault( r2.getEntry( ).getIdEntry( ), Integer.MAX_VALUE ) : Integer.MAX_VALUE;
+
+            return Integer.compare( order1, order2 );
+        } );
+
+        return sortedResponses;
+    }
+
+    /**
+     * Recursively collect entry IDs in hierarchical order (entry, then its conditional children).
+     *
+     * @param nIdEntry
+     *            The entry ID to process
+     * @param listOrderedEntryIds
+     *            The list to add IDs to
+     */
+    private static void collectEntryIdsRecursive( int nIdEntry, List<Integer> listOrderedEntryIds )
+    {
+        Entry entry = EntryHome.findByPrimaryKey( nIdEntry );
+
+        if ( entry == null )
+        {
+            return;
+        }
+
+        if ( Boolean.TRUE.equals( entry.getEntryType( ).getGroup( ) ) )
+        {
+            listOrderedEntryIds.add( nIdEntry );
+
+            for ( Entry child : entry.getChildren( ) )
+            {
+                collectEntryIdsRecursive( child.getIdEntry( ), listOrderedEntryIds );
+            }
+        }
+        else
+        {
+            listOrderedEntryIds.add( nIdEntry );
+
+            for ( Field field : entry.getFields( ) )
+            {
+                Field fullField = FieldHome.findByPrimaryKey( field.getIdField( ) );
+
+                if ( fullField.getConditionalQuestions( ) != null )
+                {
+                    for ( Entry conditionalEntry : fullField.getConditionalQuestions( ) )
+                    {
+                        collectEntryIdsRecursive( conditionalEntry.getIdEntry( ), listOrderedEntryIds );
+                    }
+                }
+            }
+        }
     }
 }

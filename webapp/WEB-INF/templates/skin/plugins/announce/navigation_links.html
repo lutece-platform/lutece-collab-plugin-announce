@@ -1,0 +1,21 @@
+<div class="card card-body mb-3">
+    <h6>
+        #i18n{announce.navigation_menu.title}
+    </h6>
+    <ul class="list-unstyled mb-0">
+        <li>
+            <a href="jsp/site/Portal.jsp?page=announce">#i18n{announce.navigation_menu.home}</a>
+        </li>
+        <li>
+            <a href="jsp/site/Portal.jsp?page=announce&action=addnew">#i18n{announce.navigation_menu.postAnnounce}</a>
+        </li>
+        <li>
+            <a href="jsp/site/Portal.jsp?page=announce&action=my_announces">#i18n{announce.navigation_menu.userAnnounces}</a>
+        </li>
+        <#if isSubscribe?? && isSubscribe>
+        <li>
+            <a href="jsp/site/Portal.jsp?page=announce&action=view_subscriptions">#i18n{announce.navigation_menu.usersubscriptions}</a>
+        </li>
+        </#if>
+    </ul>
+</div>

@@ -1,17 +1,17 @@
-<div class="boxed2">
-        <h2>Catégories</h2>
-	<ul class="sectors">
+<div class="card card-body">
+	<h5>#i18n{announce.navigation_menu.categories.title}</h5>
+	<ul class="list-unstyled sectors">
 	<#list list_sectors as sector>
-            <li class="sector">
-                <a href="#">${sector.label}</a>
-                <ul>
-                    <#list sector.listCategories as category>
-                    <li>
-                        <a href="#">${category.label}</a>
-                    </li>
-                    </#list>
-                </ul>
-            </li>
+		<li class="sector">
+			<a href="#">${sector.label}</a>
+			<ul class="list-unstyled ms-3">
+				<#list sector.listCategories as category>
+				<li>
+					<a href="#">${category.label}</a>
+				</li>
+				</#list>
+			</ul>
+		</li>
 	</#list>
 	</ul>
 </div>

@@ -1,34 +1,40 @@
-<div class="form-group">
-	<label class="col-sm-2 control-label" for="attribute${entry.idEntry}">${entry.title}<#if entry.mandatory> *</#if></label>
+<div class="row mb-3">
+	<label class="col-sm-2 col-form-label" for="attribute${entry.idEntry}">${entry.title}<#if entry.mandatory> *</#if></label>
 	<#assign default_val=getFieldValueByCode( entry, "text_config")>
 	<#assign field_width=getFieldValueByCode( entry, "width")>
 	<#assign field_max_size=getFieldValueByCode( entry, "max_size")>
 	<div class="col-sm-10">
-		<input type="text" name="attribute${entry.idEntry}" id="attribute${entry.idEntry}" size="${field_width}"
-			<#if list_responses??>
-				<#list list_responses as response>
+		<#assign hasError = false>
+		<#assign responseValue = ''>
+		<#if list_responses??>
+			<#list list_responses as response>
 				<#if response.entry.idEntry == entry.idEntry>
 					<#if response.toStringValueResponse??>
-						value="${response.toStringValueResponse}"
+						<#assign responseValue = response.toStringValueResponse>
 					</#if>
 					<#if response.entry.error??>
-						class="error"
+						<#assign hasError = true>
 					</#if>
-					</#if>
-				</#list>
+				</#if>
+			</#list>
+		</#if>
+		<input type="text" class="form-control ${entry.CSSClass!}<#if hasError> is-invalid</#if>" name="attribute${entry.idEntry}" id="attribute${entry.idEntry}" size="${field_width}"
+			<#if list_responses??>
+				value="${responseValue}"
 			<#else>
 				<#if default_val??>
 					value="${default_val}"
-			 	<#else>
-					 value="" 
+				<#else>
+					value=""
 				</#if>
 			</#if>
 			<#if field_max_size?number!=-1>
 				maxlength="${field_max_size}"
 			</#if>
-			class="${entry.CSSClass!} "	/>
-		<#if entry.helpMessage?exists&&entry.helpMessage!=''>
-			<p class="help-block">${entry.helpMessage}</p>
+			<#if entry.mandatory>required</#if>
+		/>
+		<#if entry.helpMessage?? && entry.helpMessage != ''>
+			<p class="form-text">${entry.helpMessage}</p>
 		</#if>
 	</div>
 </div>
@@ -36,17 +42,17 @@
 	<#list list_responses as response>
 		<#if response.entry.idEntry == entry.idEntry && response.entry.error??>
 			<#assign error = response.entry.error>
-			<div class="alert alert-error"><#if error.mandatoryError>#i18n{announce.message.mandatory.entry}<#else>${error.errorMessage}</#if></div>
+			<div class="alert alert-danger"><#if error.mandatoryError>#i18n{announce.message.mandatory.entry}<#else>${error.errorMessage}</#if></div>
 		</#if>
 	</#list>
 </#if>
 <#assign confirmField=getFieldByCode( entry, "confirm_field")>
 <#if confirmField.value?boolean>
-<div class="control-group">
-	<label class="control-label" for="attribute${entry.idEntry}_confirm_field">${entry.confirmFieldTitle}<#if entry.mandatory> *</#if></label>
-	<div class="controls">
-		<input type="text" name="attribute${entry.idEntry}_confirm_field" id="attribute${entry.idEntry}_confirm_field" size="${field.width}" value="" 
-		<#if field_max_size!=-1>maxlength="${field_max_size}"</#if>/>
+<div class="row mb-3">
+	<label class="col-sm-2 col-form-label" for="attribute${entry.idEntry}_confirm_field">${entry.confirmFieldTitle}<#if entry.mandatory> *</#if></label>
+	<div class="col-sm-10">
+		<input type="text" class="form-control" name="attribute${entry.idEntry}_confirm_field" id="attribute${entry.idEntry}_confirm_field" size="${field.width}" value=""
+		<#if field_max_size!=-1>maxlength="${field_max_size}"</#if> <#if entry.mandatory>required</#if>/>
 	</div>
 </div>
 </#if>

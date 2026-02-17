@@ -1,55 +1,41 @@
-<div class="form-group">
-	<label class="control-label col-xs-12 col-sm-12 col-md-3" for="attribute${entry.idEntry}">${entry.title} <#if entry.mandatory>*</#if></label>
-	<div class="col-xs-12 col-sm-12 col-md-9">	 
-		<select name="attribute${entry.idEntry}" id="attribute${entry.idEntry}"
-			<#if list_responses??>
-				<#list list_responses as response>
-					<#if response.entry.idEntry == entry.idEntry && response.entry.error??>
-						class="error"
-						<#break>
-					</#if>
-				</#list>
-				class="${entry.CSSClass!} form-control"</#if>>
-		<option value="">#i18n{announce.xpage.form.noValue}</option>
-		<#list entry.fields as field>
-			<#if field.code == 'answer_choice'>
-				<option  value="${field.idField}" <#if field.comment?? && field.comment != ''>title="${field.comment}"</#if>
-					<#if list_responses??>
-						<#list list_responses as response>
-							<#if response.entry.idEntry == entry.idEntry && response.field??>
-								<#if response.field.idField == field.idField>
-									selected ="selected"
-									<#break>
-								</#if>
-							</#if>
-						</#list>
-					<#else>
-						<#if field.defaultValue>
-							selected ="selected"
-						</#if>
-					</#if>
-					>
-						${field.title}
-				</option>
-			</#if>
-		</#list>
-	</select>
-	<#if entry.helpMessage?exists&&entry.helpMessage!=''>
-	<p class="help-block">${entry.helpMessage}</p>
-	</#if>
-	<#if list_responses??>
-		<#list list_responses as response>
-			<#if response.entry.idEntry == entry.idEntry && response.entry.error??>
-				<div class="alert alert-error">
-					<#assign error = response.entry.error>
-					<#if error.mandatoryError>
-						#i18n{announce.message.mandatory.entry}
-					<#else>
-						${error.errorMessage}
-					</#if>
-				</div>	
-				</#if>
-			</#list>
-	</#if>
-	</div>
-</div>
+<#assign hasError = false>
+<#assign errorMessage = ''>
+<#if list_responses??>
+    <#list list_responses as response>
+        <#if response.entry.idEntry == entry.idEntry && response.entry.error??>
+            <#assign hasError = true>
+            <#assign error = response.entry.error>
+            <#if error.mandatoryError>
+                <#assign errorMessage = '#i18n{announce.message.mandatory.entry}'>
+            <#else>
+                <#assign errorMessage = error.errorMessage!>
+            </#if>
+        </#if>
+    </#list>
+</#if>
+<@formGroup labelKey='${entry.title}' labelFor='attribute${entry.idEntry}' mandatory=entry.mandatory helpKey='${entry.helpMessage!}' rows=2>
+    <select name="attribute${entry.idEntry}" id="attribute${entry.idEntry}" class="form-select ${entry.CSSClass!}<#if hasError> is-invalid</#if>">
+        <option value="">#i18n{announce.message.noValue}</option>
+        <#list entry.fields as field>
+            <#if field.code == 'answer_choice'>
+                <#assign isSelected = false>
+                <#if list_responses??>
+                    <#list list_responses as response>
+                        <#if response.entry.idEntry == entry.idEntry && response.field??>
+                            <#if response.field.idField == field.idField>
+                                <#assign isSelected = true>
+                                <#break>
+                            </#if>
+                        </#if>
+                    </#list>
+                <#else>
+                    <#assign isSelected = field.defaultValue>
+                </#if>
+                <option value="${field.idField}"<#if field.comment?? && field.comment != ''> title="${field.comment}"</#if><#if isSelected> selected</#if>>${field.title!}</option>
+            </#if>
+        </#list>
+    </select>
+</@formGroup>
+<#if hasError>
+    <@alert color='danger'>${errorMessage}</@alert>
+</#if>

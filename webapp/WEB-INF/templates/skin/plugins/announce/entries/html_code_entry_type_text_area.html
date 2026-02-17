@@ -3,14 +3,14 @@
 <#assign field_width=getFieldValueByCode( entry, "width")>
 	<!#-- 	fieldInLine means use rich text -->
 	<#if has_error>
-		<textarea name="attribute${entry.idEntry}" id="attribute${entry.idEntry}" cols="${field_width}" rows="${field_height}" class="alert alert-error<#if entry.fieldInLine> richtext</#if>">${responseContent}</textarea>
+		<textarea name="attribute${entry.idEntry}" id="attribute${entry.idEntry}" cols="${field_width}" rows="${field_height}" class="form-control is-invalid<#if entry.fieldInLine> richtext</#if>" <#if entry.mandatory>required</#if>>${responseContent}</textarea>
 	<#else>
-		<textarea name="attribute${entry.idEntry}" id="attribute${entry.idEntry}" cols="${field_width}" rows="${field_height}" class="${entry.CSSClass!}<#if entry.fieldInLine> richtext</#if>" >${responseContent}</textarea>
+		<textarea name="attribute${entry.idEntry}" id="attribute${entry.idEntry}" cols="${field_width}" rows="${field_height}" class="form-control ${entry.CSSClass!}<#if entry.fieldInLine> richtext</#if>" <#if entry.mandatory>required</#if>>${responseContent}</textarea>
 	</#if>
 </#macro>
 
-<div class="form-group">
-<label class="col-sm-2 control-label" for="attribute${entry.idEntry}">${entry.title}<#if entry.mandatory> *</#if></label>
+<div class="row mb-3">
+<label class="col-sm-2 col-form-label" for="attribute${entry.idEntry}">${entry.title}<#if entry.mandatory> *</#if></label>
 <div class="col-sm-10">
 	<#assign field=getFieldByCode( entry, "text_config")>
 	<#if list_responses??>
@@ -24,19 +24,19 @@
 			</#if>
 		</#list>
 	<#else>
-		<#if field.value?exists>
+		<#if field.value??>
 			<@getTextAreaContent responseContent=field.value has_error=false entry=entry field=field/>
 		<#else>
 			<@getTextAreaContent responseContent="" has_error=false entry=entry field=field/>
 		</#if>
 	</#if>
-	<#if entry.helpMessage?exists&&entry.helpMessage!=''>
-		<p class="help-block">${entry.helpMessage}</p>
+	<#if entry.helpMessage?? && entry.helpMessage != ''>
+		<p class="form-text">${entry.helpMessage}</p>
 	</#if>
 	<#if list_responses??>
 		<#list list_responses as response>
 			<#if response.entry.idEntry == entry.idEntry && response.entry.error??>
-				<div class="alert alert-error">
+				<div class="alert alert-danger">
 					<#assign error = response.entry.error>
 					<#if error.mandatoryError>#i18n{announce.message.mandatory.entry}<#else>${error.errorMessage}</#if>
 				</div>
@@ -50,4 +50,3 @@
 	<#include "/util/editor/editor.html" />
 	<@initEditor />
 </#if>
-		

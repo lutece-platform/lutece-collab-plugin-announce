@@ -5,34 +5,55 @@
             <@aButton href='jsp/admin/plugins/announce/CreateCategory.jsp' buttonIcon='plus' title='#i18n{announce.manage_categories.buttonCreateCategory}' color='primary' />
         </@pageHeader>
         <@tabs tab="categories" />
-        <form method="post" action="jsp/admin/plugins/announce/ManageCategories.jsp">
-            <@paginationAdmin paginator=paginator form=0 combo=1 showcount=0 />
-        </form>
+        <@tform method='post' action='jsp/admin/plugins/announce/ManageCategories.jsp'>
+            <@paginationAdmin paginator=paginator form=0 combo=1 />
+        </@tform>
         <#if list_categories?has_content>
             <@table>
-                <tr>
-                    <th>#i18n{announce.category.label}</th>
-                    <th>#i18n{announce.category.numberAnnounces}</th>
-                    <th>#i18n{portal.util.labelActions}</th>
-                </tr>
+                <@tr>
+                    <@th>
+                        #i18n{announce.manage_categories.columnTitleLabel}
+                        <@sort jsp_url='jsp/admin/plugins/announce/ManageCategories.jsp' attribute='label_category' />
+                    </@th>
+                    <@th>
+                        #i18n{announce.category.sector}
+                        <@sort jsp_url='jsp/admin/plugins/announce/ManageCategories.jsp' attribute='label_sector' />
+                    </@th>
+                    <@th>
+                        #i18n{announce.category.numberAnnounces}
+                        <@sort jsp_url='jsp/admin/plugins/announce/ManageCategories.jsp' attribute='number_announces' />
+                    </@th>
+                    <@th>#i18n{portal.util.labelActions}</@th>
+                </@tr>
                 <#list list_categories as category>
-                <tr>
-                    <td>${category.labelSector!} > ${category.label!}</td>
-                    <td>${category.numberAnnounces!}</td>
-                    <td>
-                        <@aButton href='jsp/admin/plugins/announce/ModifyCategory.jsp?category_id=${category.id}' buttonIcon='edit' title='#i18n{portal.util.labelModify}' />
-                        <@aButton href='jsp/admin/plugins/announce/ViewFormExample.jsp?category_id=${category.id}' buttonIcon='eye' title='#i18n{announce.manage_categories.formPreview}' />
-                        <@aButton href='jsp/admin/plugins/announce/DoDuplicateCategory.jsp?category_id=${category.id}' buttonIcon='copy' title='#i18n{announce.manage_categories.duplicateCategory}' />
-                        <@aButton href='jsp/admin/plugins/announce/RemoveCategory.jsp?category_id=${category.id}' buttonIcon='trash' color='danger' title='#i18n{announce.manage_categories.removeCategoryTitle}' />
-                    </td>
-                </tr>
+                    <@tr>
+                        <@td>${category.label!}</@td>
+                        <@td>${category.labelSector!}</@td>
+                        <@td>${category.numberAnnounces!}</@td>
+                        <@td>
+                            <@aButton class='dropdown-toggle' dropdownMenu=true href='#' title='#i18n{portal.util.labelActions}' color='' hideTitle=['xs','sm','md']>
+                                <@div>
+                                    <@link class='dropdown-item' href='jsp/admin/plugins/announce/ModifyCategory.jsp?category_id=${category.id}' label='#i18n{portal.util.labelModify}' />
+                                </@div>
+                                <@div>
+                                    <@link class='dropdown-item' href='jsp/admin/plugins/announce/ViewFormExample.jsp?category_id=${category.id}' label='#i18n{announce.manage_categories.formPreview}' />
+                                </@div>
+                                <@div>
+                                    <@link class='dropdown-item' href='jsp/admin/plugins/announce/DoDuplicateCategory.jsp?category_id=${category.id}' label='#i18n{announce.manage_categories.duplicateCategory}' />
+                                </@div>
+                                <@div>
+                                    <@link class='dropdown-item text-danger' href='jsp/admin/plugins/announce/RemoveCategory.jsp?category_id=${category.id}' label='#i18n{announce.manage_categories.removeCategoryTitle}' />
+                                </@div>
+                            </@aButton>
+                        </@td>
+                    </@tr>
                 </#list>
             </@table>
         <#else>
             <@alert color='info'>#i18n{announce.manage_categories.noData}</@alert>
         </#if>
-        <form method="post" action="jsp/admin/plugins/announce/ManageCategories.jsp">
-            <@paginationAdmin paginator=paginator form=0 combo=1 showcount=0 />
-        </form>
+        <@tform method='post' action='jsp/admin/plugins/announce/ManageCategories.jsp'>
+            <@paginationAdmin paginator=paginator form=0 combo=1 />
+        </@tform>
     </@pageColumn>
 </@pageContainer>

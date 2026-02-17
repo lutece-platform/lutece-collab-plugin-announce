@@ -1,12 +1,12 @@
 <#assign cpt=0>
 ${entry.CSSClass!}
-<div class="form-group">
-	<label class="col-sm-2 control-label" for="form${entry.idEntry}" id="form${entry.idEntry}">${entry.title}<#if entry.mandatory>	*</#if></label>
+<div class="row mb-3">
+	<label class="col-sm-2 col-form-label" for="form${entry.idEntry}" id="form${entry.idEntry}">${entry.title}<#if entry.mandatory>	*</#if></label>
 		<div class="col-sm-10">
 		<#list entry.fields as field>
 			<#if field.code == 'answer_choice'>
-				<label class="checkbox <#if entry.fieldInLine>inline</#if>" for="attribute${entry.idEntry}_${field.idField}" <#if field.comment?? && field.comment != ''>title="${field.comment}"</#if> >
-				<input type="checkbox" name="attribute${entry.idEntry}" id="attribute${entry.idEntry}_${field.idField}" value="${field.idField}"
+				<div class="form-check<#if entry.fieldInLine> form-check-inline</#if>">
+				<input type="checkbox" class="form-check-input" name="attribute${entry.idEntry}" id="attribute${entry.idEntry}_${field.idField}" value="${field.idField}"
 					<#if list_responses??>
 						<#list list_responses as response>
 							<#if response.entry.idEntry == entry.idEntry && response.field??>
@@ -16,35 +16,34 @@ ${entry.CSSClass!}
 					<#else>
 						<#if field.defaultValue>checked="checked" </#if>
 					</#if>
-					<#if field.conditionalQuestions?exists&&field.conditionalQuestions?size!=0>
+					<#if field.conditionalQuestions?? && field.conditionalQuestions?size!=0>
 						onclick="doCheckboxEffect(this.checked,${field.idField});"
 					</#if>
 				/>
+				<label class="form-check-label" for="attribute${entry.idEntry}_${field.idField}" <#if field.comment?? && field.comment != ''>title="${field.comment}"</#if>>
 				<#if !field.noDisplayTitle>
 					${field.title}
 				</#if>
 				</label>
-				<#if !entry.fieldInLine&&entry.helpMessage?exists&&entry.helpMessage!=''>
-					<p class="help-block">${entry.helpMessage}</p>
-				</#if>
-			</#if>	
+				</div>
+			</#if>
 		</#list>
-		<#if entry.fieldInLine&&entry.helpMessage?exists&&entry.helpMessage!=''>
-			<p class="help-block">${entry.helpMessage}</p>
-		</#if>	
+		<#if entry.helpMessage?? && entry.helpMessage != ''>
+			<p class="form-text">${entry.helpMessage}</p>
+		</#if>
 		<#if list_responses??>
 			<#list list_responses as response>
 				<#if response.entry.idEntry == entry.idEntry && response.entry.error??>
-					<div class="alert alert-error">
+					<div class="alert alert-danger">
 					<#assign error = response.entry.error>
 					<#if error.mandatoryError>#i18n{announce.message.mandatory.entry}<#else>${error.errorMessage}</#if>
 					</div>
 				</#if>
 			</#list>
 		</#if>
-		<#if str_list_entry_children?exists>${str_list_entry_children}</#if>
+		<#if str_list_entry_children??>${str_list_entry_children}</#if>
 		</div>
-	</div>	
+	</div>
 	<#if list_responses??>
 		<script type="text/javascript">
 		<#list list_responses as response>
@@ -60,7 +59,7 @@ ${entry.CSSClass!}
 		</script>
 	<#else>
 		<#list entry.fields as field>
-			<#if field.defaultValue && field.conditionalQuestions?exists && field.conditionalQuestions?size != 0>
+			<#if field.defaultValue && field.conditionalQuestions?? && field.conditionalQuestions?size != 0>
 				<script type="text/javascript">
 					var baliseId = "div" + ${field.idField};
 					if(document.getElementById && document.getElementById(baliseId) != null)

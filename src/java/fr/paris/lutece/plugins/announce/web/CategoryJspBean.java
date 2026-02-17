@@ -34,6 +34,7 @@
 package fr.paris.lutece.plugins.announce.web;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -70,6 +71,7 @@ import fr.paris.lutece.portal.service.util.AppPropertiesService;
 import fr.paris.lutece.portal.service.workflow.WorkflowService;
 import fr.paris.lutece.portal.web.admin.PluginAdminPageJspBean;
 import fr.paris.lutece.portal.web.constants.Messages;
+import fr.paris.lutece.portal.web.constants.Parameters;
 import fr.paris.lutece.util.ReferenceList;
 import fr.paris.lutece.util.html.AbstractPaginator;
 import fr.paris.lutece.util.html.HtmlTemplate;
@@ -154,10 +156,18 @@ public class CategoryJspBean extends PluginAdminPageJspBean
     private static final String MARK_IS_CAPTCHA_ENABLED = "isCaptchaEnabled";
     private static final CaptchaSecurityService _captchaSecurityService = new CaptchaSecurityService( );
 
+    /* Sort */
+    private static final String SORT_SECTOR = "label_sector";
+    private static final String SORT_LABEL = "label_category";
+    private static final String SORT_NUMBER_ANNOUNCES = "number_announces";
+    private static final String SESSION_SORT_ATTRIBUTE = "announce.sessionCategorySortAttribute";
+    private static final String SESSION_SORT_ASC = "announce.sessionCategorySortAsc";
+
     /* Variables */
     private AnnounceService _announceService = SpringContextService.getBean( AnnounceService.BEAN_NAME );
     private String _strCurrentPageIndex;
     private int _nItemsPerPage;
+    private Category _category;
 
     /**
      * {@inheritDoc}
@@ -190,7 +200,33 @@ public class CategoryJspBean extends PluginAdminPageJspBean
         int defaultItemsPerPage = AppPropertiesService.getPropertyInt( PROPERTY_DEFAULT_LIST_CATEGORY_PER_PAGE, 50 );
         _nItemsPerPage = AbstractPaginator.getItemsPerPage( request, AbstractPaginator.PARAMETER_ITEMS_PER_PAGE, _nItemsPerPage, defaultItemsPerPage );
 
-        List<Category> listCategories = CategoryHome.findAll( );
+        List<Category> listCategories = new ArrayList<>( CategoryHome.findAll( ) );
+
+        // Sort handling
+        String strSortAttribute = request.getParameter( Parameters.SORTED_ATTRIBUTE_NAME );
+        String strAscSort = request.getParameter( Parameters.SORTED_ASC );
+
+        if ( strSortAttribute == null )
+        {
+            strSortAttribute = (String) request.getSession( ).getAttribute( SESSION_SORT_ATTRIBUTE );
+            strAscSort = (String) request.getSession( ).getAttribute( SESSION_SORT_ASC );
+        }
+        else
+        {
+            request.getSession( ).setAttribute( SESSION_SORT_ATTRIBUTE, strSortAttribute );
+            request.getSession( ).setAttribute( SESSION_SORT_ASC, strAscSort );
+        }
+
+        if ( strSortAttribute != null )
+        {
+            boolean bAsc = Boolean.parseBoolean( strAscSort );
+            Comparator<Category> comparator = getCategoryComparator( strSortAttribute, bAsc );
+
+            if ( comparator != null )
+            {
+                listCategories.sort( comparator );
+            }
+        }
 
         Paginator<Category> paginator = new Paginator<>( listCategories, _nItemsPerPage, getUrlPage( ), PARAMETER_PAGE_INDEX, _strCurrentPageIndex );
 
@@ -249,6 +285,8 @@ public class CategoryJspBean extends PluginAdminPageJspBean
         model.put( MARK_LIST_ANNOUNCES_VALIDATION, listAnnouncesValidation );
         model.put( MARK_LIST_WORKFLOWS, WorkflowService.getInstance( ).getWorkflowsEnabled( user, getLocale( ) ) );
         model.put( MARK_IS_CAPTCHA_ENABLED, _captchaSecurityService.isAvailable( ) );
+        model.put( MARK_CATEGORY, ( _category != null ) ? _category : new Category( ) );
+        _category = null;
 
         HtmlTemplate template = AppTemplateService.getTemplate( TEMPLATE_CREATE_CATEGORY, getLocale( ), model );
 
@@ -282,24 +320,25 @@ public class CategoryJspBean extends PluginAdminPageJspBean
         boolean bDisplayCaptcha = Boolean.parseBoolean( request.getParameter( PARAMETER_DISPLAY_CAPTCHA ) );
         boolean bPriceMandatory = Boolean.parseBoolean( request.getParameter( PARAMETER_PRICE_MANDATORY ) );
 
-        // Mandatory sectors
+        // Populate _category for form repopulation on error
+        _category = new Category( );
+        _category.setLabel( strCategoryLabel );
+        _category.setIdSector( nIdSector );
+        _category.setAnnouncesValidation( nAnnouncesValidation );
+        _category.setIdMailingList( nIdMailingList );
+        _category.setIdWorkflow( nIdWorkflow );
+        _category.setDisplayPrice( strDisplayPrice != null );
+        _category.setPriceMandatory( _category.getDisplayPrice( ) && bPriceMandatory );
+        _category.setDisplayCaptcha( bDisplayCaptcha );
+
+        // Mandatory fields
         if ( ( nIdSector == 0 ) || StringUtils.isEmpty( strCategoryLabel ) )
         {
             return AdminMessageService.getMessageUrl( request, Messages.MANDATORY_FIELDS, AdminMessage.TYPE_STOP );
         }
 
-        Category category = new Category( );
-        category.setLabel( strCategoryLabel );
-        category.setIdSector( nIdSector );
-        category.setIdMailingList( nIdMailingList );
-        category.setAnnouncesValidation( nAnnouncesValidation );
-        category.setIdWorkflow( nIdWorkflow );
-        category.setDisplayPrice( strDisplayPrice != null );
-
-        category.setPriceMandatory( category.getDisplayPrice( ) && bPriceMandatory );
-        category.setDisplayCaptcha( bDisplayCaptcha );
-
-        CategoryHome.create( category );
+        CategoryHome.create( _category );
+        _category = null;
 
         // if the operation occurred well, redirects towards the list
         return JSP_REDIRECT_TO_MANAGE_CATEGORIES;
@@ -514,6 +553,40 @@ public class CategoryJspBean extends PluginAdminPageJspBean
         UrlItem url = new UrlItem( JSP_MANAGE_CATEGORIES );
 
         return url.getUrl( );
+    }
+
+    /**
+     * Get the comparator for categories based on the sort attribute
+     *
+     * @param strSort
+     *            The sort attribute name
+     * @param bAsc
+     *            True for ascending sort, false for descending
+     * @return The comparator, or null if the attribute is not recognized
+     */
+    private Comparator<Category> getCategoryComparator( String strSort, boolean bAsc )
+    {
+        Comparator<Category> comparator = null;
+
+        if ( SORT_SECTOR.equals( strSort ) )
+        {
+            comparator = Comparator.comparing( Category::getLabelSector, String.CASE_INSENSITIVE_ORDER );
+        }
+        else if ( SORT_LABEL.equals( strSort ) )
+        {
+            comparator = Comparator.comparing( Category::getLabel, String.CASE_INSENSITIVE_ORDER );
+        }
+        else if ( SORT_NUMBER_ANNOUNCES.equals( strSort ) )
+        {
+            comparator = Comparator.comparingInt( Category::getNumberAnnounces );
+        }
+
+        if ( comparator != null && !bAsc )
+        {
+            comparator = comparator.reversed( );
+        }
+
+        return comparator;
     }
 
     /**

@@ -2,36 +2,31 @@
 	<div class="col-sm-3">
 		<#include "navigation_menu.html">
 	</div>
-	<div class="col-sm-9"> 
+	<div class="col-sm-9">
 		<#if (paginator.pagesCount > 1) >
-			<div class="paginator">
+			<div class="mb-3">
 				Pages: <@pagination paginator=paginator />
 			</div>
 		</#if>
-		
-		<div class="well">
-			<legend>
+
+		<div class="card card-body">
+			<h5>
 				#i18n{announce.my_announces.pageTitle}
-			</legend>
-			
+			</h5>
+
 				<#if announces_list?has_content >
-					<table class="my_announces table table-striped table-condensed">
+					<table class="my_announces table table-striped table-sm">
 						<tr>
-							<th>
-							</th>
-							<th>
-								#i18n{announce.my_announces.announceState.columnTitle}
-							</th>
-							<th colspan="3">
-								#i18n{announce.my_announces.actions.columnTitle}
-							</th>
+							<th></th>
+							<th>#i18n{announce.my_announces.announceState.columnTitle}</th>
+							<th>#i18n{announce.my_announces.actions.columnTitle}</th>
 						</tr>
 						<#list announces_list as announce>
 							<tr class="announce-result">
 								<td>
 									<#if announce.hasPictures>
 										<a href="jsp/site/Portal.jsp?page=announce&action=view_announce&announce_id=${announce.id}">
-											<img class="thumbnail" width="80" height="80" src="image?resource_type=announce_img&id=${announce.listIdImageResponse?first}" />
+											<img class="img-thumbnail" width="80" height="80" src="image?resource_type=announce_img&id=${announce.listIdImageResponse?first}" />
 										</a>
 									</#if>
 									<#if announce.category.displayPrice>
@@ -47,38 +42,42 @@
 									<span class="info">${announce.dateCreation}</span><br/>
 									${announce.description}
 								</td>
-								
+
 								<td>
-									<#if announce.suspended>
-										<img src="images/local/skin/plugins/announce/suspended.png" alt="#i18n{announce.my_announces.statusSuspended}" title="#i18n{announce.my_announces.statusSuspended}" />
-									<#else>
-										<#if announce.published>
-											<img src="images/local/skin/plugins/announce/published.png" alt="#i18n{announce.my_announces.statusPublished}" title="#i18n{announce.my_announces.statusPublished}"/>
-										<#else>
-											<img src="images/local/skin/plugins/announce/unpublished.png" alt="#i18n{announce.my_announces.statusUnPublished}" title="#i18n{announce.my_announces.statusUnPublished}"/>
+									<div class="d-flex flex-column gap-1">
+										<#if announce.published && !announce.suspended && !announce.suspendedByUser>
+											<span class="badge bg-success"><i class="ti ti-circle-check"></i> #i18n{announce.my_announces.statusPublished}</span>
+										<#elseif !announce.published && announce.timePublication == 0>
+											<span class="badge bg-info"><i class="ti ti-clock"></i> #i18n{announce.my_announces.statusPendingValidation}</span>
+										<#elseif !announce.published && !announce.suspended && !announce.suspendedByUser>
+											<span class="badge bg-secondary"><i class="ti ti-circle-x"></i> #i18n{announce.my_announces.statusUnPublished}</span>
 										</#if>
-									</#if>
+										<#if announce.suspended>
+											<span class="badge bg-danger"><i class="ti ti-lock"></i> #i18n{announce.my_announces.statusSuspended}</span>
+										</#if>
+										<#if announce.suspendedByUser>
+											<span class="badge bg-warning text-dark"><i class="ti ti-player-pause"></i> #i18n{announce.my_announces.statusSuspendedByUser}</span>
+										</#if>
+									</div>
 								</td>
-								<td class="icons">
-									<a href="jsp/site/Portal.jsp?page=announce&action=modify_announce&announce_id=${announce.id}">
-										<img src="images/local/skin/plugins/announce/actions/modify.png" alt="#i18n{announce.my_announces.actionTitleModify}" title="#i18n{announce.my_announces.actionTitleModify}"/>
-									</a>
-								</td>
-								<td class="icons">
-									<a href="jsp/site/Portal.jsp?page=announce&action=delete_announce&announce_id=${announce.id}">
-										<img src="images/local/skin/plugins/announce/actions/delete.png" alt="#i18n{announce.my_announces.actionTitleDelete}" title="#i18n{announce.my_announces.actionTitleDelete}"/>
-									</a>
-								</td>
-								<td class="icons">
-									<#if !announce.suspendedByUser>
-										<a href="jsp/site/Portal.jsp?page=announce&action=suspend_by_user&announce_id=${announce.id}">
-											<img src="images/local/skin/plugins/announce/actions/suspend_by_user.png" alt="#i18n{announce.my_announces.actionTitleSuspend}" title="#i18n{announce.my_announces.actionTitleSuspend}"/>
+								<td>
+									<div class="d-flex gap-1">
+										<a class="btn btn-sm btn-primary" href="jsp/site/Portal.jsp?page=announce&action=modify_announce&announce_id=${announce.id}" title="#i18n{announce.my_announces.actionTitleModify}">
+											<i class="ti ti-edit"></i>
 										</a>
-									<#else>
-										<a href="jsp/site/Portal.jsp?page=announce&action=enable_by_user&announce_id=${announce.id}">
-											<img src="images/local/skin/plugins/announce/actions/enable_by_user.png" alt="#i18n{announce.my_announces.actionTitleEnable}" title="#i18n{announce.my_announces.actionTitleEnable}"/>
+										<a class="btn btn-sm btn-danger" href="jsp/site/Portal.jsp?page=announce&action=delete_announce&announce_id=${announce.id}" title="#i18n{announce.my_announces.actionTitleDelete}">
+											<i class="ti ti-trash"></i>
 										</a>
-									</#if>
+										<#if !announce.suspendedByUser>
+											<a class="btn btn-sm btn-warning" href="jsp/site/Portal.jsp?page=announce&action=suspend_by_user&announce_id=${announce.id}" title="#i18n{announce.my_announces.actionTitleSuspend}">
+												<i class="ti ti-player-pause"></i>
+											</a>
+										<#else>
+											<a class="btn btn-sm btn-success" href="jsp/site/Portal.jsp?page=announce&action=enable_by_user&announce_id=${announce.id}" title="#i18n{announce.my_announces.actionTitleEnable}">
+												<i class="ti ti-player-play"></i>
+											</a>
+										</#if>
+									</div>
 								</td>
 							</tr>
 						</#list>

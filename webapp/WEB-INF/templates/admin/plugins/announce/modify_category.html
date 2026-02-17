@@ -1,197 +1,201 @@
 <#include "/admin/plugins/announce/announce_tabs.html" />
 <@pageContainer>
-	<@pageColumn>
-		<@pageHeader title='#i18n{announce.modify_category.pageTitle}'>
-			<@aButton href='jsp/admin/plugins/announce/ManageCategories.jsp' buttonIcon='arrow-left' title='#i18n{portal.util.labelBack}' />
-		</@pageHeader>
-		<@tabs tab="categories" />
-		<@row>
-			<@columns md=4>
-				<@tform method='post' name='modify_category' action='jsp/admin/plugins/announce/DoModifyCategory.jsp' boxed=true>
-					<@input type='hidden' name='category_id' value='${category.id}' />
-					<@formGroup labelKey='#i18n{announce.category.label}' labelFor='category_label' mandatory=true>
-						<@input name='category_label' type='text' id='category_label' value='${category.label!}' maxlength=50 />
-					</@formGroup>
-					<@formGroup labelKey='#i18n{announce.category.sector}' labelFor='category_sector_id' mandatory=true>
-						<@select name='category_sector_id' id='category_sector_id' items=list_sectors default_value=category.idSector?string />
-					</@formGroup>
-					<@formGroup labelKey='#i18n{announce.category.announcesValidation}' labelFor='category_announces_validation' mandatory=true>
-						<@select name='category_announces_validation' id='category_announces_validation' items=list_announces_validation default_value=category.announcesValidation?string />
-					</@formGroup>
-					<@formGroup labelKey='#i18n{announce.category.mailingList}' labelFor='mailing_list_id' helpKey='#i18n{announce.category.mailingList.helper}'>
-						<@select name='mailing_list_id' id='mailing_list_id' items=mailing_list_list default_value=category.idMailingList?string />
-					</@formGroup>
-					<@formGroup helpKey='#i18n{announce.category.displayPrice.helper}'>
-						<@checkBox name='display_price' value='true' checked=category.displayPrice labelKey='#i18n{announce.category.displayPrice}' />
-					</@formGroup>
-					<@formGroup helpKey='#i18n{announce.category.priceMandatory.helper}'>
-						<@checkBox name='price_mandatory' value='true' checked=category.priceMandatory labelKey='#i18n{announce.category.priceMandatory}' />
-					</@formGroup>
-					<#if isCaptchaEnabled?? && isCaptchaEnabled>
-						<@formGroup>
-							<@checkBox name='display_captcha' value='true' checked=category.displayCaptcha labelKey='#i18n{announce.category.displayCaptcha}' />
-						</@formGroup>
-					</#if>
-					<#if listWorkflows??>
-						<@formGroup labelKey='#i18n{announce.create_category.labelWorkflow}' labelFor='id_workflow'>
-							<@select name='id_workflow' id='id_workflow' items=listWorkflows default_value=category.idWorkflow?string />
-						</@formGroup>
-					</#if>
-					<@formGroup>
-						<@button type='submit' buttonIcon='check' title='#i18n{announce.modify_category.buttonModify}' color='primary' />
-						<@aButton href='jsp/admin/plugins/announce/ManageCategories.jsp' buttonIcon='x' title='#i18n{portal.util.labelCancel}' color='' />
-					</@formGroup>
-				</@tform>
-			</@columns>
-			<@columns md=8>
-				<@box title='#i18n{announce.modify_category.defaultEntries}'>
-					<@table>
-						<tr>
-							<th>#i18n{announce.modify_category.entry_list.labelTitle}</th>
-							<th>#i18n{announce.modify_category.entry_list.labelType}</th>
-						</tr>
-						<tr>
-							<td>#i18n{announce.modify_category.defaultEntries.entryTitle}</td>
-							<td>#i18n{announce.entryType.text.title}</td>
-						</tr>
-						<tr>
-							<td>#i18n{announce.modify_category.defaultEntries.entryDescription}</td>
-							<td>#i18n{announce.entryType.textArea.title}</td>
-						</tr>
-					</@table>
-				</@box>
-				<@box title='#i18n{announce.modify_category.entry_list.adminTitle}'>
-					<#if entry_type_list?has_content>
-						<div class="d-flex align-items-center gap-2 mb-3">
-							<form method="post" class="d-flex align-items-center gap-2" action="jsp/admin/plugins/announce/ManageCategoryEntries.jsp">
-								<input type="hidden" value="getCreateEntry" name="view" />
-								<input type="hidden" name="id_category" value="${category.id}" />
-								<label for="id_type" class="text-nowrap">#i18n{announce.modify_category.create_entry.labelEntryType}</label>
-								<@select name='id_type' id='id_type' items=entry_type_list default_value='-1' />
-								<@button type='submit' buttonIcon='plus' title='#i18n{announce.modify_category.create_entry.buttonLabelCreate}' color='primary' size='sm' />
-							</form>
-							<#if entry_group_list?has_content>
-								<form method="post" class="d-flex align-items-center gap-2" action="jsp/admin/plugins/announce/ManageCategoryEntries.jsp">
-									<input type="hidden" name="action" value="doChangeOrderEntry" />
-									<input type="hidden" name="id_category" value="${category.id}" />
-									<@select name='id_entry_group' id='id_entry_group' items=entry_group_list default_value='' />
-									<@button type='submit' name='add_to_group' value='move' buttonIcon='arrow-bar-to-right' title='#i18n{announce.modifyField.manageConditionalQuestion.titleMove}' color='secondary' size='sm' />
-								</form>
-							</#if>
-						</div>
-					</#if>
-					<form method="post" action="jsp/admin/plugins/announce/ManageCategoryEntries.jsp">
-						<input type="hidden" name="action" value="doChangeOrderEntry" />
-						<input type="hidden" name="id_category" value="${category.id}" />
-						<@table>
-							<tr>
-								<th>
-									<input type="checkbox" name="selectAll" id="selectAll" value="selectAll" title="#i18n{announce.modify_category.selectAll}" />
-								</th>
-								<th>#i18n{announce.createEntry.manageField.rowTitle}</th>
-								<th>#i18n{announce.modifyField.manageConditionalQuestion.rowType}</th>
-								<th>#i18n{announce.createEntry.manageField.rowConditionalQuestion}</th>
-								<th>#i18n{announce.createEntry.manageField.rowOrder}</th>
-								<th>#i18n{announce.createEntry.manageField.rowActions}</th>
-							</tr>
-							<#list entry_list as entry>
-								<#if entry.entryType.group>
-									<#assign lastGroup = entry>
-								</#if>
-								<tr>
-									<td>
-										<#if !entry.entryType.group>
-											<input type="checkbox" name="entry_id_move" value="${entry.idEntry!}" />
-										</#if>
-									</td>
-									<td>
-										<#if entry.entryType.group>
-											<strong>${entry.title!}</strong>
-										<#elseif entry.parent?exists>
-											<i class="fa fa-level-down"></i>
-											<#if entry.entryType.comment>
-												${entry.comment!}
-											<#else>
-												${entry.title!}
-											</#if>
-										<#elseif entry.entryType.myLuteceUser>
-											${entry.title!}
-										<#else>
-											<#if entry.entryType.comment>
-												${entry.comment!}
-											<#else>
-												${entry.title!}
-											</#if>
-										</#if>
-									</td>
-									<td>
-										<#if !entry.entryType.group>
-											<span class="badge bg-primary">${entry.entryType.title!}</span>
-										</#if>
-									</td>
-									<td>
-										<#if entry.numberConditionalQuestion != 0>
-											${entry.numberConditionalQuestion}
-										</#if>
-									</td>
-									<td>
-										<div class="d-flex align-items-center gap-1">
-											<#if entry.parent?exists>
-												<@comboOrders name="order_id_${entry.idEntry}" default_value=entry.position idParent=entry.parent.idEntry />
-											<#else>
-												<@comboOrders name="order_id_${entry.idEntry}" default_value=entry.position idParent=0 />
-											</#if>
-											<@button type='submit' name='id_entry' value='${entry.idEntry}' buttonIcon='check' title='#i18n{announce.modifyField.manageConditionalQuestion.titleMove}' color='secondary' size='sm' />
-										</div>
-									</td>
-									<td>
-										<div class="d-flex align-items-center gap-1">
-											<#if !entry.entryType.myLuteceUser>
-												<@aButton href='jsp/admin/plugins/announce/ManageCategoryEntries.jsp?view=getModifyEntry&id_entry=${entry.idEntry}' buttonIcon='edit' title='#i18n{portal.util.labelModify}' size='sm' />
-											</#if>
-											<#if entry.parent?exists>
-												<@aButton href='jsp/admin/plugins/announce/ManageCategoryEntries.jsp?action=doMoveOutEntry&id_entry=${entry.idEntry}#list' buttonIcon='arrow-bar-to-left' title='#i18n{announce.modifyField.manageConditionalQuestion.titleGoOut}' size='sm' />
-											</#if>
-											<#if !entry.entryType.group && !entry.entryType.myLuteceUser>
-												<@aButton href='jsp/admin/plugins/announce/ManageCategoryEntries.jsp?action=doCopyEntry&id_entry=${entry.idEntry}#list' buttonIcon='copy' title='#i18n{announce.createEntry.manageField.titleCopy}' size='sm' />
-											</#if>
-											<@aButton href='jsp/admin/plugins/announce/ManageCategoryEntries.jsp?view=confirmRemoveEntry&id_entry=${entry.idEntry}#list' buttonIcon='trash' color='danger' title='#i18n{announce.modifyField.manageConditionalQuestion.titleDelete}' size='sm' />
-										</div>
-									</td>
-								</tr>
-							</#list>
-						</@table>
-					</form>
-				</@box>
-			</@columns>
-		</@row>
-	</@pageColumn>
+    <@pageColumn>
+        <@pageHeader title='#i18n{announce.modify_category.pageTitle}'>
+            <@aButton href='jsp/admin/plugins/announce/ManageCategories.jsp' buttonIcon='arrow-left' title='#i18n{portal.util.labelBack}' />
+        </@pageHeader>
+        <@tabs tab="categories" />
+        <@row>
+            <@columns md=4>
+                <@tform method='post' name='modify_category' action='jsp/admin/plugins/announce/DoModifyCategory.jsp' boxed=true>
+                    <@input type='hidden' name='category_id' value='${category.id}' />
+                    <@formGroup labelKey='#i18n{announce.category.label}' labelFor='category_label' mandatory=true>
+                        <@input name='category_label' type='text' id='category_label' value='${category.label!}' maxlength=50 />
+                    </@formGroup>
+                    <@formGroup labelKey='#i18n{announce.category.sector}' labelFor='category_sector_id' mandatory=true>
+                        <@select name='category_sector_id' id='category_sector_id' items=list_sectors default_value=category.idSector?string />
+                    </@formGroup>
+                    <@formGroup labelKey='#i18n{announce.category.announcesValidation}' labelFor='category_announces_validation' mandatory=true>
+                        <@select name='category_announces_validation' id='category_announces_validation' items=list_announces_validation default_value=category.announcesValidation?string />
+                    </@formGroup>
+                    <@formGroup labelKey='#i18n{announce.category.mailingList}' labelFor='mailing_list_id' helpKey='#i18n{announce.category.mailingList.helper}'>
+                        <@select name='mailing_list_id' id='mailing_list_id' items=mailing_list_list default_value=category.idMailingList?string />
+                    </@formGroup>
+                    <@formGroup helpKey='#i18n{announce.category.displayPrice.helper}'>
+                        <@checkBox name='display_price' value='true' checked=category.displayPrice labelKey='#i18n{announce.category.displayPrice}' />
+                    </@formGroup>
+                    <@formGroup helpKey='#i18n{announce.category.priceMandatory.helper}'>
+                        <@checkBox name='price_mandatory' value='true' checked=category.priceMandatory labelKey='#i18n{announce.category.priceMandatory}' />
+                    </@formGroup>
+                    <#if isCaptchaEnabled?? && isCaptchaEnabled>
+                        <@formGroup>
+                            <@checkBox name='display_captcha' value='true' checked=category.displayCaptcha labelKey='#i18n{announce.category.displayCaptcha}' />
+                        </@formGroup>
+                    </#if>
+                    <#if listWorkflows??>
+                        <@formGroup labelKey='#i18n{announce.create_category.labelWorkflow}' labelFor='id_workflow'>
+                            <@select name='id_workflow' id='id_workflow' items=listWorkflows default_value=category.idWorkflow?string />
+                        </@formGroup>
+                    </#if>
+                    <@formGroup>
+                        <@button type='submit' buttonIcon='check' title='#i18n{announce.modify_category.buttonModify}' color='primary' />
+                        <@aButton href='jsp/admin/plugins/announce/ManageCategories.jsp' buttonIcon='x' title='#i18n{portal.util.labelCancel}' color='' />
+                    </@formGroup>
+                </@tform>
+            </@columns>
+            <@columns md=8>
+                <@box title='#i18n{announce.modify_category.defaultEntries}'>
+                    <@table>
+                        <@tr>
+                            <@th>#i18n{announce.modify_category.entry_list.labelTitle}</@th>
+                            <@th>#i18n{announce.modify_category.entry_list.labelType}</@th>
+                        </@tr>
+                        <@tr>
+                            <@td>#i18n{announce.modify_category.defaultEntries.entryTitle}</@td>
+                            <@td>#i18n{announce.entryType.text.title}</@td>
+                        </@tr>
+                        <@tr>
+                            <@td>#i18n{announce.modify_category.defaultEntries.entryDescription}</@td>
+                            <@td>#i18n{announce.entryType.textArea.title}</@td>
+                        </@tr>
+                    </@table>
+                </@box>
+                <@box title='#i18n{announce.modify_category.entry_list.adminTitle}'>
+                    <#if entry_type_list?has_content>
+                        <div class="d-flex align-items-center justify-content-between mb-3">
+                            <@tform method='post' class='d-flex align-items-center gap-2' action='jsp/admin/plugins/announce/ManageCategoryEntries.jsp'>
+                                <@input type='hidden' name='view' value='getCreateEntry' />
+                                <@input type='hidden' name='id_category' value='${category.id}' />
+                                <label for="id_type" class="text-nowrap">#i18n{announce.modify_category.create_entry.labelEntryType}</label>
+                                <@select name='id_type' id='id_type' items=entry_type_list default_value='-1' />
+                                <@button type='submit' buttonIcon='plus' title='#i18n{announce.modify_category.create_entry.buttonLabelCreate}' color='primary' size='sm' />
+                            </@tform>
+                            <#if entry_group_list?has_content>
+                                <div class="d-flex align-items-center gap-2">
+                                    <select name="id_entry_group" id="id_entry_group" class="form-select form-select-sm" style="width:auto;" form="formEntryTable">
+                                        <#list entry_group_list as item>
+                                            <option value="${item.code}">${item.name}</option>
+                                        </#list>
+                                    </select>
+                                    <button type="submit" name="add_to_group" value="move" form="formEntryTable" class="btn btn-secondary btn-sm">
+                                        <i class="ti ti-arrow-bar-to-right"></i>&nbsp;#i18n{announce.modifyField.manageConditionalQuestion.titleMove}
+                                    </button>
+                                </div>
+                            </#if>
+                        </div>
+                    </#if>
+                    <@tform method='post' action='jsp/admin/plugins/announce/ManageCategoryEntries.jsp' id='formEntryTable'>
+                        <@input type='hidden' name='action' value='doChangeOrderEntry' />
+                        <@input type='hidden' name='id_category' value='${category.id}' />
+                        <@table>
+                            <@tr>
+                                <@th>
+                                    <input type="checkbox" name="selectAll" id="selectAll" value="selectAll" title="#i18n{announce.modify_category.selectAll}" />
+                                </@th>
+                                <@th>#i18n{announce.createEntry.manageField.rowTitle}</@th>
+                                <@th>#i18n{announce.modifyField.manageConditionalQuestion.rowType}</@th>
+                                <@th>#i18n{announce.createEntry.manageField.rowConditionalQuestion}</@th>
+                                <@th>#i18n{announce.createEntry.manageField.rowOrder}</@th>
+                                <@th>#i18n{announce.createEntry.manageField.rowActions}</@th>
+                            </@tr>
+                            <#list entry_list as entry>
+                                <#if entry.entryType.group>
+                                    <#assign lastGroup = entry>
+                                </#if>
+                                <@tr>
+                                    <@td>
+                                        <#if !entry.entryType.group>
+                                            <input type="checkbox" name="entry_id_move" value="${entry.idEntry!}" />
+                                        </#if>
+                                    </@td>
+                                    <@td>
+                                        <#if entry.entryType.group>
+                                            <strong>${entry.title!}</strong>
+                                        <#elseif entry.parent??>
+                                            <@icon style='corner-down-right' />
+                                            <#if entry.entryType.comment>
+                                                ${entry.comment!}
+                                            <#else>
+                                                ${entry.title!}
+                                            </#if>
+                                        <#elseif entry.entryType.myLuteceUser>
+                                            ${entry.title!}
+                                        <#else>
+                                            <#if entry.entryType.comment>
+                                                ${entry.comment!}
+                                            <#else>
+                                                ${entry.title!}
+                                            </#if>
+                                        </#if>
+                                    </@td>
+                                    <@td>
+                                        <#if !entry.entryType.group>
+                                            ${entry.entryType.title!}
+                                        </#if>
+                                    </@td>
+                                    <@td>
+                                        <#if entry.numberConditionalQuestion != 0>
+                                            ${entry.numberConditionalQuestion}
+                                        </#if>
+                                    </@td>
+                                    <@td>
+                                        <div class="d-flex align-items-center gap-1">
+                                            <#if entry.parent??>
+                                                <@comboOrders name="order_id_${entry.idEntry}" default_value=entry.position idParent=entry.parent.idEntry />
+                                            <#else>
+                                                <@comboOrders name="order_id_${entry.idEntry}" default_value=entry.position idParent=0 />
+                                            </#if>
+                                            <@button type='submit' name='id_entry' value='${entry.idEntry}' buttonIcon='check' title='#i18n{portal.util.labelValidate}' hideTitle=['all'] color='primary' size='sm' />
+                                        </div>
+                                    </@td>
+                                    <@td>
+                                        <@aButton class='dropdown-toggle' dropdownMenu=true href='#' title='#i18n{portal.util.labelActions}' color='' hideTitle=['xs','sm','md']>
+                                            <#if !entry.entryType.myLuteceUser>
+                                                <@div><@link class='dropdown-item' href='jsp/admin/plugins/announce/ManageCategoryEntries.jsp?view=getModifyEntry&id_entry=${entry.idEntry}' label='#i18n{portal.util.labelModify}' /></@div>
+                                            </#if>
+                                            <#if entry.parent??>
+                                                <@div><@link class='dropdown-item' href='jsp/admin/plugins/announce/ManageCategoryEntries.jsp?action=doMoveOutEntry&id_entry=${entry.idEntry}#list' label='#i18n{announce.modifyField.manageConditionalQuestion.titleGoOut}' /></@div>
+                                            </#if>
+                                            <#if !entry.entryType.group && !entry.entryType.myLuteceUser>
+                                                <@div><@link class='dropdown-item' href='jsp/admin/plugins/announce/ManageCategoryEntries.jsp?action=doCopyEntry&id_entry=${entry.idEntry}#list' label='#i18n{announce.createEntry.manageField.titleCopy}' /></@div>
+                                            </#if>
+                                            <@div><@link class='dropdown-item text-danger' href='jsp/admin/plugins/announce/ManageCategoryEntries.jsp?view=confirmRemoveEntry&id_entry=${entry.idEntry}#list' label='#i18n{announce.modifyField.manageConditionalQuestion.titleDelete}' /></@div>
+                                        </@aButton>
+                                    </@td>
+                                </@tr>
+                            </#list>
+                        </@table>
+                    </@tform>
+                </@box>
+            </@columns>
+        </@row>
+    </@pageColumn>
 </@pageContainer>
 <script>
 document.addEventListener( 'DOMContentLoaded', function() {
-	var selectAll = document.getElementById( 'selectAll' );
-	if ( selectAll ) {
-		selectAll.addEventListener( 'click', function() {
-			var checkboxes = document.querySelectorAll( 'input[name="entry_id_move"]' );
-			checkboxes.forEach( function( cb ) {
-				cb.checked = selectAll.checked;
-			});
-		});
-	}
+    var selectAll = document.getElementById( 'selectAll' );
+    if ( selectAll ) {
+        selectAll.addEventListener( 'click', function() {
+            var checkboxes = document.querySelectorAll( 'input[name="entry_id_move"]' );
+            checkboxes.forEach( function( cb ) {
+                cb.checked = selectAll.checked;
+            });
+        });
+    }
 });
 </script>
 <#macro comboOrders name default_value idParent>
-	<select id="${name}" name="${name}" class="form-select form-select-sm" style="width:auto;">
-		<#if idParent &gt; 0 && lastGroup??>
-			<#assign start_enum = lastGroup.position + 1>
-			<#assign nb_entries = lastGroup.position + lastGroup.children?size>
-			<#list start_enum..nb_entries as i>
-				<option value="${i}" <#if default_value == i>selected</#if>>${i}</option>
-			</#list>
-		<#else>
-			<#list listOrderFirstLevel as i>
-				<option value="${i}" <#if default_value == i>selected</#if>>${i}</option>
-			</#list>
-		</#if>
-	</select>
+    <select id="${name}" name="${name}" class="form-select form-select-sm" style="width:auto;">
+        <#if idParent &gt; 0 && lastGroup??>
+            <#assign start_enum = lastGroup.position + 1>
+            <#assign nb_entries = lastGroup.position + lastGroup.children?size>
+            <#list start_enum..nb_entries as i>
+                <option value="${i}" <#if default_value == i>selected</#if>>${i}</option>
+            </#list>
+        <#else>
+            <#list listOrderFirstLevel as i>
+                <option value="${i}" <#if default_value == i>selected</#if>>${i}</option>
+            </#list>
+        </#if>
+    </select>
 </#macro>

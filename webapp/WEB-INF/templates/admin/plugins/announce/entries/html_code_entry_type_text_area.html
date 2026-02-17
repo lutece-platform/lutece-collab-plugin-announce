@@ -1,51 +1,38 @@
-<#macro getTextAreaContent responseContent has_error entry field_width field_height >
-	<!#-- 	fieldInLine means use rich text -->
-	<#if has_error>
-		<textarea name="attribute${entry.idEntry}" id="attribute${entry.idEntry}" cols="${field_width}" rows="${field_height}" class="form-control alert alert-error<#if entry.fieldInLine> richtext</#if>">${responseContent}</textarea>
-	<#else>
-		<textarea name="attribute${entry.idEntry}" id="attribute${entry.idEntry}" cols="${field_width}" rows="${field_height}" class="form-control ${entry.CSSClass!}<#if entry.fieldInLine> richtext</#if>" >${responseContent}</textarea>
-	</#if>
-</#macro>
-<#assign field_width=getFieldValueByCode( entry, "width")>
-<#assign field_height=getFieldValueByCode( entry, "height")>
-<div class="form-group">
-<label class="control-label col-xs-12 col-sm-12 col-md-3" for="attribute${entry.idEntry}">${entry.title}<#if entry.mandatory> *</#if></label>
-<div class="col-xs-12 col-sm-12 col-md-9">
-	<#assign field=getFieldByCode( entry, "text_config")>
-	<#if list_responses??>
-		<#list list_responses as response>
-			<#if response.entry.idEntry == entry.idEntry && response.valueResponse??>
-				<#if response.entry.error??>
-					<@getTextAreaContent responseContent=response.valueResponse has_error=true entry=entry field_width=field_width field_height=field_height/>
-				<#else>
-					<@getTextAreaContent responseContent=response.valueResponse has_error=false entry=entry field_width=field_width field_height=field_height/>
-				</#if>
-			</#if>
-		</#list>
-	<#else>
-		<#if field.value?exists>
-			<@getTextAreaContent responseContent=field.value has_error=false entry=entry field_width=field_width field_height=field_height/>
-		<#else>
-			<@getTextAreaContent responseContent="" has_error=false entry=entry field_width=field_width field_height=field_height/>
-		</#if>
-	</#if>
-	<#if entry.helpMessage?exists&&entry.helpMessage!=''>
-		<p class="help-block">${entry.helpMessage}</p>
-	</#if>
-	<#if list_responses??>
-		<#list list_responses as response>
-			<#if response.entry.idEntry == entry.idEntry && response.entry.error??>
-				<div class="alert alert-error">
-					<#assign error = response.entry.error>
-					<#if error.mandatoryError>#i18n{announce.message.mandatory.entry}<#else>${error.errorMessage}</#if>
-				</div>
-			</#if>
-		</#list>
-	</#if>
-	</div>
-</div>
-
+<#assign field_width=getFieldValueByCode(entry, "width")>
+<#assign field_height=getFieldValueByCode(entry, "height")>
+<#assign field=getFieldByCode(entry, "text_config")>
+<#assign textValue = field.value!>
+<#assign hasError = false>
+<#assign errorMessage = ''>
+<#assign inputClass = entry.CSSClass!>
+<#if list_responses??>
+    <#list list_responses as response>
+        <#if response.entry.idEntry == entry.idEntry && response.valueResponse??>
+            <#assign textValue = response.valueResponse>
+            <#if response.entry.error??>
+                <#assign hasError = true>
+                <#assign inputClass = inputClass + ' is-invalid'>
+                <#assign error = response.entry.error>
+                <#if error.mandatoryError>
+                    <#assign errorMessage = '#i18n{announce.message.mandatory.entry}'>
+                <#else>
+                    <#assign errorMessage = error.errorMessage!>
+                </#if>
+            </#if>
+        </#if>
+    </#list>
+</#if>
+<#assign wCols = 40>
+<#if field_width?has_content><#assign wCols = field_width?number></#if>
+<#assign wRows = 4>
+<#if field_height?has_content><#assign wRows = field_height?number></#if>
+<@formGroup labelKey='${entry.title}' labelFor='attribute${entry.idEntry}' mandatory=entry.mandatory helpKey='${entry.helpMessage!}' rows=2>
+    <@input type='textarea' name='attribute${entry.idEntry}' id='attribute${entry.idEntry}' value=textValue cols=wCols rows=wRows class=inputClass richtext=entry.fieldInLine />
+</@formGroup>
+<#if hasError>
+    <@alert color='danger'>${errorMessage}</@alert>
+</#if>
 <#if entry.fieldInLine>
-	<#include "/util/editor/editor.html" />
-	<@initEditor />
+    <#include "/util/editor/editor.html" />
+    <@initEditor />
 </#if>

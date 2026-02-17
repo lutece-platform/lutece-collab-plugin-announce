@@ -1,44 +1,21 @@
-<div class="row">
-	<div class="col-xs-12 col-sm-12 col-md-12">
-		<div class="box box-primary">
-			<div class="box-header">
-				<h3 class="box-title">#i18n{announce.createEntry.titleComment}  - ${category.label}</h3>
-			</div>
-			<div class="box-body">
-				<form class="form-horizontal" action="jsp/admin/plugins/announce/ManageCategoryEntries.jsp" method="post" name="" id="">
-				<input name="id_entry" value="${entry.idEntry}" type="hidden">
-				<input name="action" value="doModifyEntry" type="hidden">
-				<div class="form-group">
-					<label class="control-label col-xs-12 col-sm-12 col-md-3" for="comment"> #i18n{announce.createEntry.labelComment} * </label>
-					<div class="col-xs-12 col-sm-12 col-md-6">
-						<textarea name="comment" id="comment" rows="5" class="richtext">${entry.comment}</textarea>
-					</div>
-				</div>
-				<div class="form-group">
-					<label class="control-label col-xs-12 col-sm-12 col-md-3" for="css_class">#i18n{announce.createEntry.labelCSSClass} </label>
-					<div class="col-xs-12 col-sm-12 col-md-6">
-						<input type="text" name="css_class" value="${entry.CSSClass!}" maxlength="255" class="form-control">
-						<span class="help-block">#i18n{announce.createEntry.labelCSSClassComment}</span>
-					</div>
-				</div>
-				<div class="form-group">
-					<div class="col-xs-12 col-sm-12 col-md-6 col-md-offset-3">
-						<button class="btn btn-primary btn-flat" type="submit">
-							<i class="fa fa-check"></i>&nbsp;#i18n{announce.modifyEntry.buttonSave}
-						</button>
-						<button class="btn btn-default btn-flat" type="submit" name="cancel" value="cancel" >
-							<i class="fa fa-remove"></i>&nbsp;#i18n{announce.createEntry.buttonCancel}
-						</button>
-					</div>
-				</div>
-			</form>
-			</div>
-		</div>
-	</div>
-</div>
+<@pageContainer>
+    <@pageColumn>
+        <@pageHeader title='#i18n{announce.createEntry.titleComment} - ${category.label!}' />
+        <@tform method='post' action='jsp/admin/plugins/announce/ManageCategoryEntries.jsp' boxed=true>
+            <@input type='hidden' name='id_entry' value='${entry.idEntry}' />
+            <@input type='hidden' name='action' value='doModifyEntry' />
+            <@formGroup labelKey='#i18n{announce.createEntry.labelComment}' labelFor='comment' mandatory=true>
+                <textarea name='comment' id='comment' rows='5' class='richtext'>${entry.comment!}</textarea>
+            </@formGroup>
+            <@formGroup labelKey='#i18n{announce.createEntry.labelCSSClass}' labelFor='css_class' helpKey='#i18n{announce.createEntry.labelCSSClassComment}'>
+                <@input type='text' name='css_class' id='css_class' value='${entry.CSSClass!}' maxlength=255 />
+            </@formGroup>
+            <@formGroup>
+                <@button type='submit' buttonIcon='check' title='#i18n{announce.modifyEntry.buttonSave}' color='primary' />
+                <@button type='submit' name='cancel' buttonIcon='x' title='#i18n{announce.createEntry.buttonCancel}' params='value="cancel" formnovalidate' />
+            </@formGroup>
+        </@tform>
+    </@pageColumn>
+</@pageContainer>
 <#include "/admin/util/editor/editor.html" />
 <@initEditor />
-
- 
-
- 

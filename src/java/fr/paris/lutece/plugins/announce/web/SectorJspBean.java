@@ -33,7 +33,9 @@
  */
 package fr.paris.lutece.plugins.announce.web;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -41,6 +43,8 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.StringUtils;
+
+import fr.paris.lutece.portal.web.constants.Parameters;
 
 import fr.paris.lutece.api.user.User;
 import fr.paris.lutece.plugins.announce.business.Sector;
@@ -115,6 +119,13 @@ public class SectorJspBean extends PluginAdminPageJspBean
     /* Misc */
     private static final String REGEX_ID = "^[\\d]+$";
 
+    /* Sort */
+    private static final String SORT_LABEL = "label_sector";
+    private static final String SORT_DESCRIPTION = "description_sector";
+    private static final String SORT_NUMBER_CATEGORIES = "number_categories";
+    private static final String SESSION_SORT_ATTRIBUTE = "announce.sessionSectorSortAttribute";
+    private static final String SESSION_SORT_ASC = "announce.sessionSectorSortAsc";
+
     /* Variables */
     private String _strCurrentPageIndex;
     private int _nItemsPerPage;
@@ -150,9 +161,35 @@ public class SectorJspBean extends PluginAdminPageJspBean
         int defaultItemsPerPage = AppPropertiesService.getPropertyInt( PROPERTY_DEFAULT_LIST_FIELD_PER_PAGE, 50 );
         _nItemsPerPage = AbstractPaginator.getItemsPerPage( request, AbstractPaginator.PARAMETER_ITEMS_PER_PAGE, _nItemsPerPage, defaultItemsPerPage );
 
-        Collection<Sector> listSectors = SectorHome.findAll( );
+        List<Sector> listSectors = new ArrayList<>( SectorHome.findAll( ) );
 
-        Paginator<Sector> paginator = new Paginator<>( (List<Sector>) listSectors, _nItemsPerPage, getUrlPage( ), PARAMETER_PAGE_INDEX, _strCurrentPageIndex );
+        // Sort
+        String strSort = request.getParameter( Parameters.SORTED_ATTRIBUTE_NAME );
+        String strSortAsc = request.getParameter( Parameters.SORTED_ASC );
+
+        if ( strSort != null )
+        {
+            request.getSession( ).setAttribute( SESSION_SORT_ATTRIBUTE, strSort );
+            request.getSession( ).setAttribute( SESSION_SORT_ASC, strSortAsc );
+        }
+        else
+        {
+            strSort = (String) request.getSession( ).getAttribute( SESSION_SORT_ATTRIBUTE );
+            strSortAsc = (String) request.getSession( ).getAttribute( SESSION_SORT_ASC );
+        }
+
+        if ( strSort != null )
+        {
+            boolean bAsc = Boolean.parseBoolean( strSortAsc );
+            Comparator<Sector> comparator = getSectorComparator( strSort, bAsc );
+
+            if ( comparator != null )
+            {
+                listSectors.sort( comparator );
+            }
+        }
+
+        Paginator<Sector> paginator = new Paginator<>( listSectors, _nItemsPerPage, getUrlPage( ), PARAMETER_PAGE_INDEX, _strCurrentPageIndex );
 
         Map<String, Object> model = new HashMap<>( );
 
@@ -431,8 +468,42 @@ public class SectorJspBean extends PluginAdminPageJspBean
     }
 
     /**
+     * Get a comparator for sorting sectors
+     *
+     * @param strSort
+     *            The attribute name to sort by
+     * @param bAsc
+     *            True to sort ascending, false otherwise
+     * @return The comparator, or null if the attribute is not sortable
+     */
+    private Comparator<Sector> getSectorComparator( String strSort, boolean bAsc )
+    {
+        Comparator<Sector> comparator = null;
+
+        if ( SORT_LABEL.equals( strSort ) )
+        {
+            comparator = Comparator.comparing( Sector::getLabel, String.CASE_INSENSITIVE_ORDER );
+        }
+        else if ( SORT_DESCRIPTION.equals( strSort ) )
+        {
+            comparator = Comparator.comparing( Sector::getDescription, String.CASE_INSENSITIVE_ORDER );
+        }
+        else if ( SORT_NUMBER_CATEGORIES.equals( strSort ) )
+        {
+            comparator = Comparator.comparingInt( Sector::getNumberCategories );
+        }
+
+        if ( comparator != null && !bAsc )
+        {
+            comparator = comparator.reversed( );
+        }
+
+        return comparator;
+    }
+
+    /**
      * Return UrlPage Url
-     * 
+     *
      * @return url
      */
     private String getUrlPage( )
