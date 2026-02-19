@@ -40,7 +40,9 @@ import java.util.List;
 
 import fr.paris.lutece.plugins.announce.business.Announce;
 import fr.paris.lutece.plugins.announce.business.AnnounceHome;
+import fr.paris.lutece.plugins.announce.service.AnnounceLifecycleService;
 import fr.paris.lutece.portal.service.daemon.Daemon;
+import fr.paris.lutece.portal.service.spring.SpringContextService;
 import fr.paris.lutece.portal.service.mail.MailService;
 import fr.paris.lutece.portal.service.util.AppPropertiesService;
 
@@ -51,6 +53,7 @@ public class AnnounceExpirationDaemon extends Daemon
 {
     private static final String PROPERTY_NB_DAYS_BEFORE_ANNOUNCES_REMOVAL = "announce.nbDaysBeforeAnnouncesRemoval";
     private static final int DEFAULT_NB_DAYS_BEFORE_ANNOUNCES_REMOVAL = 90;
+    private AnnounceLifecycleService _announceLifecycleService = SpringContextService.getBean( AnnounceLifecycleService.BEAN_NAME );
 
     /**
      * {@inheritDoc}
@@ -87,7 +90,7 @@ public class AnnounceExpirationDaemon extends Daemon
                         + "Veuillez la modifier si vous  voulez la maintenir \n";
                 MailService.sendMailHtml( email, strSenderName, strSenderEmail, strSubject, message );
                 ann.setHasNotify( 1 );
-                AnnounceHome.setHasNotifed( ann );
+                _announceLifecycleService.setHasNotified( ann );
             }
 
         }
@@ -96,7 +99,7 @@ public class AnnounceExpirationDaemon extends Daemon
 
         for ( Integer nIdExpiredAnnounce : listIdExpiredAnnounces )
         {
-            AnnounceHome.remove( nIdExpiredAnnounce );
+            _announceLifecycleService.remove( nIdExpiredAnnounce );
         }
 
         setLastRunLogs( listIdNotifiesAnnounces.size( ) + " notified and " + listIdExpiredAnnounces.size( ) + " expired announces have been removed" );

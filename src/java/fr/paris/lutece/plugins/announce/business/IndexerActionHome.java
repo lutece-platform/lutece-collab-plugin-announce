@@ -64,52 +64,33 @@ public final class IndexerActionHome
      */
     public static synchronized void create( IndexerAction indexerAction )
     {
+        // Indexer actions are queued here and processed later by the indexer daemon to update the Lucene index.
+        // Before inserting, we remove any pending opposite action for the same announce (e.g. a pending DELETE
+        // when we queue a CREATE, or vice-versa) to avoid redundant or contradictory indexing operations.
         int nOppositeTask = 0;
 
         if ( indexerAction.getIdTask( ) == IndexerAction.TASK_CREATE )
         {
             nOppositeTask = IndexerAction.TASK_DELETE;
         }
-        else
-            if ( indexerAction.getIdTask( ) == IndexerAction.TASK_DELETE )
-            {
-                nOppositeTask = IndexerAction.TASK_CREATE;
-            }
-
-        boolean bAlreadyFound = false;
+        else if ( indexerAction.getIdTask( ) == IndexerAction.TASK_DELETE )
+        {
+            nOppositeTask = IndexerAction.TASK_CREATE;
+        }
 
         if ( nOppositeTask > 0 )
         {
             IndexerActionFilter filter = new IndexerActionFilter( );
             filter.setIdTask( nOppositeTask );
+            filter.setIdAnnounce( indexerAction.getIdAnnounce( ) );
 
-            List<IndexerAction> listIndexerActions = getList( filter );
-
-            for ( IndexerAction action : listIndexerActions )
+            for ( IndexerAction action : getList( filter ) )
             {
-                if ( action.getIdTask( ) == nOppositeTask )
-                {
-                    remove( action.getIdAction( ) );
-                }
-                else
-                    if ( action.getIdTask( ) == indexerAction.getIdTask( ) )
-                    {
-                        if ( bAlreadyFound )
-                        {
-                            remove( action.getIdAction( ) );
-                        }
-                        else
-                        {
-                            bAlreadyFound = true;
-                        }
-                    }
+                remove( action.getIdAction( ) );
             }
         }
 
-        if ( !bAlreadyFound )
-        {
-            _dao.insert( indexerAction, _plugin );
-        }
+        _dao.insert( indexerAction, _plugin );
     }
 
     /**

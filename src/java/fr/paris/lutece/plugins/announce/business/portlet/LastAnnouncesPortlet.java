@@ -49,7 +49,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 
 /**
- * This class represents business objects AppointmentPortlet
+ * This class represents business objects LastAnnouncesPortlet
  */
 public class LastAnnouncesPortlet extends PortletHtmlContent
 {
@@ -65,7 +65,7 @@ public class LastAnnouncesPortlet extends PortletHtmlContent
      */
     public LastAnnouncesPortlet( )
     {
-        setPortletTypeId( MyAnnouncesPortletHome.getInstance( ).getPortletTypeId( ) );
+        setPortletTypeId( LastAnnouncesPortletHome.getInstance( ).getPortletTypeId( ) );
     }
 
     /**

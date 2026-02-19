@@ -69,7 +69,7 @@ public class IndexerActionFilter
     }
 
     /**
-     * weather or not it contains the task
+     * whether or not it contains the task
      * 
      * @return true if the filter contain a task id
      */

@@ -74,7 +74,6 @@ public class Announce implements Serializable, IExtendableResource, RBACResource
     private List<Integer> _listIdImageResponse;
     private Timestamp _dateCreation;
     private Timestamp _dateModification;
-    private Timestamp _datePublication;
     private long _lTimePublication;
     private Double _nPrice;
     private String _strTags;
@@ -293,9 +292,9 @@ public class Announce implements Serializable, IExtendableResource, RBACResource
     }
 
     /**
-     * weather or not the announce has pictures in slideshow
+     * whether or not the announce has pictures in slideshow
      * 
-     * @return weather or not the announce has pictures in slideshow
+     * @return whether or not the announce has pictures in slideshow
      */
     public boolean getHasPictures( )
     {
@@ -303,10 +302,10 @@ public class Announce implements Serializable, IExtendableResource, RBACResource
     }
 
     /**
-     * set weather or not the announce has pictures
+     * set whether or not the announce has pictures
      * 
      * @param bHasPictures
-     *            weather or not the announce has pictures
+     *            whether or not the announce has pictures
      */
     public void setHasPictures( boolean bHasPictures )
     {
@@ -578,7 +577,35 @@ public class Announce implements Serializable, IExtendableResource, RBACResource
     {
         try
         {
-            return super.clone( );
+            Announce clone = (Announce) super.clone( ); // Copy primitives + references
+
+            // Copy mutable objects: each gets its own independent instance
+            if ( _category != null )
+            {
+                clone._category = (Category) _category.clone( );
+            }
+
+            if ( _dateCreation != null )
+            {
+                clone._dateCreation = new Timestamp( _dateCreation.getTime( ) );
+            }
+
+            if ( _dateModification != null )
+            {
+                clone._dateModification = new Timestamp( _dateModification.getTime( ) );
+            }
+
+            if ( _listResponse != null )
+            {
+                clone._listResponse = new java.util.ArrayList<>( _listResponse );
+            }
+
+            if ( _listIdImageResponse != null )
+            {
+                clone._listIdImageResponse = new java.util.ArrayList<>( _listIdImageResponse );
+            }
+
+            return clone;
         }
         catch( CloneNotSupportedException e )
         {
@@ -589,20 +616,13 @@ public class Announce implements Serializable, IExtendableResource, RBACResource
     }
 
     /**
-     * @return the _datePublication
+     * Get the publication date, computed from the publication timestamp
+     *
+     * @return the publication date
      */
     public Timestamp getDatePublication( )
     {
         return new Timestamp( this.getTimePublication( ) );
-    }
-
-    /**
-     * @param _datePublication
-     *            the _datePublication to set
-     */
-    public void setDatePublication( )
-    {
-        this._datePublication = new Timestamp( this.getTimePublication( ) );
     }
 
     /**

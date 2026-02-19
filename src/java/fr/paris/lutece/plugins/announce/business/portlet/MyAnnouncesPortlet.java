@@ -43,7 +43,7 @@ import org.apache.commons.lang3.StringUtils;
 import javax.servlet.http.HttpServletRequest;
 
 /**
- * This class represents business objects AppointmentPortlet
+ * This class represents business objects MyAnnouncesPortlet
  */
 public class MyAnnouncesPortlet extends PortletHtmlContent
 {

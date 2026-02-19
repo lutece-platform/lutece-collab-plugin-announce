@@ -153,9 +153,9 @@ public class Category implements RBACResource, Serializable, Cloneable
     }
 
     /**
-     * weather or not the announces must be moderated before publishing
+     * whether or not the announces must be moderated before publishing
      * 
-     * @return weather or not the announces must be moderated before publishing
+     * @return whether or not the announces must be moderated before publishing
      */
     public int getAnnouncesValidation( )
     {
@@ -163,10 +163,10 @@ public class Category implements RBACResource, Serializable, Cloneable
     }
 
     /**
-     * sets weather or not the announces must be moderated before publishing
+     * sets whether or not the announces must be moderated before publishing
      * 
      * @param nAnnouncesValidation
-     *            weather or not the announces must be moderated before publishing
+     *            whether or not the announces must be moderated before publishing
      */
     public void setAnnouncesValidation( int nAnnouncesValidation )
     {
@@ -192,9 +192,9 @@ public class Category implements RBACResource, Serializable, Cloneable
     }
 
     /**
-     * weather or not the category must display the price of announce
+     * whether or not the category must display the price of announce
      * 
-     * @return weather or not the category must display the price of announce
+     * @return whether or not the category must display the price of announce
      */
     public boolean getDisplayPrice( )
     {
@@ -202,10 +202,10 @@ public class Category implements RBACResource, Serializable, Cloneable
     }
 
     /**
-     * sets weather or not the category must display the price of announce
+     * sets whether or not the category must display the price of announce
      * 
      * @param displayPrice
-     *            weather or not the category must display the price of announce
+     *            whether or not the category must display the price of announce
      */
     public void setDisplayPrice( boolean displayPrice )
     {

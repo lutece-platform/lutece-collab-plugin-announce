@@ -5,7 +5,7 @@
 
 DROP TABLE IF EXISTS announce_sector;
 CREATE TABLE announce_sector(
-id_sector int DEFAULT '0' NOT NULL,
+id_sector int AUTO_INCREMENT NOT NULL,
 label_sector varchar(50) NOT NULL,
 description_sector varchar(255) NOT NULL ,
 announces_validation smallint default '0',
@@ -17,7 +17,7 @@ PRIMARY KEY (id_sector)
 
 DROP TABLE IF EXISTS announce_category;
 CREATE TABLE announce_category(
-	id_category int default '0' NOT NULL,
+	id_category int AUTO_INCREMENT NOT NULL,
 	id_sector int default '0' NOT NULL,
 	label_category varchar(50) NOT NULL,
 	display_price smallint default '0',
@@ -32,7 +32,7 @@ CREATE TABLE announce_category(
 
 DROP TABLE IF EXISTS announce_announce;
 CREATE TABLE announce_announce(
-	id_announce int default '0' NOT NULL,
+	id_announce int AUTO_INCREMENT NOT NULL,
 	user_name varchar(255) NOT NULL,
 	user_lastname varchar(255) default '' NOT NULL,
 	user_secondname varchar(255) default '' NOT NULL,
@@ -57,7 +57,7 @@ CREATE INDEX announce_user_name ON announce_announce (user_name);
 
 DROP TABLE IF EXISTS announce_indexer_action;
 CREATE TABLE announce_indexer_action (
-  id_action INT DEFAULT 0 NOT NULL,
+  id_action INT AUTO_INCREMENT NOT NULL,
   id_announce INT DEFAULT 0 NOT NULL,
   id_task INT DEFAULT 0 NOT NULL ,
   PRIMARY KEY (id_action)
@@ -76,7 +76,7 @@ CREATE INDEX announce_response_file ON announce_announce_response (id_response);
 
 DROP TABLE IF EXISTS announce_search_filters;
 CREATE TABLE announce_search_filters(
-	id_filter int NOT NULL,
+	id_filter int AUTO_INCREMENT NOT NULL,
 	id_category int NOT NULL,
 	keywords long varchar NOT NULL ,
 	date_min DATE null,
@@ -95,7 +95,7 @@ CREATE TABLE announce_portlet_last_announces(
 
 DROP TABLE IF EXISTS announce_notify;
 CREATE TABLE announce_notify(
-id int default '0' NOT NULL,
+id int AUTO_INCREMENT NOT NULL,
 id_announce int default '0' NOT NULL,
 PRIMARY KEY (id)
 );

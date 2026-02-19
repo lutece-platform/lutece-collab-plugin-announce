@@ -170,7 +170,7 @@ public interface IAnnounceDAO
      */
     void setPublished( Announce announce, Plugin plugin );
 
-    void setHasNotifed( Announce announce, Plugin plugin );
+    void setHasNotified( Announce announce, Plugin plugin );
 
     /**
      * suspend or enable an announce

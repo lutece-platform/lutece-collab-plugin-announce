@@ -37,6 +37,8 @@ import fr.paris.lutece.portal.service.plugin.Plugin;
 import fr.paris.lutece.util.ReferenceList;
 import fr.paris.lutece.util.sql.DAOUtil;
 
+import java.sql.Statement;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -45,39 +47,16 @@ import java.util.List;
  */
 public final class CategoryDAO implements ICategoryDAO
 {
-    private static final String SQL_QUERY_NEWPK = "SELECT max( id_category ) FROM announce_category ";
     private static final String SQL_QUERY_SELECT = "SELECT id_category, id_sector, label_category, display_price, price_mandatory, announces_validation, id_mailing_list, id_workflow, display_captcha FROM announce_category WHERE id_category = ? ";
-    private static final String SQL_QUERY_SELECTALL = "SELECT a.id_category, a.id_sector, a.label_category, b.label_sector FROM announce_category a, announce_sector b WHERE a.id_sector = b.id_sector ORDER BY a.id_sector, a.label_category";
-    private static final String SQL_QUERY_INSERT = "INSERT INTO announce_category ( id_category, id_sector, label_category, display_price, price_mandatory, announces_validation, id_mailing_list, id_workflow, display_captcha )  VALUES (?,?,?,?,?,?,?,?,?) ";
+    private static final String SQL_QUERY_SELECTALL = "SELECT a.id_category, a.id_sector, a.label_category, b.label_sector, COUNT(c.id_announce) FROM announce_category a INNER JOIN announce_sector b ON a.id_sector = b.id_sector LEFT JOIN announce_announce c ON c.id_category = a.id_category GROUP BY a.id_category, a.id_sector, a.label_category, b.label_sector ORDER BY a.id_sector, a.label_category";
+    private static final String SQL_QUERY_INSERT = "INSERT INTO announce_category ( id_sector, label_category, display_price, price_mandatory, announces_validation, id_mailing_list, id_workflow, display_captcha ) VALUES (?,?,?,?,?,?,?,?) ";
     private static final String SQL_QUERY_DELETE = "DELETE FROM announce_category WHERE id_category = ? ";
     private static final String SQL_QUERY_UPDATE = "UPDATE announce_category SET id_sector = ?, label_category = ?, display_price = ?, price_mandatory = ?, announces_validation = ?, id_mailing_list = ?, id_workflow = ?, display_captcha = ? WHERE id_category = ? ";
-    private static final String SQL_QUERY_COUNT_ANNOUNCES_FOR_CATEORY = "SELECT COUNT(*) FROM announce_announce WHERE id_category = ?";
-    private static final String SQL_QUERY_COUNT_PUBLISHED_ANNOUNCES_FOR_CATEORY = "SELECT COUNT(*) FROM announce_announce WHERE id_category = ? AND published = 1 AND suspended = 0 AND suspended_by_user = 0 ";
-    private static final String SQL_QUERY_COUNT_ENTRIES_FOR_CATEGORY = "SELECT COUNT(*) FROM announce_announce WHERE id_category = ?";
-    private static final String SQL_QUERY_SELECT_CATEGORIES_FOR_FIELD = "SELECT id_category, id_sector, label_category FROM announce_category WHERE id_sector = ? ORDER BY label_category";
+    private static final String SQL_QUERY_COUNT_ANNOUNCES_FOR_CATEGORY = "SELECT COUNT(*) FROM announce_announce WHERE id_category = ?";
+    private static final String SQL_QUERY_COUNT_PUBLISHED_ANNOUNCES_FOR_CATEGORY = "SELECT COUNT(*) FROM announce_announce WHERE id_category = ? AND published = 1 AND suspended = 0 AND suspended_by_user = 0 ";
+    private static final String SQL_QUERY_COUNT_ENTRIES_FOR_CATEGORY = "SELECT COUNT(*) FROM genatt_entry WHERE id_resource = ? AND resource_type = 'CATEGORY'";
+    private static final String SQL_QUERY_SELECT_CATEGORIES_FOR_FIELD = "SELECT a.id_category, a.id_sector, a.label_category, COUNT(c.id_announce) FROM announce_category a LEFT JOIN announce_announce c ON c.id_category = a.id_category AND c.published = 1 AND c.suspended = 0 AND c.suspended_by_user = 0 WHERE a.id_sector = ? GROUP BY a.id_category, a.id_sector, a.label_category ORDER BY a.label_category";
     private static final String SQL_QUERY_SELECT_CATEGORIES_REFERENCELIST = "SELECT id_category, label_category FROM announce_category";
-
-    /**
-     * Generates a new primary key
-     * 
-     * @param plugin
-     *            The plugin
-     * @return The new primary key
-     */
-    public int newPrimaryKey( Plugin plugin )
-    {
-        int nKey = 1;
-        try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_NEWPK, plugin ) )
-        {
-            daoUtil.executeQuery( );
-
-            if ( daoUtil.next( ) )
-            {
-                nKey = daoUtil.getInt( 1 ) + 1;
-            }
-        }
-        return nKey;
-    }
 
     /**
      * {@inheritDoc}
@@ -85,42 +64,46 @@ public final class CategoryDAO implements ICategoryDAO
     @Override
     public void insert( Category category, Plugin plugin )
     {
-        try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_INSERT, plugin ) )
+        try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_INSERT, Statement.RETURN_GENERATED_KEYS, plugin ) )
         {
-            category.setId( newPrimaryKey( plugin ) );
-
             int nIndex = 1;
-            daoUtil.setInt( nIndex++, category.getId( ) );
             daoUtil.setInt( nIndex++, category.getIdSector( ) );
             daoUtil.setString( nIndex++, category.getLabel( ) );
             daoUtil.setBoolean( nIndex++, category.getDisplayPrice( ) );
             daoUtil.setBoolean( nIndex++, category.getPriceMandatory( ) );
             daoUtil.setInt( nIndex++, category.getAnnouncesValidation( ) );
             daoUtil.setInt( nIndex++, category.getIdMailingList( ) );
-            daoUtil.setBoolean( nIndex++, category.getDisplayCaptcha( ) );
-            daoUtil.setInt( nIndex, category.getIdWorkflow( ) );
+            daoUtil.setInt( nIndex++, category.getIdWorkflow( ) );
+            daoUtil.setBoolean( nIndex, category.getDisplayCaptcha( ) );
             daoUtil.executeUpdate( );
+
+            if ( daoUtil.nextGeneratedKey( ) )
+            {
+                category.setId( daoUtil.getGeneratedKeyInt( 1 ) );
+            }
         }
     }
 
     @Override
     public int copyCategory( Category category, Plugin plugin )
     {
-        try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_INSERT, plugin ) )
+        try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_INSERT, Statement.RETURN_GENERATED_KEYS, plugin ) )
         {
-            category.setId( newPrimaryKey( plugin ) );
-
             int nIndex = 1;
-            daoUtil.setInt( nIndex++, category.getId( ) );
             daoUtil.setInt( nIndex++, category.getIdSector( ) );
             daoUtil.setString( nIndex++, category.getLabel( ) );
             daoUtil.setBoolean( nIndex++, category.getDisplayPrice( ) );
             daoUtil.setBoolean( nIndex++, category.getPriceMandatory( ) );
             daoUtil.setInt( nIndex++, category.getAnnouncesValidation( ) );
             daoUtil.setInt( nIndex++, category.getIdMailingList( ) );
-            daoUtil.setBoolean( nIndex++, category.getDisplayCaptcha( ) );
-            daoUtil.setInt( nIndex, category.getIdWorkflow( ) );
+            daoUtil.setInt( nIndex++, category.getIdWorkflow( ) );
+            daoUtil.setBoolean( nIndex, category.getDisplayCaptcha( ) );
             daoUtil.executeUpdate( );
+
+            if ( daoUtil.nextGeneratedKey( ) )
+            {
+                category.setId( daoUtil.getGeneratedKeyInt( 1 ) );
+            }
         }
         return category.getId( );
     }
@@ -210,7 +193,7 @@ public final class CategoryDAO implements ICategoryDAO
                 category.setIdSector( daoUtil.getInt( 2 ) );
                 category.setLabel( daoUtil.getString( 3 ) );
                 category.setLabelSector( daoUtil.getString( 4 ) );
-                category.setNumberAnnounces( countAnnouncesForCategory( category, plugin ) );
+                category.setNumberAnnounces( daoUtil.getInt( 5 ) );
 
                 listCategories.add( category );
             }
@@ -230,7 +213,7 @@ public final class CategoryDAO implements ICategoryDAO
     private int countAnnouncesForCategory( Category category, Plugin plugin )
     {
         int nNumberAnnounces = 0;
-        try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_COUNT_ANNOUNCES_FOR_CATEORY, plugin ) )
+        try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_COUNT_ANNOUNCES_FOR_CATEGORY, plugin ) )
         {
             daoUtil.setInt( 1, category.getId( ) );
             daoUtil.executeQuery( );
@@ -250,7 +233,7 @@ public final class CategoryDAO implements ICategoryDAO
     public int countPublishedAnnouncesForCategory( Category category, Plugin plugin )
     {
         int nNumberAnnounces = 0;
-        try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_COUNT_PUBLISHED_ANNOUNCES_FOR_CATEORY, plugin ) )
+        try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_COUNT_PUBLISHED_ANNOUNCES_FOR_CATEGORY, plugin ) )
         {
             daoUtil.setInt( 1, category.getId( ) );
             daoUtil.executeQuery( );
@@ -301,7 +284,7 @@ public final class CategoryDAO implements ICategoryDAO
                 category.setId( daoUtil.getInt( 1 ) );
                 category.setIdSector( daoUtil.getInt( 2 ) );
                 category.setLabel( daoUtil.getString( 3 ) );
-                category.setNumberAnnounces( countPublishedAnnouncesForCategory( category, plugin ) );
+                category.setNumberAnnounces( daoUtil.getInt( 4 ) );
 
                 listCategories.add( category );
             }

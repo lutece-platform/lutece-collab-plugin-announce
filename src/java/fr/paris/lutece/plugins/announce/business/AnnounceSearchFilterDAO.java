@@ -37,9 +37,11 @@ import fr.paris.lutece.portal.service.plugin.Plugin;
 import fr.paris.lutece.util.sql.DAOUtil;
 
 import java.sql.Date;
+import java.sql.Statement;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
 
@@ -48,38 +50,15 @@ import org.apache.commons.collections4.CollectionUtils;
  */
 public class AnnounceSearchFilterDAO implements IAnnounceSearchFilterDAO
 {
-    private static final String SQL_QUERY_NEW_PRIMARY_KEY = " SELECT max(id_filter) FROM announce_search_filters ";
     private static final String SQL_QUERY_SELECT = " SELECT id_filter, id_category, keywords, date_min, date_max, price_min, price_max FROM announce_search_filters ";
     private static final String SQL_QUERY_SELECT_LIST_ID = SQL_QUERY_SELECT + " WHERE id_filter IN ( ";
     private static final String SQL_QUERY_SELECT_BY_PRIMARY_KEY = SQL_QUERY_SELECT + " WHERE id_filter = ? ";
-    private static final String SQL_QUERY_INSERT = " INSERT INTO announce_search_filters ( id_filter, id_category, keywords, date_min, date_max, price_min, price_max ) VALUES (?,?,?,?,?,?,?) ";
+    private static final String SQL_QUERY_INSERT = " INSERT INTO announce_search_filters ( id_category, keywords, date_min, date_max, price_min, price_max ) VALUES (?,?,?,?,?,?) ";
     private static final String SQL_QUERY_UPDATE = " UPDATE announce_search_filters SET id_category = ?, keywords = ?, date_min = ?, date_max = ?, price_min = ?, price_max = ? WHERE id_filter = ? ";
     private static final String SQL_QUERY_DELETE = " DELETE FROM announce_search_filters WHERE id_filter = ? ";
     private static final String SQL_QUERY_DELETE_BY_ID_CATEGORY = " DELETE FROM announce_search_filters WHERE id_category = ? ";
     private static final String CONSTANT_COMA = ",";
     private static final String CONSTANT_CLOSE_PARENTHESIS = ")";
-
-    /**
-     * Get a new primary key
-     * 
-     * @param plugin
-     *            The plugin
-     * @return the new value of the primary key
-     */
-    private int getNewPrimaryKey( Plugin plugin )
-    {
-        int nRes = 1;
-        try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_NEW_PRIMARY_KEY, plugin ) )
-        {
-            daoUtil.executeQuery( );
-
-            if ( daoUtil.next( ) )
-            {
-                nRes = daoUtil.getInt( 1 ) + 1;
-            }
-        }
-        return nRes;
-    }
 
     /**
      * {@inheritDoc}
@@ -105,14 +84,11 @@ public class AnnounceSearchFilterDAO implements IAnnounceSearchFilterDAO
      * {@inheritDoc}
      */
     @Override
-    public synchronized void create( AnnounceSearchFilter filter, Plugin plugin )
+    public void create( AnnounceSearchFilter filter, Plugin plugin )
     {
-        filter.setIdFilter( getNewPrimaryKey( plugin ) );
-
-        try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_INSERT, plugin ) )
+        try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_INSERT, Statement.RETURN_GENERATED_KEYS, plugin ) )
         {
             int nIndex = 1;
-            daoUtil.setInt( nIndex++, filter.getIdFilter( ) );
             daoUtil.setInt( nIndex++, filter.getIdCategory( ) );
             daoUtil.setString( nIndex++, filter.getKeywords( ) );
             daoUtil.setDate( nIndex++, ( filter.getDateMin( ) == null ) ? null : new Date( filter.getDateMin( ).getTime( ) ) );
@@ -120,6 +96,11 @@ public class AnnounceSearchFilterDAO implements IAnnounceSearchFilterDAO
             daoUtil.setInt( nIndex++, filter.getPriceMin( ) );
             daoUtil.setInt( nIndex, filter.getPriceMax( ) );
             daoUtil.executeUpdate( );
+
+            if ( daoUtil.nextGeneratedKey( ) )
+            {
+                filter.setIdFilter( daoUtil.getGeneratedKeyInt( 1 ) );
+            }
         }
     }
 
@@ -134,8 +115,8 @@ public class AnnounceSearchFilterDAO implements IAnnounceSearchFilterDAO
             int nIndex = 1;
             daoUtil.setInt( nIndex++, filter.getIdCategory( ) );
             daoUtil.setString( nIndex++, filter.getKeywords( ) );
-            daoUtil.setDate( nIndex++, new Date( filter.getDateMin( ).getTime( ) ) );
-            daoUtil.setDate( nIndex++, new Date( filter.getDateMax( ).getTime( ) ) );
+            daoUtil.setDate( nIndex++, ( filter.getDateMin( ) == null ) ? null : new Date( filter.getDateMin( ).getTime( ) ) );
+            daoUtil.setDate( nIndex++, ( filter.getDateMax( ) == null ) ? null : new Date( filter.getDateMax( ).getTime( ) ) );
             daoUtil.setInt( nIndex++, filter.getPriceMin( ) );
             daoUtil.setInt( nIndex++, filter.getPriceMax( ) );
             daoUtil.setInt( nIndex, filter.getIdFilter( ) );
@@ -197,25 +178,16 @@ public class AnnounceSearchFilterDAO implements IAnnounceSearchFilterDAO
     {
         if ( CollectionUtils.isEmpty( listIdFilters ) )
         {
-            return null;
+            return new ArrayList<>( );
         }
 
-        StringBuilder sbSql = new StringBuilder( SQL_QUERY_SELECT_LIST_ID );
-        boolean bHasContent = false;
-
-        for ( int nIdFilters : listIdFilters )
-        {
-            if ( bHasContent )
-            {
-                sbSql.append( CONSTANT_COMA );
-            }
-
-            sbSql.append( nIdFilters );
-        }
-
-        sbSql.append( CONSTANT_CLOSE_PARENTHESIS );
+        String strSql = SQL_QUERY_SELECT_LIST_ID
+                + listIdFilters.stream( ).map( String::valueOf ).collect( Collectors.joining( CONSTANT_COMA ) )
+                + CONSTANT_CLOSE_PARENTHESIS;
+        
         List<AnnounceSearchFilter> listFilters = new ArrayList<>( );
-        try ( DAOUtil daoUtil = new DAOUtil( sbSql.toString( ), plugin ) )
+        
+        try ( DAOUtil daoUtil = new DAOUtil( strSql, plugin ) )
         {
             daoUtil.executeQuery( );
 

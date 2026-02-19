@@ -52,6 +52,9 @@
     <bean id="announce.announceService"
         class="fr.paris.lutece.plugins.announce.service.AnnounceService" />
 
+    <bean id="announce.announceLifecycleService"
+        class="fr.paris.lutece.plugins.announce.service.AnnounceLifecycleService" />
+
     <bean id="announce.announceIndexer"
         class="fr.paris.lutece.plugins.announce.service.announcesearch.DefaultAnnounceIndexer" />
 

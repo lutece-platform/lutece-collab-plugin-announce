@@ -46,8 +46,8 @@ public class MyAnnouncesPortletHome extends PortletHome
     // Static variable pointed at the DAO instance
     private static IMyAnnouncesPortletDAO _dao = SpringContextService.getBean( "announce.myAnnouncesPortletDAO" );
 
-    /* This class implements the Singleton design pattern. */
-    private static MyAnnouncesPortletHome _singleton;
+    // volatile ensures that all threads see a fully constructed instance (prevents instruction reordering)
+    private static volatile MyAnnouncesPortletHome _singleton;
 
     /**
      * Returns the identifier of the portlet type
@@ -62,11 +62,12 @@ public class MyAnnouncesPortletHome extends PortletHome
     }
 
     /**
-     * Returns the instance of AppointmentPortlet Portlet
-     * 
-     * @return the AppointmentPortlet Portlet instance
+     * Returns the instance of MyAnnouncesPortlet Portlet.
+     * synchronized prevents two threads from creating separate instances when _singleton is still null.
+     *
+     * @return the MyAnnouncesPortlet Portlet instance
      */
-    public static PortletHome getInstance( )
+    public static synchronized PortletHome getInstance( )
     {
         if ( _singleton == null )
         {

@@ -90,7 +90,7 @@ public class SectorJspBean extends PluginAdminPageJspBean
     private static final String UNAUTHORIZED = "Unauthorized";
 
     /* properties */
-    private static final String PROPERTY_PAGE_TITLE_MANAGE_FIELDS = "announce.manage_sector.pageTitle";
+    private static final String PROPERTY_PAGE_TITLE_MANAGE_FIELDS = "announce.manage_sectors.pageTitle";
     private static final String PROPERTY_PAGE_TITLE_CREATE_FIELD = "announce.create_sector.pageTitle";
     private static final String PROPERTY_PAGE_TITLE_MODIFY_FIELD = "announce.modify_sector.pageTitle";
     private static final String PROPERTY_DEFAULT_LIST_FIELD_PER_PAGE = "announce.sector.itemsPerPage";
@@ -278,7 +278,7 @@ public class SectorJspBean extends PluginAdminPageJspBean
             return AdminMessageService.getMessageUrl( request, Messages.MANDATORY_FIELDS, AdminMessage.TYPE_STOP );
         }
 
-        SectorHome.create( sector, getPlugin( ) );
+        SectorHome.create( sector );
 
         // if the operation occurred well, redirects towards the list
         return JSP_REDIRECT_TO_MANAGE_FIELDS;
@@ -343,7 +343,7 @@ public class SectorJspBean extends PluginAdminPageJspBean
         sector.setLabel( strSectorLabel );
         sector.setDescription( strSectorDescription );
         sector.setTags( strTags );
-        SectorHome.update( sector, getPlugin( ) );
+        SectorHome.update( sector );
 
         // if the operation occurred well, redirects towards the list
         return JSP_REDIRECT_TO_MANAGE_FIELDS;
@@ -391,7 +391,7 @@ public class SectorJspBean extends PluginAdminPageJspBean
         int nOrder = SectorHome.getOrderById( nIdSector );
         int nNewOrder = SectorHome.getMaxOrderSector( );
         modifySectorOrder( nOrder, nNewOrder, nIdSector );
-        SectorHome.remove( sector, getPlugin( ) );
+        SectorHome.remove( sector );
 
         // if the operation occurred well, redirects towards the list
         return JSP_REDIRECT_TO_MANAGE_FIELDS;

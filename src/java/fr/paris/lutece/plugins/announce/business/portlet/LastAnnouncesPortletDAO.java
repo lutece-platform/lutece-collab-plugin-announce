@@ -104,6 +104,7 @@ public final class LastAnnouncesPortletDAO implements ILastAnnouncesPortletDAO
         try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECT, AnnouncePlugin.getPlugin( ) ) )
         {
             daoUtil.setInt( 1, nIdPortlet );
+            daoUtil.executeQuery( );
             portlet.setId( nIdPortlet );
 
             if ( daoUtil.next( ) )

@@ -42,7 +42,7 @@ public interface IAnnounceNotifyDAO
 
     void insert( AnnounceNotify announce, Plugin plugin );
 
-    void delete( int nIdAnnounce, Plugin plugin );
+    void delete( int nIdAnnounceNotify, Plugin plugin );
 
     List<AnnounceNotify> load( Plugin plugin );
 }

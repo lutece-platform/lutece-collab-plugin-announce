@@ -53,6 +53,7 @@ import fr.paris.lutece.plugins.announce.business.AnnounceNotifyHome;
 import fr.paris.lutece.plugins.announce.business.AnnounceSort;
 import fr.paris.lutece.plugins.announce.business.Category;
 import fr.paris.lutece.plugins.announce.business.CategoryHome;
+import fr.paris.lutece.plugins.announce.service.AnnounceLifecycleService;
 import fr.paris.lutece.plugins.announce.service.AnnounceResourceIdService;
 import fr.paris.lutece.plugins.announce.service.AnnounceService;
 import fr.paris.lutece.plugins.announce.utils.AnnounceUtils;
@@ -66,6 +67,7 @@ import fr.paris.lutece.portal.service.message.AdminMessage;
 import fr.paris.lutece.portal.service.message.AdminMessageService;
 import fr.paris.lutece.portal.service.plugin.Plugin;
 import fr.paris.lutece.portal.service.rbac.RBACService;
+import fr.paris.lutece.portal.service.spring.SpringContextService;
 import fr.paris.lutece.portal.service.template.AppTemplateService;
 import fr.paris.lutece.portal.service.util.AppPathService;
 import fr.paris.lutece.portal.service.util.AppPropertiesService;
@@ -125,6 +127,7 @@ public class AnnounceJspBean extends PluginAdminPageJspBean
     private static final String MARK_IS_SUBSCRIBE = "isSubscribe";
     
     /* Variables */
+    private AnnounceLifecycleService _announceLifecycleService = SpringContextService.getBean( AnnounceLifecycleService.BEAN_NAME );
     private int _nDefaultItemsPerPage;
     private String _strCurrentPageIndex;
     private int _nItemsPerPage;
@@ -353,7 +356,7 @@ public class AnnounceJspBean extends PluginAdminPageJspBean
 
         int nIdAnnounce = Integer.parseInt( strAnnounceId );
 
-        AnnounceHome.remove( nIdAnnounce );
+        _announceLifecycleService.remove( nIdAnnounce );
 
         // if the operation occurred well, redirects towards the list
         return JSP_REDIRECT_TO_MANAGE_ANNOUNCES;
@@ -393,7 +396,7 @@ public class AnnounceJspBean extends PluginAdminPageJspBean
             }
             announce.setDateCreation( new Timestamp( Calendar.getInstance( ).getTimeInMillis( ) ) );
             announce.setPublished( bPublished );
-            AnnounceHome.setPublished( announce );
+            _announceLifecycleService.publish( announce );
         }
         // if the operation occurred well, redirects towards the list
         return JSP_REDIRECT_TO_MANAGE_ANNOUNCES;
@@ -422,7 +425,7 @@ public class AnnounceJspBean extends PluginAdminPageJspBean
         int nIdAnnounce = Integer.parseInt( strAnnounceId );
         Announce announce = AnnounceHome.findByPrimaryKey( nIdAnnounce );
         announce.setSuspended( false );
-        AnnounceHome.setSuspended( announce );
+        _announceLifecycleService.suspendByAdmin( announce );
 
         // if the operation occurred well, redirects towards the list
         return JSP_REDIRECT_TO_MANAGE_ANNOUNCES;
@@ -451,7 +454,7 @@ public class AnnounceJspBean extends PluginAdminPageJspBean
         int nIdAnnounce = Integer.parseInt( strAnnounceId );
         Announce announce = AnnounceHome.findByPrimaryKey( nIdAnnounce );
         announce.setSuspended( true );
-        AnnounceHome.setSuspended( announce );
+        _announceLifecycleService.suspendByAdmin( announce );
 
         // if the operation occurred well, redirects towards the list
         return JSP_REDIRECT_TO_MANAGE_ANNOUNCES;

@@ -36,6 +36,8 @@ package fr.paris.lutece.plugins.announce.business;
 import fr.paris.lutece.portal.service.plugin.Plugin;
 import fr.paris.lutece.util.sql.DAOUtil;
 
+import java.sql.Statement;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -43,30 +45,31 @@ public class AnnounceNotifyDAO implements IAnnounceNotifyDAO
 {
 
     private static final String SQL_QUERY_SELECT_ALL = "SELECT id, id_announce FROM announce_notify";
-    private static final String SQL_QUERY_INSERT = "INSERT INTO announce_notify ( id, id_announce) VALUES (?,?)";
+    private static final String SQL_QUERY_INSERT = "INSERT INTO announce_notify ( id_announce) VALUES (?)";
     private static final String SQL_QUERY_DELETE = "DELETE FROM announce_notify WHERE id = ? ";
-
-    private static final String SQL_QUERY_NEW_PK = "SELECT max( id ) FROM announce_notify";
 
     @Override
     public void insert( AnnounceNotify announce, Plugin plugin )
     {
-
-        try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_INSERT, plugin ) )
+        try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_INSERT, Statement.RETURN_GENERATED_KEYS, plugin ) )
         {
-            daoUtil.setInt( 1, newPrimaryKey( plugin ) );
-            daoUtil.setInt( 2, announce.getIdAnnounce( ) );
+            daoUtil.setInt( 1, announce.getIdAnnounce( ) );
 
             daoUtil.executeUpdate( );
+
+            if ( daoUtil.nextGeneratedKey( ) )
+            {
+                announce.setId( daoUtil.getGeneratedKeyInt( 1 ) );
+            }
         }
     }
 
     @Override
-    public void delete( int nIdAnnounce, Plugin plugin )
+    public void delete( int nIdAnnounceNotify, Plugin plugin )
     {
         try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_DELETE, plugin ) )
         {
-            daoUtil.setInt( 1, nIdAnnounce );
+            daoUtil.setInt( 1, nIdAnnounceNotify );
             daoUtil.executeUpdate( );
         }
     }
@@ -94,18 +97,4 @@ public class AnnounceNotifyDAO implements IAnnounceNotifyDAO
         return announceList;
     }
 
-    public int newPrimaryKey( Plugin plugin )
-    {
-        int nKey = 1;
-        try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_NEW_PK, plugin ) )
-        {
-            daoUtil.executeQuery( );
-
-            if ( daoUtil.next( ) )
-            {
-                nKey = daoUtil.getInt( 1 ) + 1;
-            }
-        }
-        return nKey;
-    }
 }

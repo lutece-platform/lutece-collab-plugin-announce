@@ -164,9 +164,9 @@ public class Sector implements RBACResource
     }
 
     /**
-     * gets weather or not the announces of the filed must be moderated
+     * gets whether or not the announces of the filed must be moderated
      * 
-     * @return weather or not the announces of the filed must be moderated
+     * @return whether or not the announces of the filed must be moderated
      */
     public boolean getAnnouncesValidation( )
     {
@@ -174,10 +174,10 @@ public class Sector implements RBACResource
     }
 
     /**
-     * sets weather or not the announces of the filed must be moderated
+     * sets whether or not the announces of the filed must be moderated
      * 
      * @param bAnnouncesValidation
-     *            weather or not the announces of the filed must be moderated
+     *            whether or not the announces of the filed must be moderated
      */
     public void setAnnouncesValidation( boolean bAnnouncesValidation )
     {

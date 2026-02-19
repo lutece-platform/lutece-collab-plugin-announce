@@ -34,7 +34,6 @@
 package fr.paris.lutece.plugins.announce.service;
 
 import fr.paris.lutece.plugins.announce.business.Announce;
-import fr.paris.lutece.plugins.announce.business.AnnounceDTO;
 import fr.paris.lutece.plugins.announce.business.AnnounceHome;
 import fr.paris.lutece.plugins.announce.business.Category;
 import fr.paris.lutece.plugins.announce.business.Sector;
@@ -144,7 +143,7 @@ public class AnnounceService implements Serializable
         filter.setEntryParentNull( EntryFilter.FILTER_TRUE );
         filter.setFieldDependNull( EntryFilter.FILTER_TRUE );
 
-        AnnounceDTO announceDTO = null;
+        Map<Integer, List<Response>> mapResponsesByIdEntry = new HashMap<>( );
 
         if ( announce != null )
         {
@@ -152,8 +151,6 @@ public class AnnounceService implements Serializable
             {
                 announce.setListResponse( AnnounceHome.findListResponse( announce.getId( ), true ) );
             }
-
-            announceDTO = new AnnounceDTO( announce );
 
             if ( announce.getListResponse( ) != null )
             {
@@ -168,8 +165,6 @@ public class AnnounceService implements Serializable
                                 IEntryTypeService.PREFIX_ATTRIBUTE + Integer.toString( response.getEntry( ).getIdEntry( ) ), request );
                     }
                 }
-
-                Map<Integer, List<Response>> mapResponsesByIdEntry = announceDTO.getMapResponsesByIdEntry( );
 
                 for ( Response response : announce.getListResponse( ) )
                 {
@@ -190,7 +185,7 @@ public class AnnounceService implements Serializable
 
         for ( Entry entry : listEntryFirstLevel )
         {
-            getHtmlEntry( announceDTO, entry.getIdEntry( ), strBuffer, locale, bDisplayFront, request );
+            getHtmlEntry( mapResponsesByIdEntry, entry.getIdEntry( ), strBuffer, locale, bDisplayFront, request );
         }
 
         Sector sector = SectorHome.findByPrimaryKey( category.getIdSector( ) );
@@ -207,9 +202,9 @@ public class AnnounceService implements Serializable
 
     /**
      * Insert in the string buffer the content of the HTML code of the entry
-     * 
-     * @param announce
-     *            The announce to load current values, or null to use default values
+     *
+     * @param mapResponsesByIdEntry
+     *            The map of responses indexed by entry id, or null to use default values
      * @param nIdEntry
      *            the key of the entry which HTML code must be insert in the stringBuffer
      * @param stringBuffer
@@ -221,7 +216,7 @@ public class AnnounceService implements Serializable
      * @param request
      *            HttpServletRequest
      */
-    public void getHtmlEntry( AnnounceDTO announce, int nIdEntry, StringBuffer stringBuffer, Locale locale, boolean bDisplayFront, HttpServletRequest request )
+    public void getHtmlEntry( Map<Integer, List<Response>> mapResponsesByIdEntry, int nIdEntry, StringBuffer stringBuffer, Locale locale, boolean bDisplayFront, HttpServletRequest request )
     {
         Map<String, Object> model = new HashMap<>( );
         StringBuilder strConditionalQuestionStringBuffer = null;
@@ -234,7 +229,7 @@ public class AnnounceService implements Serializable
 
             for ( Entry entryChild : entry.getChildren( ) )
             {
-                getHtmlEntry( announce, entryChild.getIdEntry( ), strGroupStringBuffer, locale, bDisplayFront, request );
+                getHtmlEntry( mapResponsesByIdEntry, entryChild.getIdEntry( ), strGroupStringBuffer, locale, bDisplayFront, request );
             }
 
             model.put( MARK_STR_LIST_CHILDREN, strGroupStringBuffer.toString( ) );
@@ -262,7 +257,7 @@ public class AnnounceService implements Serializable
 
                     for ( Entry entryConditional : field.getConditionalQuestions( ) )
                     {
-                        getHtmlEntry( announce, entryConditional.getIdEntry( ), strGroupStringBuffer, locale, bDisplayFront, request );
+                        getHtmlEntry( mapResponsesByIdEntry, entryConditional.getIdEntry( ), strGroupStringBuffer, locale, bDisplayFront, request );
                     }
 
                     model.put( MARK_STR_LIST_CHILDREN, strGroupStringBuffer.toString( ) );
@@ -294,9 +289,9 @@ public class AnnounceService implements Serializable
 
         model.put( MARK_USER, user );
 
-        if ( ( announce != null ) && ( announce.getMapResponsesByIdEntry( ) != null ) )
+        if ( mapResponsesByIdEntry != null )
         {
-            List<Response> listResponses = announce.getMapResponsesByIdEntry( ).get( entry.getIdEntry( ) );
+            List<Response> listResponses = mapResponsesByIdEntry.get( entry.getIdEntry( ) );
             if ( listResponses != null )
             {
                 for ( Response response : listResponses )
@@ -329,31 +324,31 @@ public class AnnounceService implements Serializable
 
     /**
      * Get the responses associated with an entry.<br />
-     * Return null if there is no error in the response, or return the list of errors Response created are stored the map of {@link AnnounceDTO}. The key of the
-     * map is this id of the entry, and the value the list of responses
-     * 
+     * Return null if there is no error in the response, or return the list of errors. Response created are stored in the map.
+     * The key of the map is the id of the entry, and the value the list of responses
+     *
      * @param request
      *            the request
      * @param nIdEntry
      *            the key of the entry
      * @param locale
      *            the locale
-     * @param announce
-     *            The announce
+     * @param mapResponsesByIdEntry
+     *            The map to store responses indexed by entry id
      * @return null if there is no error in the response or the list of errors found
      */
-    public List<GenericAttributeError> getResponseEntry( HttpServletRequest request, int nIdEntry, Locale locale, AnnounceDTO announce )
+    public List<GenericAttributeError> getResponseEntry( HttpServletRequest request, int nIdEntry, Locale locale, Map<Integer, List<Response>> mapResponsesByIdEntry )
     {
         List<Response> listResponse = new ArrayList<>( );
-        announce.getMapResponsesByIdEntry( ).put( nIdEntry, listResponse );
+        mapResponsesByIdEntry.put( nIdEntry, listResponse );
 
-        return getResponseEntry( request, nIdEntry, listResponse, false, locale, announce );
+        return getResponseEntry( request, nIdEntry, listResponse, false, locale, mapResponsesByIdEntry );
     }
 
     /**
      * Get the responses associated with an entry.<br />
      * Return null if there is no error in the response, or return the list of errors
-     * 
+     *
      * @param request
      *            the request
      * @param nIdEntry
@@ -364,12 +359,12 @@ public class AnnounceService implements Serializable
      *            true if the response created must be null
      * @param locale
      *            the locale
-     * @param announce
-     *            The announce
+     * @param mapResponsesByIdEntry
+     *            The map to store responses indexed by entry id
      * @return null if there is no error in the response or the list of errors found
      */
     private List<GenericAttributeError> getResponseEntry( HttpServletRequest request, int nIdEntry, List<Response> listResponse, boolean bResponseNull,
-            Locale locale, AnnounceDTO announce )
+            Locale locale, Map<Integer, List<Response>> mapResponsesByIdEntry )
     {
         List<GenericAttributeError> listFormErrors = new ArrayList<>( );
         Entry entry = EntryHome.findByPrimaryKey( nIdEntry );
@@ -389,9 +384,9 @@ public class AnnounceService implements Serializable
             for ( Entry entryChild : entry.getChildren( ) )
             {
                 List<Response> listResponseChild = new ArrayList<>( );
-                announce.getMapResponsesByIdEntry( ).put( entryChild.getIdEntry( ), listResponseChild );
+                mapResponsesByIdEntry.put( entryChild.getIdEntry( ), listResponseChild );
 
-                listFormErrors.addAll( getResponseEntry( request, entryChild.getIdEntry( ), listResponseChild, false, locale, announce ) );
+                listFormErrors.addAll( getResponseEntry( request, entryChild.getIdEntry( ), listResponseChild, false, locale, mapResponsesByIdEntry ) );
             }
         }
         else
@@ -430,10 +425,10 @@ public class AnnounceService implements Serializable
                         for ( Entry conditionalEntry : field.getConditionalQuestions( ) )
                         {
                             List<Response> listResponseChild = new ArrayList<>( );
-                            announce.getMapResponsesByIdEntry( ).put( conditionalEntry.getIdEntry( ), listResponseChild );
+                            mapResponsesByIdEntry.put( conditionalEntry.getIdEntry( ), listResponseChild );
 
                             listFormErrors.addAll(
-                                    getResponseEntry( request, conditionalEntry.getIdEntry( ), listResponseChild, !bIsFieldInResponseList, locale, announce ) );
+                                    getResponseEntry( request, conditionalEntry.getIdEntry( ), listResponseChild, !bIsFieldInResponseList, locale, mapResponsesByIdEntry ) );
                         }
                     }
                 }
@@ -487,22 +482,22 @@ public class AnnounceService implements Serializable
     }
 
     /**
-     * Convert an AppointmentDTO to an Appointment by transferring response from the map of class AppointmentDTO to the list of class Appointment.
-     * 
-     * @param announce
-     *            The announce to get the map to convert
+     * Convert a map of responses indexed by entry id to a flat list of responses.
+     *
+     * @param mapResponsesByIdEntry
+     *            The map to convert
+     * @return The flat list of all responses
      */
-    public void convertMapResponseToList( AnnounceDTO announce )
+    public List<Response> convertMapResponseToList( Map<Integer, List<Response>> mapResponsesByIdEntry )
     {
         List<Response> listResponse = new ArrayList<>( );
 
-        for ( List<Response> listResponseByEntry : announce.getMapResponsesByIdEntry( ).values( ) )
+        for ( List<Response> listResponseByEntry : mapResponsesByIdEntry.values( ) )
         {
             listResponse.addAll( listResponseByEntry );
         }
 
-        announce.setMapResponsesByIdEntry( null );
-        announce.setListResponse( listResponse );
+        return listResponse;
     }
 
     /**

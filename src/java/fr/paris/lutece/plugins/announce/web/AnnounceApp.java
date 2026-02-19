@@ -52,7 +52,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Strings;
 
 import fr.paris.lutece.plugins.announce.business.Announce;
-import fr.paris.lutece.plugins.announce.business.AnnounceDTO;
 import fr.paris.lutece.plugins.announce.business.AnnounceHome;
 import fr.paris.lutece.plugins.announce.business.AnnounceNotify;
 import fr.paris.lutece.plugins.announce.business.AnnounceNotifyHome;
@@ -63,6 +62,7 @@ import fr.paris.lutece.plugins.announce.business.Category;
 import fr.paris.lutece.plugins.announce.business.CategoryHome;
 import fr.paris.lutece.plugins.announce.business.Sector;
 import fr.paris.lutece.plugins.announce.business.SectorHome;
+import fr.paris.lutece.plugins.announce.service.AnnounceLifecycleService;
 import fr.paris.lutece.plugins.announce.service.AnnounceService;
 import fr.paris.lutece.plugins.announce.service.IAnnounceSubscriptionProvider;
 import fr.paris.lutece.plugins.announce.service.announcesearch.AnnounceSearchService;
@@ -260,6 +260,7 @@ public class AnnounceApp extends MVCApplication
 
     // private fields
     private AnnounceService _announceService = SpringContextService.getBean( AnnounceService.BEAN_NAME );
+    private AnnounceLifecycleService _announceLifecycleService = SpringContextService.getBean( AnnounceLifecycleService.BEAN_NAME );
     private int _nDefaultItemsPerPage;
     private String _strCurrentPageIndex;
     private int _nItemsPerPage;
@@ -618,7 +619,7 @@ public class AnnounceApp extends MVCApplication
 
         if ( strConfirmRemoveAnnounce != null )
         {
-            AnnounceHome.remove( nIdAnnounce );
+            _announceLifecycleService.remove( nIdAnnounce );
 
             return redirect( request, AppPathService.getBaseUrl( request ) + getActionFullUrl( ACTION_MY_ANNOUNCES ) );
         }
@@ -658,7 +659,7 @@ public class AnnounceApp extends MVCApplication
         if ( strConfirmSuspendAnnounce != null )
         {
             announce.setSuspendedByUser( true );
-            AnnounceHome.setSuspendedByUser( announce );
+            _announceLifecycleService.suspendByUser( announce );
 
             return redirect( request, AppPathService.getBaseUrl( request ) + getActionFullUrl( ACTION_MY_ANNOUNCES ) );
         }
@@ -694,7 +695,7 @@ public class AnnounceApp extends MVCApplication
         Announce announce = getAuthorizedAnnounce( nIdAnnounce, user, request );
 
         announce.setSuspendedByUser( false );
-        AnnounceHome.setSuspendedByUser( announce );
+        _announceLifecycleService.suspendByUser( announce );
 
         return redirect( request, AppPathService.getBaseUrl( request ) + getActionFullUrl( ACTION_MY_ANNOUNCES ) );
     }
@@ -1139,11 +1140,11 @@ public class AnnounceApp extends MVCApplication
         List<Entry> listEntryFirstLevel = EntryHome.getEntryList( filter );
         List<GenericAttributeError> listErrors = new ArrayList<>( );
 
-        AnnounceDTO announceDTO = new AnnounceDTO( announce );
+        Map<Integer, List<Response>> mapResponsesByIdEntry = new HashMap<>( );
 
         for ( Entry entry : listEntryFirstLevel )
         {
-            listErrors.addAll( _announceService.getResponseEntry( request, entry.getIdEntry( ), request.getLocale( ), announceDTO ) );
+            listErrors.addAll( _announceService.getResponseEntry( request, entry.getIdEntry( ), request.getLocale( ), mapResponsesByIdEntry ) );
         }
 
         if ( category.getDisplayCaptcha( ) && _captchaSecurityService.isAvailable( ) && !_captchaSecurityService.validate( request ) )
@@ -1153,8 +1154,8 @@ public class AnnounceApp extends MVCApplication
             listErrors.add( genAttError );
         }
 
-        _announceService.convertMapResponseToList( announceDTO );
-        announce.setListResponse( announceDTO.getListResponse( ) );
+        List<Response> listResponses = _announceService.convertMapResponseToList( mapResponsesByIdEntry );
+        announce.setListResponse( listResponses );
 
         if ( CollectionUtils.isNotEmpty( listErrors ) )
         {
@@ -1163,7 +1164,7 @@ public class AnnounceApp extends MVCApplication
 
         announce.setHasPictures( false );
 
-        for ( Response response : announceDTO.getListResponse( ) )
+        for ( Response response : listResponses )
         {
             if ( ( response.getFile( ) != null ) && FileUtil.hasImageExtension( response.getFile( ).getTitle( ) ) )
             {
@@ -1173,7 +1174,7 @@ public class AnnounceApp extends MVCApplication
             }
         }
 
-        AnnounceHome.create( announce );
+        _announceLifecycleService.create( announce );
 
         // If announce is auto-published (no moderation), queue for subscription notification
         if ( announce.getPublished( ) )
@@ -1183,7 +1184,7 @@ public class AnnounceApp extends MVCApplication
             AnnounceNotifyHome.create( announceNotify );
         }
 
-        for ( Response response : announceDTO.getListResponse( ) )
+        for ( Response response : listResponses )
         {
             ResponseHome.create( response );
             AnnounceHome.insertAnnounceResponse( announce.getId( ), response.getIdResponse( ),
@@ -1301,11 +1302,11 @@ public class AnnounceApp extends MVCApplication
         List<Entry> listEntryFirstLevel = EntryHome.getEntryList( filter );
         List<GenericAttributeError> listErrors = new ArrayList<>( );
 
-        AnnounceDTO announceDTO = new AnnounceDTO( announce );
+        Map<Integer, List<Response>> mapResponsesByIdEntry = new HashMap<>( );
 
         for ( Entry entry : listEntryFirstLevel )
         {
-            listErrors.addAll( _announceService.getResponseEntry( request, entry.getIdEntry( ), request.getLocale( ), announceDTO ) );
+            listErrors.addAll( _announceService.getResponseEntry( request, entry.getIdEntry( ), request.getLocale( ), mapResponsesByIdEntry ) );
         }
 
         if ( category.getDisplayCaptcha( ) && _captchaSecurityService.isAvailable( ) && !_captchaSecurityService.validate( request ) )
@@ -1315,21 +1316,18 @@ public class AnnounceApp extends MVCApplication
             listErrors.add( genAttError );
         }
 
+        List<Response> listResponses = _announceService.convertMapResponseToList( mapResponsesByIdEntry );
+        announce.setListResponse( listResponses );
+
         // If there is some errors, we redirect the user to the form page
         if ( CollectionUtils.isNotEmpty( listErrors ) )
         {
-            _announceService.convertMapResponseToList( announceDTO );
-            announce.setListResponse( announceDTO.getListResponse( ) );
-
             return listErrors;
         }
 
-        _announceService.convertMapResponseToList( announceDTO );
-        announce.setListResponse( announceDTO.getListResponse( ) );
-
         announce.setHasPictures( false );
 
-        for ( Response response : announceDTO.getListResponse( ) )
+        for ( Response response : listResponses )
         {
             if ( ( response.getFile( ) != null ) && FileUtil.hasImageExtension( response.getFile( ).getTitle( ) ) )
             {
@@ -1339,7 +1337,7 @@ public class AnnounceApp extends MVCApplication
             }
         }
 
-        AnnounceHome.update( announce );
+        _announceLifecycleService.update( announce );
 
         List<Integer> listIdResponse = AnnounceHome.findListIdResponse( announce.getId( ) );
 
@@ -1350,7 +1348,7 @@ public class AnnounceApp extends MVCApplication
 
         AnnounceHome.removeAnnounceResponse( announce.getId( ) );
 
-        for ( Response response : announceDTO.getListResponse( ) )
+        for ( Response response : listResponses )
         {
             ResponseHome.create( response );
             AnnounceHome.insertAnnounceResponse( announce.getId( ), response.getIdResponse( ),
