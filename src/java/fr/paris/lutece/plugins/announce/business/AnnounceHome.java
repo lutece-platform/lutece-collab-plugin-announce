@@ -296,6 +296,18 @@ public final class AnnounceHome
     }
 
     /**
+     * Get the list of ids of announces whose most recent activity (creation or modification) is before the given date
+     *
+     * @param timestamp
+     *            The timestamp
+     * @return The list of ids
+     */
+    public static List<Integer> findIdAnnouncesByLastActivity( Timestamp timestamp )
+    {
+        return _dao.findIdAnnouncesByLastActivity( timestamp, _plugin );
+    }
+
+    /**
      * Get the list of ids of announces that were created after a given time
      * 
      * @param lMinPublicationTime

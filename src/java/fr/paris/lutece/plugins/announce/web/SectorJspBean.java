@@ -84,7 +84,7 @@ public class SectorJspBean extends PluginAdminPageJspBean
     private static final String PARAMETER_FIELD_LABEL = "sector_label";
     private static final String PARAMETER_FIELD_DESCRIPTION = "sector_description";
     private static final String PARAMETER_FIELD_ANNOUNCES_VALIDATION = "sector_announces_validation";
-    private static final String CHECKBOX_ON = "on";
+    private static final String CHECKBOX_ON = "true";
     private static final String PARAMETER_FIELD_ORDER = "sector_order";
     private static final String PARAMETER_TAGS = "tags";
     private static final String UNAUTHORIZED = "Unauthorized";

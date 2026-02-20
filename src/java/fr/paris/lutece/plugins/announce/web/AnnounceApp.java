@@ -82,6 +82,7 @@ import fr.paris.lutece.portal.service.i18n.I18nService;
 import fr.paris.lutece.portal.service.mail.MailService;
 import fr.paris.lutece.portal.service.mailinglist.AdminMailingListService;
 import fr.paris.lutece.portal.service.message.SiteMessage;
+import fr.paris.lutece.portal.service.datastore.DatastoreService;
 import fr.paris.lutece.portal.service.message.SiteMessageException;
 import fr.paris.lutece.portal.service.message.SiteMessageService;
 import fr.paris.lutece.portal.service.portal.PortalService;
@@ -186,8 +187,10 @@ public class AnnounceApp extends MVCApplication
     private static final String PROPERTY_PAGE_TITLE_MY_ANNOUNCES = "announce.my_announces.pageTitle";
     private static final String PROPERTY_PAGE_TITLE_CREATE_ANNOUNCE = "announce.create_announce.pageTitle";
     private static final String PROPERTY_DEFAULT_FRONT_LIST_ANNOUNCE_PER_PAGE = "announce.front.announce.defaultItemsPerPage";
-    private static final String PROPERTY_WEBMASTER_EMAIL = "email.webmaster";
-    private static final String PROPERTY_WEBMASTER_NAME = "lutece.name";
+    private static final String KEY_WEBMASTER_EMAIL = "portal.site.site_property.email";
+    private static final String PROPERTY_SENDER_EMAIL = "announce.mail.senderEmail";
+    private static final String KEY_SITE_NAME = "portal.site.site_property.name";
+    private static final String PROPERTY_SENDER_NAME = "announce.mail.senderName";
     private static final String PROPERTY_ANNOUNCE_NOTIFY_SUBJECT = "announce.notification.subject";
     private static final String PROPERTY_PROD_URL = "lutece.prod.url";
     private static final String PROPERTY_MAX_AMOUNT_ANNOUNCE = "announce.announce.qty.max";
@@ -528,7 +531,10 @@ public class AnnounceApp extends MVCApplication
             return page;
         }
 
-        SiteMessageService.setMessage( request, PROPERTY_QUOTA_EXCEEDED, SiteMessage.TYPE_STOP );
+        int nMaxAnnounces = AppPropertiesService.getPropertyInt( PROPERTY_MAX_AMOUNT_ANNOUNCE, 20 );
+        SiteMessageService.setMessage( request, PROPERTY_QUOTA_EXCEEDED, new Object [ ] {
+                nMaxAnnounces
+        }, SiteMessage.TYPE_STOP );
 
         return null;
     }
@@ -1012,32 +1018,42 @@ public class AnnounceApp extends MVCApplication
     {
         int nIdMailingList = announce.getCategory( ).getIdMailingList( );
 
-        if ( nIdMailingList > 0 )
+        if ( nIdMailingList <= 0 )
         {
-            Collection<Recipient> listRecipients = AdminMailingListService.getRecipients( nIdMailingList );
+            AppLogService.info( "sendAnnounceNotification: no mailing list configured for category '{}' (id={}), admin notification skipped for announce {}",
+                    announce.getCategory( ).getLabel( ), announce.getCategory( ).getId( ), announce.getId( ) );
+            return;
+        }
 
-            for ( Recipient recipient : listRecipients )
-            {
-                HashMap<String, Object> model = new HashMap<>( );
+        Collection<Recipient> listRecipients = AdminMailingListService.getRecipients( nIdMailingList );
 
-                String strSenderEmail = AppPropertiesService.getProperty( PROPERTY_WEBMASTER_EMAIL );
-                String strSenderName = AppPropertiesService.getProperty( PROPERTY_WEBMASTER_NAME );
-                String strSubject = I18nService.getLocalizedString( PROPERTY_ANNOUNCE_NOTIFY_SUBJECT, request.getLocale( ) );
+        if ( listRecipients.isEmpty( ) )
+        {
+            AppLogService.info( "sendAnnounceNotification: mailing list {} has no recipients, admin notification skipped for announce {}",
+                    nIdMailingList, announce.getId( ) );
+            return;
+        }
 
-                // Generate the subject of the message
-                strSubject += ( " " + announce.getCategory( ).getLabel( ) );
+        String strSenderEmail = DatastoreService.getDataValue( KEY_WEBMASTER_EMAIL, AppPropertiesService.getProperty( PROPERTY_SENDER_EMAIL ) );
+        String strSenderName = DatastoreService.getDataValue( KEY_SITE_NAME, AppPropertiesService.getProperty( PROPERTY_SENDER_NAME ) );
+        String strSubject = I18nService.getLocalizedString( PROPERTY_ANNOUNCE_NOTIFY_SUBJECT, request.getLocale( ) );
 
-                // Generate the body of the message
-                model.put( MARK_PROD_URL, AppPropertiesService.getProperty( PROPERTY_PROD_URL ) );
-                model.put( MARK_ANNOUNCE, announce );
-                model.put( MARK_LIST_FIELDS, getSectorList( ) );
-                model.put( MARK_LOCALE, request.getLocale( ) );
+        // Generate the subject of the message
+        strSubject += ( " " + announce.getCategory( ).getLabel( ) );
 
-                HtmlTemplate template = AppTemplateService.getTemplate( TEMPLATE_ANNOUNCE_NOTIFY_MESSAGE, request.getLocale( ), model );
-                String strBody = template.getHtml( );
+        // Generate the body of the message
+        HashMap<String, Object> model = new HashMap<>( );
+        model.put( MARK_PROD_URL, AppPropertiesService.getProperty( PROPERTY_PROD_URL ) );
+        model.put( MARK_ANNOUNCE, announce );
+        model.put( MARK_LIST_FIELDS, getSectorList( ) );
+        model.put( MARK_LOCALE, request.getLocale( ) );
 
-                MailService.sendMailHtml( recipient.getEmail( ), strSenderName, strSenderEmail, strSubject, strBody );
-            }
+        HtmlTemplate template = AppTemplateService.getTemplate( TEMPLATE_ANNOUNCE_NOTIFY_MESSAGE, request.getLocale( ), model );
+        String strBody = template.getHtml( );
+
+        for ( Recipient recipient : listRecipients )
+        {
+            MailService.sendMailHtml( recipient.getEmail( ), strSenderName, strSenderEmail, strSubject, strBody );
         }
     }
 
@@ -1265,6 +1281,7 @@ public class AnnounceApp extends MVCApplication
             return listFormErrors;
         }
 
+        announce.setCategory( category );
         announce.setTitle( strTitleAnnounce );
         announce.setDescription( strDescriptionAnnounce );
         announce.setContactInformation( strContactInformation );

@@ -203,6 +203,17 @@ public interface IAnnounceDAO
      */
     List<Integer> findIdAnnouncesByDateCreation( Timestamp timestamp, Plugin plugin );
 
+    /**
+     * Get the list of ids of announces whose most recent activity (creation or modification) is before the given date
+     *
+     * @param timestamp
+     *            The timestamp
+     * @param plugin
+     *            The plugin
+     * @return The list of ids
+     */
+    List<Integer> findIdAnnouncesByLastActivity( Timestamp timestamp, Plugin plugin );
+
     // ----------------------------------------
     // Announce response management
     // ----------------------------------------

@@ -60,6 +60,7 @@ public final class AnnounceDAO implements IAnnounceDAO
     private static final String SQL_QUERY_SELECTALL = SQL_QUERY_SELECT_ID;
     private static final String SQL_QUERY_SELECTALL_PUBLISHED_FOR_CATEGORY = "SELECT a.id_announce FROM announce_announce a WHERE a.id_category = ? AND a.published = 1 AND a.suspended = 0 AND a.suspended_by_user = 0 ";
     private static final String SQL_QUERY_SELECT_ID_BY_DATE_CREATION = "SELECT id_announce FROM announce_announce WHERE date_creation < ?";
+    private static final String SQL_QUERY_SELECT_ID_BY_LAST_ACTIVITY = "SELECT id_announce FROM announce_announce WHERE GREATEST(date_creation, date_modification) < ?";
     private static final String SQL_QUERY_SELECT_ID_BY_TIME_PUBLICATION = "SELECT id_announce FROM announce_announce WHERE publication_time > ? ";
 
     // Select
@@ -400,6 +401,26 @@ public final class AnnounceDAO implements IAnnounceDAO
     {
         List<Integer> announceIdList = new ArrayList<>( );
         try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECT_ID_BY_DATE_CREATION, plugin ) )
+        {
+            daoUtil.setTimestamp( 1, timestamp );
+            daoUtil.executeQuery( );
+
+            while ( daoUtil.next( ) )
+            {
+                announceIdList.add( daoUtil.getInt( 1 ) );
+            }
+        }
+        return announceIdList;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<Integer> findIdAnnouncesByLastActivity( Timestamp timestamp, Plugin plugin )
+    {
+        List<Integer> announceIdList = new ArrayList<>( );
+        try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECT_ID_BY_LAST_ACTIVITY, plugin ) )
         {
             daoUtil.setTimestamp( 1, timestamp );
             daoUtil.executeQuery( );
