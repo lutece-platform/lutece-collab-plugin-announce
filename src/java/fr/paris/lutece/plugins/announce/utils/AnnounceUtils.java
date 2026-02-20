@@ -42,8 +42,11 @@
 package fr.paris.lutece.plugins.announce.utils;
 
 import fr.paris.lutece.plugins.announce.service.AnnouncePlugin;
+import fr.paris.lutece.plugins.genericattributes.business.EntryType;
+import fr.paris.lutece.plugins.genericattributes.business.EntryTypeHome;
 import fr.paris.lutece.portal.service.plugin.Plugin;
 import fr.paris.lutece.portal.service.plugin.PluginService;
+import fr.paris.lutece.util.ReferenceList;
 
 import java.util.List;
 
@@ -145,5 +148,22 @@ public final class AnnounceUtils
     public static Plugin getPlugin( )
     {
         return PluginService.getPlugin( AnnouncePlugin.PLUGIN_NAME );
+    }
+
+    /**
+     * Get a reference list of entry types for the announce plugin
+     *
+     * @return A {@link ReferenceList} containing entry types
+     */
+    public static ReferenceList getEntryTypeReferenceList( )
+    {
+        ReferenceList refListEntryType = new ReferenceList( );
+
+        for ( EntryType entryType : EntryTypeHome.getList( AnnouncePlugin.PLUGIN_NAME ) )
+        {
+            refListEntryType.addItem( entryType.getIdType( ), entryType.getTitle( ) );
+        }
+
+        return refListEntryType;
     }
 }

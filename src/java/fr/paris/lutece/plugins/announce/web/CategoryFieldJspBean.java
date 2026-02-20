@@ -33,7 +33,7 @@
  */
 package fr.paris.lutece.plugins.announce.web;
 
-import fr.paris.lutece.plugins.announce.service.EntryTypeService;
+import fr.paris.lutece.plugins.announce.utils.AnnounceUtils;
 import fr.paris.lutece.plugins.genericattributes.business.Entry;
 import fr.paris.lutece.plugins.genericattributes.business.EntryHome;
 import fr.paris.lutece.plugins.genericattributes.business.Field;
@@ -191,7 +191,7 @@ public class CategoryFieldJspBean extends MVCAdminJspBean
 
         if ( bWithConditionalQuestion )
         {
-            model.put( MARK_ENTRY_TYPE_LIST, EntryTypeService.getInstance( ).getEntryTypeReferenceList( ) );
+            model.put( MARK_ENTRY_TYPE_LIST, AnnounceUtils.getEntryTypeReferenceList( ) );
             model.put( MARK_ENTRY_LIST, field.getConditionalQuestions( ) );
             strTemplateName = TEMPLATE_MODIFY_FIELD_WITH_CONDITIONAL_QUESTION;
         }

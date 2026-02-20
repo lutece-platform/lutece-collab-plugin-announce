@@ -36,11 +36,9 @@ package fr.paris.lutece.plugins.announce.web;
 import fr.paris.lutece.plugins.announce.business.Category;
 import fr.paris.lutece.plugins.announce.business.CategoryHome;
 import fr.paris.lutece.plugins.announce.service.EntryService;
-import fr.paris.lutece.plugins.announce.service.EntryTypeService;
 import fr.paris.lutece.plugins.genericattributes.business.Entry;
 import fr.paris.lutece.plugins.genericattributes.business.EntryFilter;
 import fr.paris.lutece.plugins.genericattributes.business.EntryHome;
-import fr.paris.lutece.plugins.genericattributes.business.EntryType;
 import fr.paris.lutece.plugins.genericattributes.business.EntryTypeHome;
 import fr.paris.lutece.plugins.genericattributes.business.Field;
 import fr.paris.lutece.plugins.genericattributes.business.FieldHome;
@@ -219,11 +217,9 @@ public class CategoryEntryJspBean extends MVCAdminJspBean
         if ( ( request.getParameter( PARAMETER_CANCEL ) == null ) && StringUtils.isNotEmpty( strIdType ) && StringUtils.isNumeric( strIdType ) )
         {
             int nIdType = Integer.parseInt( strIdType );
-            EntryType entryType = new EntryType( );
-            entryType.setIdType( nIdType );
 
             Entry entry = new Entry( );
-            entry.setEntryType( EntryTypeService.getInstance( ).getEntryType( nIdType ) );
+            entry.setEntryType( EntryTypeHome.findByPrimaryKey( nIdType ) );
 
             String strIdField = request.getParameter( PARAMETER_ID_FIELD );
             int nIdField = -1;
