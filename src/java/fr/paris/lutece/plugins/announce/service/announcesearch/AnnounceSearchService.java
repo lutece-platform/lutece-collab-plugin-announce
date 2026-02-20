@@ -94,9 +94,9 @@ public final class AnnounceSearchService
     private static final int DEFAULT_WRITER_MAX_FIELD_LENGTH = 1000000;
 
     // Constants corresponding to the variables defined in the lutece.properties file
-    private static volatile AnnounceSearchService _singleton;
+    private static final AnnounceSearchService _singleton = new AnnounceSearchService( );
     private static String _strPriceFormat;
-    private volatile String _strIndex;
+    private String _strIndex;
     private Analyzer _analyzer;
     private IAnnounceSearchIndexer _indexer;
     private int _nWriterMergeFactor;
@@ -145,11 +145,6 @@ public final class AnnounceSearchService
      */
     public static AnnounceSearchService getInstance( )
     {
-        if ( _singleton == null )
-        {
-            _singleton = new AnnounceSearchService( );
-        }
-
         return _singleton;
     }
 
