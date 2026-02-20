@@ -58,8 +58,6 @@ import fr.paris.lutece.plugins.announce.service.AnnounceResourceIdService;
 import fr.paris.lutece.plugins.announce.service.AnnounceService;
 import fr.paris.lutece.plugins.announce.utils.AnnounceUtils;
 import fr.paris.lutece.plugins.genericattributes.business.Entry;
-import fr.paris.lutece.plugins.genericattributes.business.EntryHome;
-import fr.paris.lutece.plugins.genericattributes.business.Field;
 import fr.paris.lutece.plugins.genericattributes.business.Response;
 import fr.paris.lutece.portal.business.rbac.RBAC;
 import fr.paris.lutece.portal.service.admin.AccessDeniedException;
@@ -250,45 +248,12 @@ public class AnnounceJspBean extends PluginAdminPageJspBean
 
         int nIdAnnounce = Integer.parseInt( request.getParameter( PARAMETER_ANNOUNCE_ID ) );
         Announce announce = AnnounceHome.findByPrimaryKey( nIdAnnounce );
-        Collection<Entry> listGeolocalisation = new ArrayList<>( );
         User user = getUser( );
 
-        Collection<Response> listResponses = AnnounceHome.findListResponse( announce.getId( ), false );
-        for ( Response response : listResponses )
-        {
-
-            if ( response.getEntry( ) != null && response.getEntry( ).getEntryType( ) != null
-                    && "announce.entryTypeGeolocation".equals( response.getEntry( ).getEntryType( ).getBeanName( ) ) )
-            {
-                Entry entry = EntryHome.findByPrimaryKey( response.getEntry( ).getIdEntry( ) );
-                for ( Field filed : entry.getFields( ) )
-                {
-
-                    if ( response.getField( ) != null && filed.getIdField( ) == response.getField( ).getIdField( ) )
-                    {
-                        response.setField( filed );
-                    }
-                }
-
-                boolean bool = true;
-
-                for ( Entry ent : listGeolocalisation )
-                {
-                    if ( ent.getIdEntry( ) == ( entry.getIdEntry( ) ) )
-                    {
-                        bool = false;
-                    }
-                }
-                if ( bool )
-                {
-                    listGeolocalisation.add( entry );
-                }
-            }
-
-        }
+        List<Response> listResponses = AnnounceHome.findListResponse( announce.getId( ), false );
 
         HashMap<String, Object> model = new HashMap<>( );
-        model.put( MARK_ENTRY_LIST_GEOLOCATION, listGeolocalisation );
+        model.put( MARK_ENTRY_LIST_GEOLOCATION, AnnounceService.extractGeolocationEntries( listResponses ) );
         model.put( MARK_LIST_RESPONSES, listResponses );
         model.put( MARK_ANNOUNCE, announce );
 

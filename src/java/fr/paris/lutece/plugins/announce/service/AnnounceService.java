@@ -36,6 +36,7 @@ package fr.paris.lutece.plugins.announce.service;
 import fr.paris.lutece.plugins.announce.business.Announce;
 import fr.paris.lutece.plugins.announce.business.AnnounceHome;
 import fr.paris.lutece.plugins.announce.business.Category;
+import fr.paris.lutece.plugins.announce.business.CategoryHome;
 import fr.paris.lutece.plugins.announce.business.Sector;
 import fr.paris.lutece.plugins.announce.business.SectorHome;
 import fr.paris.lutece.plugins.announce.service.upload.AnnounceAsynchronousUploadHandler;
@@ -55,6 +56,7 @@ import fr.paris.lutece.portal.business.file.FileHome;
 import fr.paris.lutece.portal.business.physicalfile.PhysicalFile;
 import fr.paris.lutece.portal.business.physicalfile.PhysicalFileHome;
 import fr.paris.lutece.portal.service.content.XPageAppService;
+import fr.paris.lutece.portal.service.i18n.I18nService;
 import fr.paris.lutece.portal.service.spring.SpringContextService;
 import fr.paris.lutece.portal.service.security.LuteceUser;
 import fr.paris.lutece.portal.service.security.SecurityService;
@@ -62,11 +64,13 @@ import fr.paris.lutece.portal.service.security.UserNotSignedException;
 import fr.paris.lutece.portal.service.template.AppTemplateService;
 import fr.paris.lutece.portal.service.util.AppPathService;
 import fr.paris.lutece.portal.util.mvc.utils.MVCUtils;
+import fr.paris.lutece.util.file.FileUtil;
 import fr.paris.lutece.util.html.HtmlTemplate;
 import fr.paris.lutece.util.url.UrlItem;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.fileupload.FileItem;
+import org.apache.commons.lang3.StringUtils;
 
 import java.io.Serializable;
 
@@ -74,6 +78,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -99,6 +104,16 @@ public class AnnounceService implements Serializable
     private static final String VIEW_GET_FORM = "viewForm";
     private static final String PARAMETER_ID_CATEGORY = "id_form";
     private static final String PREFIX_ATTRIBUTE = "attribute";
+    private static final String BEAN_NAME_ENTRY_TYPE_GEOLOCATION = "announce.entryTypeGeolocation";
+
+    // Validation constants
+    private static final String ERROR_MESSAGE_MANDATORY_FIELDS = "announce.message.error.mandatory_fields";
+    private static final String ERROR_MESSAGE_INVALID_PRICE_FORMAT = "announce.message.error.invalid_price_format";
+
+    // Moderation flags (matches category.announcesValidation DB values)
+    private static final int ANNOUNCES_VALIDATION_GLOBAL_PARAMETERS = 0;
+    private static final int ANNOUNCES_VALIDATION_YES = 1;
+    private static final int ANNOUNCES_VALIDATION_NO = 2;
 
     // marks
     private static final String MARK_LOCALE = "locale";
@@ -501,8 +516,338 @@ public class AnnounceService implements Serializable
     }
 
     /**
+     * Extract geolocation entries from a list of responses, enriching each response's field
+     * with the full field data from the entry.
+     *
+     * @param listResponses
+     *            The list of responses to process (modified in place for field enrichment)
+     * @return The list of unique geolocation entries found
+     */
+    public static List<Entry> extractGeolocationEntries( List<Response> listResponses )
+    {
+        List<Entry> listGeolocalisation = new ArrayList<>( );
+
+        for ( Response response : listResponses )
+        {
+            if ( response.getEntry( ) == null || response.getEntry( ).getEntryType( ) == null
+                    || !BEAN_NAME_ENTRY_TYPE_GEOLOCATION.equals( response.getEntry( ).getEntryType( ).getBeanName( ) ) )
+            {
+                continue;
+            }
+
+            Entry entry = EntryHome.findByPrimaryKey( response.getEntry( ).getIdEntry( ) );
+
+            for ( Field field : entry.getFields( ) )
+            {
+                if ( response.getField( ) != null && field.getIdField( ) == response.getField( ).getIdField( ) )
+                {
+                    response.setField( field );
+                }
+            }
+
+            boolean bAlreadyAdded = false;
+
+            for ( Entry existingEntry : listGeolocalisation )
+            {
+                if ( existingEntry.getIdEntry( ) == entry.getIdEntry( ) )
+                {
+                    bAlreadyAdded = true;
+                    break;
+                }
+            }
+
+            if ( !bAlreadyAdded )
+            {
+                listGeolocalisation.add( entry );
+            }
+        }
+
+        return listGeolocalisation;
+    }
+
+    /**
+     * Parse a price string, handling comma-to-dot conversion.
+     *
+     * @param strPrice
+     *            The price string from the form, may be null or empty
+     * @return The parse result with the numeric value and a flag indicating invalid format
+     */
+    public static PriceParseResult parsePrice( String strPrice )
+    {
+        if ( StringUtils.isEmpty( strPrice ) )
+        {
+            return new PriceParseResult( 0.0, false );
+        }
+
+        try
+        {
+            return new PriceParseResult( Double.parseDouble( strPrice.replace( ',', '.' ) ), false );
+        }
+        catch( NumberFormatException e )
+        {
+            return new PriceParseResult( 0.0, true );
+        }
+    }
+
+    /**
+     * Validate the mandatory announce form fields and price format.
+     *
+     * @param strTitle
+     *            The announce title
+     * @param strDescription
+     *            The announce description
+     * @param strContact
+     *            The contact information
+     * @param category
+     *            The category (for price validation rules)
+     * @param priceResult
+     *            The result of price parsing
+     * @param locale
+     *            The locale for error messages
+     * @return The list of validation errors, empty if valid
+     */
+    public static List<GenericAttributeError> validateAnnounceFormFields( String strTitle, String strDescription, String strContact,
+            Category category, PriceParseResult priceResult, Locale locale )
+    {
+        List<GenericAttributeError> listErrors = new ArrayList<>( );
+
+        if ( StringUtils.isEmpty( strTitle ) || StringUtils.isEmpty( strDescription ) || StringUtils.isEmpty( strContact )
+                || ( category.getDisplayPrice( ) && category.getPriceMandatory( ) && ( priceResult.getPrice( ) == 0.0 ) && !priceResult.isInvalidFormat( ) ) )
+        {
+            GenericAttributeError error = new GenericAttributeError( );
+            error.setErrorMessage( I18nService.getLocalizedString( ERROR_MESSAGE_MANDATORY_FIELDS, locale ) );
+            listErrors.add( error );
+        }
+
+        if ( priceResult.isInvalidFormat( ) )
+        {
+            GenericAttributeError error = new GenericAttributeError( );
+            error.setErrorMessage( I18nService.getLocalizedString( ERROR_MESSAGE_INVALID_PRICE_FORMAT, locale ) );
+            listErrors.add( error );
+        }
+
+        return listErrors;
+    }
+
+    /**
+     * Determine whether moderation is required based on category and sector validation settings.
+     *
+     * @param category
+     *            The category
+     * @param sector
+     *            The sector
+     * @return true if the announce requires moderation (should NOT be published), false otherwise
+     */
+    public static boolean isModerationRequired( Category category, Sector sector )
+    {
+        switch( category.getAnnouncesValidation( ) )
+        {
+            case ANNOUNCES_VALIDATION_YES:
+                return true;
+
+            case ANNOUNCES_VALIDATION_NO:
+                return false;
+
+            case ANNOUNCES_VALIDATION_GLOBAL_PARAMETERS:
+            default:
+                return sector.getAnnouncesValidation( );
+        }
+    }
+
+    /**
+     * Process form entries for a category: create filter, collect entries, validate responses
+     * and convert to a flat response list.
+     *
+     * @param request
+     *            The HTTP request
+     * @param nIdCategory
+     *            The category id
+     * @return The processing result with validation errors and responses
+     */
+    public FormProcessingResult processFormEntries( HttpServletRequest request, int nIdCategory )
+    {
+        EntryFilter filter = new EntryFilter( );
+        filter.setIdResource( nIdCategory );
+        filter.setResourceType( Category.RESOURCE_TYPE );
+        filter.setEntryParentNull( EntryFilter.FILTER_TRUE );
+        filter.setFieldDependNull( EntryFilter.FILTER_TRUE );
+        filter.setIdIsComment( EntryFilter.FILTER_FALSE );
+
+        List<Entry> listEntryFirstLevel = EntryHome.getEntryList( filter );
+        List<GenericAttributeError> listErrors = new ArrayList<>( );
+        Map<Integer, List<Response>> mapResponsesByIdEntry = new HashMap<>( );
+
+        for ( Entry entry : listEntryFirstLevel )
+        {
+            listErrors.addAll( getResponseEntry( request, entry.getIdEntry( ), request.getLocale( ), mapResponsesByIdEntry ) );
+        }
+
+        List<Response> listResponses = convertMapResponseToList( mapResponsesByIdEntry );
+
+        return new FormProcessingResult( listErrors, listResponses );
+    }
+
+    /**
+     * Check whether any response in the list contains an image file.
+     *
+     * @param listResponses
+     *            The list of responses to check
+     * @return true if at least one response contains an image
+     */
+    public static boolean detectHasPictures( List<Response> listResponses )
+    {
+        for ( Response response : listResponses )
+        {
+            if ( ( response.getFile( ) != null ) && FileUtil.hasImageExtension( response.getFile( ).getTitle( ) ) )
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Get the list of sectors with their categories and published announce counts.
+     *
+     * @return The enriched list of sectors
+     */
+    public static Collection<Sector> getSectorList( )
+    {
+        Collection<Sector> listSectors = SectorHome.findAll( );
+
+        for ( Sector sector : listSectors )
+        {
+            int nNumberAnnounces = 0;
+            Collection<Category> categoryList = CategoryHome.findCategoriesForSector( sector );
+            sector.setListCategories( categoryList );
+
+            for ( Category category : categoryList )
+            {
+                nNumberAnnounces += CategoryHome.countPublishedAnnouncesForCategory( category );
+            }
+
+            sector.setNumberAnnounces( nNumberAnnounces );
+        }
+
+        return listSectors;
+    }
+
+    /**
+     * Get the list of categories, optionally filtered by sector.
+     *
+     * @param nIdSector
+     *            The sector id, or 0 for all categories
+     * @return The list of categories
+     */
+    public static Collection<Category> getCategoryList( int nIdSector )
+    {
+        if ( nIdSector == 0 )
+        {
+            return CategoryHome.findAll( );
+        }
+
+        Sector sector = SectorHome.findByPrimaryKey( nIdSector );
+
+        return CategoryHome.findCategoriesForSector( sector );
+    }
+
+    /**
+     * Sort responses according to the hierarchical order of entries in the category form.
+     * This ensures conditional question responses appear right after their parent entry responses.
+     *
+     * @param listResponses
+     *            The flat list of responses
+     * @param nIdCategory
+     *            The id of the category to get the entry hierarchy
+     * @return The sorted list of responses
+     */
+    public static List<Response> sortResponsesByEntryHierarchy( List<Response> listResponses, int nIdCategory )
+    {
+        // Build the ordered list of entry IDs following the form hierarchy
+        List<Integer> listOrderedEntryIds = new ArrayList<>( );
+        EntryFilter filter = new EntryFilter( );
+        filter.setIdResource( nIdCategory );
+        filter.setResourceType( Category.RESOURCE_TYPE );
+        filter.setEntryParentNull( EntryFilter.FILTER_TRUE );
+        filter.setFieldDependNull( EntryFilter.FILTER_TRUE );
+
+        List<Entry> listEntryFirstLevel = EntryHome.getEntryList( filter );
+
+        for ( Entry entry : listEntryFirstLevel )
+        {
+            collectEntryIdsRecursive( entry.getIdEntry( ), listOrderedEntryIds );
+        }
+
+        // Build a map of position by entry ID
+        Map<Integer, Integer> mapEntryOrder = new HashMap<>( );
+
+        for ( int i = 0; i < listOrderedEntryIds.size( ); i++ )
+        {
+            mapEntryOrder.put( listOrderedEntryIds.get( i ), i );
+        }
+
+        // Sort responses based on the entry order
+        List<Response> sortedResponses = new ArrayList<>( listResponses );
+        sortedResponses.sort( ( r1, r2 ) ->
+        {
+            int order1 = ( r1.getEntry( ) != null ) ? mapEntryOrder.getOrDefault( r1.getEntry( ).getIdEntry( ), Integer.MAX_VALUE ) : Integer.MAX_VALUE;
+            int order2 = ( r2.getEntry( ) != null ) ? mapEntryOrder.getOrDefault( r2.getEntry( ).getIdEntry( ), Integer.MAX_VALUE ) : Integer.MAX_VALUE;
+
+            return Integer.compare( order1, order2 );
+        } );
+
+        return sortedResponses;
+    }
+
+    /**
+     * Recursively collect entry IDs in hierarchical order (entry, then its conditional children).
+     *
+     * @param nIdEntry
+     *            The entry ID to process
+     * @param listOrderedEntryIds
+     *            The list to add IDs to
+     */
+    private static void collectEntryIdsRecursive( int nIdEntry, List<Integer> listOrderedEntryIds )
+    {
+        Entry entry = EntryHome.findByPrimaryKey( nIdEntry );
+
+        if ( entry == null )
+        {
+            return;
+        }
+
+        if ( Boolean.TRUE.equals( entry.getEntryType( ).getGroup( ) ) )
+        {
+            listOrderedEntryIds.add( nIdEntry );
+
+            for ( Entry child : entry.getChildren( ) )
+            {
+                collectEntryIdsRecursive( child.getIdEntry( ), listOrderedEntryIds );
+            }
+        }
+        else
+        {
+            listOrderedEntryIds.add( nIdEntry );
+
+            for ( Field field : entry.getFields( ) )
+            {
+                Field fullField = FieldHome.findByPrimaryKey( field.getIdField( ) );
+
+                if ( fullField.getConditionalQuestions( ) != null )
+                {
+                    for ( Entry conditionalEntry : fullField.getConditionalQuestions( ) )
+                    {
+                        collectEntryIdsRecursive( conditionalEntry.getIdEntry( ), listOrderedEntryIds );
+                    }
+                }
+            }
+        }
+    }
+
+    /**
      * Get the date format to use
-     * 
+     *
      * @return The date format to use
      */
     public static DateFormat getDateFormat( )
@@ -521,5 +866,64 @@ public class AnnounceService implements Serializable
     public static boolean isSubscribeModuleAvailable( )
     {
         return !SpringContextService.getBeansOfType( IAnnounceSubscriptionProvider.class ).isEmpty( );
+    }
+
+    // -----------------------------------------------------------------------
+    // Inner classes for form processing results
+    // -----------------------------------------------------------------------
+
+    /**
+     * Result of price string parsing.
+     */
+    public static class PriceParseResult
+    {
+        private final double _dPrice;
+        private final boolean _bInvalidFormat;
+
+        public PriceParseResult( double dPrice, boolean bInvalidFormat )
+        {
+            _dPrice = dPrice;
+            _bInvalidFormat = bInvalidFormat;
+        }
+
+        public double getPrice( )
+        {
+            return _dPrice;
+        }
+
+        public boolean isInvalidFormat( )
+        {
+            return _bInvalidFormat;
+        }
+    }
+
+    /**
+     * Result of form entry processing (generic attributes validation + response collection).
+     */
+    public static class FormProcessingResult
+    {
+        private final List<GenericAttributeError> _listErrors;
+        private final List<Response> _listResponses;
+
+        public FormProcessingResult( List<GenericAttributeError> listErrors, List<Response> listResponses )
+        {
+            _listErrors = listErrors;
+            _listResponses = listResponses;
+        }
+
+        public List<GenericAttributeError> getErrors( )
+        {
+            return _listErrors;
+        }
+
+        public List<Response> getResponses( )
+        {
+            return _listResponses;
+        }
+
+        public boolean hasErrors( )
+        {
+            return !_listErrors.isEmpty( );
+        }
     }
 }

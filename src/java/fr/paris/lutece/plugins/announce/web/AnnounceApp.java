@@ -68,11 +68,6 @@ import fr.paris.lutece.plugins.announce.service.IAnnounceSubscriptionProvider;
 import fr.paris.lutece.plugins.announce.service.announcesearch.AnnounceSearchService;
 import fr.paris.lutece.plugins.announce.service.upload.AnnounceAsynchronousUploadHandler;
 import fr.paris.lutece.plugins.announce.utils.AnnounceUtils;
-import fr.paris.lutece.plugins.genericattributes.business.Entry;
-import fr.paris.lutece.plugins.genericattributes.business.EntryFilter;
-import fr.paris.lutece.plugins.genericattributes.business.EntryHome;
-import fr.paris.lutece.plugins.genericattributes.business.Field;
-import fr.paris.lutece.plugins.genericattributes.business.FieldHome;
 import fr.paris.lutece.plugins.genericattributes.business.GenericAttributeError;
 import fr.paris.lutece.plugins.genericattributes.business.Response;
 import fr.paris.lutece.plugins.genericattributes.business.ResponseHome;
@@ -171,11 +166,6 @@ public class AnnounceApp extends MVCApplication
     // Views
     private static final String VIEW_DEFAULT_PAGE = "viewDefaultPage";
 
-    // Validation flags
-    private static final int PARAMETER_ANNOUNCES_VALIDATION_GLOBAL_PARAMETERS = 0;
-    private static final int PARAMETER_ANNOUNCES_VALIDATION_YES = 1;
-    private static final int PARAMETER_ANNOUNCES_VALIDATION_NO = 2;
-
     // properties
     private static final String PROPERTY_NOT_AUTHORIZED = "announce.messages.notAuthorized";
     private static final String PROPERTY_QUOTA_EXCEEDED = "announce.messages.quotaExceeded";
@@ -243,8 +233,7 @@ public class AnnounceApp extends MVCApplication
     private static final String MARK_IS_SUBSCRIBE = "isSubscribe";
     // Messages
     private static final String ERROR_MESSAGE_WRONG_CAPTCHA = "portal.admin.message.wrongCaptcha";
-    private static final String ERROR_MESSAGE_MANDATORY_FIELDS = "announce.message.error.mandatory_fields";
-    private static final String ERROR_MESSAGE_INVALID_PRICE_FORMAT = "announce.message.error.invalid_price_format";
+
 
     // Constants
     private static final String CONSTANT_BLANK_SPACE = " ";
@@ -371,7 +360,7 @@ public class AnnounceApp extends MVCApplication
         Map<String, Object> model = new HashMap<>( );
         model.put( MARK_NB_ITEMS_PER_PAGE, Integer.toString( _nItemsPerPage ) );
         model.put( MARK_PAGINATOR, paginator );
-        model.put( MARK_LIST_FIELDS, getSectorList( ) );
+        model.put( MARK_LIST_FIELDS, AnnounceService.getSectorList( ) );
         model.put( MARK_LOCALE, request.getLocale( ) );
 
         for ( Announce announce : paginator.getPageItems( ) )
@@ -390,9 +379,9 @@ public class AnnounceApp extends MVCApplication
         // useful if you want to work with Portal.jsp and RunStandaloneApp.jsp
         model.put( FULL_URL, request.getRequestURL( ) );
 
-        model.put( MARK_LIST_SECTORS, AnnounceApp.getSectorList( ) );
+        model.put( MARK_LIST_SECTORS, AnnounceService.getSectorList( ) );
         int nIdSector = ( request.getParameter( PARAMETER_SECTOR_ID ) == null ? 0 : Integer.parseInt( request.getParameter( PARAMETER_SECTOR_ID ) ) );
-        model.put( MARK_LIST_CATEGORIES, AnnounceApp.getCategoryList( nIdSector ) );
+        model.put( MARK_LIST_CATEGORIES, AnnounceService.getCategoryList( nIdSector ) );
         model.put( "sortArg", anSort.getSortColumn( ) );
         model.put( PARAMETER_PAGE_INDEX, _strCurrentPageIndex );
         model.put( "nbItem", nNbItems );
@@ -425,7 +414,7 @@ public class AnnounceApp extends MVCApplication
         List<Announce> listAnnounces = AnnounceHome.findByListId( listIdAnnounces, announceSort );
 
         Map<String, Object> model = new HashMap<>( );
-        model.put( MARK_LIST_FIELDS, getSectorList( ) );
+        model.put( MARK_LIST_FIELDS, AnnounceService.getSectorList( ) );
         model.put( MARK_LOCALE, request.getLocale( ) );
 
         for ( Announce announce : listAnnounces )
@@ -441,7 +430,7 @@ public class AnnounceApp extends MVCApplication
         // useful if you want to work with Portal.jsp and RunStandaloneApp.jsp
         model.put( FULL_URL, request.getRequestURL( ) );
 
-        model.put( MARK_LIST_SECTORS, AnnounceApp.getSectorList( ) );
+        model.put( MARK_LIST_SECTORS, AnnounceService.getSectorList( ) );
 
         if ( SecurityService.isAuthenticationEnable( ) )
         {
@@ -522,7 +511,7 @@ public class AnnounceApp extends MVCApplication
 
         if ( listAnnounces.size( ) < AppPropertiesService.getPropertyInt( PROPERTY_MAX_AMOUNT_ANNOUNCE, 20 ) )
         {
-            model.put( MARK_LIST_FIELDS, getSectorList( ) );
+            model.put( MARK_LIST_FIELDS, AnnounceService.getSectorList( ) );
             model.put( MARK_IS_SUBSCRIBE, AnnounceService.isSubscribeModuleAvailable( ) );
 
             XPage page = getXPage( TEMPLATE_PAGE_CREATE_ANNOUNCE_STEP_CATEGORY, request.getLocale( ), model );
@@ -558,14 +547,14 @@ public class AnnounceApp extends MVCApplication
         String strFormSend = request.getParameter( PARAMETER_FORM_SEND );
 
         Map<String, Object> model = new HashMap<>( );
-        model.put( MARK_LIST_FIELDS, getSectorList( ) );
+        model.put( MARK_LIST_FIELDS, AnnounceService.getSectorList( ) );
         model.put( MARK_LOCALE, request.getLocale( ) );
 
         if ( strFormSend != null )
         {
             List<GenericAttributeError> listErrors = doModifyAnnounce( request, announce );
 
-            if ( listErrors == null )
+            if ( CollectionUtils.isEmpty( listErrors ) )
             {
                 return redirect( request, getUrlViewAnnounce( request, nIdAnnounce ) );
             }
@@ -579,27 +568,8 @@ public class AnnounceApp extends MVCApplication
 
         Category category = CategoryHome.findByPrimaryKey( announce.getCategory( ).getId( ) );
         Sector sector = SectorHome.findByPrimaryKey( category.getIdSector( ) );
-        boolean bModerated = true;
 
-        // unpublish announce if category moderation is on
-        switch( category.getAnnouncesValidation( ) )
-        {
-            case PARAMETER_ANNOUNCES_VALIDATION_YES:
-                bModerated = true;
-
-                break;
-
-            case PARAMETER_ANNOUNCES_VALIDATION_NO:
-                bModerated = false;
-
-                break;
-
-            case PARAMETER_ANNOUNCES_VALIDATION_GLOBAL_PARAMETERS:
-            default:
-                bModerated = sector.getAnnouncesValidation( );
-        }
-
-        model.put( MARK_MODERATED, bModerated );
+        model.put( MARK_MODERATED, AnnounceService.isModerationRequired( category, sector ) );
         model.put( MARK_ANNOUNCE, announce );
 
         XPage page = getAnnounceFormHtml( request, announce, category, request.getLocale( ), model );
@@ -751,48 +721,15 @@ public class AnnounceApp extends MVCApplication
         if ( bAllowAccess )
         {
             List<Response> listResponses = AnnounceHome.findListResponse( announce.getId( ), false );
-            listResponses = sortResponsesByEntryHierarchy( listResponses, announce.getCategory( ).getId( ) );
-            Collection<Entry> listGeolocalisation = new ArrayList<>( );
+            listResponses = AnnounceService.sortResponsesByEntryHierarchy( listResponses, announce.getCategory( ).getId( ) );
 
-            for ( Response response : listResponses )
-            {
-                if ( response.getEntry( ) != null && response.getEntry( ).getEntryType( ) != null
-                        && "announce.entryTypeGeolocation".equals( response.getEntry( ).getEntryType( ).getBeanName( ) ) )
-                {
-                    Entry entry = EntryHome.findByPrimaryKey( response.getEntry( ).getIdEntry( ) );
-                    for ( Field filed : entry.getFields( ) )
-                    {
-
-                        if ( response.getField( ) != null && filed.getIdField( ) == response.getField( ).getIdField( ) )
-                        {
-                            response.setField( filed );
-                        }
-                    }
-
-                    boolean bool = true;
-
-                    for ( Entry ent : listGeolocalisation )
-                    {
-                        if ( ent.getIdEntry( ) == ( entry.getIdEntry( ) ) )
-                        {
-                            bool = false;
-                        }
-                    }
-                    if ( bool )
-                    {
-                        listGeolocalisation.add( entry );
-                    }
-                }
-
-            }
-
-            model.put( MARK_ENTRY_LIST_GEOLOCATION, listGeolocalisation );
+            model.put( MARK_ENTRY_LIST_GEOLOCATION, AnnounceService.extractGeolocationEntries( listResponses ) );
             model.put( MARK_USER_IS_AUTHOR, bUserIsAuthor );
             model.put( MARK_ANNOUNCE, announce );
             model.put( MARK_LIST_RESPONSES, listResponses );
             model.put( "width", "500px" );
             model.put( "height", "500px" );
-            model.put( MARK_LIST_FIELDS, getSectorList( ) );
+            model.put( MARK_LIST_FIELDS, AnnounceService.getSectorList( ) );
             model.put( MARK_LOCALE, request.getLocale( ) );
             model.put( MARK_IS_EXTEND_INSTALLED, PortalService.isExtendActivated( ) );
             model.put( MARK_IS_SUBSCRIBE, AnnounceService.isSubscribeModuleAvailable( ) );
@@ -881,7 +818,7 @@ public class AnnounceApp extends MVCApplication
         model.put( MARK_ANNOUNCE_OWNER, StringUtils.isNotBlank( strUserRealName ) ? strUserRealName : strUserName );
         model.put( MARK_ANNOUNCE_OWNER_NAME, strUserName );
         model.put( MARK_ANNOUNCES_PUBLISHED_AMOUNT, nNbPlublishedAnnounces );
-        model.put( MARK_LIST_FIELDS, getSectorList( ) );
+        model.put( MARK_LIST_FIELDS, AnnounceService.getSectorList( ) );
         model.put( MARK_LOCALE, request.getLocale( ) );
 
         model.put( MARK_IS_SUBSCRIBE, AnnounceService.isSubscribeModuleAvailable( ) );
@@ -1045,7 +982,7 @@ public class AnnounceApp extends MVCApplication
         HashMap<String, Object> model = new HashMap<>( );
         model.put( MARK_PROD_URL, AppPropertiesService.getProperty( PROPERTY_PROD_URL ) );
         model.put( MARK_ANNOUNCE, announce );
-        model.put( MARK_LIST_FIELDS, getSectorList( ) );
+        model.put( MARK_LIST_FIELDS, AnnounceService.getSectorList( ) );
         model.put( MARK_LOCALE, request.getLocale( ) );
 
         HtmlTemplate template = AppTemplateService.getTemplate( TEMPLATE_ANNOUNCE_NOTIFY_MESSAGE, request.getLocale( ), model );
@@ -1081,64 +1018,22 @@ public class AnnounceApp extends MVCApplication
         String strDescriptionAnnounce = request.getParameter( PARAMETER_DESCRIPTION_ANNOUNCE );
         String strContactInformation = request.getParameter( PARAMETER_CONTACT_INFORMATION );
         String strTags = request.getParameter( PARAMETER_TAGS );
-        String strPrice = request.getParameter( PARAMETER_PRICE_ANNOUNCE );
-        Double nPriceAnnounce = 0.0;
-        boolean bInvalidPriceFormat = false;
-        if ( StringUtils.isNotEmpty( strPrice ) )
-        {
-            try
-            {
-                nPriceAnnounce = Double.parseDouble( strPrice.replace( ',', '.' ) );
-            }
-            catch( NumberFormatException e )
-            {
-                bInvalidPriceFormat = true;
-            }
-        }
 
-        List<GenericAttributeError> listFormErrors = new ArrayList<>( );
-
-        if ( StringUtils.isEmpty( strTitleAnnounce ) || StringUtils.isEmpty( strDescriptionAnnounce ) || StringUtils.isEmpty( strContactInformation )
-                || ( category.getDisplayPrice( ) && category.getPriceMandatory( ) && ( nPriceAnnounce == 0.0 ) && !bInvalidPriceFormat ) )
-        {
-            GenericAttributeError error = new GenericAttributeError( );
-            error.setErrorMessage( I18nService.getLocalizedString( ERROR_MESSAGE_MANDATORY_FIELDS, request.getLocale( ) ) );
-            listFormErrors.add( error );
-        }
-
-        if ( bInvalidPriceFormat )
-        {
-            GenericAttributeError error = new GenericAttributeError( );
-            error.setErrorMessage( I18nService.getLocalizedString( ERROR_MESSAGE_INVALID_PRICE_FORMAT, request.getLocale( ) ) );
-            listFormErrors.add( error );
-        }
+        // Validate form fields (price + mandatory)
+        AnnounceService.PriceParseResult priceResult = AnnounceService.parsePrice( request.getParameter( PARAMETER_PRICE_ANNOUNCE ) );
+        List<GenericAttributeError> listFormErrors = AnnounceService.validateAnnounceFormFields( strTitleAnnounce, strDescriptionAnnounce,
+                strContactInformation, category, priceResult, request.getLocale( ) );
 
         if ( CollectionUtils.isNotEmpty( listFormErrors ) )
         {
             return listFormErrors;
         }
 
-        switch( category.getAnnouncesValidation( ) )
-        {
-            case PARAMETER_ANNOUNCES_VALIDATION_YES:
-                announce.setPublished( false );
-
-                break;
-
-            case PARAMETER_ANNOUNCES_VALIDATION_NO:
-                announce.setPublished( true );
-
-                break;
-
-            case PARAMETER_ANNOUNCES_VALIDATION_GLOBAL_PARAMETERS:
-            default:
-                announce.setPublished( !sector.getAnnouncesValidation( ) );
-        }
-
+        announce.setPublished( !AnnounceService.isModerationRequired( category, sector ) );
         announce.setCategory( category );
         announce.setTitle( strTitleAnnounce );
         announce.setDescription( strDescriptionAnnounce );
-        announce.setPrice( nPriceAnnounce );
+        announce.setPrice( priceResult.getPrice( ) );
         announce.setContactInformation( strContactInformation );
         announce.setUserName( user.getName( ) );
         announce.setUserLastName( user.getUserInfo( LuteceUser.NAME_GIVEN ) );
@@ -1146,49 +1041,25 @@ public class AnnounceApp extends MVCApplication
         announce.setUserName( user.getName( ) );
         announce.setTags( strTags );
 
-        EntryFilter filter = new EntryFilter( );
-        filter.setIdResource( category.getId( ) );
-        filter.setResourceType( Category.RESOURCE_TYPE );
-        filter.setEntryParentNull( EntryFilter.FILTER_TRUE );
-        filter.setFieldDependNull( EntryFilter.FILTER_TRUE );
-        filter.setIdIsComment( EntryFilter.FILTER_FALSE );
-
-        List<Entry> listEntryFirstLevel = EntryHome.getEntryList( filter );
-        List<GenericAttributeError> listErrors = new ArrayList<>( );
-
-        Map<Integer, List<Response>> mapResponsesByIdEntry = new HashMap<>( );
-
-        for ( Entry entry : listEntryFirstLevel )
-        {
-            listErrors.addAll( _announceService.getResponseEntry( request, entry.getIdEntry( ), request.getLocale( ), mapResponsesByIdEntry ) );
-        }
+        // Process generic attribute entries
+        AnnounceService.FormProcessingResult formResult = _announceService.processFormEntries( request, category.getId( ) );
 
         if ( category.getDisplayCaptcha( ) && _captchaSecurityService.isAvailable( ) && !_captchaSecurityService.validate( request ) )
         {
             GenericAttributeError genAttError = new GenericAttributeError( );
             genAttError.setErrorMessage( I18nService.getLocalizedString( ERROR_MESSAGE_WRONG_CAPTCHA, request.getLocale( ) ) );
-            listErrors.add( genAttError );
+            formResult.getErrors( ).add( genAttError );
         }
 
-        List<Response> listResponses = _announceService.convertMapResponseToList( mapResponsesByIdEntry );
+        List<Response> listResponses = formResult.getResponses( );
         announce.setListResponse( listResponses );
 
-        if ( CollectionUtils.isNotEmpty( listErrors ) )
+        if ( formResult.hasErrors( ) )
         {
-            return listErrors;
+            return formResult.getErrors( );
         }
 
-        announce.setHasPictures( false );
-
-        for ( Response response : listResponses )
-        {
-            if ( ( response.getFile( ) != null ) && FileUtil.hasImageExtension( response.getFile( ).getTitle( ) ) )
-            {
-                announce.setHasPictures( true );
-
-                break;
-            }
-        }
+        announce.setHasPictures( AnnounceService.detectHasPictures( listResponses ) );
 
         _announceLifecycleService.create( announce );
 
@@ -1244,37 +1115,11 @@ public class AnnounceApp extends MVCApplication
         String strDescriptionAnnounce = request.getParameter( PARAMETER_DESCRIPTION_ANNOUNCE );
         String strContactInformation = request.getParameter( PARAMETER_CONTACT_INFORMATION );
         String strTags = request.getParameter( PARAMETER_TAGS );
-        String strPrice = request.getParameter( PARAMETER_PRICE_ANNOUNCE );
-        Double nPriceAnnounce = 0.0;
-        boolean bInvalidPriceFormat = false;
-        if ( StringUtils.isNotEmpty( strPrice ) )
-        {
-            try
-            {
-                nPriceAnnounce = Double.parseDouble( strPrice.replace( ',', '.' ) );
-            }
-            catch( NumberFormatException e )
-            {
-                bInvalidPriceFormat = true;
-            }
-        }
 
-        List<GenericAttributeError> listFormErrors = new ArrayList<>( );
-
-        if ( StringUtils.isEmpty( strTitleAnnounce ) || StringUtils.isEmpty( strDescriptionAnnounce ) || StringUtils.isEmpty( strContactInformation )
-                || ( category.getDisplayPrice( ) && category.getPriceMandatory( ) && ( nPriceAnnounce == 0.0 ) && !bInvalidPriceFormat ) )
-        {
-            GenericAttributeError error = new GenericAttributeError( );
-            error.setErrorMessage( I18nService.getLocalizedString( ERROR_MESSAGE_MANDATORY_FIELDS, request.getLocale( ) ) );
-            listFormErrors.add( error );
-        }
-
-        if ( bInvalidPriceFormat )
-        {
-            GenericAttributeError error = new GenericAttributeError( );
-            error.setErrorMessage( I18nService.getLocalizedString( ERROR_MESSAGE_INVALID_PRICE_FORMAT, request.getLocale( ) ) );
-            listFormErrors.add( error );
-        }
+        // Validate form fields (price + mandatory)
+        AnnounceService.PriceParseResult priceResult = AnnounceService.parsePrice( request.getParameter( PARAMETER_PRICE_ANNOUNCE ) );
+        List<GenericAttributeError> listFormErrors = AnnounceService.validateAnnounceFormFields( strTitleAnnounce, strDescriptionAnnounce,
+                strContactInformation, category, priceResult, request.getLocale( ) );
 
         if ( CollectionUtils.isNotEmpty( listFormErrors ) )
         {
@@ -1286,73 +1131,31 @@ public class AnnounceApp extends MVCApplication
         announce.setDescription( strDescriptionAnnounce );
         announce.setContactInformation( strContactInformation );
         announce.setTags( strTags );
-        announce.setPrice( nPriceAnnounce );
+        announce.setPrice( priceResult.getPrice( ) );
         announce.setHasNotify( 0 );
 
         Sector sector = SectorHome.findByPrimaryKey( category.getIdSector( ) );
+        announce.setPublished( !AnnounceService.isModerationRequired( category, sector ) );
 
-        // unpublish announce if category moderation is on
-        switch( category.getAnnouncesValidation( ) )
-        {
-            case PARAMETER_ANNOUNCES_VALIDATION_YES:
-                announce.setPublished( false );
-
-                break;
-
-            case PARAMETER_ANNOUNCES_VALIDATION_NO:
-                announce.setPublished( true );
-
-                break;
-
-            case PARAMETER_ANNOUNCES_VALIDATION_GLOBAL_PARAMETERS:
-            default:
-                announce.setPublished( !sector.getAnnouncesValidation( ) );
-        }
-
-        EntryFilter filter = new EntryFilter( );
-        filter.setIdResource( category.getId( ) );
-        filter.setResourceType( Category.RESOURCE_TYPE );
-        filter.setEntryParentNull( EntryFilter.FILTER_TRUE );
-        filter.setFieldDependNull( EntryFilter.FILTER_TRUE );
-        filter.setIdIsComment( EntryFilter.FILTER_FALSE );
-
-        List<Entry> listEntryFirstLevel = EntryHome.getEntryList( filter );
-        List<GenericAttributeError> listErrors = new ArrayList<>( );
-
-        Map<Integer, List<Response>> mapResponsesByIdEntry = new HashMap<>( );
-
-        for ( Entry entry : listEntryFirstLevel )
-        {
-            listErrors.addAll( _announceService.getResponseEntry( request, entry.getIdEntry( ), request.getLocale( ), mapResponsesByIdEntry ) );
-        }
+        // Process generic attribute entries
+        AnnounceService.FormProcessingResult formResult = _announceService.processFormEntries( request, category.getId( ) );
 
         if ( category.getDisplayCaptcha( ) && _captchaSecurityService.isAvailable( ) && !_captchaSecurityService.validate( request ) )
         {
             GenericAttributeError genAttError = new GenericAttributeError( );
             genAttError.setErrorMessage( I18nService.getLocalizedString( ERROR_MESSAGE_WRONG_CAPTCHA, request.getLocale( ) ) );
-            listErrors.add( genAttError );
+            formResult.getErrors( ).add( genAttError );
         }
 
-        List<Response> listResponses = _announceService.convertMapResponseToList( mapResponsesByIdEntry );
+        List<Response> listResponses = formResult.getResponses( );
         announce.setListResponse( listResponses );
 
-        // If there is some errors, we redirect the user to the form page
-        if ( CollectionUtils.isNotEmpty( listErrors ) )
+        if ( formResult.hasErrors( ) )
         {
-            return listErrors;
+            return formResult.getErrors( );
         }
 
-        announce.setHasPictures( false );
-
-        for ( Response response : listResponses )
-        {
-            if ( ( response.getFile( ) != null ) && FileUtil.hasImageExtension( response.getFile( ).getTitle( ) ) )
-            {
-                announce.setHasPictures( true );
-
-                break;
-            }
-        }
+        announce.setHasPictures( AnnounceService.detectHasPictures( listResponses ) );
 
         _announceLifecycleService.update( announce );
 
@@ -1378,7 +1181,7 @@ public class AnnounceApp extends MVCApplication
             sendAnnounceNotification( request, announce );
         }
 
-        return null;
+        return new ArrayList<>( );
     }
 
     /**
@@ -1408,7 +1211,7 @@ public class AnnounceApp extends MVCApplication
         model.put( MARK_FORM_HTML, _announceService.getHtmlAnnounceForm( announce, category, locale, true, request ) );
         model.put( MARK_CATEGORY, category );
         model.put( MARK_SECTOR, sector );
-        model.put( MARK_LIST_FIELDS, getSectorList( ) );
+        model.put( MARK_LIST_FIELDS, AnnounceService.getSectorList( ) );
         model.put( MARK_LOCALE, request.getLocale( ) );
         model.put( MARK_IS_SUBSCRIBE, AnnounceService.isSubscribeModuleAvailable( ) );
 
@@ -1493,7 +1296,7 @@ public class AnnounceApp extends MVCApplication
         }
 
         Map<String, Object> model = new HashMap<>( );
-        model.put( MARK_LIST_FIELDS, getSectorList( ) );
+        model.put( MARK_LIST_FIELDS, AnnounceService.getSectorList( ) );
         model.put( MARK_LOCALE, request.getLocale( ) );
         model.put( MARK_NB_ITEMS_PER_PAGE, Integer.toString( nItemsPerPage ) );
         model.put( MARK_PAGINATOR, paginator );
@@ -1505,47 +1308,6 @@ public class AnnounceApp extends MVCApplication
         HtmlTemplate template = AppTemplateService.getTemplate( TEMPLATE_MY_ANNOUNCES, request.getLocale( ), model );
 
         return template.getHtml( );
-    }
-
-    /**
-     * Get the list of sectors to be displayed in the navigation menu
-     * 
-     * @return The list of sectors
-     */
-    public static Collection<Sector> getSectorList( )
-    {
-        Collection<Sector> listSectors = SectorHome.findAll( );
-
-        for ( Sector sector : listSectors )
-        {
-            int nNumberAnnounces = 0;
-            Collection<Category> categoryList = CategoryHome.findCategoriesForSector( sector );
-            sector.setListCategories( categoryList );
-
-            for ( Category category : categoryList )
-            {
-                nNumberAnnounces += CategoryHome.countPublishedAnnouncesForCategory( category );
-            }
-
-            sector.setNumberAnnounces( nNumberAnnounces );
-        }
-
-        return listSectors;
-    }
-
-    /**
-     * Get the list of sectors to be displayed in the navigation menu
-     * 
-     * @return The list of sectors
-     */
-    public static Collection<Category> getCategoryList( int idSector )
-    {
-        if ( idSector == 0 )
-        {
-            return CategoryHome.findAll( );
-        }
-        Sector sector = SectorHome.findByPrimaryKey( idSector );
-        return CategoryHome.findCategoriesForSector( sector );
     }
 
     /**
@@ -1834,96 +1596,4 @@ public class AnnounceApp extends MVCApplication
         return urlItem.getUrl( );
     }
 
-    /**
-     * Sort responses according to the hierarchical order of entries in the category form.
-     * This ensures conditional question responses appear right after their parent entry responses.
-     *
-     * @param listResponses
-     *            The flat list of responses
-     * @param nIdCategory
-     *            The id of the category to get the entry hierarchy
-     * @return The sorted list of responses
-     */
-    private static List<Response> sortResponsesByEntryHierarchy( List<Response> listResponses, int nIdCategory )
-    {
-        // Build the ordered list of entry IDs following the form hierarchy
-        List<Integer> listOrderedEntryIds = new ArrayList<>( );
-        EntryFilter filter = new EntryFilter( );
-        filter.setIdResource( nIdCategory );
-        filter.setResourceType( Category.RESOURCE_TYPE );
-        filter.setEntryParentNull( EntryFilter.FILTER_TRUE );
-        filter.setFieldDependNull( EntryFilter.FILTER_TRUE );
-
-        List<Entry> listEntryFirstLevel = EntryHome.getEntryList( filter );
-
-        for ( Entry entry : listEntryFirstLevel )
-        {
-            collectEntryIdsRecursive( entry.getIdEntry( ), listOrderedEntryIds );
-        }
-
-        // Build a map of position by entry ID
-        Map<Integer, Integer> mapEntryOrder = new HashMap<>( );
-
-        for ( int i = 0; i < listOrderedEntryIds.size( ); i++ )
-        {
-            mapEntryOrder.put( listOrderedEntryIds.get( i ), i );
-        }
-
-        // Sort responses based on the entry order
-        List<Response> sortedResponses = new ArrayList<>( listResponses );
-        sortedResponses.sort( ( r1, r2 ) ->
-        {
-            int order1 = ( r1.getEntry( ) != null ) ? mapEntryOrder.getOrDefault( r1.getEntry( ).getIdEntry( ), Integer.MAX_VALUE ) : Integer.MAX_VALUE;
-            int order2 = ( r2.getEntry( ) != null ) ? mapEntryOrder.getOrDefault( r2.getEntry( ).getIdEntry( ), Integer.MAX_VALUE ) : Integer.MAX_VALUE;
-
-            return Integer.compare( order1, order2 );
-        } );
-
-        return sortedResponses;
-    }
-
-    /**
-     * Recursively collect entry IDs in hierarchical order (entry, then its conditional children).
-     *
-     * @param nIdEntry
-     *            The entry ID to process
-     * @param listOrderedEntryIds
-     *            The list to add IDs to
-     */
-    private static void collectEntryIdsRecursive( int nIdEntry, List<Integer> listOrderedEntryIds )
-    {
-        Entry entry = EntryHome.findByPrimaryKey( nIdEntry );
-
-        if ( entry == null )
-        {
-            return;
-        }
-
-        if ( Boolean.TRUE.equals( entry.getEntryType( ).getGroup( ) ) )
-        {
-            listOrderedEntryIds.add( nIdEntry );
-
-            for ( Entry child : entry.getChildren( ) )
-            {
-                collectEntryIdsRecursive( child.getIdEntry( ), listOrderedEntryIds );
-            }
-        }
-        else
-        {
-            listOrderedEntryIds.add( nIdEntry );
-
-            for ( Field field : entry.getFields( ) )
-            {
-                Field fullField = FieldHome.findByPrimaryKey( field.getIdField( ) );
-
-                if ( fullField.getConditionalQuestions( ) != null )
-                {
-                    for ( Entry conditionalEntry : fullField.getConditionalQuestions( ) )
-                    {
-                        collectEntryIdsRecursive( conditionalEntry.getIdEntry( ), listOrderedEntryIds );
-                    }
-                }
-            }
-        }
-    }
 }
