@@ -49,12 +49,11 @@ import fr.paris.lutece.api.user.User;
 import fr.paris.lutece.plugins.announce.business.Announce;
 import fr.paris.lutece.plugins.announce.business.AnnounceHome;
 import fr.paris.lutece.plugins.announce.business.AnnounceResponseHome;
-import fr.paris.lutece.plugins.announce.business.AnnounceNotify;
-import fr.paris.lutece.plugins.announce.business.AnnounceNotifyHome;
 import fr.paris.lutece.plugins.announce.business.AnnounceSort;
 import fr.paris.lutece.plugins.announce.business.Category;
 import fr.paris.lutece.plugins.announce.business.CategoryHome;
 import fr.paris.lutece.plugins.announce.service.AnnounceLifecycleService;
+import fr.paris.lutece.plugins.announce.service.AnnounceNotificationService;
 import fr.paris.lutece.plugins.announce.service.AnnounceResourceIdService;
 import fr.paris.lutece.plugins.announce.service.AnnounceService;
 import fr.paris.lutece.plugins.announce.utils.AnnounceUtils;
@@ -132,6 +131,7 @@ public class AnnounceJspBean extends PluginAdminPageJspBean
 
     /* Variables */
     private AnnounceLifecycleService _announceLifecycleService = SpringContextService.getBean( AnnounceLifecycleService.BEAN_NAME );
+    private AnnounceNotificationService _announceNotificationService = SpringContextService.getBean( AnnounceNotificationService.BEAN_NAME );
     private int _nDefaultItemsPerPage;
     private String _strCurrentPageIndex;
     private int _nItemsPerPage;
@@ -368,9 +368,7 @@ public class AnnounceJspBean extends PluginAdminPageJspBean
             Announce announce = AnnounceHome.findByPrimaryKey( nIdAnnounce );
             if ( announce.getDatePublication( ).getTime( ) == new Timestamp( 0 ).getTime( ) )
             {
-                AnnounceNotify announceNotify = new AnnounceNotify( );
-                announceNotify.setIdAnnounce( announce.getId( ) );
-                AnnounceNotifyHome.create( announceNotify );
+                _announceNotificationService.queueSubscriptionNotification( announce );
             }
             announce.setPublished( bPublished );
             _announceLifecycleService.publish( announce );

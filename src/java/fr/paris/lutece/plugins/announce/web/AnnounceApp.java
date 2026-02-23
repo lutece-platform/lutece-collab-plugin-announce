@@ -49,9 +49,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import fr.paris.lutece.plugins.announce.business.Announce;
 import fr.paris.lutece.plugins.announce.business.AnnounceHome;
-import fr.paris.lutece.plugins.announce.business.AnnounceNotify;
 import fr.paris.lutece.plugins.announce.business.AnnounceResponseHome;
-import fr.paris.lutece.plugins.announce.business.AnnounceNotifyHome;
 import fr.paris.lutece.plugins.announce.business.AnnounceSearchFilter;
 import fr.paris.lutece.plugins.announce.business.AnnounceSort;
 import fr.paris.lutece.plugins.announce.business.Category;
@@ -60,6 +58,7 @@ import fr.paris.lutece.plugins.announce.business.Sector;
 import fr.paris.lutece.plugins.announce.business.SectorHome;
 import fr.paris.lutece.plugins.announce.service.AnnounceFilterService;
 import fr.paris.lutece.plugins.announce.service.AnnounceLifecycleService;
+import fr.paris.lutece.plugins.announce.service.AnnounceNotificationService;
 import fr.paris.lutece.plugins.announce.service.AnnounceService;
 import fr.paris.lutece.plugins.announce.service.IAnnounceSubscriptionProvider;
 import fr.paris.lutece.plugins.announce.service.announcesearch.AnnounceSearchService;
@@ -67,13 +66,9 @@ import fr.paris.lutece.plugins.announce.service.upload.AnnounceAsynchronousUploa
 import fr.paris.lutece.plugins.announce.utils.AnnounceUtils;
 import fr.paris.lutece.plugins.genericattributes.business.GenericAttributeError;
 import fr.paris.lutece.plugins.genericattributes.business.Response;
-import fr.paris.lutece.portal.business.mailinglist.Recipient;
 import fr.paris.lutece.portal.service.captcha.CaptchaSecurityService;
 import fr.paris.lutece.portal.service.i18n.I18nService;
-import fr.paris.lutece.portal.service.mail.MailService;
-import fr.paris.lutece.portal.service.mailinglist.AdminMailingListService;
 import fr.paris.lutece.portal.service.message.SiteMessage;
-import fr.paris.lutece.portal.service.datastore.DatastoreService;
 import fr.paris.lutece.portal.service.message.SiteMessageException;
 import fr.paris.lutece.portal.service.message.SiteMessageService;
 import fr.paris.lutece.portal.service.portal.PortalService;
@@ -164,12 +159,6 @@ public class AnnounceApp extends MVCApplication
     private static final String PROPERTY_PAGE_TITLE_MY_ANNOUNCES = "announce.my_announces.pageTitle";
     private static final String PROPERTY_PAGE_TITLE_CREATE_ANNOUNCE = "announce.create_announce.pageTitle";
     private static final String PROPERTY_DEFAULT_FRONT_LIST_ANNOUNCE_PER_PAGE = "announce.front.announce.defaultItemsPerPage";
-    private static final String KEY_WEBMASTER_EMAIL = "portal.site.site_property.email";
-    private static final String PROPERTY_SENDER_EMAIL = "announce.mail.senderEmail";
-    private static final String KEY_SITE_NAME = "portal.site.site_property.name";
-    private static final String PROPERTY_SENDER_NAME = "announce.mail.senderName";
-    private static final String PROPERTY_ANNOUNCE_NOTIFY_SUBJECT = "announce.notification.subject";
-    private static final String PROPERTY_PROD_URL = "lutece.prod.url";
     private static final String PROPERTY_MAX_AMOUNT_ANNOUNCE = "announce.announce.qty.max";
 
     // Templates
@@ -181,7 +170,6 @@ public class AnnounceApp extends MVCApplication
     private static final String TEMPLATE_MODIFY_ANNOUNCE = "skin/plugins/announce/modify_announce.html";
     private static final String TEMPLATE_LIST_ANNOUNCES = "skin/plugins/announce/list_announces.html";
     private static final String TEMPLATE_LIST_ANNOUNCES_BY_ID = "skin/plugins/announce/list_announces_by_id.html";
-    private static final String TEMPLATE_ANNOUNCE_NOTIFY_MESSAGE = "skin/plugins/announce/announce_notify_message.html";
 
     // Session keys
     private static final String SESSION_KEY_ANNOUNCE_FILTER = AnnounceFilterService.SESSION_KEY_ANNOUNCE_FILTER;
@@ -209,7 +197,6 @@ public class AnnounceApp extends MVCApplication
     private static final String MARK_PAGINATOR = "paginator";
     private static final String MARK_NB_ITEMS_PER_PAGE = "nb_items_per_page";
     private static final String MARK_MODERATED = "moderated";
-    private static final String MARK_PROD_URL = "prod_url";
     private static final String MARK_FORM_HTML = "form_html";
     private static final String MARK_LIST_ERRORS = "list_errors";
     private static final String MARK_IS_EXTEND_INSTALLED = "isExtendInstalled";
@@ -236,6 +223,7 @@ public class AnnounceApp extends MVCApplication
     // private fields
     private AnnounceService _announceService = SpringContextService.getBean( AnnounceService.BEAN_NAME );
     private AnnounceLifecycleService _announceLifecycleService = SpringContextService.getBean( AnnounceLifecycleService.BEAN_NAME );
+    private AnnounceNotificationService _announceNotificationService = SpringContextService.getBean( AnnounceNotificationService.BEAN_NAME );
     private int _nDefaultItemsPerPage;
     private String _strCurrentPageIndex;
     private int _nItemsPerPage;
@@ -918,57 +906,6 @@ public class AnnounceApp extends MVCApplication
     }
 
     /**
-     * Do send an announce by email to admin users
-     * 
-     * @param request
-     *            The request
-     * @param announce
-     *            The announce
-     */
-    private void sendAnnounceNotification( HttpServletRequest request, Announce announce )
-    {
-        int nIdMailingList = announce.getCategory( ).getIdMailingList( );
-
-        if ( nIdMailingList <= 0 )
-        {
-            AppLogService.info( "sendAnnounceNotification: no mailing list configured for category '{}' (id={}), admin notification skipped for announce {}",
-                    announce.getCategory( ).getLabel( ), announce.getCategory( ).getId( ), announce.getId( ) );
-            return;
-        }
-
-        Collection<Recipient> listRecipients = AdminMailingListService.getRecipients( nIdMailingList );
-
-        if ( listRecipients.isEmpty( ) )
-        {
-            AppLogService.info( "sendAnnounceNotification: mailing list {} has no recipients, admin notification skipped for announce {}", nIdMailingList,
-                    announce.getId( ) );
-            return;
-        }
-
-        String strSenderEmail = DatastoreService.getDataValue( KEY_WEBMASTER_EMAIL, AppPropertiesService.getProperty( PROPERTY_SENDER_EMAIL ) );
-        String strSenderName = DatastoreService.getDataValue( KEY_SITE_NAME, AppPropertiesService.getProperty( PROPERTY_SENDER_NAME ) );
-        String strSubject = I18nService.getLocalizedString( PROPERTY_ANNOUNCE_NOTIFY_SUBJECT, request.getLocale( ) );
-
-        // Generate the subject of the message
-        strSubject += ( " " + announce.getCategory( ).getLabel( ) );
-
-        // Generate the body of the message
-        HashMap<String, Object> model = new HashMap<>( );
-        model.put( MARK_PROD_URL, AppPropertiesService.getProperty( PROPERTY_PROD_URL ) );
-        model.put( MARK_ANNOUNCE, announce );
-        model.put( MARK_LIST_FIELDS, AnnounceService.getSectorList( ) );
-        model.put( MARK_LOCALE, request.getLocale( ) );
-
-        HtmlTemplate template = AppTemplateService.getTemplate( TEMPLATE_ANNOUNCE_NOTIFY_MESSAGE, request.getLocale( ), model );
-        String strBody = template.getHtml( );
-
-        for ( Recipient recipient : listRecipients )
-        {
-            MailService.sendMailHtml( recipient.getEmail( ), strSenderName, strSenderEmail, strSubject, strBody );
-        }
-    }
-
-    /**
      * Do create an announce
      * 
      * @param request
@@ -1040,9 +977,7 @@ public class AnnounceApp extends MVCApplication
         // If announce is auto-published (no moderation), queue for subscription notification
         if ( announce.getPublished( ) )
         {
-            AnnounceNotify announceNotify = new AnnounceNotify( );
-            announceNotify.setIdAnnounce( announce.getId( ) );
-            AnnounceNotifyHome.create( announceNotify );
+            _announceNotificationService.queueSubscriptionNotification( announce );
         }
 
         if ( category.getIdWorkflow( ) > 0 )
@@ -1052,10 +987,10 @@ public class AnnounceApp extends MVCApplication
                     user );
         }
 
-        // send mail notification only if announce is not published
+        // send mail notification only if announce is not published (needs moderation)
         if ( !announce.getPublished( ) )
         {
-            sendAnnounceNotification( request, announce );
+            _announceNotificationService.sendModerationNotification( announce, request.getLocale( ) );
         }
 
         AnnounceAsynchronousUploadHandler.getHandler( ).removeSessionFiles( request.getSession( ) );
@@ -1126,10 +1061,10 @@ public class AnnounceApp extends MVCApplication
 
         _announceLifecycleService.update( announce );
 
-        // send mail notification only if announce is not published
+        // send mail notification only if announce is not published (needs moderation)
         if ( !announce.getPublished( ) )
         {
-            sendAnnounceNotification( request, announce );
+            _announceNotificationService.sendModerationNotification( announce, request.getLocale( ) );
         }
 
         return new ArrayList<>( );
