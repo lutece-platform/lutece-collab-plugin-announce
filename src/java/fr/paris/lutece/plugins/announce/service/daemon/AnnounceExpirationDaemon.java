@@ -109,7 +109,14 @@ public class AnnounceExpirationDaemon extends Daemon
 
         for ( Integer nIdExpiredAnnounce : listIdExpiredAnnounces )
         {
-            _announceLifecycleService.remove( nIdExpiredAnnounce );
+            try
+            {
+                _announceLifecycleService.remove( nIdExpiredAnnounce );
+            }
+            catch( Exception e )
+            {
+                AppLogService.error( "AnnounceExpirationDaemon: error removing announce {}", nIdExpiredAnnounce, e );
+            }
         }
 
         setLastRunLogs( nNotified + " notified and " + listIdExpiredAnnounces.size( ) + " expired announces have been removed" );

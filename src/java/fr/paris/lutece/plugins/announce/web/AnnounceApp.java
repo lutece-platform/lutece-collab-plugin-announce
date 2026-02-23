@@ -229,11 +229,6 @@ public class AnnounceApp extends MVCApplication
     private int _nItemsPerPage;
 
     /**
-     * Date format for filters
-     */
-    private final DateFormat _dateFormat = AnnounceService.getDateFormat( );
-
-    /**
      * Get the optional subscription provider. Returns null if the module-announce-subscribe module is not deployed.
      *
      * @return The subscription provider, or null if not available
@@ -339,8 +334,9 @@ public class AnnounceApp extends MVCApplication
         }
 
         model.put( MARK_ANNOUNCES_LIST, paginator.getPageItems( ) );
-        model.put( MARK_FILTER_DATE_MIN, ( filter.getDateMin( ) != null ) ? _dateFormat.format( filter.getDateMin( ) ) : null );
-        model.put( MARK_FILTER_DATE_MAX, ( filter.getDateMax( ) != null ) ? _dateFormat.format( filter.getDateMax( ) ) : null );
+        DateFormat dateFormat = AnnounceService.getDateFormat( );
+        model.put( MARK_FILTER_DATE_MIN, ( filter.getDateMin( ) != null ) ? dateFormat.format( filter.getDateMin( ) ) : null );
+        model.put( MARK_FILTER_DATE_MAX, ( filter.getDateMax( ) != null ) ? dateFormat.format( filter.getDateMax( ) ) : null );
         model.put( MARK_FILTER, filter );
 
         LuteceUser user = SecurityService.getInstance( ).getRegisteredUser( request );
