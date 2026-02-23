@@ -85,8 +85,8 @@ CREATE TABLE announce_search_filters(
 	keywords long varchar NOT NULL ,
 	date_min DATE null,
 	date_max DATE null,
-	price_min int not null default 0,
-	price_max int not null default 0,
+	price_min int default 0 not null,
+	price_max int default 0 not null,
 	PRIMARY KEY (id_filter)
 );
 
