@@ -79,6 +79,7 @@ import java.text.SimpleDateFormat;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -174,7 +175,19 @@ public class AnnounceService implements Serializable
                     if ( ( response.getFile( ) != null ) && ( response.getFile( ).getIdFile( ) > 0 ) )
                     {
                         File file = FileHome.findByPrimaryKey( response.getFile( ).getIdFile( ) );
+
+                        if ( ( file == null ) || ( file.getPhysicalFile( ) == null ) )
+                        {
+                            continue;
+                        }
+
                         PhysicalFile physicalFile = PhysicalFileHome.findByPrimaryKey( file.getPhysicalFile( ).getIdPhysicalFile( ) );
+
+                        if ( physicalFile == null )
+                        {
+                            continue;
+                        }
+
                         FileItem fileItem = new GenAttFileItem( physicalFile.getValue( ), file.getTitle( ) );
                         AnnounceAsynchronousUploadHandler.getHandler( ).addFileItemToUploadedFilesList( fileItem,
                                 IEntryTypeService.PREFIX_ATTRIBUTE + Integer.toString( response.getEntry( ).getIdEntry( ) ), request );
@@ -748,6 +761,11 @@ public class AnnounceService implements Serializable
         }
 
         Sector sector = SectorHome.findByPrimaryKey( nIdSector );
+
+        if ( sector == null )
+        {
+            return Collections.emptyList( );
+        }
 
         return CategoryHome.findCategoriesForSector( sector );
     }

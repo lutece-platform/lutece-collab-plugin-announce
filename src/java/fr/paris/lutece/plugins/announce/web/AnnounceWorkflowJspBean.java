@@ -141,6 +141,11 @@ public class AnnounceWorkflowJspBean extends MVCAdminJspBean
 
             Announce announce = AnnounceHome.findByPrimaryKey( nIdAnnounce );
 
+            if ( announce == null )
+            {
+                return redirect( request, AnnounceJspBean.getURLManageAnnounces( request ) );
+            }
+
             if ( request.getParameter( PARAMETER_BACK ) == null )
             {
                 if ( WorkflowService.getInstance( ).isDisplayTasksForm( nIdAction, getLocale( ) ) )

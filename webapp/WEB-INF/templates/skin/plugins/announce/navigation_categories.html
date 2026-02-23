@@ -7,7 +7,7 @@
         <div class="accordion-item">
             <h2 class="accordion-header">
                 <button class="accordion-button collapsed py-2 px-3 small" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSector${sector.id}">
-                    ${sector.label}&nbsp;(${sector.numberAnnounces})
+                    ${sector.label?html}&nbsp;(${sector.numberAnnounces})
                 </button>
             </h2>
             <div id="collapseSector${sector.id}" class="accordion-collapse collapse" data-bs-parent="#categoriesAccordion">
@@ -16,9 +16,9 @@
                         <#list sector.listCategories as category>
                         <li class="mb-1">
                             <#if category.numberAnnounces!=0>
-                                <a href="jsp/site/Portal.jsp?page=announce&action=search&hasFilter=true&category_id=${category.id}">${category.label}&nbsp;(${category.numberAnnounces})</a>
+                                <a href="jsp/site/Portal.jsp?page=announce&action=search&hasFilter=true&category_id=${category.id}">${category.label?html}&nbsp;(${category.numberAnnounces})</a>
                             <#else>
-                                ${category.label}
+                                ${category.label?html}
                             </#if>
                             <#if isSubscribe?? && isSubscribe>
                             <a class="btn btn-primary btn-sm py-0 px-1" href="jsp/site/Portal.jsp?page=announce-subscribe&action=doCreateCategorySubscription&id_category=${category.id}" title="#i18n{announce.navigation_menu.category_subscription_title}">

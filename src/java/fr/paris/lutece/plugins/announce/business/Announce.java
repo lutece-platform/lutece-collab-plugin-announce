@@ -522,9 +522,13 @@ public class Announce implements Serializable, IExtendableResource, RBACResource
     @Override
     public String getExtendableResourceImageUrl( )
     {
-        if ( getHasPictures( ) && CollectionUtils.isNotEmpty( getListIdImageResponse( ) ) )
+        if ( getHasPictures( ) )
         {
-            return AnnounceResponseImageResourceProvider.getUrlDownloadImageResponse( getListIdImageResponse( ).get( 0 ) );
+            List<Integer> listIds = getListIdImageResponse( );
+            if ( CollectionUtils.isNotEmpty( listIds ) )
+            {
+                return AnnounceResponseImageResourceProvider.getUrlDownloadImageResponse( listIds.get( 0 ) );
+            }
         }
 
         return null;

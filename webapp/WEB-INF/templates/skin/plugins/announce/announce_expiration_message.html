@@ -32,13 +32,13 @@
                                 <tr>
                                     <td style="padding:15px; border-bottom:2px solid #007bff;">
                                         <span style="color:#007bff; font-size:18px; font-weight:bold;">
-                                            ${announce.title!}
+                                            ${announce.title!?html}
                                         </span>
                                     </td>
                                 </tr>
                                 <tr>
                                     <td style="padding:15px; font-size:15px; color:#333;">
-                                        ${announce.description!}
+                                        ${announce.description!?html}
                                     </td>
                                 </tr>
                             </table>

@@ -41,9 +41,9 @@
                 </@tr>
                 <#list list_announces as announce>
                     <@tr>
-                        <@td><strong>${announce.title!}</strong></@td>
-                        <@td>${announce.description!}</@td>
-                        <@td>${announce.category.label!}</@td>
+                        <@td><strong>${announce.title!?html}</strong></@td>
+                        <@td>${announce.description!?html}</@td>
+                        <@td>${announce.category.label!?html}</@td>
                         <@td>${announce.dateCreation!}</@td>
                         <@td>${announce.dateModification!}</@td>
                         <@td>
@@ -71,18 +71,18 @@
                                 <#if right_publish_announce?? && right_publish_announce>
                                     <@div>
                                         <#if announce.published>
-                                            <@link class='dropdown-item' href='jsp/admin/plugins/announce/DoUnPublishAnnounce.jsp?announce_id=${announce.id}' label='#i18n{announce.announce.actions.unpublish}' />
+                                            <@link class='dropdown-item' href='jsp/admin/plugins/announce/DoUnPublishAnnounce.jsp?announce_id=${announce.id}&token=${token}' label='#i18n{announce.announce.actions.unpublish}' />
                                         <#else>
-                                            <@link class='dropdown-item' href='jsp/admin/plugins/announce/DoPublishAnnounce.jsp?announce_id=${announce.id}' label='#i18n{announce.announce.actions.publish}' />
+                                            <@link class='dropdown-item' href='jsp/admin/plugins/announce/DoPublishAnnounce.jsp?announce_id=${announce.id}&token=${token}' label='#i18n{announce.announce.actions.publish}' />
                                         </#if>
                                     </@div>
                                 </#if>
                                 <#if right_suspend_announce?? && right_suspend_announce>
                                     <@div>
                                         <#if announce.suspended>
-                                            <@link class='dropdown-item' href='jsp/admin/plugins/announce/DoEnableAnnounce.jsp?announce_id=${announce.id}' label='#i18n{announce.announce.actions.enable}' />
+                                            <@link class='dropdown-item' href='jsp/admin/plugins/announce/DoEnableAnnounce.jsp?announce_id=${announce.id}&token=${token}' label='#i18n{announce.announce.actions.enable}' />
                                         <#else>
-                                            <@link class='dropdown-item' href='jsp/admin/plugins/announce/DoSuspendAnnounce.jsp?announce_id=${announce.id}' label='#i18n{announce.announce.actions.suspend}' />
+                                            <@link class='dropdown-item' href='jsp/admin/plugins/announce/DoSuspendAnnounce.jsp?announce_id=${announce.id}&token=${token}' label='#i18n{announce.announce.actions.suspend}' />
                                         </#if>
                                     </@div>
                                 </#if>
@@ -90,7 +90,7 @@
                                     <#if announce.listWorkflowActions?? && announce.listWorkflowActions?size &gt; 0>
                                         <#list announce.listWorkflowActions as action>
                                             <@div>
-                                                <@link class='dropdown-item' href='jsp/admin/plugins/announce/ManageAnnounceWorkflow.jsp?view=viewWorkflowActionForm&id_action=${action.id}&id_announce=${announce.id}' label='${action.name!}' />
+                                                <@link class='dropdown-item' href='jsp/admin/plugins/announce/ManageAnnounceWorkflow.jsp?view=viewWorkflowActionForm&id_action=${action.id}&id_announce=${announce.id}' label='${action.name!?html}' />
                                             </@div>
                                         </#list>
                                     </#if>

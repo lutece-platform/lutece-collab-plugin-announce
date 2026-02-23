@@ -54,6 +54,10 @@ CREATE TABLE announce_announce(
 );
 
 CREATE INDEX announce_user_name ON announce_announce (user_name);
+CREATE INDEX announce_id_category ON announce_announce (id_category);
+CREATE INDEX announce_published ON announce_announce (published);
+CREATE INDEX announce_date_creation ON announce_announce (date_creation);
+CREATE INDEX announce_category_id_sector ON announce_category (id_sector);
 
 DROP TABLE IF EXISTS announce_indexer_action;
 CREATE TABLE announce_indexer_action (

@@ -75,7 +75,7 @@ public class AnnounceLuceneSearchEngine implements IAnnounceSearchEngine
 {
     private static final int NO_CATEGORY = 0;
     private static final int NO_SECTOR = 0;
-    private final SimpleDateFormat _dayFormat = new SimpleDateFormat( "yyyyMMdd", Locale.US );
+    private static final String DAY_FORMAT_PATTERN = "yyyyMMdd";
     private static final String PROPERTY_LUCENE_MIN_SCORE = "announce.lucene.minScore";
     /**
      * {@inheritDoc}
@@ -149,8 +149,8 @@ public class AnnounceLuceneSearchEngine implements IAnnounceSearchEngine
                 }
 
                 // String stringDateMin = DateUtil.
-                String strLowerTerm = _dayFormat.format( dateMinToSearch );
-                String strUpperTerm = _dayFormat.format( dateMaxToSearch );
+                String strLowerTerm = new SimpleDateFormat( DAY_FORMAT_PATTERN, Locale.US ).format( dateMinToSearch );
+                String strUpperTerm = new SimpleDateFormat( DAY_FORMAT_PATTERN, Locale.US ).format( dateMaxToSearch );
                 BytesRef bRLowerTerm = new BytesRef( strLowerTerm );
                 BytesRef bRUpperTerm = new BytesRef( strUpperTerm );
                 Query queryRangeDate = new TermRangeQuery( SearchItem.FIELD_DATE, bRLowerTerm, bRUpperTerm, true, true );
@@ -282,8 +282,8 @@ public class AnnounceLuceneSearchEngine implements IAnnounceSearchEngine
                 {
                     dateMaxToSearch = filter.getDateMax( );
                 }
-                String strLowerTerm = _dayFormat.format(dateMinToSearch);
-                String strUpperTerm = _dayFormat.format(dateMaxToSearch);
+                String strLowerTerm = new SimpleDateFormat( DAY_FORMAT_PATTERN, Locale.US ).format(dateMinToSearch);
+                String strUpperTerm = new SimpleDateFormat( DAY_FORMAT_PATTERN, Locale.US ).format(dateMaxToSearch);
                 BytesRef bRLowerTerm = new BytesRef(strLowerTerm);
                 BytesRef bRUpperTerm = new BytesRef(strUpperTerm);
                 Query queryRangeDate = TermRangeQuery.newStringRange(SearchItem.FIELD_DATE, strLowerTerm, strUpperTerm, true, true);

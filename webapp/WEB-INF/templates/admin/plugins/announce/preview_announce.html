@@ -5,11 +5,13 @@
             <#if announce.published>
                 <@tform method='post' action='jsp/admin/plugins/announce/DoUnPublishAnnounce.jsp' type='inline'>
                     <@input type='hidden' name='announce_id' value='${announce.id}' />
+                    <@input type='hidden' name='token' value='${token}' />
                     <@button type='submit' buttonIcon='toggle-right' title='#i18n{announce.announce.actions.unpublish}' color='danger' />
                 </@tform>
             <#else>
                 <@tform method='post' action='jsp/admin/plugins/announce/DoPublishAnnounce.jsp' type='inline'>
                     <@input type='hidden' name='announce_id' value='${announce.id}' />
+                    <@input type='hidden' name='token' value='${token}' />
                     <@button type='submit' buttonIcon='toggle-left' title='#i18n{announce.announce.actions.publish}' color='success' />
                 </@tform>
             </#if>
@@ -17,7 +19,7 @@
         <@box>
             <@div class='d-flex align-items-baseline gap-2 mb-2'>
                 <@h level=3 class='mb-0'>#i18n{announce.preview_announce.title} :</@h>
-                <@span>${announce.title!}</@span>
+                <@span>${announce.title!?html}</@span>
             </@div>
             <#if announce.category.displayPrice>
                 <@div class='d-flex align-items-baseline gap-2 mb-2'>
@@ -27,11 +29,11 @@
             </#if>
             <@div class='d-flex align-items-baseline gap-2 mb-2'>
                 <@h level=3 class='mb-0'>#i18n{announce.preview_announce.contactInformation} :</@h>
-                <@span>${announce.contactInformation!}</@span>
+                <@span>${announce.contactInformation!?html}</@span>
             </@div>
             <@div class='d-flex align-items-baseline gap-2 mb-2'>
                 <@h level=3 class='mb-0 text-nowrap'>#i18n{announce.preview_announce.description.title} :</@h>
-                <@div>${announce.description!}</@div>
+                <@div>${announce.description!?html}</@div>
             </@div>
             <#list list_responses as response>
                 <#if response.toStringValueResponse?has_content || response.file??>
@@ -50,8 +52,8 @@
                         <#elseif response.field.title == "address">
                             <#assign addressAnnounce = response.toStringValueResponse>
                             <@div class='d-flex align-items-baseline gap-2 mb-2'>
-                                <@h level=3 class='mb-0'>${response.entry.title!} :</@h>
-                                <@span>${addressAnnounce!}</@span>
+                                <@h level=3 class='mb-0'>${response.entry.title!?html} :</@h>
+                                <@span>${addressAnnounce!?html}</@span>
                             </@div>
                             <#list admList_entryTypeGeolocation as entry>
                                 <#if entry.mapProvider?has_content && entry.idEntry == response.entry.idEntry>
@@ -63,7 +65,7 @@
                         <#assign entrySave = response.entry>
                         <#if response.file?? && response.file.idFile &gt; 0>
                             <#assign isImage = true>
-                            <@h level=3>${response.entry.title!} :</@h>
+                            <@h level=3>${response.entry.title!?html} :</@h>
                             <div class="d-flex flex-wrap gap-2">
                                 <@link href='image?resource_type=announce_img&id=${response.idResponse}' title='#i18n{announce.view_announce.imagesCaption}'>
                                     <@img url='image?resource_type=announce_img&id=${response.idResponse}' alt='#i18n{announce.view_announce.imagesCaption}' params='height="80"' />
@@ -71,13 +73,13 @@
                         <#elseif response.entry.entryType.beanName?? && response.entry.entryType.beanName == "announce.entryTypeDate">
                             <#assign dateval = response.responseValue?number?number_to_date?iso_local>
                             <@div class='d-flex align-items-baseline gap-2 mb-2'>
-                                <@h level=3 class='mb-0'>${response.entry.title!} :</@h>
+                                <@h level=3 class='mb-0'>${response.entry.title!?html} :</@h>
                                 <@span>${dateval}</@span>
                             </@div>
                         <#else>
                             <@div class='d-flex align-items-baseline gap-2 mb-2'>
-                                <@h level=3 class='mb-0'>${response.entry.title!} :</@h>
-                                <@span>${response.toStringValueResponse!}</@span>
+                                <@h level=3 class='mb-0'>${response.entry.title!?html} :</@h>
+                                <@span>${response.toStringValueResponse!?html}</@span>
                             </@div>
                         </#if>
                     <#else>
@@ -86,7 +88,7 @@
                                 <@img url='image?resource_type=announce_img&id=${response.idResponse}' alt='#i18n{announce.view_announce.imagesCaption}' params='height="80"' />
                             </@link>
                         <#else>
-                            <@p>${response.toStringValueResponse!}</@p>
+                            <@p>${response.toStringValueResponse!?html}</@p>
                         </#if>
                     </#if>
                 </#if>

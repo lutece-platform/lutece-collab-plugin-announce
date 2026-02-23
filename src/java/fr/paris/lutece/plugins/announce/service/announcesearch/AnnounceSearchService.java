@@ -121,7 +121,7 @@ public final class AnnounceSearchService
 
         String strAnalyserClassName = AppPropertiesService.getProperty( PROPERTY_ANALYSER_CLASS_NAME );
 
-        if ( ( strAnalyserClassName == null ) || ( strAnalyserClassName.equals( "" ) ) )
+        if ( StringUtils.isEmpty( strAnalyserClassName ) )
         {
             throw new AppException( "Analyser class name not found in announce.properties", null );
         }
@@ -130,7 +130,7 @@ public final class AnnounceSearchService
 
         try
         {
-            _analyzer = ( Analyzer ) Class.forName( strAnalyserClassName ).newInstance( );
+            _analyzer = ( Analyzer ) Class.forName( strAnalyserClassName ).getDeclaredConstructor( ).newInstance( );
         }
         catch( Exception e )
         {

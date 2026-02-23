@@ -36,11 +36,11 @@
 									</#if>
 									<div class="title">
 										<a href="jsp/site/Portal.jsp?page=announce&action=view_announce&announce_id=${announce.id}">
-											${announce.title} - <span class="category">${announce.category.label}</span>
+											${announce.title?html} - <span class="category">${announce.category.label?html}</span>
 										</a>
 									</div>
 									<span class="info">${announce.dateCreation}</span><br/>
-									${announce.description}
+									${announce.description?html}
 								</td>
 
 								<td>

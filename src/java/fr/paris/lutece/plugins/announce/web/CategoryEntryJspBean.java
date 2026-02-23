@@ -532,6 +532,12 @@ public class CategoryEntryJspBean extends MVCAdminJspBean
         {
             int nIdEntry = Integer.parseInt( strIdEntry );
             Entry entry = EntryHome.findByPrimaryKey( nIdEntry );
+
+            if ( ( entry == null ) || ( entry.getFieldDepend( ) == null ) )
+            {
+                return redirect( request, CategoryJspBean.getUrlManageCategories( request ) );
+            }
+
             int nNewPosition = bMoveUp ? ( entry.getPosition( ) - 1 ) : ( entry.getPosition( ) + 1 );
 
             if ( nNewPosition > 0 )
@@ -592,12 +598,19 @@ public class CategoryEntryJspBean extends MVCAdminJspBean
             // If the entry has a parent
             if ( entry.getParent( ) != null )
             {
-                // We reload the entry to get the copy and not he original entry
+                // We reload the entry to get the copy and not the original entry
                 // The id of the entry is the id of the copy. It has been set by the create method of EntryDAO
                 entry = EntryHome.findByPrimaryKey( entry.getIdEntry( ) );
 
-                Entry entryParent = EntryHome.findByPrimaryKey( entry.getParent( ).getIdEntry( ) );
-                _entryService.moveUpEntryOrder( entryParent.getPosition( ) + entryParent.getChildren( ).size( ), entry );
+                if ( ( entry != null ) && ( entry.getParent( ) != null ) )
+                {
+                    Entry entryParent = EntryHome.findByPrimaryKey( entry.getParent( ).getIdEntry( ) );
+
+                    if ( entryParent != null )
+                    {
+                        _entryService.moveUpEntryOrder( entryParent.getPosition( ) + entryParent.getChildren( ).size( ), entry );
+                    }
+                }
             }
 
             if ( entry.getFieldDepend( ) != null )

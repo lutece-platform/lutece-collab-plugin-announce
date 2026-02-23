@@ -61,6 +61,7 @@ import org.xml.sax.SAXException;
 
 import fr.paris.lutece.plugins.announce.business.Announce;
 import fr.paris.lutece.plugins.announce.business.AnnounceHome;
+import fr.paris.lutece.plugins.announce.business.Category;
 import fr.paris.lutece.plugins.announce.business.AnnounceSort;
 import fr.paris.lutece.plugins.announce.business.IndexerAction;
 import fr.paris.lutece.plugins.announce.service.AnnouncePlugin;
@@ -73,6 +74,7 @@ import fr.paris.lutece.portal.service.plugin.PluginService;
 import fr.paris.lutece.portal.service.search.IndexationService;
 import fr.paris.lutece.portal.service.search.SearchItem;
 import fr.paris.lutece.portal.service.util.AppException;
+import fr.paris.lutece.portal.service.util.AppLogService;
 import fr.paris.lutece.portal.service.util.AppPathService;
 import fr.paris.lutece.portal.service.util.AppPropertiesService;
 import fr.paris.lutece.util.url.UrlItem;
@@ -121,6 +123,12 @@ public class DefaultAnnounceIndexer implements IAnnounceSearchIndexer
             Integer nAnnounceId = it.next( );
             Announce announce = AnnounceHome.findByPrimaryKey( nAnnounceId );
 
+            if ( announce == null )
+            {
+                AppLogService.error( "DefaultAnnounceIndexer: announce {} no longer exists, skipping indexing", nAnnounceId );
+                continue;
+            }
+
             List<Response> listResponses = AnnounceHome.findListResponse( nAnnounceId, false );
             announce.setListResponse(listResponses);
 
@@ -128,7 +136,11 @@ public class DefaultAnnounceIndexer implements IAnnounceSearchIndexer
             urlAnnounce.addParameter( XPageAppService.PARAM_XPAGE_APP, AppPropertiesService.getProperty( AnnounceUtils.PARAMETER_PAGE_ANNOUNCE ) ); // FIXME
             urlAnnounce.addParameter( PARAMETER_ANNOUNCE_ID, announce.getId( ) );
 
-            indexWriter.addDocument( getDocument( announce, urlAnnounce.getUrl( ), plugin ) );
+            org.apache.lucene.document.Document doc = getDocument( announce, urlAnnounce.getUrl( ), plugin );
+            if ( doc != null )
+            {
+                indexWriter.addDocument( doc );
+            }
         }
     }
 
@@ -236,9 +248,9 @@ public class DefaultAnnounceIndexer implements IAnnounceSearchIndexer
                 urlAnnounce.addParameter( PARAMETER_ANNOUNCE_ID, announce.getId( ) );
 
                 org.apache.lucene.document.Document docAnnounce = getDocument( announce, urlAnnounce.getUrl( ), plugin );
-                listDocs.add( docAnnounce );
                 if ( docAnnounce != null )
                 {
+                    listDocs.add( docAnnounce );
                     IndexationService.write( docAnnounce );
                 }
             }
@@ -279,8 +291,14 @@ public class DefaultAnnounceIndexer implements IAnnounceSearchIndexer
         ftStoredDocs.freeze();
 
         // Add fields to the document
-        doc.add(new StringField(AnnounceSearchItem.FIELD_SECTOR_ID, String.valueOf(announce.getCategory().getIdSector()), Field.Store.YES));
-        doc.add(new StringField(AnnounceSearchItem.FIELD_CATEGORY_ID, String.valueOf(announce.getCategory().getId()), Field.Store.YES));
+        Category category = announce.getCategory( );
+        if ( category == null )
+        {
+            AppLogService.error( "DefaultAnnounceIndexer: announce {} has no category, skipping document creation", announce.getId( ) );
+            return null;
+        }
+        doc.add(new StringField(AnnounceSearchItem.FIELD_SECTOR_ID, String.valueOf(category.getIdSector()), Field.Store.YES));
+        doc.add(new StringField(AnnounceSearchItem.FIELD_CATEGORY_ID, String.valueOf(category.getId()), Field.Store.YES));
         doc.add(new Field(AnnounceSearchItem.FIELD_ID_ANNOUNCE, Integer.toString(announce.getId()), storedFieldType));
         doc.add(new StringField(AnnounceSearchItem.FIELD_TAGS, announce.getTags(),  Field.Store.YES));
         // Add the url as a field named "url". Use an UnIndexed field, so

@@ -40,6 +40,7 @@ import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -71,12 +72,13 @@ public class AnnounceExpirationDaemon extends Daemon
     private static final String PROPERTY_MAX_ANNOUNCES_PER_EMAIL = "announce.daemon.expiration.maxAnnouncesPerEmail";
     private static final int DEFAULT_NB_DAYS_BEFORE_ANNOUNCES_REMOVAL = 90;
     private static final int DEFAULT_MAX_ANNOUNCES_PER_EMAIL = 10;
+    private static final Pattern PATTERN_EMAIL = Pattern.compile( "^[\\w.%+-]+@[\\w.-]+\\.[a-zA-Z]{2,}$" );
 
     private static final String TEMPLATE_EXPIRATION_MESSAGE = "skin/plugins/announce/announce_expiration_message.html";
     private static final String MARK_ANNOUNCES = "announces";
     private static final String MARK_PROD_URL = "prod_url";
 
-    private AnnounceLifecycleService _announceLifecycleService = SpringContextService.getBean( AnnounceLifecycleService.BEAN_NAME );
+    private AnnounceLifecycleService _announceLifecycleService;
 
     /**
      * {@inheritDoc}
@@ -84,6 +86,11 @@ public class AnnounceExpirationDaemon extends Daemon
     @Override
     public void run( )
     {
+        if ( _announceLifecycleService == null )
+        {
+            _announceLifecycleService = SpringContextService.getBean( AnnounceLifecycleService.BEAN_NAME );
+        }
+
         Calendar calendar = new GregorianCalendar( );
         Calendar calendarNotification = new GregorianCalendar( );
         int nNbDaysBeforeAnnouncesRemoval = AppPropertiesService.getPropertyInt( PROPERTY_NB_DAYS_BEFORE_ANNOUNCES_REMOVAL,
@@ -126,11 +133,17 @@ public class AnnounceExpirationDaemon extends Daemon
         {
             Announce announce = AnnounceHome.findByPrimaryKey( nIdAnnounce );
 
+            if ( announce == null )
+            {
+                AppLogService.info( "AnnounceExpirationDaemon: announce {} no longer exists, skipping", nIdAnnounce );
+                continue;
+            }
+
             if ( announce.getHasNotify( ) == 0 )
             {
                 String strEmail = announce.getContactInformation( );
 
-                if ( StringUtils.isBlank( strEmail ) || !strEmail.contains( "@" ) )
+                if ( StringUtils.isBlank( strEmail ) || !PATTERN_EMAIL.matcher( strEmail ).matches( ) )
                 {
                     AppLogService.info( "AnnounceExpirationDaemon: invalid contact '{}' for announce {}, skipping notification",
                             strEmail, nIdAnnounce );

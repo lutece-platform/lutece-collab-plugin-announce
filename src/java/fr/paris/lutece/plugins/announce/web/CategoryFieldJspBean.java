@@ -180,6 +180,12 @@ public class CategoryFieldJspBean extends MVCAdminJspBean
 
         int nIdField = Integer.parseInt( request.getParameter( PARAMETER_ID_FIELD ) );
         Field field = FieldHome.findByPrimaryKey( nIdField );
+
+        if ( field == null )
+        {
+            return redirect( request, CategoryJspBean.getUrlManageCategories( request ) );
+        }
+
         Entry entry = EntryHome.findByPrimaryKey( field.getParentEntry( ).getIdEntry( ) );
 
         field.setParentEntry( entry );
@@ -285,10 +291,14 @@ public class CategoryFieldJspBean extends MVCAdminJspBean
             return redirect( request, CategoryJspBean.getUrlManageCategories( request ) );
         }
 
-        Field field = null;
         int nIdField = Integer.parseInt( strIdField );
 
-        field = FieldHome.findByPrimaryKey( nIdField );
+        Field field = FieldHome.findByPrimaryKey( nIdField );
+
+        if ( field == null )
+        {
+            return redirect( request, CategoryJspBean.getUrlManageCategories( request ) );
+        }
 
         if ( request.getParameter( PARAMETER_CANCEL ) == null )
         {
@@ -415,19 +425,22 @@ public class CategoryFieldJspBean extends MVCAdminJspBean
 
         int nIdField = Integer.parseInt( strIdField );
 
-        List<Field> listField;
         Field field = FieldHome.findByPrimaryKey( nIdField );
 
-        listField = FieldHome.getFieldListByIdEntry( field.getParentEntry( ).getIdEntry( ) );
+        if ( field == null )
+        {
+            return redirect( request, CategoryJspBean.getUrlManageCategories( request ) );
+        }
+
+        List<Field> listField = FieldHome.getFieldListByIdEntry( field.getParentEntry( ).getIdEntry( ) );
 
         int nIndexField = getIndexFieldInFieldList( nIdField, listField );
+        int nSwapIndex = bMoveUp ? ( nIndexField - 1 ) : ( nIndexField + 1 );
 
-        if ( nIndexField != ( listField.size( ) ) )
+        if ( ( nIndexField != listField.size( ) ) && ( nSwapIndex >= 0 ) && ( nSwapIndex < listField.size( ) ) )
         {
-            int nNewPosition;
-            Field fieldToInversePosition;
-            fieldToInversePosition = listField.get( bMoveUp ? ( nIndexField - 1 ) : ( nIndexField + 1 ) );
-            nNewPosition = fieldToInversePosition.getPosition( );
+            Field fieldToInversePosition = listField.get( nSwapIndex );
+            int nNewPosition = fieldToInversePosition.getPosition( );
             fieldToInversePosition.setPosition( field.getPosition( ) );
             field.setPosition( nNewPosition );
             FieldHome.update( field );
@@ -436,7 +449,7 @@ public class CategoryFieldJspBean extends MVCAdminJspBean
             return redirect( request, CategoryEntryJspBean.getURLModifyEntry( request, field.getParentEntry( ).getIdEntry( ) ) );
         }
 
-        return redirect( request, CategoryJspBean.getUrlManageCategories( request ) );
+        return redirect( request, CategoryEntryJspBean.getURLModifyEntry( request, field.getParentEntry( ).getIdEntry( ) ) );
     }
 
     /**

@@ -14,9 +14,9 @@
 						<option value="0">#i18n{announce.search_form.defaultSectorLabel}</option>
 						<#list list_sectors as sector>
 							<#if (filter.idSector)?? && filter.idSector == sector.id>
-								<option selected="selected" value="${sector.id}">${sector.label}</option>
+								<option selected="selected" value="${sector.id}">${sector.label?html}</option>
 							<#else>
-								<option value="${sector.id}">${sector.label}</option>
+								<option value="${sector.id}">${sector.label?html}</option>
 							</#if>
 						</#list>
 					</select>
@@ -26,9 +26,9 @@
 						<option value="0">#i18n{announce.search_form.defaultCategoryLabel}</option>
 						<#list list_sector_categories as category>
 							<#if (filter.idCategory)?? && filter.idCategory == category.id>
-								<option selected="selected" value="${category.id}">${category.label}</option>
+								<option selected="selected" value="${category.id}">${category.label?html}</option>
 							<#else>
-								<option value="${category.id}">${category.label}</option>
+								<option value="${category.id}">${category.label?html}</option>
 							</#if>
 						</#list>
 					</select>
@@ -115,24 +115,24 @@
 					<div class="card h-100">
 						<div class="card-body">
 							<div class="mb-2">
-								<span class="badge bg-secondary">${announce.category.label}</span>
+								<span class="badge bg-secondary">${announce.category.label?html}</span>
 								<#if announce.category.displayPrice && announce.price?has_content && (announce.price &gt; 0)>
 									<span class="badge bg-success">${announce.price} #i18n{announce.preview_announce.price.currency}</span>
 								</#if>
 							</div>
 							<h6 class="card-title">
 								<a class="text-decoration-none" href="jsp/site/Portal.jsp?page=announce&action=view_announce&announce_id=${announce.id}">
-									${announce.title}
+									${announce.title?html}
 								</a>
 							</h6>
-							<p class="card-text small text-muted">${announce.description}</p>
+							<p class="card-text small text-muted">${announce.description?html}</p>
 							<a class="small" href="jsp/site/Portal.jsp?page=announce&action=view_announce&announce_id=${announce.id}">
 								#i18n{announce.list_announces.viewAnnounce}
 							</a>
 						</div>
 						<div class="card-footer d-flex justify-content-between align-items-center">
 							<small class="text-muted">${announce.datePublication}</small>
-							<a class="small" href="jsp/site/Portal.jsp?page=announce&action=view_announces&username=${announce.userName}">
+							<a class="small" href="jsp/site/Portal.jsp?page=announce&action=view_announces&username=${announce.userName?url}">
 								#i18n{announce.list_announces.otherAnnounces}
 							</a>
 						</div>
@@ -168,7 +168,7 @@ document.addEventListener('DOMContentLoaded', function() {
 			var catSelect = document.getElementById('idCategory');
 			catSelect.innerHTML = '<option value="0">#i18n{announce.search_form.defaultCategoryLabel}</option>';
 			var listSecCat = [<#list list_sectors as sector>
-								["${sector.id}",<#list sector.listCategories as category>"${category.label}",</#list>],
+								["${sector.id}",<#list sector.listCategories as category>"${category.label?js_string}",</#list>],
 							</#list>];
 			var listIdSecCat = [<#list list_sectors as sector>
 								["${sector.id}",<#list sector.listCategories as category>"${category.id}",</#list>],

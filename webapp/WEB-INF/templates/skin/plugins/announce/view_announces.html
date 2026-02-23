@@ -6,13 +6,13 @@
 	<div class="col-sm-9">
 		<div class="card card-body">
 			<h5>
-				#i18n{announce.view_announces.page.title} ${owner}
+				#i18n{announce.view_announces.page.title} ${owner?html}
 			</h5>
 			<div>
 				<#if user?? && (hasSubscribedToUser??) && !hasSubscribedToUser >
 					<#if isSubscribe?? && isSubscribe>
 					<div class="float-end">
-					    <a class="btn btn-primary" href="jsp/site/Portal.jsp?page=announce-subscribe&action=doCreateUserSubscription&username=${owner_name}" title="#i18n{announce.labelCreateUserSubscriptionTitle}">
+					    <a class="btn btn-primary" href="jsp/site/Portal.jsp?page=announce-subscribe&action=doCreateUserSubscription&username=${owner_name?url}" title="#i18n{announce.labelCreateUserSubscriptionTitle}">
 					    	#i18n{announce.labelCreateUserSubscription}
 					    </a>
 				    </div>
@@ -33,7 +33,7 @@
 												</#if>
 											</#list>
 										<#else>
-											<a title="${announce.title}" href="jsp/site/Portal.jsp?page=announce&action=view_announce&announce_id=${announce.id}">
+											<a title="${announce.title?html}" href="jsp/site/Portal.jsp?page=announce&action=view_announce&announce_id=${announce.id}">
 												<img class="img-thumbnail" width="80" height="80" src="./images/local/skin/plugins/announce/no_picture.png" />
 											</a>
 										</#if>
@@ -44,12 +44,12 @@
 										</#if>
 										<div class="title">
 											<a href="jsp/site/Portal.jsp?page=announce&action=view_announce&announce_id=${announce.id}">
-												${announce.title} - <span class="category">${announce.category.label}</span>
+												${announce.title?html} - <span class="category">${announce.category.label?html}</span>
 											</a>
 										</div>
 										<span class="info">${announce.dateCreation}</span><br/>
-										${announce.description}<br />
-										<a href="jsp/site/Portal.jsp?page=announce&action=view_announces&username=${announce.userName}">
+										${announce.description?html}<br />
+										<a href="jsp/site/Portal.jsp?page=announce&action=view_announces&username=${announce.userName?url}">
 											#i18n{announce.list_announces.otherAnnounces}
 										</a>
 									</div>

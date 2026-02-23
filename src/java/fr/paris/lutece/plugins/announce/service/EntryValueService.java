@@ -46,7 +46,7 @@ public class EntryValueService
      * 
      * @return instance of service
      */
-    public EntryValueService getInstance( )
+    public static EntryValueService getInstance( )
     {
         return _singleton;
     }

@@ -89,6 +89,7 @@ public class AnnounceLifecycleService
     public Announce update( Announce announce )
     {
         announce.setDateModification( new Timestamp( System.currentTimeMillis( ) ) );
+        updatePublicationTimestamp( announce );
         AnnounceHome.update( announce );
 
         if ( isVisible( announce ) )

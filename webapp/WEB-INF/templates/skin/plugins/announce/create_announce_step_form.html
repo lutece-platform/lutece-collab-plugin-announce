@@ -11,17 +11,17 @@
 				</#if>
 				<form method="post" enctype="multipart/form-data" action="jsp/site/Portal.jsp">
 					<fieldset>
-						<legend>#i18n{announce.create_announce.chosenCategory}: ${sector.label} > ${category.label}</legend>
+						<legend>#i18n{announce.create_announce.chosenCategory}: ${sector.label?html} > ${category.label?html}</legend>
 						<div class="row mb-3">
 							<label class="col-sm-2 col-form-label">#i18n{announce.create_announce_step_form.labelTitle} *</label>
 							<div class="col-sm-10">
-								<input type="text" class="form-control" name="title_announce" value="${(announce.title)!}" required />
+								<input type="text" class="form-control" name="title_announce" value="${(announce.title)!?html}" required />
 							</div>
 						</div>
 						<div class="row mb-3">
 							<label class="col-sm-2 col-form-label" for="description_announce">#i18n{announce.create_announce_step_form.labelDescription} *</label>
 							<div class="col-sm-10">
-								<textarea class="form-control" name="description_announce" required>${(announce.description)!}</textarea>
+								<textarea class="form-control" name="description_announce" required>${(announce.description)!?html}</textarea>
 							</div>
 						</div>
 						<#if !announce?? && moderated?? && moderated>
@@ -43,14 +43,14 @@
 						<div class="row mb-3">
 							<label class="col-sm-2 col-form-label" for="contact_information">#i18n{announce.create_announce_step_form.contactInformation} *</label>
 							<div class="col-sm-10">
-								<input class="form-control" value="<#if announce?? && announce.contactInformation != ''>${(announce.contactInformation)!}<#else>${contact_information!}</#if>" type="text" name="contact_information" required />
+								<input class="form-control" value="<#if announce?? && announce.contactInformation != ''>${(announce.contactInformation)!?html}<#else>${contact_information!?html}</#if>" type="text" name="contact_information" required />
 							</div>
 						</div>
 
 						<div class="row mb-3">
 							<label class="col-sm-2 col-form-label" for="tags">#i18n{announce.create_announce_step_form.tags}</label>
 							<div class="col-sm-10">
-								<input class="form-control" value="<#if announce?? && announce.tags??>${(announce.tags)!}<#else>${sector.tags!}</#if>" type="text" name="tags"/>
+								<input class="form-control" value="<#if announce?? && announce.tags??>${(announce.tags)!?html}<#else>${sector.tags!?html}</#if>" type="text" name="tags"/>
 								<span class="form-text">#i18n{announce.create_announce_step_form.tags.helper}</span>
 							</div>
 						</div>

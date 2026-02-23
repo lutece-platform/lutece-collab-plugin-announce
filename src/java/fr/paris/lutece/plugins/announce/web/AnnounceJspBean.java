@@ -62,6 +62,7 @@ import fr.paris.lutece.plugins.genericattributes.business.Response;
 import fr.paris.lutece.portal.business.rbac.RBAC;
 import fr.paris.lutece.portal.service.admin.AccessDeniedException;
 import fr.paris.lutece.portal.service.message.AdminMessage;
+import fr.paris.lutece.portal.service.security.SecurityTokenService;
 import fr.paris.lutece.portal.service.message.AdminMessageService;
 import fr.paris.lutece.portal.service.plugin.Plugin;
 import fr.paris.lutece.portal.service.rbac.RBACService;
@@ -109,6 +110,10 @@ public class AnnounceJspBean extends PluginAdminPageJspBean
 
     /* Messages */
     private static final String MESSAGE_CONFIRM_REMOVE_ANNOUNCE = "announce.message.confirmRemoveAnnounce";
+    private static final String MESSAGE_ERROR_TOKEN = "Invalid security token";
+
+    /* Actions for CSRF tokens */
+    private static final String TOKEN_ACTION_ANNOUNCE = "doActionAnnounce";
 
     /* Markers */
     private static final String MARK_ANNOUNCE = "announce";
@@ -228,8 +233,8 @@ public class AnnounceJspBean extends PluginAdminPageJspBean
         model.put( MARK_RIGHT_SUSPEND,
                 RBACService.isAuthorized( Announce.RESOURCE_TYPE, RBAC.WILDCARD_RESOURCES_ID, AnnounceResourceIdService.PERMISSION_SUSPEND, user ) );
         model.put( MARK_RIGHT_WORKFLOW_ACTION, bCanExecuteWorkflowAction );
-        
-        
+        model.put( SecurityTokenService.MARK_TOKEN, SecurityTokenService.getInstance( ).getToken( request, TOKEN_ACTION_ANNOUNCE ) );
+
         HtmlTemplate templateList = AppTemplateService.getTemplate( TEMPLATE_MANAGE_ANNOUNCES, getLocale( ), model );
 
         return getAdminPage( templateList.getHtml( ) );
@@ -265,6 +270,8 @@ public class AnnounceJspBean extends PluginAdminPageJspBean
             model.put( MARK_RESOURCE_HISTORY, WorkflowService.getInstance( ).getDisplayDocumentHistory( nIdAnnounce, Announce.RESOURCE_TYPE,
                     category.getIdWorkflow( ), request, getLocale( ), user ) );
         }
+
+        model.put( SecurityTokenService.MARK_TOKEN, SecurityTokenService.getInstance( ).getToken( request, TOKEN_ACTION_ANNOUNCE ) );
 
         HtmlTemplate template = AppTemplateService.getTemplate( TEMPLATE_PREVIEW_ANNOUNCE, getLocale( ), model );
 
@@ -340,6 +347,11 @@ public class AnnounceJspBean extends PluginAdminPageJspBean
      */
     public String doPublishAnnounce( HttpServletRequest request, boolean bPublished ) throws AccessDeniedException
     {
+        if ( !SecurityTokenService.getInstance( ).validate( request, TOKEN_ACTION_ANNOUNCE ) )
+        {
+            throw new AccessDeniedException( MESSAGE_ERROR_TOKEN );
+        }
+
         String strAnnounceId = request.getParameter( PARAMETER_ANNOUNCE_ID );
         User user = getUser( );
 
@@ -359,7 +371,6 @@ public class AnnounceJspBean extends PluginAdminPageJspBean
                 announceNotify.setIdAnnounce( announce.getId( ) );
                 AnnounceNotifyHome.create( announceNotify );
             }
-            announce.setDateCreation( new Timestamp( Calendar.getInstance( ).getTimeInMillis( ) ) );
             announce.setPublished( bPublished );
             _announceLifecycleService.publish( announce );
         }
@@ -378,6 +389,11 @@ public class AnnounceJspBean extends PluginAdminPageJspBean
      */
     public String doEnableAnnounce( HttpServletRequest request ) throws AccessDeniedException
     {
+        if ( !SecurityTokenService.getInstance( ).validate( request, TOKEN_ACTION_ANNOUNCE ) )
+        {
+            throw new AccessDeniedException( MESSAGE_ERROR_TOKEN );
+        }
+
         String strAnnounceId = request.getParameter( PARAMETER_ANNOUNCE_ID );
         User user = getUser( );
 
@@ -407,6 +423,11 @@ public class AnnounceJspBean extends PluginAdminPageJspBean
      */
     public String doSuspendAnnounce( HttpServletRequest request ) throws AccessDeniedException
     {
+        if ( !SecurityTokenService.getInstance( ).validate( request, TOKEN_ACTION_ANNOUNCE ) )
+        {
+            throw new AccessDeniedException( MESSAGE_ERROR_TOKEN );
+        }
+
         String strAnnounceId = request.getParameter( PARAMETER_ANNOUNCE_ID );
         User user = getUser( );
 
