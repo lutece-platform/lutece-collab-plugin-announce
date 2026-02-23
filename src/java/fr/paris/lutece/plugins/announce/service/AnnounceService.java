@@ -244,7 +244,8 @@ public class AnnounceService implements Serializable
      * @param request
      *            HttpServletRequest
      */
-    public void getHtmlEntry( Map<Integer, List<Response>> mapResponsesByIdEntry, int nIdEntry, StringBuffer stringBuffer, Locale locale, boolean bDisplayFront, HttpServletRequest request )
+    public void getHtmlEntry( Map<Integer, List<Response>> mapResponsesByIdEntry, int nIdEntry, StringBuffer stringBuffer, Locale locale, boolean bDisplayFront,
+            HttpServletRequest request )
     {
         Map<String, Object> model = new HashMap<>( );
         StringBuilder strConditionalQuestionStringBuffer = null;
@@ -352,8 +353,8 @@ public class AnnounceService implements Serializable
 
     /**
      * Get the responses associated with an entry.<br />
-     * Return null if there is no error in the response, or return the list of errors. Response created are stored in the map.
-     * The key of the map is the id of the entry, and the value the list of responses
+     * Return null if there is no error in the response, or return the list of errors. Response created are stored in the map. The key of the map is the id of
+     * the entry, and the value the list of responses
      *
      * @param request
      *            the request
@@ -365,7 +366,8 @@ public class AnnounceService implements Serializable
      *            The map to store responses indexed by entry id
      * @return null if there is no error in the response or the list of errors found
      */
-    public List<GenericAttributeError> getResponseEntry( HttpServletRequest request, int nIdEntry, Locale locale, Map<Integer, List<Response>> mapResponsesByIdEntry )
+    public List<GenericAttributeError> getResponseEntry( HttpServletRequest request, int nIdEntry, Locale locale,
+            Map<Integer, List<Response>> mapResponsesByIdEntry )
     {
         List<Response> listResponse = new ArrayList<>( );
         mapResponsesByIdEntry.put( nIdEntry, listResponse );
@@ -417,50 +419,49 @@ public class AnnounceService implements Serializable
                 listFormErrors.addAll( getResponseEntry( request, entryChild.getIdEntry( ), listResponseChild, false, locale, mapResponsesByIdEntry ) );
             }
         }
-        else
-            if ( !Boolean.TRUE.equals( entry.getEntryType( ).getComment( ) ) )
+        else if ( !Boolean.TRUE.equals( entry.getEntryType( ).getComment( ) ) )
+        {
+            GenericAttributeError formError = null;
+
+            if ( !bResponseNull )
             {
-                GenericAttributeError formError = null;
-
-                if ( !bResponseNull )
-                {
-                    formError = EntryTypeServiceManager.getEntryTypeService( entry ).getResponseData( entry, request, listResponse, locale );
-
-                    if ( formError != null )
-                    {
-                        formError.setUrl( getEntryUrl( entry ) );
-                    }
-                }
-                else
-                {
-                    Response response = new Response( );
-                    response.setEntry( entry );
-                    listResponse.add( response );
-                }
+                formError = EntryTypeServiceManager.getEntryTypeService( entry ).getResponseData( entry, request, listResponse, locale );
 
                 if ( formError != null )
                 {
-                    entry.setError( formError );
-                    listFormErrors.add( formError );
+                    formError.setUrl( getEntryUrl( entry ) );
                 }
+            }
+            else
+            {
+                Response response = new Response( );
+                response.setEntry( entry );
+                listResponse.add( response );
+            }
 
-                if ( entry.getNumberConditionalQuestion( ) != 0 )
+            if ( formError != null )
+            {
+                entry.setError( formError );
+                listFormErrors.add( formError );
+            }
+
+            if ( entry.getNumberConditionalQuestion( ) != 0 )
+            {
+                for ( Field field : entry.getFields( ) )
                 {
-                    for ( Field field : entry.getFields( ) )
+                    boolean bIsFieldInResponseList = isFieldInTheResponseList( field.getIdField( ), listResponse );
+
+                    for ( Entry conditionalEntry : field.getConditionalQuestions( ) )
                     {
-                        boolean bIsFieldInResponseList = isFieldInTheResponseList( field.getIdField( ), listResponse );
+                        List<Response> listResponseChild = new ArrayList<>( );
+                        mapResponsesByIdEntry.put( conditionalEntry.getIdEntry( ), listResponseChild );
 
-                        for ( Entry conditionalEntry : field.getConditionalQuestions( ) )
-                        {
-                            List<Response> listResponseChild = new ArrayList<>( );
-                            mapResponsesByIdEntry.put( conditionalEntry.getIdEntry( ), listResponseChild );
-
-                            listFormErrors.addAll(
-                                    getResponseEntry( request, conditionalEntry.getIdEntry( ), listResponseChild, !bIsFieldInResponseList, locale, mapResponsesByIdEntry ) );
-                        }
+                        listFormErrors.addAll( getResponseEntry( request, conditionalEntry.getIdEntry( ), listResponseChild, !bIsFieldInResponseList, locale,
+                                mapResponsesByIdEntry ) );
                     }
                 }
             }
+        }
 
         return listFormErrors;
     }
@@ -529,8 +530,7 @@ public class AnnounceService implements Serializable
     }
 
     /**
-     * Extract geolocation entries from a list of responses, enriching each response's field
-     * with the full field data from the entry.
+     * Extract geolocation entries from a list of responses, enriching each response's field with the full field data from the entry.
      *
      * @param listResponses
      *            The list of responses to process (modified in place for field enrichment)
@@ -619,8 +619,8 @@ public class AnnounceService implements Serializable
      *            The locale for error messages
      * @return The list of validation errors, empty if valid
      */
-    public static List<GenericAttributeError> validateAnnounceFormFields( String strTitle, String strDescription, String strContact,
-            Category category, PriceParseResult priceResult, Locale locale )
+    public static List<GenericAttributeError> validateAnnounceFormFields( String strTitle, String strDescription, String strContact, Category category,
+            PriceParseResult priceResult, Locale locale )
     {
         List<GenericAttributeError> listErrors = new ArrayList<>( );
 
@@ -668,8 +668,7 @@ public class AnnounceService implements Serializable
     }
 
     /**
-     * Process form entries for a category: create filter, collect entries, validate responses
-     * and convert to a flat response list.
+     * Process form entries for a category: create filter, collect entries, validate responses and convert to a flat response list.
      *
      * @param request
      *            The HTTP request
@@ -771,8 +770,8 @@ public class AnnounceService implements Serializable
     }
 
     /**
-     * Sort responses according to the hierarchical order of entries in the category form.
-     * This ensures conditional question responses appear right after their parent entry responses.
+     * Sort responses according to the hierarchical order of entries in the category form. This ensures conditional question responses appear right after their
+     * parent entry responses.
      *
      * @param listResponses
      *            The flat list of responses
@@ -807,8 +806,7 @@ public class AnnounceService implements Serializable
 
         // Sort responses based on the entry order
         List<Response> sortedResponses = new ArrayList<>( listResponses );
-        sortedResponses.sort( ( r1, r2 ) ->
-        {
+        sortedResponses.sort( ( r1, r2 ) -> {
             int order1 = ( r1.getEntry( ) != null ) ? mapEntryOrder.getOrDefault( r1.getEntry( ).getIdEntry( ), Integer.MAX_VALUE ) : Integer.MAX_VALUE;
             int order2 = ( r2.getEntry( ) != null ) ? mapEntryOrder.getOrDefault( r2.getEntry( ).getIdEntry( ), Integer.MAX_VALUE ) : Integer.MAX_VALUE;
 

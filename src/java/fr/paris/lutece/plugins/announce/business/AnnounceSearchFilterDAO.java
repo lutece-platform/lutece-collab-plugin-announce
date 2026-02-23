@@ -181,12 +181,11 @@ public class AnnounceSearchFilterDAO implements IAnnounceSearchFilterDAO
             return new ArrayList<>( );
         }
 
-        String strSql = SQL_QUERY_SELECT_LIST_ID
-                + listIdFilters.stream( ).map( String::valueOf ).collect( Collectors.joining( CONSTANT_COMA ) )
+        String strSql = SQL_QUERY_SELECT_LIST_ID + listIdFilters.stream( ).map( String::valueOf ).collect( Collectors.joining( CONSTANT_COMA ) )
                 + CONSTANT_CLOSE_PARENTHESIS;
-        
+
         List<AnnounceSearchFilter> listFilters = new ArrayList<>( );
-        
+
         try ( DAOUtil daoUtil = new DAOUtil( strSql, plugin ) )
         {
             daoUtil.executeQuery( );

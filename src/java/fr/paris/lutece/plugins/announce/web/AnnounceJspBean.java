@@ -128,7 +128,7 @@ public class AnnounceJspBean extends PluginAdminPageJspBean
     private static final String MARK_RIGHT_WORKFLOW_ACTION = "right_execute_workflow_action";
     private static final String MARK_ENTRY_LIST_GEOLOCATION = "admList_entryTypeGeolocation";
     private static final String MARK_IS_SUBSCRIBE = "isSubscribe";
-    
+
     /* Variables */
     private AnnounceLifecycleService _announceLifecycleService = SpringContextService.getBean( AnnounceLifecycleService.BEAN_NAME );
     private int _nDefaultItemsPerPage;
@@ -225,7 +225,7 @@ public class AnnounceJspBean extends PluginAdminPageJspBean
         model.put( MARK_PAGINATOR, paginator );
         model.put( MARK_ANNOUNCE_LIST, paginator.getPageItems( ) );
         model.put( MARK_IS_SUBSCRIBE, AnnounceService.isSubscribeModuleAvailable( ) );
-        
+
         model.put( MARK_RIGHT_DELETE,
                 RBACService.isAuthorized( Announce.RESOURCE_TYPE, RBAC.WILDCARD_RESOURCES_ID, AnnounceResourceIdService.PERMISSION_DELETE, user ) );
         model.put( MARK_RIGHT_PUBLISH,

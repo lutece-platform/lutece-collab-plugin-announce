@@ -38,10 +38,8 @@ import javax.servlet.http.HttpServletRequest;
 import fr.paris.lutece.portal.service.security.LuteceUser;
 
 /**
- * Interface for subscription provider services in the announce plugin.
- * This interface allows the subscription feature to be optional:
- * if the module-announce-subscribe module is present, it provides the implementation;
- * otherwise, subscription features are simply not available.
+ * Interface for subscription provider services in the announce plugin. This interface allows the subscription feature to be optional: if the
+ * module-announce-subscribe module is present, it provides the implementation; otherwise, subscription features are simply not available.
  */
 public interface IAnnounceSubscriptionProvider
 {

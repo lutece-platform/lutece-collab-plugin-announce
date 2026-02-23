@@ -139,9 +139,8 @@ public class AnnounceSort
     {
         if ( Strings.CS.equals( SORT_DATE_CREATION, strSort ) || Strings.CS.equals( SORT_DATE_PUBLICATION, strSort )
                 || Strings.CS.equals( SORT_DATE_MODIFICATION, strSort ) || Strings.CS.equals( SORT_TITLE, strSort )
-                || Strings.CS.equals( SORT_DESCRIPTION, strSort ) || Strings.CS.equals( SORT_PRICE, strSort )
-                || Strings.CS.equals( SORT_CATEGORY, strSort ) || Strings.CS.equals( SORT_PUBLISHED, strSort )
-                || Strings.CS.equals( SORT_SUSPENDED, strSort ) )
+                || Strings.CS.equals( SORT_DESCRIPTION, strSort ) || Strings.CS.equals( SORT_PRICE, strSort ) || Strings.CS.equals( SORT_CATEGORY, strSort )
+                || Strings.CS.equals( SORT_PUBLISHED, strSort ) || Strings.CS.equals( SORT_SUSPENDED, strSort ) )
         {
             return new AnnounceSort( strSort, bSortAsc );
         }

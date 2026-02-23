@@ -476,16 +476,14 @@ public class CategoryFieldJspBean extends MVCAdminJspBean
         {
             strFieldError = FIELD_TITLE_FIELD;
         }
-        else
-            if ( StringUtils.isEmpty( strValue ) )
-            {
-                strFieldError = FIELD_VALUE_FIELD;
-            }
-            else
-                if ( !StringUtil.checkCodeKey( strValue ) )
-                {
-                    return AdminMessageService.getMessageUrl( request, MESSAGE_FIELD_VALUE_FIELD, AdminMessage.TYPE_STOP );
-                }
+        else if ( StringUtils.isEmpty( strValue ) )
+        {
+            strFieldError = FIELD_VALUE_FIELD;
+        }
+        else if ( !StringUtil.checkCodeKey( strValue ) )
+        {
+            return AdminMessageService.getMessageUrl( request, MESSAGE_FIELD_VALUE_FIELD, AdminMessage.TYPE_STOP );
+        }
 
         if ( strFieldError != null )
         {

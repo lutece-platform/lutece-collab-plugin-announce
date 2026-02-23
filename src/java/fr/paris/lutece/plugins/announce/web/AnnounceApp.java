@@ -234,7 +234,6 @@ public class AnnounceApp extends MVCApplication
     // Messages
     private static final String ERROR_MESSAGE_WRONG_CAPTCHA = "portal.admin.message.wrongCaptcha";
 
-
     // Constants
     private static final String CONSTANT_BLANK_SPACE = " ";
     private static final String CONSTANT_COMA = ",";
@@ -263,8 +262,7 @@ public class AnnounceApp extends MVCApplication
     private final DateFormat _dateFormat = AnnounceService.getDateFormat( );
 
     /**
-     * Get the optional subscription provider. Returns null if the module-announce-subscribe
-     * module is not deployed.
+     * Get the optional subscription provider. Returns null if the module-announce-subscribe module is not deployed.
      *
      * @return The subscription provider, or null if not available
      */
@@ -810,9 +808,7 @@ public class AnnounceApp extends MVCApplication
 
         IAnnounceSubscriptionProvider subscriptionProvider = getSubscriptionProvider( );
         model.put( MARK_HAS_SUBSCRIBED_TO_USER,
-            ( user != null && subscriptionProvider != null )
-                ? subscriptionProvider.hasSubscribedToUser( user, strUserName )
-                : false );
+                ( user != null && subscriptionProvider != null ) ? subscriptionProvider.hasSubscribedToUser( user, strUserName ) : false );
 
         String strUserRealName = ( strUserInfo == null ) ? strUserName : strUserInfo;
         model.put( MARK_ANNOUNCE_OWNER, StringUtils.isNotBlank( strUserRealName ) ? strUserRealName : strUserName );
@@ -966,8 +962,8 @@ public class AnnounceApp extends MVCApplication
 
         if ( listRecipients.isEmpty( ) )
         {
-            AppLogService.info( "sendAnnounceNotification: mailing list {} has no recipients, admin notification skipped for announce {}",
-                    nIdMailingList, announce.getId( ) );
+            AppLogService.info( "sendAnnounceNotification: mailing list {} has no recipients, admin notification skipped for announce {}", nIdMailingList,
+                    announce.getId( ) );
             return;
         }
 

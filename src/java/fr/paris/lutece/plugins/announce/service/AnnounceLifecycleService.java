@@ -47,8 +47,8 @@ import java.sql.Timestamp;
 import java.util.List;
 
 /**
- * Service handling announce lifecycle operations (create, update, remove, publish, suspend).
- * Centralizes cross-cutting concerns: indexation, cache invalidation, publication timestamp, and cleanup.
+ * Service handling announce lifecycle operations (create, update, remove, publish, suspend). Centralizes cross-cutting concerns: indexation, cache
+ * invalidation, publication timestamp, and cleanup.
  */
 public class AnnounceLifecycleService
 {

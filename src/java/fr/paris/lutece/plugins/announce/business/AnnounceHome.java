@@ -379,7 +379,7 @@ public final class AnnounceHome
         for ( Integer nIdResponse : listIdResponse )
         {
             Response response = ResponseHome.findByPrimaryKey( nIdResponse );
-            
+
             if ( response != null )
             {
                 if ( bLoadFiles && ( response.getFile( ) != null ) )

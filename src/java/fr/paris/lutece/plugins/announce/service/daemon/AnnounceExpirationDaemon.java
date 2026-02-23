@@ -145,8 +145,7 @@ public class AnnounceExpirationDaemon extends Daemon
 
                 if ( StringUtils.isBlank( strEmail ) || !PATTERN_EMAIL.matcher( strEmail ).matches( ) )
                 {
-                    AppLogService.info( "AnnounceExpirationDaemon: invalid contact '{}' for announce {}, skipping notification",
-                            strEmail, nIdAnnounce );
+                    AppLogService.info( "AnnounceExpirationDaemon: invalid contact '{}' for announce {}, skipping notification", strEmail, nIdAnnounce );
                     announce.setHasNotify( 1 );
                     _announceLifecycleService.setHasNotified( announce );
                     continue;

@@ -130,7 +130,7 @@ public final class AnnounceSearchService
 
         try
         {
-            _analyzer = ( Analyzer ) Class.forName( strAnalyserClassName ).getDeclaredConstructor( ).newInstance( );
+            _analyzer = (Analyzer) Class.forName( strAnalyserClassName ).getDeclaredConstructor( ).newInstance( );
         }
         catch( Exception e )
         {
@@ -268,7 +268,6 @@ public final class AnnounceSearchService
         try
         {
             sbLogs.append( "\r\nIndexing all contents ...\r\n" );
-
 
             writer = getIndexWriterInstance( bCreateIndex );
 
@@ -444,12 +443,12 @@ public final class AnnounceSearchService
     {
         if ( _indexWriterInstance == null )
         {
-            Directory dir = FSDirectory.open(Paths.get( getIndex( ) ) );
+            Directory dir = FSDirectory.open( Paths.get( getIndex( ) ) );
             IndexWriterConfig conf = new IndexWriterConfig( new LimitTokenCountAnalyzer( _analyzer, _nWriterMaxSectorLength ) );
             LogMergePolicy mergePolicy = new LogDocMergePolicy( );
             mergePolicy.setMergeFactor( _nWriterMergeFactor );
-            conf.setMergePolicy(mergePolicy);
-            if (bCreateIndex)
+            conf.setMergePolicy( mergePolicy );
+            if ( bCreateIndex )
             {
                 conf.setOpenMode( OpenMode.CREATE );
             }

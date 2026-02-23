@@ -62,8 +62,7 @@ public class LastAnnouncesPortletHome extends PortletHome
     }
 
     /**
-     * Returns the instance of LastAnnouncesPortlet Portlet.
-     * synchronized prevents two threads from creating separate instances when _singleton is still null.
+     * Returns the instance of LastAnnouncesPortlet Portlet. synchronized prevents two threads from creating separate instances when _singleton is still null.
      *
      * @return the LastAnnouncesPortlet Portlet instance
      */

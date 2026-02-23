@@ -266,11 +266,10 @@ public class SectorJspBean extends PluginAdminPageJspBean
         {
             sector.setAnnouncesValidation( false );
         }
-        else
-            if ( strAnnouncesValidation.equals( CHECKBOX_ON ) )
-            {
-                sector.setAnnouncesValidation( true );
-            }
+        else if ( strAnnouncesValidation.equals( CHECKBOX_ON ) )
+        {
+            sector.setAnnouncesValidation( true );
+        }
 
         // Mandatory sectors
         if ( ( strSectorLabel == null ) || ( strSectorDescription == null ) || strSectorDescription.equals( "" ) || strSectorLabel.equals( "" ) )
@@ -334,11 +333,10 @@ public class SectorJspBean extends PluginAdminPageJspBean
         {
             sector.setAnnouncesValidation( false );
         }
-        else
-            if ( strAnnouncesValidation.equals( CHECKBOX_ON ) )
-            {
-                sector.setAnnouncesValidation( true );
-            }
+        else if ( strAnnouncesValidation.equals( CHECKBOX_ON ) )
+        {
+            sector.setAnnouncesValidation( true );
+        }
 
         sector.setLabel( strSectorLabel );
         sector.setDescription( strSectorDescription );
