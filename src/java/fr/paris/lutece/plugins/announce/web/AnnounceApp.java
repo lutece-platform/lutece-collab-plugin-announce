@@ -35,7 +35,6 @@ package fr.paris.lutece.plugins.announce.web;
 
 import java.io.IOException;
 import java.text.DateFormat;
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -49,20 +48,18 @@ import javax.validation.constraints.NotNull;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.Strings;
-
 import fr.paris.lutece.plugins.announce.business.Announce;
 import fr.paris.lutece.plugins.announce.business.AnnounceHome;
 import fr.paris.lutece.plugins.announce.business.AnnounceNotify;
 import fr.paris.lutece.plugins.announce.business.AnnounceResponseHome;
 import fr.paris.lutece.plugins.announce.business.AnnounceNotifyHome;
 import fr.paris.lutece.plugins.announce.business.AnnounceSearchFilter;
-import fr.paris.lutece.plugins.announce.business.AnnounceSearchFilterHome;
 import fr.paris.lutece.plugins.announce.business.AnnounceSort;
 import fr.paris.lutece.plugins.announce.business.Category;
 import fr.paris.lutece.plugins.announce.business.CategoryHome;
 import fr.paris.lutece.plugins.announce.business.Sector;
 import fr.paris.lutece.plugins.announce.business.SectorHome;
+import fr.paris.lutece.plugins.announce.service.AnnounceFilterService;
 import fr.paris.lutece.plugins.announce.service.AnnounceLifecycleService;
 import fr.paris.lutece.plugins.announce.service.AnnounceService;
 import fr.paris.lutece.plugins.announce.service.IAnnounceSubscriptionProvider;
@@ -198,7 +195,7 @@ public class AnnounceApp extends MVCApplication
     private static final String TEMPLATE_ANNOUNCE_NOTIFY_MESSAGE = "skin/plugins/announce/announce_notify_message.html";
 
     // Session keys
-    private static final String SESSION_KEY_ANNOUNCE_FILTER = "announce.session.announceSearchFilter";
+    private static final String SESSION_KEY_ANNOUNCE_FILTER = AnnounceFilterService.SESSION_KEY_ANNOUNCE_FILTER;
 
     // Markers
     private static final String MARK_LIST_FIELDS = "list_sectors";
@@ -236,9 +233,6 @@ public class AnnounceApp extends MVCApplication
     private static final String ERROR_MESSAGE_WRONG_CAPTCHA = "portal.admin.message.wrongCaptcha";
 
     // Constants
-    private static final String CONSTANT_BLANK_SPACE = " ";
-    private static final String CONSTANT_COMA = ",";
-    private static final String CONSTANT_POINT = ".";
 
     // Session keys
     private static final String SESSION_ATTRIBUTE_MY_ANNOUNCES_ITEMS_PER_PAGE = "announce.myAnnouncesItemsPerPage";
@@ -1302,139 +1296,12 @@ public class AnnounceApp extends MVCApplication
     }
 
     /**
-     * Get the announce search filter with data contained in an HTTP request
-     * 
-     * @param request
-     *            The request
-     * @return The search filter. If the request contains no filter data, then the returned search filter is empty but never null.
+     * @deprecated Use {@link AnnounceFilterService#getAnnounceFilterFromRequest(HttpServletRequest)} instead
      */
+    @Deprecated
     public static AnnounceSearchFilter getAnnounceFilterFromRequest( HttpServletRequest request )
     {
-        if ( request == null )
-        {
-            return new AnnounceSearchFilter( );
-        }
-
-        String strIdFilter = request.getParameter( PARAMETER_ID_FILTER );
-
-        if ( StringUtils.isNotEmpty( strIdFilter ) && StringUtils.isNumeric( strIdFilter ) )
-        {
-            int nIdFilter = Integer.parseInt( strIdFilter );
-            AnnounceSearchFilter filter = AnnounceSearchFilterHome.findByPrimaryKey( nIdFilter );
-            request.getSession( ).setAttribute( SESSION_KEY_ANNOUNCE_FILTER, filter );
-
-            return filter;
-        }
-
-        if ( Boolean.parseBoolean( request.getParameter( PARAMETER_HAS_FILTER ) ) )
-        {
-            String strKeywords = request.getParameter( PARAMETER_KEYWORDS );
-            String strIdSector = request.getParameter( PARAMETER_SECTOR_ID );
-            String strIdCategory = request.getParameter( PARAMETER_CATEGORY_ID );
-            String strDateMin = request.getParameter( PARAMETER_DATE_MIN );
-            String strDateMax = request.getParameter( PARAMETER_DATE_MAX );
-            String strPriceMin = request.getParameter( PARAMETER_PRICE_MIN );
-            String strPriceMax = request.getParameter( PARAMETER_PRICE_MAX );
-            strKeywords = ( strKeywords == null ) ? StringUtils.EMPTY : strKeywords;
-
-            Date formatedDateMin = null;
-            Date formatedDateMax = null;
-
-            DateFormat dateFormat = AnnounceService.getDateFormat( );
-
-            if ( StringUtils.isNotEmpty( strDateMin ) )
-            {
-                try
-                {
-                    formatedDateMin = dateFormat.parse( strDateMin.trim( ) );
-                }
-                catch( ParseException e )
-                {
-                    AppLogService.error( e );
-                }
-            }
-
-            if ( StringUtils.isNotEmpty( strDateMax ) )
-            {
-                try
-                {
-                    formatedDateMax = dateFormat.parse( strDateMax.trim( ) );
-                }
-                catch( ParseException e )
-                {
-                    AppLogService.error( e );
-                }
-            }
-
-            AnnounceSearchFilter filter = new AnnounceSearchFilter( );
-            filter.setKeywords( strKeywords );
-
-            if ( StringUtils.isNotEmpty( strIdSector ) && StringUtils.isNumeric( strIdSector ) )
-            {
-                filter.setIdSector( Integer.parseInt( strIdSector ) );
-            }
-
-            if ( StringUtils.isNotEmpty( strIdCategory ) && StringUtils.isNumeric( strIdCategory ) )
-            {
-                filter.setIdCategory( Integer.parseInt( strIdCategory ) );
-            }
-
-            filter.setDateMin( formatedDateMin );
-            filter.setDateMax( formatedDateMax );
-
-            if ( StringUtils.isNotEmpty( strPriceMin ) )
-            {
-                strPriceMin = strPriceMin.replace( CONSTANT_BLANK_SPACE, StringUtils.EMPTY ).trim( );
-
-                if ( Strings.CS.contains( strPriceMin, CONSTANT_COMA ) )
-                {
-                    strPriceMin = strPriceMin.substring( 0, strPriceMin.indexOf( CONSTANT_COMA ) );
-                }
-
-                if ( Strings.CS.contains( strPriceMin, CONSTANT_POINT ) )
-                {
-                    strPriceMin = strPriceMin.substring( 0, strPriceMin.indexOf( CONSTANT_POINT ) );
-                }
-
-                if ( StringUtils.isNumeric( strPriceMin ) )
-                {
-                    filter.setPriceMin( Integer.parseInt( strPriceMin ) );
-                }
-            }
-
-            if ( StringUtils.isNotEmpty( strPriceMax ) )
-            {
-                strPriceMax = strPriceMax.replace( CONSTANT_BLANK_SPACE, StringUtils.EMPTY ).trim( );
-
-                if ( Strings.CS.contains( strPriceMax, CONSTANT_COMA ) )
-                {
-                    strPriceMax = strPriceMax.substring( 0, strPriceMax.indexOf( CONSTANT_COMA ) );
-                }
-
-                if ( Strings.CS.contains( strPriceMax, CONSTANT_POINT ) )
-                {
-                    strPriceMax = strPriceMax.substring( 0, strPriceMax.indexOf( CONSTANT_POINT ) );
-                }
-
-                if ( StringUtils.isNumeric( strPriceMax ) )
-                {
-                    filter.setPriceMax( Integer.parseInt( strPriceMax ) );
-                }
-            }
-
-            request.getSession( ).setAttribute( SESSION_KEY_ANNOUNCE_FILTER, filter );
-
-            return filter;
-        }
-
-        AnnounceSearchFilter filter = (AnnounceSearchFilter) request.getSession( ).getAttribute( SESSION_KEY_ANNOUNCE_FILTER );
-
-        if ( filter == null )
-        {
-            filter = new AnnounceSearchFilter( );
-        }
-
-        return filter;
+        return AnnounceFilterService.getAnnounceFilterFromRequest( request );
     }
 
     // -----------------------------------------------
