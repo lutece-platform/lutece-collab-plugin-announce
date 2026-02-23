@@ -36,7 +36,7 @@
 									</div>
 									<span class="info">${announce.dateCreation}</span><br/>
 									${announce.description?html}<br />
-									<a href="jsp/site/Portal.jsp?page=announce&action=view_announces&username=${announce.userName?url}">
+									<a href="jsp/site/Portal.jsp?page=announce&action=view_announces&username=${announce.userName?url('UTF-8')}">
 										#i18n{announce.list_announces.otherAnnounces}
 									</a>
 								</div>

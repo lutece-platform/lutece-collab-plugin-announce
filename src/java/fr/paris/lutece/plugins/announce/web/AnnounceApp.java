@@ -452,7 +452,7 @@ public class AnnounceApp extends MVCApplication
      *             If a site message needs to be displayed
      */
     @Action( ACTION_ADDNEW )
-    public XPage getCreateAnnounce( HttpServletRequest request ) throws SiteMessageException
+    public XPage getCreateAnnounce( HttpServletRequest request ) throws SiteMessageException, UserNotSignedException
     {
         LuteceUser user = getLuteceUserAuthentication( request );
 
@@ -536,7 +536,7 @@ public class AnnounceApp extends MVCApplication
      *             If a site message needs to be displayed
      */
     @Action( ACTION_MODIFY_ANNOUNCE )
-    public XPage getModifyAnnounce( HttpServletRequest request ) throws SiteMessageException
+    public XPage getModifyAnnounce( HttpServletRequest request ) throws SiteMessageException, UserNotSignedException
     {
         LuteceUser user = getLuteceUserAuthentication( request );
         int nIdAnnounce = Integer.parseInt( request.getParameter( PARAMETER_ANNOUNCE_ID ) );
@@ -619,7 +619,7 @@ public class AnnounceApp extends MVCApplication
      *             If a site message needs to be displayed
      */
     @Action( ACTION_SUSPEND_ANNOUNCE_BY_USER )
-    public XPage getSuspendAnnounceByUser( HttpServletRequest request ) throws SiteMessageException
+    public XPage getSuspendAnnounceByUser( HttpServletRequest request ) throws SiteMessageException, UserNotSignedException
     {
         String strConfirmSuspendAnnounce = request.getParameter( PARAMETER_CONFIRM_SUSPEND_ANNOUNCE );
         int nIdAnnounce = Integer.parseInt( request.getParameter( PARAMETER_ANNOUNCE_ID ) );
@@ -658,7 +658,7 @@ public class AnnounceApp extends MVCApplication
      *             If a site message needs to be displayed
      */
     @Action( ACTION_ENABLE_ANNOUNCE_BY_USER )
-    public XPage enableAnnounceByUser( HttpServletRequest request ) throws SiteMessageException
+    public XPage enableAnnounceByUser( HttpServletRequest request ) throws SiteMessageException, UserNotSignedException
     {
         int nIdAnnounce = Integer.parseInt( request.getParameter( PARAMETER_ANNOUNCE_ID ) );
 
@@ -873,7 +873,7 @@ public class AnnounceApp extends MVCApplication
      *             If a site message needs to be displayed
      */
     @Action( ACTION_MY_ANNOUNCES )
-    public XPage getUserAnnounces( HttpServletRequest request ) throws SiteMessageException
+    public XPage getUserAnnounces( HttpServletRequest request ) throws SiteMessageException, UserNotSignedException
     {
         XPage page = getXPage( );
         page.setContent( getManageUserAnnounces( request ) );
@@ -888,29 +888,23 @@ public class AnnounceApp extends MVCApplication
      * @param request
      *            The request
      * @return The current Lutece User
-     * @throws SiteMessageException
-     *             If a site message needs to be displayed
+     * @throws UserNotSignedException
+     *             If no user is currently authenticated
      */
     @NotNull
-    private static LuteceUser getLuteceUserAuthentication( HttpServletRequest request ) throws SiteMessageException
+    private static LuteceUser getLuteceUserAuthentication( HttpServletRequest request ) throws UserNotSignedException
     {
-        LuteceUser user = null;
-
         if ( SecurityService.isAuthenticationEnable( ) )
-        { // myLutece not installed or disabled
-            user = SecurityService.getInstance( ).getRegisteredUser( request );
+        {
+            LuteceUser user = SecurityService.getInstance( ).getRegisteredUser( request );
 
-            if ( user == null ) // user is not logged
+            if ( user != null )
             {
-                SiteMessageService.setMessage( request, PROPERTY_NOT_AUTHORIZED, SiteMessage.TYPE_STOP );
+                return user;
             }
         }
-        else
-        {
-            SiteMessageService.setMessage( request, PROPERTY_NOT_AUTHORIZED, SiteMessage.TYPE_STOP );
-        }
 
-        return user;
+        throw new UserNotSignedException( );
     }
 
     /**
@@ -1246,7 +1240,7 @@ public class AnnounceApp extends MVCApplication
      * @throws SiteMessageException
      *             If a site message needs to be displayed
      */
-    public static String getManageUserAnnounces( HttpServletRequest request ) throws SiteMessageException
+    public static String getManageUserAnnounces( HttpServletRequest request ) throws SiteMessageException, UserNotSignedException
     {
         LuteceUser user = getLuteceUserAuthentication( request );
 

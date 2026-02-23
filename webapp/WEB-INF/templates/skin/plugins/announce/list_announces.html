@@ -132,7 +132,7 @@
 						</div>
 						<div class="card-footer d-flex justify-content-between align-items-center">
 							<small class="text-muted">${announce.datePublication}</small>
-							<a class="small" href="jsp/site/Portal.jsp?page=announce&action=view_announces&username=${announce.userName?url}">
+							<a class="small" href="jsp/site/Portal.jsp?page=announce&action=view_announces&username=${announce.userName?url('UTF-8')}">
 								#i18n{announce.list_announces.otherAnnounces}
 							</a>
 						</div>
