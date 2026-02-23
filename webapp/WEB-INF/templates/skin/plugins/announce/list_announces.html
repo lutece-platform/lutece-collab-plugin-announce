@@ -22,7 +22,7 @@
 					</select>
 				</div>
 				<div class="mb-2">
-					<select class="form-select form-select-sm" name="category_id" id="idCategory">
+					<select class="form-select form-select-sm" name="category_id" id="idCategory" data-default-label="#i18n{announce.search_form.defaultCategoryLabel}">
 						<option value="0">#i18n{announce.search_form.defaultCategoryLabel}</option>
 						<#list list_sector_categories as category>
 							<#if (filter.idCategory)?? && filter.idCategory == category.id>
@@ -148,52 +148,7 @@
 
 	</div>
 </div>
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-	var sortSelect = document.getElementById('idSort');
-	if (sortSelect) {
-		sortSelect.addEventListener('change', function() {
-			var loc = '' + location;
-			var n = loc.indexOf('jsp');
-			var urlbase = loc.substring(0, n);
-			var pageIndex = document.getElementById('idPageIndex').value;
-			location = urlbase + 'jsp/site/Portal.jsp?page=announce&action=search&sortBy=' + this.value + '&page_index=' + pageIndex;
-		});
-	}
-
-	var sectorSelect = document.getElementById('idSector');
-	if (sectorSelect) {
-		sectorSelect.addEventListener('change', function() {
-			var idSec = this.value;
-			var catSelect = document.getElementById('idCategory');
-			catSelect.innerHTML = '<option value="0">#i18n{announce.search_form.defaultCategoryLabel}</option>';
-			var listSecCat = [<#list list_sectors as sector>
-								["${sector.id}",<#list sector.listCategories as category>"${category.label?js_string}",</#list>],
-							</#list>];
-			var listIdSecCat = [<#list list_sectors as sector>
-								["${sector.id}",<#list sector.listCategories as category>"${category.id}",</#list>],
-							</#list>];
-			for (var i = 0; i < listSecCat.length; i++) {
-				if (idSec == parseInt(listSecCat[i][0])) {
-					for (var j = 1; j < listSecCat[i].length; j++) {
-						var option = document.createElement('option');
-						option.value = listIdSecCat[i][j];
-						option.textContent = listSecCat[i][j];
-						catSelect.appendChild(option);
-					}
-				}
-			}
-			if (idSec == 0) {
-				for (var i = 0; i < listSecCat.length; i++) {
-					for (var j = 1; j < listSecCat[i].length; j++) {
-						var option = document.createElement('option');
-						option.value = listIdSecCat[i][j];
-						option.textContent = listSecCat[i][j];
-						catSelect.appendChild(option);
-					}
-				}
-			}
-		});
-	}
-});
+<script type="application/json" id="announce-sectors-data">
+[<#list list_sectors as sector>{"id":"${sector.id}","categories":[<#list sector.listCategories as category>{"id":"${category.id}","label":"${category.label?js_string}"}<#sep>,</#sep></#list>]}<#sep>,</#sep></#list>]
 </script>
+<script src="js/plugins/announce/announce-search.js"></script>
