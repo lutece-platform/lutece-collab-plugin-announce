@@ -35,6 +35,7 @@ package fr.paris.lutece.plugins.announce.service;
 
 import fr.paris.lutece.plugins.announce.business.Announce;
 import fr.paris.lutece.plugins.announce.business.AnnounceHome;
+import fr.paris.lutece.plugins.announce.business.AnnounceResponseHome;
 import fr.paris.lutece.plugins.announce.business.Category;
 import fr.paris.lutece.plugins.announce.business.CategoryHome;
 import fr.paris.lutece.plugins.announce.business.Sector;
@@ -165,7 +166,7 @@ public class AnnounceService implements Serializable
         {
             if ( ( announce.getListResponse( ) == null ) && ( announce.getId( ) > 0 ) )
             {
-                announce.setListResponse( AnnounceHome.findListResponse( announce.getId( ), true ) );
+                announce.setListResponse( AnnounceResponseHome.findListResponse( announce.getId( ), true ) );
             }
 
             if ( announce.getListResponse( ) != null )

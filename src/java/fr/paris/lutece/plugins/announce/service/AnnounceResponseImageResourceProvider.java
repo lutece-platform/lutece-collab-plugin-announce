@@ -37,6 +37,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import fr.paris.lutece.plugins.announce.business.Announce;
 import fr.paris.lutece.plugins.announce.business.AnnounceHome;
+import fr.paris.lutece.plugins.announce.business.AnnounceResponseHome;
 import fr.paris.lutece.plugins.announce.web.AnnounceJspBean;
 import fr.paris.lutece.plugins.genericattributes.business.Response;
 import fr.paris.lutece.plugins.genericattributes.business.ResponseHome;
@@ -127,7 +128,7 @@ public class AnnounceResponseImageResourceProvider implements ImageResourceProvi
     @Override
     public ImageResource getImageResource( int nIdResource )
     {
-        Integer nIdAnnounce = AnnounceHome.findIdByImageResponse( nIdResource );
+        Integer nIdAnnounce = AnnounceResponseHome.findIdByImageResponse( nIdResource );
         if ( nIdAnnounce != null )
         {
             // When using an older core version (before 5.1.5), the local variables will not

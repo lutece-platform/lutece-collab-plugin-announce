@@ -36,8 +36,6 @@ package fr.paris.lutece.plugins.announce.business;
 import fr.paris.lutece.plugins.announce.service.AnnounceCacheService;
 import fr.paris.lutece.plugins.announce.service.AnnouncePlugin;
 import fr.paris.lutece.plugins.genericattributes.business.Response;
-import fr.paris.lutece.plugins.genericattributes.business.ResponseHome;
-import fr.paris.lutece.portal.business.file.FileHome;
 import fr.paris.lutece.portal.service.plugin.Plugin;
 import fr.paris.lutece.portal.service.plugin.PluginService;
 import fr.paris.lutece.portal.service.security.LuteceUser;
@@ -45,7 +43,6 @@ import fr.paris.lutece.portal.service.spring.SpringContextService;
 
 import java.sql.Timestamp;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -131,15 +128,12 @@ public final class AnnounceHome
     }
 
     /**
-     * Returns the announce id from its image response id
-     * 
-     * @param nIdResponse
-     *            the id of the response
-     * @return The announce id, or null if there no announce that has this response as an image
+     * @deprecated Use {@link AnnounceResponseHome#findIdByImageResponse(int)} instead
      */
+    @Deprecated
     public static Integer findIdByImageResponse( int nIdResponse )
     {
-        return _dao.findIdByImageResponse( nIdResponse, _plugin );
+        return AnnounceResponseHome.findIdByImageResponse( nIdResponse );
     }
 
     /**
@@ -332,89 +326,52 @@ public final class AnnounceHome
     }
 
     // -----------------------------------------------
-    // Announce response management
+    // Announce response management — deprecated, use AnnounceResponseHome
     // -----------------------------------------------
 
     /**
-     * Associates a response to an Announce
-     * 
-     * @param nIdAnnounce
-     *            The id of the announce
-     * @param nIdResponse
-     *            The id of the response
-     * @param bIsImage
-     *            True if the response is an image, false otherwise
+     * @deprecated Use {@link AnnounceResponseHome#insertAnnounceResponse(int, int, boolean)} instead
      */
+    @Deprecated
     public static void insertAnnounceResponse( int nIdAnnounce, int nIdResponse, boolean bIsImage )
     {
-        _dao.insertAnnounceResponse( nIdAnnounce, nIdResponse, bIsImage, _plugin );
+        AnnounceResponseHome.insertAnnounceResponse( nIdAnnounce, nIdResponse, bIsImage );
     }
 
     /**
-     * Get the list of id of responses associated with an announce
-     * 
-     * @param nIdAnnounce
-     *            the id of the announce
-     * @return the list of responses, or an empty list if no response was found
+     * @deprecated Use {@link AnnounceResponseHome#findListIdResponse(int)} instead
      */
+    @Deprecated
     public static List<Integer> findListIdResponse( int nIdAnnounce )
     {
-        return _dao.findListIdResponse( nIdAnnounce, _plugin );
+        return AnnounceResponseHome.findListIdResponse( nIdAnnounce );
     }
 
     /**
-     * Get the list of id of image responses associated with an announce
-     * 
-     * @param nIdAnnounce
-     *            the id of the announce
-     * @return the list of responses, or an empty list if no response was found
+     * @deprecated Use {@link AnnounceResponseHome#findListIdImageResponse(int)} instead
      */
+    @Deprecated
     public static List<Integer> findListIdImageResponse( int nIdAnnounce )
     {
-        return _dao.findListIdImageResponse( nIdAnnounce, _plugin );
+        return AnnounceResponseHome.findListIdImageResponse( nIdAnnounce );
     }
 
     /**
-     * Get the list of responses associated with an announce
-     * 
-     * @param nIdAnnounce
-     *            the id of the announce
-     * @param bLoadFiles
-     *            True to load files, false to ignore them. Note that physical files are never loaded by this method.
-     * @return the list of responses, or an empty list if no response was found
+     * @deprecated Use {@link AnnounceResponseHome#findListResponse(int, boolean)} instead
      */
+    @Deprecated
     public static List<Response> findListResponse( int nIdAnnounce, boolean bLoadFiles )
     {
-        List<Integer> listIdResponse = findListIdResponse( nIdAnnounce );
-        List<Response> listResponse = new ArrayList<>( listIdResponse.size( ) );
-
-        for ( Integer nIdResponse : listIdResponse )
-        {
-            Response response = ResponseHome.findByPrimaryKey( nIdResponse );
-
-            if ( response != null )
-            {
-                if ( bLoadFiles && ( response.getFile( ) != null ) )
-                {
-                    response.setFile( FileHome.findByPrimaryKey( response.getFile( ).getIdFile( ) ) );
-                }
-
-                listResponse.add( response );
-            }
-        }
-
-        return listResponse;
+        return AnnounceResponseHome.findListResponse( nIdAnnounce, bLoadFiles );
     }
 
     /**
-     * Remove the association between an announce and responses
-     * 
-     * @param nIdAnnounce
-     *            The id of the announce
+     * @deprecated Use {@link AnnounceResponseHome#removeAnnounceResponse(int)} instead
      */
+    @Deprecated
     public static void removeAnnounceResponse( int nIdAnnounce )
     {
-        _dao.deleteAnnounceResponse( nIdAnnounce, _plugin );
+        AnnounceResponseHome.removeAnnounceResponse( nIdAnnounce );
     }
 
 }

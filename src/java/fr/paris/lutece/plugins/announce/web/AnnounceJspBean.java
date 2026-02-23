@@ -48,6 +48,7 @@ import org.apache.commons.lang3.StringUtils;
 import fr.paris.lutece.api.user.User;
 import fr.paris.lutece.plugins.announce.business.Announce;
 import fr.paris.lutece.plugins.announce.business.AnnounceHome;
+import fr.paris.lutece.plugins.announce.business.AnnounceResponseHome;
 import fr.paris.lutece.plugins.announce.business.AnnounceNotify;
 import fr.paris.lutece.plugins.announce.business.AnnounceNotifyHome;
 import fr.paris.lutece.plugins.announce.business.AnnounceSort;
@@ -255,7 +256,7 @@ public class AnnounceJspBean extends PluginAdminPageJspBean
         Announce announce = AnnounceHome.findByPrimaryKey( nIdAnnounce );
         User user = getUser( );
 
-        List<Response> listResponses = AnnounceHome.findListResponse( announce.getId( ), false );
+        List<Response> listResponses = AnnounceResponseHome.findListResponse( announce.getId( ), false );
 
         HashMap<String, Object> model = new HashMap<>( );
         model.put( MARK_ENTRY_LIST_GEOLOCATION, AnnounceService.extractGeolocationEntries( listResponses ) );

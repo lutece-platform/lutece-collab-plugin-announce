@@ -35,6 +35,7 @@ package fr.paris.lutece.plugins.announce.service;
 
 import fr.paris.lutece.plugins.announce.business.Announce;
 import fr.paris.lutece.plugins.announce.business.AnnounceHome;
+import fr.paris.lutece.plugins.announce.business.AnnounceResponseHome;
 import fr.paris.lutece.plugins.announce.business.IndexerAction;
 import fr.paris.lutece.plugins.announce.service.announcesearch.AnnounceSearchService;
 import fr.paris.lutece.plugins.genericattributes.business.ResponseHome;
@@ -117,14 +118,14 @@ public class AnnounceLifecycleService
     {
         AnnounceSearchService.getInstance( ).addIndexerAction( nIdAnnounce, IndexerAction.TASK_DELETE, _plugin );
 
-        List<Integer> listIdResponse = AnnounceHome.findListIdResponse( nIdAnnounce );
+        List<Integer> listIdResponse = AnnounceResponseHome.findListIdResponse( nIdAnnounce );
 
         for ( int nIdResponse : listIdResponse )
         {
             ResponseHome.remove( nIdResponse );
         }
 
-        AnnounceHome.removeAnnounceResponse( nIdAnnounce );
+        AnnounceResponseHome.removeAnnounceResponse( nIdAnnounce );
 
         ExtendableResourceRemovalListenerService.doRemoveResourceExtentions( Announce.RESOURCE_TYPE, Integer.toString( nIdAnnounce ) );
 

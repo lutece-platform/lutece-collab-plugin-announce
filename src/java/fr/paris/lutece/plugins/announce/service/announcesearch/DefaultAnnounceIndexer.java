@@ -61,6 +61,7 @@ import org.xml.sax.SAXException;
 
 import fr.paris.lutece.plugins.announce.business.Announce;
 import fr.paris.lutece.plugins.announce.business.AnnounceHome;
+import fr.paris.lutece.plugins.announce.business.AnnounceResponseHome;
 import fr.paris.lutece.plugins.announce.business.Category;
 import fr.paris.lutece.plugins.announce.business.AnnounceSort;
 import fr.paris.lutece.plugins.announce.business.IndexerAction;
@@ -129,7 +130,7 @@ public class DefaultAnnounceIndexer implements IAnnounceSearchIndexer
                 continue;
             }
 
-            List<Response> listResponses = AnnounceHome.findListResponse( nAnnounceId, false );
+            List<Response> listResponses = AnnounceResponseHome.findListResponse( nAnnounceId, false );
             announce.setListResponse( listResponses );
 
             UrlItem urlAnnounce = new UrlItem( strPortalUrl );

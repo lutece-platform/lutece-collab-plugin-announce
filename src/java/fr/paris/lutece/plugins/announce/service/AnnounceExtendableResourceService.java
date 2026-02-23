@@ -35,6 +35,7 @@ package fr.paris.lutece.plugins.announce.service;
 
 import fr.paris.lutece.plugins.announce.business.Announce;
 import fr.paris.lutece.plugins.announce.business.AnnounceHome;
+import fr.paris.lutece.plugins.announce.business.AnnounceResponseHome;
 import fr.paris.lutece.plugins.announce.web.AnnounceApp;
 import fr.paris.lutece.portal.service.i18n.I18nService;
 import fr.paris.lutece.portal.service.resource.IExtendableResource;
@@ -73,7 +74,7 @@ public class AnnounceExtendableResourceService implements IExtendableResourceSer
 
             if ( announce != null )
             {
-                announce.setListIdImageResponse( AnnounceHome.findListIdImageResponse( nIdResource ) );
+                announce.setListIdImageResponse( AnnounceResponseHome.findListIdImageResponse( nIdResource ) );
 
                 return announce;
             }

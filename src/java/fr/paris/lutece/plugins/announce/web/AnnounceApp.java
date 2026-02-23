@@ -54,6 +54,7 @@ import org.apache.commons.lang3.Strings;
 import fr.paris.lutece.plugins.announce.business.Announce;
 import fr.paris.lutece.plugins.announce.business.AnnounceHome;
 import fr.paris.lutece.plugins.announce.business.AnnounceNotify;
+import fr.paris.lutece.plugins.announce.business.AnnounceResponseHome;
 import fr.paris.lutece.plugins.announce.business.AnnounceNotifyHome;
 import fr.paris.lutece.plugins.announce.business.AnnounceSearchFilter;
 import fr.paris.lutece.plugins.announce.business.AnnounceSearchFilterHome;
@@ -363,7 +364,7 @@ public class AnnounceApp extends MVCApplication
 
         for ( Announce announce : paginator.getPageItems( ) )
         {
-            announce.setListIdImageResponse( AnnounceHome.findListIdImageResponse( announce.getId( ) ) );
+            announce.setListIdImageResponse( AnnounceResponseHome.findListIdImageResponse( announce.getId( ) ) );
         }
 
         model.put( MARK_ANNOUNCES_LIST, paginator.getPageItems( ) );
@@ -417,7 +418,7 @@ public class AnnounceApp extends MVCApplication
 
         for ( Announce announce : listAnnounces )
         {
-            announce.setListIdImageResponse( AnnounceHome.findListIdImageResponse( announce.getId( ) ) );
+            announce.setListIdImageResponse( AnnounceResponseHome.findListIdImageResponse( announce.getId( ) ) );
         }
 
         model.put( MARK_ANNOUNCES_LIST, listAnnounces );
@@ -718,7 +719,7 @@ public class AnnounceApp extends MVCApplication
 
         if ( bAllowAccess )
         {
-            List<Response> listResponses = AnnounceHome.findListResponse( announce.getId( ), false );
+            List<Response> listResponses = AnnounceResponseHome.findListResponse( announce.getId( ), false );
             listResponses = AnnounceService.sortResponsesByEntryHierarchy( listResponses, announce.getCategory( ).getId( ) );
 
             model.put( MARK_ENTRY_LIST_GEOLOCATION, AnnounceService.extractGeolocationEntries( listResponses ) );
@@ -779,7 +780,7 @@ public class AnnounceApp extends MVCApplication
 
         for ( Announce announce : paginator.getPageItems( ) )
         {
-            announce.setListIdImageResponse( AnnounceHome.findListIdImageResponse( announce.getId( ) ) );
+            announce.setListIdImageResponse( AnnounceResponseHome.findListIdImageResponse( announce.getId( ) ) );
         }
 
         model.put( MARK_ANNOUNCES_LIST, paginator.getPageItems( ) );
@@ -1064,7 +1065,7 @@ public class AnnounceApp extends MVCApplication
         for ( Response response : listResponses )
         {
             ResponseHome.create( response );
-            AnnounceHome.insertAnnounceResponse( announce.getId( ), response.getIdResponse( ),
+            AnnounceResponseHome.insertAnnounceResponse( announce.getId( ), response.getIdResponse( ),
                     ( response.getFile( ) != null ) && FileUtil.hasImageExtension( response.getFile( ).getTitle( ) ) );
         }
 
@@ -1149,19 +1150,19 @@ public class AnnounceApp extends MVCApplication
 
         _announceLifecycleService.update( announce );
 
-        List<Integer> listIdResponse = AnnounceHome.findListIdResponse( announce.getId( ) );
+        List<Integer> listIdResponse = AnnounceResponseHome.findListIdResponse( announce.getId( ) );
 
         for ( int nIdResponse : listIdResponse )
         {
             ResponseHome.remove( nIdResponse );
         }
 
-        AnnounceHome.removeAnnounceResponse( announce.getId( ) );
+        AnnounceResponseHome.removeAnnounceResponse( announce.getId( ) );
 
         for ( Response response : listResponses )
         {
             ResponseHome.create( response );
-            AnnounceHome.insertAnnounceResponse( announce.getId( ), response.getIdResponse( ),
+            AnnounceResponseHome.insertAnnounceResponse( announce.getId( ), response.getIdResponse( ),
                     ( response.getFile( ) != null ) && FileUtil.hasImageExtension( response.getFile( ).getTitle( ) ) );
         }
 
@@ -1282,7 +1283,7 @@ public class AnnounceApp extends MVCApplication
 
         for ( Announce announce : paginator.getPageItems( ) )
         {
-            announce.setListIdImageResponse( AnnounceHome.findListIdImageResponse( announce.getId( ) ) );
+            announce.setListIdImageResponse( AnnounceResponseHome.findListIdImageResponse( announce.getId( ) ) );
         }
 
         Map<String, Object> model = new HashMap<>( );
