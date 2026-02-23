@@ -1437,154 +1437,71 @@ public class AnnounceApp extends MVCApplication
         return filter;
     }
 
+    // -----------------------------------------------
+    // URL builders — deprecated, use AnnounceUrlService
+    // -----------------------------------------------
+
     /**
-     * Get the URL to search for announces
-     * 
-     * @param request
-     *            The request
-     * @return The URL to search announces
+     * @deprecated Use {@link AnnounceUrlService#getUrlSearchAnnounceSort(HttpServletRequest, int)} instead
      */
+    @Deprecated
     public static String getUrlSearchAnnounceSort( HttpServletRequest request, int nSort )
     {
-        return getUrlSearchAnnounceSort( request, 0, nSort );
+        return AnnounceUrlService.getUrlSearchAnnounceSort( request, nSort );
     }
 
     /**
-     * Get the URL to search for announces
-     * 
-     * @param request
-     *            The request
-     * @param nIdFilter
-     *            The id of the filter to load, or 0 to use the filter stored in session if any
-     * @return The URL to search announces
+     * @deprecated Use {@link AnnounceUrlService#getUrlSearchAnnounceSort(HttpServletRequest, int, int)} instead
      */
+    @Deprecated
     public static String getUrlSearchAnnounceSort( HttpServletRequest request, int nIdFilter, int nSort )
     {
-        UrlItem urlItem = new UrlItem( AppPathService.getBaseUrl( request ) + AppPathService.getPortalUrl( ) );
-        urlItem.addParameter( PARAMETER_PAGE, AnnounceUtils.PARAMETER_PAGE_ANNOUNCE );
-        urlItem.addParameter( MVCUtils.PARAMETER_ACTION, ACTION_SEARCH );
-
-        if ( nIdFilter > 0 )
-        {
-            urlItem.addParameter( PARAMETER_ID_FILTER, nIdFilter );
-        }
-        if ( nSort == 0 )
-        {
-            urlItem.addParameter( PARAMETER_SORT_BY, "date_creation" );
-        }
-        if ( nSort == 1 )
-        {
-            urlItem.addParameter( PARAMETER_SORT_BY, "date_modification" );
-        }
-        if ( nSort == 2 )
-        {
-            urlItem.addParameter( PARAMETER_SORT_BY, PARAMETER_TITLE_ANNOUNCE );
-        }
-        if ( nSort == 3 )
-        {
-            urlItem.addParameter( PARAMETER_SORT_BY, PARAMETER_PRICE_ANNOUNCE );
-        }
-        if ( nSort == 4 )
-        {
-            urlItem.addParameter( PARAMETER_SORT_BY, PARAMETER_DESCRIPTION_ANNOUNCE );
-        }
-        if ( nSort == 5 )
-        {
-            urlItem.addParameter( PARAMETER_SORT_BY, "date_publication" );
-        }
-
-        return urlItem.getUrl( );
+        return AnnounceUrlService.getUrlSearchAnnounceSort( request, nIdFilter, nSort );
     }
 
     /**
-     * Get the URL to search for announces
-     * 
-     * @param request
-     *            The request
-     * @return The URL to search announces
+     * @deprecated Use {@link AnnounceUrlService#getUrlSearchAnnounce(HttpServletRequest)} instead
      */
+    @Deprecated
     public static String getUrlSearchAnnounce( HttpServletRequest request )
     {
-        return getUrlSearchAnnounce( request, 0 );
+        return AnnounceUrlService.getUrlSearchAnnounce( request );
     }
 
     /**
-     * Get the URL to search for announces
-     * 
-     * @param request
-     *            The request
-     * @param nIdFilter
-     *            The id of the filter to load, or 0 to use the filter stored in session if any
-     * @return The URL to search announces
+     * @deprecated Use {@link AnnounceUrlService#getUrlSearchAnnounce(HttpServletRequest, int)} instead
      */
+    @Deprecated
     public static String getUrlSearchAnnounce( HttpServletRequest request, int nIdFilter )
     {
-        UrlItem urlItem = new UrlItem( AppPathService.getBaseUrl( request ) + AppPathService.getPortalUrl( ) );
-        urlItem.addParameter( PARAMETER_PAGE, AnnounceUtils.PARAMETER_PAGE_ANNOUNCE );
-        urlItem.addParameter( MVCUtils.PARAMETER_ACTION, ACTION_SEARCH );
-
-        if ( nIdFilter > 0 )
-        {
-            urlItem.addParameter( PARAMETER_ID_FILTER, nIdFilter );
-        }
-
-        return urlItem.getUrl( );
+        return AnnounceUrlService.getUrlSearchAnnounce( request, nIdFilter );
     }
 
     /**
-     * Get the URl to view an announce
-     * 
-     * @param nIdAnnounce
-     *            The id of the announce to view
-     * @return The relative URL to view the announce
+     * @deprecated Use {@link AnnounceUrlService#getRelativeUrlViewAnnounce(int)} instead
      */
+    @Deprecated
     public static String getRelativeUrlViewAnnounce( int nIdAnnounce )
     {
-        UrlItem urlItem = new UrlItem( AppPathService.getPortalUrl( ) );
-        urlItem.addParameter( PARAMETER_PAGE, AnnounceUtils.PARAMETER_PAGE_ANNOUNCE );
-        urlItem.addParameter( MVCUtils.PARAMETER_ACTION, ACTION_VIEW_ANNOUNCE );
-        urlItem.addParameter( PARAMETER_ANNOUNCE_ID, nIdAnnounce );
-
-        return urlItem.getUrl( );
+        return AnnounceUrlService.getRelativeUrlViewAnnounce( nIdAnnounce );
     }
 
     /**
-     * Get the URL to search for a given category
-     * 
-     * @param request
-     *            The request
-     * @param nIdCategory
-     *            The of the category to search for
-     * @return The URL
+     * @deprecated Use {@link AnnounceUrlService#getUrlViewCategory(HttpServletRequest, int)} instead
      */
+    @Deprecated
     public static String getUrlViewCategory( HttpServletRequest request, int nIdCategory )
     {
-        UrlItem urlItem = new UrlItem( AppPathService.getBaseUrl( request ) + AppPathService.getPortalUrl( ) );
-        urlItem.addParameter( PARAMETER_PAGE, AnnounceUtils.PARAMETER_PAGE_ANNOUNCE );
-        urlItem.addParameter( MVCUtils.PARAMETER_ACTION, ACTION_SEARCH );
-        urlItem.addParameter( PARAMETER_CATEGORY_ID, nIdCategory );
-        urlItem.addParameter( PARAMETER_HAS_FILTER, Boolean.TRUE.toString( ) );
-
-        return urlItem.getUrl( );
+        return AnnounceUrlService.getUrlViewCategory( request, nIdCategory );
     }
 
     /**
-     * Get the URL to view announces of a user
-     * 
-     * @param request
-     *            The request
-     * @param strUserName
-     *            The name of the user to view announces of
-     * @return The URL
+     * @deprecated Use {@link AnnounceUrlService#getUrlViewUserAnnounces(HttpServletRequest, String)} instead
      */
+    @Deprecated
     public static String getUrlViewUserAnnounces( HttpServletRequest request, String strUserName )
     {
-        UrlItem urlItem = new UrlItem( AppPathService.getBaseUrl( request ) + AppPathService.getPortalUrl( ) );
-        urlItem.addParameter( PARAMETER_PAGE, AnnounceUtils.PARAMETER_PAGE_ANNOUNCE );
-        urlItem.addParameter( MVCUtils.PARAMETER_ACTION, ACTION_VIEW_ANNOUNCES );
-        urlItem.addParameter( PARAMETER_USERNAME, strUserName );
-
-        return urlItem.getUrl( );
+        return AnnounceUrlService.getUrlViewUserAnnounces( request, strUserName );
     }
 
 }
