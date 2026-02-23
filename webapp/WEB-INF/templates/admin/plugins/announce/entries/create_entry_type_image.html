@@ -21,14 +21,11 @@
             <@formGroup>
                 <@checkBox name='mandatory' id='mandatory' value='1' checked=false labelKey='#i18n{announce.createEntry.labelMandatory}' />
             </@formGroup>
-            <@formGroup labelKey='#i18n{announce.createEntry.labelWidth}' labelFor='width' mandatory=true>
-                <@input type='text' name='width' id='width' value='255' />
-            </@formGroup>
             <@formGroup labelKey='#i18n{announce.createEntry.labelFileMaxSize}' labelFor='file_max_size' mandatory=true>
                 <@input type='text' name='file_max_size' id='file_max_size' value='' />
             </@formGroup>
             <@formGroup labelKey='#i18n{announce.createEntry.labelMaxFiles}' labelFor='max_files' mandatory=true>
-                <@input type='text' name='max_files' id='max_files' value='' maxlength=2 />
+                <@input type='number' name='max_files' id='max_files' value='1' params='min="1"' maxlength=2 />
             </@formGroup>
             <@formGroup>
                 <@checkBox name='export_binary' id='export_binary' value='1' checked=false labelKey='#i18n{announce.createEntry.labelExportBinaryComment}' />

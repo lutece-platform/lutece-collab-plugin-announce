@@ -17,24 +17,13 @@
             <@formGroup>
                 <@checkBox name='mandatory' id='mandatory' value='1' checked=entry.mandatory labelKey='#i18n{announce.createEntry.labelMandatory}' />
             </@formGroup>
-            <#if entry??>
-                <#list entry.fields as key>
-                    <#if key??>
-                        <#if key.code=="file_config">
-                            <#assign field=key>
-                        </#if>
-                    </#if>
-                </#list>
-            </#if>
-            <@formGroup labelKey='#i18n{announce.createEntry.labelWidth}' labelFor='width' mandatory=true>
-                <@input type='text' name='width' id='width' value='${field.width!}' />
-            </@formGroup>
+            <#assign field=getFieldByCode(entry, "file_config")>
             <#assign id_field=field.idField>
             <@formGroup labelKey='#i18n{announce.createEntry.labelFileMaxSize}' labelFor='file_max_size' mandatory=true>
                 <@input type='text' name='file_max_size' id='file_max_size' value='${getFileMaxSize(entry)!}' />
             </@formGroup>
             <@formGroup labelKey='#i18n{announce.createEntry.labelMaxFiles}' labelFor='max_files' mandatory=true>
-                <@input type='text' name='max_files' id='max_files' value='${getMaxFiles(entry)!}' maxlength=2 />
+                <@input type='number' name='max_files' id='max_files' value='${getMaxFiles(entry)!}' params='min="1"' maxlength=2 />
             </@formGroup>
             <@formGroup>
                 <@checkBox name='export_binary' id='export_binary' value='1' checked=exportBinary(entry) labelKey='#i18n{announce.createEntry.labelExportBinaryComment}' />

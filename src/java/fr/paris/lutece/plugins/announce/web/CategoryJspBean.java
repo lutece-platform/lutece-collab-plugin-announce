@@ -47,6 +47,7 @@ import fr.paris.lutece.api.user.User;
 import fr.paris.lutece.plugins.announce.business.Category;
 import fr.paris.lutece.plugins.announce.business.CategoryHome;
 import fr.paris.lutece.plugins.announce.business.SectorHome;
+import fr.paris.lutece.plugins.announce.service.AnnounceLifecycleService;
 import fr.paris.lutece.plugins.announce.service.AnnounceService;
 import fr.paris.lutece.plugins.announce.service.CategoryResourceIdService;
 import fr.paris.lutece.plugins.announce.utils.AnnounceUtils;
@@ -133,7 +134,7 @@ public class CategoryJspBean extends PluginAdminPageJspBean
 
     /* Messages */
     private static final String MESSAGE_CONFIRM_REMOVE_CATEGORY = "announce.message.confirmRemoveCategory";
-    private static final String MESSAGE_PLEASE_REMOVE_ANNOUCES = "announce.message.pleaseRemoveAnnounces";
+    private static final String MESSAGE_CONFIRM_REMOVE_CATEGORY_WITH_ANNOUNCES = "announce.message.confirmRemoveCategoryWithAnnounces";
     private static final String MESSAGE_PLEASE_REMOVE_ENTRIES = "announce.message.pleaseRemoveEntries";
     private static final String MESSAGE_COPY_TITLE = "announce.message.copy_title";
 
@@ -164,6 +165,7 @@ public class CategoryJspBean extends PluginAdminPageJspBean
 
     /* Variables */
     private AnnounceService _announceService = SpringContextService.getBean( AnnounceService.BEAN_NAME );
+    private AnnounceLifecycleService _announceLifecycleService = SpringContextService.getBean( AnnounceLifecycleService.BEAN_NAME );
     private String _strCurrentPageIndex;
     private int _nItemsPerPage;
     private Category _category;
@@ -484,25 +486,25 @@ public class CategoryJspBean extends PluginAdminPageJspBean
         int nIdCategory = Integer.parseInt( request.getParameter( PARAMETER_CATEGORY_ID ) );
         Category category = getAuthorizedCategory( request, CategoryResourceIdService.PERMISSION_DELETE );
 
-        if ( ( category.getNumberAnnounces( ) == 0 ) && ( CategoryHome.countEntriesForCategory( category ) == 0 ) )
-        {
-            UrlItem url = new UrlItem( JSP_DO_REMOVE_CATEGORY );
-            url.addParameter( PARAMETER_CATEGORY_ID, nIdCategory );
-
-            return AdminMessageService.getMessageUrl( request, MESSAGE_CONFIRM_REMOVE_CATEGORY, url.getUrl( ), AdminMessage.TYPE_CONFIRMATION );
-        }
-
-        if ( category.getNumberAnnounces( ) != 0 )
-        {
-            return AdminMessageService.getMessageUrl( request, MESSAGE_PLEASE_REMOVE_ANNOUCES, AdminMessage.TYPE_STOP );
-        }
-
         if ( CategoryHome.countEntriesForCategory( category ) != 0 )
         {
             return AdminMessageService.getMessageUrl( request, MESSAGE_PLEASE_REMOVE_ENTRIES, AdminMessage.TYPE_STOP );
         }
 
-        return null;
+        UrlItem url = new UrlItem( JSP_DO_REMOVE_CATEGORY );
+        url.addParameter( PARAMETER_CATEGORY_ID, nIdCategory );
+
+        if ( category.getNumberAnnounces( ) > 0 )
+        {
+            Object [ ] messageArgs = {
+                    category.getNumberAnnounces( )
+            };
+
+            return AdminMessageService.getMessageUrl( request, MESSAGE_CONFIRM_REMOVE_CATEGORY_WITH_ANNOUNCES, messageArgs, url.getUrl( ),
+                    AdminMessage.TYPE_CONFIRMATION );
+        }
+
+        return AdminMessageService.getMessageUrl( request, MESSAGE_CONFIRM_REMOVE_CATEGORY, url.getUrl( ), AdminMessage.TYPE_CONFIRMATION );
     }
 
     /**
@@ -517,9 +519,18 @@ public class CategoryJspBean extends PluginAdminPageJspBean
     public String doRemoveCategory( HttpServletRequest request ) throws AccessDeniedException
     {
         Category category = getAuthorizedCategory( request, CategoryResourceIdService.PERMISSION_DELETE );
-        CategoryHome.remove( category );
 
-        // TODO : remove entries, responses, fields, etc...
+        // Server-side check: entries must be removed first
+        if ( CategoryHome.countEntriesForCategory( category ) != 0 )
+        {
+            return AdminMessageService.getMessageUrl( request, MESSAGE_PLEASE_REMOVE_ENTRIES, AdminMessage.TYPE_STOP );
+        }
+
+        // Remove all announces belonging to this category (responses, workflow, notifications, index, cache)
+        _announceLifecycleService.removeAllByCategory( category.getId( ) );
+
+        // Remove the category itself
+        CategoryHome.remove( category );
 
         // if the operation occurred well, redirects towards the list
         return JSP_REDIRECT_TO_MANAGE_CATEGORIES;

@@ -148,6 +148,17 @@ public interface IAnnounceDAO
     List<Integer> selectAllPublishedForCategory( Category category, AnnounceSort announceSort, Plugin plugin );
 
     /**
+     * Get the list of ids of all announces for a given category
+     *
+     * @param nIdCategory
+     *            The id of the category
+     * @param plugin
+     *            The plugin
+     * @return The list of announce ids
+     */
+    List<Integer> selectAllIdByCategory( int nIdCategory, Plugin plugin );
+
+    /**
      * selects all announces for a given user
      * 
      * @param announceSort

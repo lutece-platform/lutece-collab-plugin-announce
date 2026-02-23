@@ -59,6 +59,7 @@ public final class AnnounceDAO implements IAnnounceDAO
             + " AND a.published = 1 AND a.suspended = 0 AND a.suspended_by_user = 0 ";
     private static final String SQL_QUERY_SELECTALL = SQL_QUERY_SELECT_ID;
     private static final String SQL_QUERY_SELECTALL_PUBLISHED_FOR_CATEGORY = "SELECT a.id_announce FROM announce_announce a WHERE a.id_category = ? AND a.published = 1 AND a.suspended = 0 AND a.suspended_by_user = 0 ";
+    private static final String SQL_QUERY_SELECTALL_ID_FOR_CATEGORY = "SELECT id_announce FROM announce_announce WHERE id_category = ?";
     private static final String SQL_QUERY_SELECT_ID_BY_DATE_CREATION = "SELECT id_announce FROM announce_announce WHERE date_creation < ?";
     private static final String SQL_QUERY_SELECT_ID_BY_LAST_ACTIVITY = "SELECT id_announce FROM announce_announce WHERE GREATEST(date_creation, date_modification) < ?";
     private static final String SQL_QUERY_SELECT_ID_BY_TIME_PUBLICATION = "SELECT id_announce FROM announce_announce WHERE publication_time > ? ";
@@ -308,6 +309,26 @@ public final class AnnounceDAO implements IAnnounceDAO
             }
         }
         return announceList;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<Integer> selectAllIdByCategory( int nIdCategory, Plugin plugin )
+    {
+        List<Integer> listIdAnnounces = new ArrayList<>( );
+        try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECTALL_ID_FOR_CATEGORY, plugin ) )
+        {
+            daoUtil.setInt( 1, nIdCategory );
+            daoUtil.executeQuery( );
+
+            while ( daoUtil.next( ) )
+            {
+                listIdAnnounces.add( daoUtil.getInt( 1 ) );
+            }
+        }
+        return listIdAnnounces;
     }
 
     /**

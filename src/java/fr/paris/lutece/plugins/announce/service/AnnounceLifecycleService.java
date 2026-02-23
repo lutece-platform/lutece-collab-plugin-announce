@@ -139,6 +139,20 @@ public class AnnounceLifecycleService
     }
 
     /**
+     * Remove all announces belonging to a category
+     *
+     * @param nIdCategory
+     *            The id of the category
+     */
+    public void removeAllByCategory( int nIdCategory )
+    {
+        for ( int nIdAnnounce : AnnounceHome.findAllIdByCategory( nIdCategory ) )
+        {
+            remove( nIdAnnounce );
+        }
+    }
+
+    /**
      * Publish or unpublish an announce with indexation and cache invalidation
      *
      * @param announce

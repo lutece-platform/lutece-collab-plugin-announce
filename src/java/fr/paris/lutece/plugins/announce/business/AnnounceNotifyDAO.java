@@ -47,6 +47,7 @@ public class AnnounceNotifyDAO implements IAnnounceNotifyDAO
     private static final String SQL_QUERY_SELECT_ALL = "SELECT id, id_announce FROM announce_notify";
     private static final String SQL_QUERY_INSERT = "INSERT INTO announce_notify ( id_announce) VALUES (?)";
     private static final String SQL_QUERY_DELETE = "DELETE FROM announce_notify WHERE id = ? ";
+    private static final String SQL_QUERY_DELETE_BY_ID_ANNOUNCE = "DELETE FROM announce_notify WHERE id_announce = ? ";
 
     @Override
     public void insert( AnnounceNotify announce, Plugin plugin )
@@ -70,6 +71,16 @@ public class AnnounceNotifyDAO implements IAnnounceNotifyDAO
         try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_DELETE, plugin ) )
         {
             daoUtil.setInt( 1, nIdAnnounceNotify );
+            daoUtil.executeUpdate( );
+        }
+    }
+
+    @Override
+    public void deleteByIdAnnounce( int nIdAnnounce, Plugin plugin )
+    {
+        try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_DELETE_BY_ID_ANNOUNCE, plugin ) )
+        {
+            daoUtil.setInt( 1, nIdAnnounce );
             daoUtil.executeUpdate( );
         }
     }

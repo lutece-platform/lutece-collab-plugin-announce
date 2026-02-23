@@ -44,5 +44,7 @@ public interface IAnnounceNotifyDAO
 
     void delete( int nIdAnnounceNotify, Plugin plugin );
 
+    void deleteByIdAnnounce( int nIdAnnounce, Plugin plugin );
+
     List<AnnounceNotify> load( Plugin plugin );
 }

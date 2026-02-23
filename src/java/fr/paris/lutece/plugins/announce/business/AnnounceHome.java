@@ -246,6 +246,18 @@ public final class AnnounceHome
     }
 
     /**
+     * Get the list of ids of all announces for a given category
+     *
+     * @param nIdCategory
+     *            The id of the category
+     * @return The list of announce ids
+     */
+    public static List<Integer> findAllIdByCategory( int nIdCategory )
+    {
+        return _dao.selectAllIdByCategory( nIdCategory, _plugin );
+    }
+
+    /**
      * publish or unpublish an announce
      * 
      * @param announce
