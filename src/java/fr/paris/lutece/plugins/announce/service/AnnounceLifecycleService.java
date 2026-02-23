@@ -38,7 +38,9 @@ import fr.paris.lutece.plugins.announce.business.AnnounceHome;
 import fr.paris.lutece.plugins.announce.business.AnnounceResponseHome;
 import fr.paris.lutece.plugins.announce.business.IndexerAction;
 import fr.paris.lutece.plugins.announce.service.announcesearch.AnnounceSearchService;
+import fr.paris.lutece.plugins.genericattributes.business.Response;
 import fr.paris.lutece.plugins.genericattributes.business.ResponseHome;
+import fr.paris.lutece.util.file.FileUtil;
 import fr.paris.lutece.portal.service.plugin.Plugin;
 import fr.paris.lutece.portal.service.plugin.PluginService;
 import fr.paris.lutece.portal.service.resource.ExtendableResourceRemovalListenerService;
@@ -69,6 +71,7 @@ public class AnnounceLifecycleService
         announce.setDateModification( new Timestamp( System.currentTimeMillis( ) ) );
         updatePublicationTimestamp( announce );
         AnnounceHome.create( announce );
+        saveResponses( announce );
 
         if ( isVisible( announce ) )
         {
@@ -92,6 +95,7 @@ public class AnnounceLifecycleService
         announce.setDateModification( new Timestamp( System.currentTimeMillis( ) ) );
         updatePublicationTimestamp( announce );
         AnnounceHome.update( announce );
+        replaceResponses( announce );
 
         if ( isVisible( announce ) )
         {
@@ -233,6 +237,47 @@ public class AnnounceLifecycleService
         AnnounceHome.setHasNotified( announce );
 
         AnnounceCacheService.getService( ).removeKey( AnnounceCacheService.getAnnounceCacheKey( announce.getId( ) ) );
+    }
+
+    /**
+     * Persist all responses from the announce's response list and link them to the announce
+     *
+     * @param announce
+     *            The announce (must have a valid id and a non-null listResponse)
+     */
+    private void saveResponses( Announce announce )
+    {
+        if ( announce.getListResponse( ) == null )
+        {
+            return;
+        }
+
+        for ( Response response : announce.getListResponse( ) )
+        {
+            ResponseHome.create( response );
+            AnnounceResponseHome.insertAnnounceResponse( announce.getId( ), response.getIdResponse( ),
+                    ( response.getFile( ) != null ) && FileUtil.hasImageExtension( response.getFile( ).getTitle( ) ) );
+        }
+    }
+
+    /**
+     * Remove all existing responses for an announce and save the new ones from its response list
+     *
+     * @param announce
+     *            The announce (must have a valid id and a non-null listResponse)
+     */
+    private void replaceResponses( Announce announce )
+    {
+        List<Integer> listIdResponse = AnnounceResponseHome.findListIdResponse( announce.getId( ) );
+
+        for ( int nIdResponse : listIdResponse )
+        {
+            ResponseHome.remove( nIdResponse );
+        }
+
+        AnnounceResponseHome.removeAnnounceResponse( announce.getId( ) );
+
+        saveResponses( announce );
     }
 
     /**

@@ -37,7 +37,6 @@ import java.io.IOException;
 import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -68,7 +67,6 @@ import fr.paris.lutece.plugins.announce.service.upload.AnnounceAsynchronousUploa
 import fr.paris.lutece.plugins.announce.utils.AnnounceUtils;
 import fr.paris.lutece.plugins.genericattributes.business.GenericAttributeError;
 import fr.paris.lutece.plugins.genericattributes.business.Response;
-import fr.paris.lutece.plugins.genericattributes.business.ResponseHome;
 import fr.paris.lutece.portal.business.mailinglist.Recipient;
 import fr.paris.lutece.portal.service.captcha.CaptchaSecurityService;
 import fr.paris.lutece.portal.service.i18n.I18nService;
@@ -94,11 +92,9 @@ import fr.paris.lutece.portal.util.mvc.utils.MVCUtils;
 import fr.paris.lutece.portal.util.mvc.xpage.MVCApplication;
 import fr.paris.lutece.portal.util.mvc.xpage.annotations.Controller;
 import fr.paris.lutece.portal.web.LocalVariables;
-import fr.paris.lutece.portal.web.constants.Messages;
 import fr.paris.lutece.portal.web.constants.Parameters;
 import fr.paris.lutece.portal.web.util.LocalizedDelegatePaginator;
 import fr.paris.lutece.portal.web.xpages.XPage;
-import fr.paris.lutece.util.file.FileUtil;
 import fr.paris.lutece.util.html.AbstractPaginator;
 import fr.paris.lutece.util.html.HtmlTemplate;
 import fr.paris.lutece.util.html.Paginator;
@@ -138,15 +134,8 @@ public class AnnounceApp extends MVCApplication
     private static final String PARAMETER_CONFIRM_REMOVE_ANNOUNCE = "confirm_remove";
     private static final String PARAMETER_CONFIRM_SUSPEND_ANNOUNCE = "confirm_suspend";
     private static final String PARAMETER_ANNOUNCE_ID = "announce_id";
-    private static final String PARAMETER_KEYWORDS = "keywords";
-    private static final String PARAMETER_DATE_MIN = "date_min";
-    private static final String PARAMETER_DATE_MAX = "date_max";
-    private static final String PARAMETER_PRICE_MIN = "price_min";
-    private static final String PARAMETER_PRICE_MAX = "price_max";
     private static final String PARAMETER_PAGE_INDEX = "page_index";
     private static final String PARAMETER_TAGS = "tags";
-    private static final String PARAMETER_HAS_FILTER = "hasFilter";
-    private static final String PARAMETER_ID_FILTER = "id_filter";
     private static final String PARAMETER_SORT_BY = "sortBy";
 
     // Actions
@@ -1056,13 +1045,6 @@ public class AnnounceApp extends MVCApplication
             AnnounceNotifyHome.create( announceNotify );
         }
 
-        for ( Response response : listResponses )
-        {
-            ResponseHome.create( response );
-            AnnounceResponseHome.insertAnnounceResponse( announce.getId( ), response.getIdResponse( ),
-                    ( response.getFile( ) != null ) && FileUtil.hasImageExtension( response.getFile( ).getTitle( ) ) );
-        }
-
         if ( category.getIdWorkflow( ) > 0 )
         {
             WorkflowService.getInstance( ).getState( announce.getId( ), Announce.RESOURCE_TYPE, category.getIdWorkflow( ), category.getId( ) );
@@ -1143,22 +1125,6 @@ public class AnnounceApp extends MVCApplication
         announce.setHasPictures( AnnounceService.detectHasPictures( listResponses ) );
 
         _announceLifecycleService.update( announce );
-
-        List<Integer> listIdResponse = AnnounceResponseHome.findListIdResponse( announce.getId( ) );
-
-        for ( int nIdResponse : listIdResponse )
-        {
-            ResponseHome.remove( nIdResponse );
-        }
-
-        AnnounceResponseHome.removeAnnounceResponse( announce.getId( ) );
-
-        for ( Response response : listResponses )
-        {
-            ResponseHome.create( response );
-            AnnounceResponseHome.insertAnnounceResponse( announce.getId( ), response.getIdResponse( ),
-                    ( response.getFile( ) != null ) && FileUtil.hasImageExtension( response.getFile( ).getTitle( ) ) );
-        }
 
         // send mail notification only if announce is not published
         if ( !announce.getPublished( ) )
