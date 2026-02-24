@@ -130,6 +130,11 @@ public class DefaultAnnounceIndexer implements IAnnounceSearchIndexer
                 continue;
             }
 
+            if ( !announce.getPublished( ) || announce.getSuspended( ) || announce.getSuspendedByUser( ) )
+            {
+                continue;
+            }
+
             List<Response> listResponses = AnnounceResponseHome.findListResponse( nAnnounceId, false );
             announce.setListResponse( listResponses );
 

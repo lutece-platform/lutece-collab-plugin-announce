@@ -337,6 +337,7 @@ public class AnnounceLuceneSearchEngine implements IAnnounceSearchEngine
                     listAnnouncesResult.add( AnnounceHome.findByPrimaryKey( Integer.parseInt( si.getId( ) ) ) );
                     listResults.add( si );
                 }
+                listAnnouncesResult.removeIf( a -> a == null || !a.getPublished( ) || a.getSuspended( ) || a.getSuspendedByUser( ) );
                 nNbResults = listAnnouncesResult.size( );
             }
             else
@@ -350,6 +351,7 @@ public class AnnounceLuceneSearchEngine implements IAnnounceSearchEngine
                     listResults.add( si );
                 }
                 listAnnouncesResult.addAll( AnnounceHome.findByListId( listIdAnnounces, anSort ) );
+                listAnnouncesResult.removeIf( a -> a == null || !a.getPublished( ) || a.getSuspended( ) || a.getSuspendedByUser( ) );
                 nNbResults = listAnnouncesResult.size( );
             }
         }

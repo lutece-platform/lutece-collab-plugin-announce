@@ -154,6 +154,8 @@ public class AnnounceApp extends MVCApplication
     private static final String PROPERTY_REFUSED_ACCESS = "announce.messages.refusedAccess";
     private static final String PROPERTY_CONFIRM_REMOVE_ANNOUNCE = "announce.messages.confirmRemoveAnnounce";
     private static final String PROPERTY_CONFIRM_SUSPEND_ANNOUNCE = "announce.messages.confirmSuspendAnnounce";
+    private static final String PROPERTY_MESSAGE_ANNOUNCE_NOT_FOUND = "announce.view_announce.message.notFound";
+    private static final String PROPERTY_MESSAGE_ANNOUNCE_UNPUBLISHED = "announce.view_announce.message.unpublished";
     private static final String PROPERTY_PAGE_TITLE_SEARCH_RESULTS = "announce.search_results.pageTitle";
     private static final String PROPERTY_PAGE_TITLE_MODIFY_ANNOUNCE = "announce.modify_announce.pageTitle";
     private static final String PROPERTY_PAGE_TITLE_MY_ANNOUNCES = "announce.my_announces.pageTitle";
@@ -378,6 +380,7 @@ public class AnnounceApp extends MVCApplication
     public static String getAnnounceListById( HttpServletRequest request, List<Integer> listIdAnnounces, AnnounceSort announceSort )
     {
         List<Announce> listAnnounces = AnnounceHome.findByListId( listIdAnnounces, announceSort );
+        listAnnounces.removeIf( a -> !a.getPublished( ) || a.getSuspended( ) || a.getSuspendedByUser( ) );
 
         Map<String, Object> model = new HashMap<>( );
         model.put( MARK_LIST_FIELDS, AnnounceService.getSectorList( ) );
@@ -650,10 +653,15 @@ public class AnnounceApp extends MVCApplication
      * @return The HTML content to display
      */
     @Action( ACTION_VIEW_ANNOUNCE )
-    public XPage getViewAnnounce( HttpServletRequest request )
+    public XPage getViewAnnounce( HttpServletRequest request ) throws SiteMessageException
     {
         int nIdAnnounce = Integer.parseInt( request.getParameter( PARAMETER_ANNOUNCE_ID ) );
         Announce announce = AnnounceHome.findByPrimaryKey( nIdAnnounce );
+
+        if ( announce == null )
+        {
+            SiteMessageService.setMessage( request, PROPERTY_MESSAGE_ANNOUNCE_NOT_FOUND, SiteMessage.TYPE_STOP );
+        }
 
         boolean bAllowAccess = false;
         boolean bUserIsAuthor = false;
@@ -675,6 +683,11 @@ public class AnnounceApp extends MVCApplication
         if ( ( ( user != null ) && user.getName( ).equals( announce.getUserName( ) ) ) )
         {
             bUserIsAuthor = true;
+        }
+
+        if ( !bUserIsAuthor && ( !announce.getPublished( ) || announce.getSuspended( ) || announce.getSuspendedByUser( ) ) )
+        {
+            SiteMessageService.setMessage( request, PROPERTY_MESSAGE_ANNOUNCE_UNPUBLISHED, SiteMessage.TYPE_STOP );
         }
 
         if ( ( announce.getPublished( ) && !announce.getSuspended( ) && !announce.getSuspendedByUser( ) ) || bUserIsAuthor )

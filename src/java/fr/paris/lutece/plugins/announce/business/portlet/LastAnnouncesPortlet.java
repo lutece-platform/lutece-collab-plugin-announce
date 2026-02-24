@@ -131,4 +131,22 @@ public class LastAnnouncesPortlet extends PortletHtmlContent
     {
         LastAnnouncesPortletHome.getInstance( ).remove( this );
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean canBeCachedForAnonymousUsers( )
+    {
+        return false;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean canBeCachedForConnectedUsers( )
+    {
+        return false;
+    }
 }

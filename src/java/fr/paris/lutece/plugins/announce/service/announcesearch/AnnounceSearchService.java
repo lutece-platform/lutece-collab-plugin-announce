@@ -249,14 +249,10 @@ public final class AnnounceSearchService
             sbLogs.append( "\r\nIndexing all contents ...\r\n" );
 
             Directory dir = FSDirectory.open( Paths.get( getIndex( ) ) );
-            // check if index exists
+            // check if index exists — force create if index does not exist, otherwise respect caller's request
             if ( !DirectoryReader.indexExists( dir ) )
             {
                 bCreateIndex = true;
-            }
-            else
-            {
-                bCreateIndex = false;
             }
         }
         catch( java.io.IOException e )
