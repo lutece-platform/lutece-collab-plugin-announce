@@ -317,11 +317,12 @@ public class AnnounceLifecycleService
         AnnounceCacheService cacheService = AnnounceCacheService.getService( );
         cacheService.removeKey( AnnounceCacheService.getAnnounceCacheKey( nIdAnnounce ) );
 
-        String strPrefix = AnnounceCacheService.getListIdPublishedAnnouncesCacheKeyPrefix( );
+        String strPublishedPrefix = AnnounceCacheService.getListIdPublishedAnnouncesCacheKeyPrefix( );
+        String strCategoryPrefix = AnnounceCacheService.getCategoryCacheKeyPrefix( );
 
         for ( String strKey : cacheService.getKeys( ) )
         {
-            if ( strKey.startsWith( strPrefix ) )
+            if ( strKey.startsWith( strPublishedPrefix ) || strKey.startsWith( strCategoryPrefix ) )
             {
                 cacheService.removeKey( strKey );
             }

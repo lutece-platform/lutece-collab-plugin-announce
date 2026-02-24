@@ -115,6 +115,16 @@ public final class AnnounceCacheService extends AbstractCacheableService
     }
 
     /**
+     * Get the cache key prefix for categories
+     *
+     * @return The cache key prefix
+     */
+    public static String getCategoryCacheKeyPrefix( )
+    {
+        return CATEGORY_KEY_PREFIXE;
+    }
+
+    /**
      * {@inheritDoc}
      */
     @Override
