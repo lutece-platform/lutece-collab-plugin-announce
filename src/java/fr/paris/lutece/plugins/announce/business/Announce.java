@@ -68,8 +68,6 @@ public class Announce implements Serializable, IExtendableResource, RBACResource
     private boolean _bSuspended;
     private boolean _bSuspendedByUser;
     private String _strUserName;
-    private String _strUserLastName;
-    private String _strUserSecondName;
     private boolean _bHasPictures;
     private List<Integer> _listIdImageResponse;
     private Timestamp _dateCreation;
@@ -247,48 +245,6 @@ public class Announce implements Serializable, IExtendableResource, RBACResource
     public void setUserName( String strUserName )
     {
         _strUserName = strUserName;
-    }
-
-    /**
-     * gets the user name
-     * 
-     * @return the username
-     */
-    public String getUserLastName( )
-    {
-        return _strUserLastName;
-    }
-
-    /**
-     * sets the announce user name
-     * 
-     * @param strUserName
-     *            the user name
-     */
-    public void setUserLastName( String strUserLastName )
-    {
-        _strUserLastName = strUserLastName;
-    }
-
-    /**
-     * gets the user name
-     * 
-     * @return the username
-     */
-    public String getUserSecondName( )
-    {
-        return _strUserSecondName;
-    }
-
-    /**
-     * sets the announce user name
-     * 
-     * @param strUserName
-     *            the user name
-     */
-    public void setUserSecondName( String strUserSecondName )
-    {
-        _strUserSecondName = strUserSecondName;
     }
 
     /**

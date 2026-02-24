@@ -148,8 +148,6 @@ public class AnnounceTest extends LuteceTestCase
         announce.setDescription( ANNOUNCE_DESCRIPTION1 );
         announce.setCategory( category );
         announce.setUserName( ANNOUNCE_USER );
-        announce.setUserLastName( "Junit" );
-        announce.setUserSecondName( "Test" );
         announce.setContactInformation( ANNOUNCE_CONTACT );
         announce.setTags( TAGS1 );
         announce.setPrice( 10.0 );

@@ -9,7 +9,7 @@
 				#i18n{announce.view_announces.page.title} ${owner?html}
 			</h5>
 			<div>
-				<#if user?? && (hasSubscribedToUser??) && !hasSubscribedToUser >
+				<#if user?? && !(is_own_announces!false) && (hasSubscribedToUser??) && !hasSubscribedToUser >
 					<#if isSubscribe?? && isSubscribe>
 					<div class="float-end">
 					    <a class="btn btn-primary" href="jsp/site/Portal.jsp?page=announce-subscribe&action=doCreateUserSubscription&username=${owner_name?url('UTF-8')}" title="#i18n{announce.labelCreateUserSubscriptionTitle}">

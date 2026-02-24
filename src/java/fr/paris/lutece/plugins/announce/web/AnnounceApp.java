@@ -207,6 +207,7 @@ public class AnnounceApp extends MVCApplication
     private static final String MARK_LIST_CATEGORIES = "list_sector_categories";
     private static final String MARK_ENTRY_LIST_GEOLOCATION = "list_entryTypeGeolocation";
     private static final String MARK_IS_SUBSCRIBE = "isSubscribe";
+    private static final String MARK_IS_OWN_ANNOUNCES = "is_own_announces";
     // Messages
     private static final String ERROR_MESSAGE_WRONG_CAPTCHA = "portal.admin.message.wrongCaptcha";
 
@@ -736,7 +737,6 @@ public class AnnounceApp extends MVCApplication
     public XPage getViewUserAnnounces( HttpServletRequest request ) throws SiteMessageException
     {
         String strUserName = request.getParameter( PARAMETER_USERNAME );
-        String strUserInfo = "";
         _strCurrentPageIndex = AbstractPaginator.getPageIndex( request, AbstractPaginator.PARAMETER_PAGE_INDEX, DEFAULT_PAGE_INDEX );
         _nDefaultItemsPerPage = AppPropertiesService.getPropertyInt( PROPERTY_DEFAULT_FRONT_LIST_ANNOUNCE_PER_PAGE, 10 );
         _nItemsPerPage = AbstractPaginator.getItemsPerPage( request, AbstractPaginator.PARAMETER_ITEMS_PER_PAGE, _nItemsPerPage, _nDefaultItemsPerPage );
@@ -744,11 +744,6 @@ public class AnnounceApp extends MVCApplication
         int nNbPlublishedAnnounces;
 
         List<Announce> listAnnounces = AnnounceHome.getAnnouncesForUser( strUserName, AnnounceSort.DEFAULT_SORT );
-
-        if ( listAnnounces != null && !listAnnounces.isEmpty( ) )
-        {
-            strUserInfo = listAnnounces.get( 0 ).getUserLastName( ) + " " + listAnnounces.get( 0 ).getUserSecondName( );
-        }
 
         Paginator<Announce> paginator = new Paginator<>( listAnnounces, _nItemsPerPage,
                 JSP_PORTAL + "?" + PARAMETER_PAGE + "=" + AnnounceUtils.PARAMETER_PAGE_ANNOUNCE + "&" + MVCUtils.PARAMETER_ACTION + "=" + ACTION_MY_ANNOUNCES,
@@ -776,6 +771,7 @@ public class AnnounceApp extends MVCApplication
         }
 
         LuteceUser user = null;
+        boolean bIsOwnAnnounces = false;
 
         if ( SecurityService.isAuthenticationEnable( ) )
         { // myLutece not installed or disabled
@@ -784,16 +780,17 @@ public class AnnounceApp extends MVCApplication
             if ( user != null ) // user is logged
             {
                 model.put( MARK_USER, user );
+                bIsOwnAnnounces = user.getName( ).equals( strUserName );
             }
         }
 
         IAnnounceSubscriptionProvider subscriptionProvider = getSubscriptionProvider( );
         model.put( MARK_HAS_SUBSCRIBED_TO_USER,
-                ( user != null && subscriptionProvider != null ) ? subscriptionProvider.hasSubscribedToUser( user, strUserName ) : false );
+                ( user != null && subscriptionProvider != null && !bIsOwnAnnounces ) ? subscriptionProvider.hasSubscribedToUser( user, strUserName ) : false );
 
-        String strUserRealName = ( strUserInfo == null ) ? strUserName : strUserInfo;
-        model.put( MARK_ANNOUNCE_OWNER, StringUtils.isNotBlank( strUserRealName ) ? strUserRealName : strUserName );
+        model.put( MARK_ANNOUNCE_OWNER, strUserName );
         model.put( MARK_ANNOUNCE_OWNER_NAME, strUserName );
+        model.put( MARK_IS_OWN_ANNOUNCES, bIsOwnAnnounces );
         model.put( MARK_ANNOUNCES_PUBLISHED_AMOUNT, nNbPlublishedAnnounces );
         model.put( MARK_LIST_FIELDS, AnnounceService.getSectorList( ) );
         model.put( MARK_LOCALE, request.getLocale( ) );
@@ -955,9 +952,6 @@ public class AnnounceApp extends MVCApplication
         announce.setDescription( strDescriptionAnnounce );
         announce.setPrice( priceResult.getPrice( ) );
         announce.setContactInformation( strContactInformation );
-        announce.setUserName( user.getName( ) );
-        announce.setUserLastName( user.getUserInfo( LuteceUser.NAME_GIVEN ) );
-        announce.setUserSecondName( user.getUserInfo( LuteceUser.NAME_FAMILY ) );
         announce.setUserName( user.getName( ) );
         announce.setTags( strTags );
 
