@@ -1,3 +1,0 @@
--- liquibase formatted sql
--- changeset announce:init_db_announce.sql
--- preconditions onFail:MARK_RAN onError:WARN

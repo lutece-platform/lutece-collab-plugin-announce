@@ -870,7 +870,7 @@ public class AnnounceApp extends MVCApplication
      *             If no user is currently authenticated
      */
     @NotNull
-    private static LuteceUser getLuteceUserAuthentication( HttpServletRequest request ) throws UserNotSignedException
+    private static LuteceUser getLuteceUserAuthentication( HttpServletRequest request ) throws UserNotSignedException, SiteMessageException
     {
         if ( SecurityService.isAuthenticationEnable( ) )
         {
@@ -880,8 +880,11 @@ public class AnnounceApp extends MVCApplication
             {
                 return user;
             }
+
+            throw new UserNotSignedException( );
         }
 
+        SiteMessageService.setMessage( request, PROPERTY_NOT_AUTHORIZED, SiteMessage.TYPE_STOP );
         throw new UserNotSignedException( );
     }
 
