@@ -202,6 +202,11 @@ public class DefaultAnnounceIndexer implements IAnnounceSearchIndexer
             for ( IndexerAction action : AnnounceSearchService.getInstance( ).getAllIndexerActionByTask( IndexerAction.TASK_CREATE, plugin ) )
             {
                 sbLogAnnounce( sbLogs, action.getIdAnnounce( ), IndexerAction.TASK_CREATE );
+
+                // Delete any existing document to avoid duplicates in the index
+                Term term = new Term( AnnounceSearchItem.FIELD_ID_ANNOUNCE, Integer.toString( action.getIdAnnounce( ) ) );
+                indexWriter.deleteDocuments( term );
+
                 listIdAnnounce.add( action.getIdAnnounce( ) );
 
                 AnnounceSearchService.getInstance( ).removeIndexerAction( action.getIdAction( ), plugin );
