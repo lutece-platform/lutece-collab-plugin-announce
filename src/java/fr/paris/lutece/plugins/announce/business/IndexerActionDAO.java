@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002-2021, City of Paris
+ * Copyright (c) 2002-2026, City of Paris
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -37,6 +37,8 @@ import fr.paris.lutece.plugins.announce.utils.AnnounceUtils;
 import fr.paris.lutece.portal.service.plugin.Plugin;
 import fr.paris.lutece.util.sql.DAOUtil;
 
+import java.sql.Statement;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -46,9 +48,8 @@ import java.util.List;
 public final class IndexerActionDAO implements IIndexerActionDAO
 {
     // Constants
-    private static final String SQL_QUERY_NEW_PK = "SELECT max( id_action ) FROM announce_indexer_action";
     private static final String SQL_QUERY_FIND_BY_PRIMARY_KEY = "SELECT id_action,id_announce,id_task" + " FROM announce_indexer_action WHERE id_action = ?";
-    private static final String SQL_QUERY_INSERT = "INSERT INTO announce_indexer_action( id_action,id_announce,id_task)" + " VALUES(?,?,?)";
+    private static final String SQL_QUERY_INSERT = "INSERT INTO announce_indexer_action( id_announce,id_task)" + " VALUES(?,?)";
     private static final String SQL_QUERY_DELETE = "DELETE FROM announce_indexer_action WHERE id_action = ? ";
     private static final String SQL_QUERY_SELECT = "SELECT id_action,id_announce,id_task" + " FROM announce_indexer_action  ";
     private static final String SQL_FILTER_ID_TASK = " id_task = ? ";
@@ -58,37 +59,20 @@ public final class IndexerActionDAO implements IIndexerActionDAO
      * {@inheritDoc}
      */
     @Override
-    public int newPrimaryKey( Plugin plugin )
+    public void insert( IndexerAction indexerAction, Plugin plugin )
     {
-        int nKey = 1;
-        try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_NEW_PK, plugin ) )
+        try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_INSERT, Statement.RETURN_GENERATED_KEYS, plugin ) )
         {
-            daoUtil.executeQuery( );
-
-            if ( daoUtil.next( ) )
-            {
-                nKey = daoUtil.getInt( 1 ) + 1;
-            }
-        }
-        return nKey;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public synchronized void insert( IndexerAction indexerAction, Plugin plugin )
-    {
-        try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_INSERT, plugin ) )
-        {
-            daoUtil.setInt( 2, indexerAction.getIdAnnounce( ) );
-            daoUtil.setInt( 3, indexerAction.getIdTask( ) );
-
-            indexerAction.setIdAction( newPrimaryKey( plugin ) );
-            daoUtil.setInt( 1, indexerAction.getIdAction( ) );
+            int nIndex = 1;
+            daoUtil.setInt( nIndex++, indexerAction.getIdAnnounce( ) );
+            daoUtil.setInt( nIndex, indexerAction.getIdTask( ) );
 
             daoUtil.executeUpdate( );
 
+            if ( daoUtil.nextGeneratedKey( ) )
+            {
+                indexerAction.setIdAction( daoUtil.getGeneratedKeyInt( 1 ) );
+            }
         }
     }
 

@@ -1,12 +1,78 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <document>
 	<properties>
-		<title>Plugin announce</title>
+		<title>Plugin Announce</title>
 	</properties>
 	<body>
-		<section name="Plugin announce">
+		<section name="Plugin Announce">
 			<subsection name="Introduction">
-				Plugin announce is a ads manager.
+				<p>
+					Plugin Announce is a classified ads management system for the Lutece platform.
+					It allows users to create, publish and manage announcements organized by sectors
+					and categories, with built-in search, moderation, workflow integration and
+					automatic expiration.
+				</p>
+			</subsection>
+			<subsection name="Features">
+				<p><strong>Front-office (XPage)</strong></p>
+				<ul>
+					<li>Browse announces by sector / category</li>
+					<li>Full-text search with filters (keywords, date range, price range)</li>
+					<li>Create, modify, suspend and delete own announces</li>
+					<li>Multi-step announce creation form with custom fields (generic attributes)</li>
+					<li>Image slideshow support</li>
+					<li>Subscription to categories or users (email notifications)</li>
+				</ul>
+				<p><strong>Back-office (Admin)</strong></p>
+				<ul>
+					<li>Manage sectors and categories</li>
+					<li>Publish / unpublish / suspend announces</li>
+					<li>Moderate announces before publication (per category)</li>
+					<li>Workflow integration for advanced lifecycle management</li>
+					<li>RBAC permissions on sectors, categories and announces</li>
+				</ul>
+				<p><strong>Daemons</strong></p>
+				<ul>
+					<li><strong>Search Indexer</strong> - Incremental Lucene indexing of announces (default: every 60s)</li>
+					<li><strong>Expiration Daemon</strong> - Notifies users of upcoming expiration and removes old announces (default: 120 days, configurable)</li>
+				</ul>
+				<p><strong>Portlets</strong></p>
+				<ul>
+					<li><em>My Announces</em> - Displays the current user's announces</li>
+					<li><em>Last Announces</em> - Displays the most recent announces (configurable count)</li>
+				</ul>
+			</subsection>
+			<subsection name="Configuration">
+				<p>Key properties in <code>announce.properties</code>:</p>
+				<table>
+					<tr><th>Property</th><th>Default</th><th>Description</th></tr>
+					<tr><td>announce.announce.qty.max</td><td>10</td><td>Max announces per user</td></tr>
+					<tr><td>announce.nbDaysBeforeAnnouncesRemoval</td><td>120</td><td>Days before automatic removal</td></tr>
+					<tr><td>announce.front.announce.defaultItemsPerPage</td><td>10</td><td>Pagination size (front-office)</td></tr>
+					<tr><td>announce.indexer.enable</td><td>true</td><td>Enable Lucene search indexing</td></tr>
+					<tr><td>announce.lucene.minScore</td><td>0.5</td><td>Minimum Lucene relevance score</td></tr>
+				</table>
+			</subsection>
+			<subsection name="Database">
+				<table>
+					<tr><th>Table</th><th>Purpose</th></tr>
+					<tr><td>announce_sector</td><td>Top-level grouping of categories</td></tr>
+					<tr><td>announce_category</td><td>Announcement categories with moderation/workflow settings</td></tr>
+					<tr><td>announce_announce</td><td>The announcements themselves</td></tr>
+					<tr><td>announce_announce_response</td><td>Links announces to generic attribute responses</td></tr>
+					<tr><td>announce_indexer_action</td><td>Lucene incremental indexing queue</td></tr>
+					<tr><td>announce_search_filters</td><td>Saved user search criteria</td></tr>
+					<tr><td>announce_portlet_last_announces</td><td>Portlet configuration</td></tr>
+					<tr><td>announce_notify</td><td>Notification tracking</td></tr>
+				</table>
+			</subsection>
+			<subsection name="RBAC Permissions">
+				<table>
+					<tr><th>Resource</th><th>Permissions</th></tr>
+					<tr><td>Sector</td><td>Create, Modify, Delete</td></tr>
+					<tr><td>Category</td><td>Create, Modify, Copy, Delete</td></tr>
+					<tr><td>Announce</td><td>Publish/Unpublish, Suspend, Delete, Workflow action</td></tr>
+				</table>
 			</subsection>
 		</section>
 	</body>

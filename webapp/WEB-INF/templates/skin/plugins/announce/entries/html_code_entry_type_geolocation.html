@@ -3,8 +3,8 @@
 	<#assign xField = getFieldValueByCode( entry, "X" )>
 	<#assign yField = getFieldValueByCode( entry, "Y" )>
 </#if>
-<div class="form-group">
-	<label class="col-sm-2 control-label" for="form${entry.idEntry}_address" id="attribute${entry.idEntry}">${entry.title}<#if entry.mandatory>	*</#if></label>
+<div class="row mb-3">
+	<label class="col-sm-2 col-form-label" for="form${entry.idEntry}_address" id="attribute${entry.idEntry}">${entry.title}<#if entry.mandatory>	*</#if></label>
 	<div class="col-sm-10">
     <#if list_responses??>
 		<#list list_responses as response>
@@ -17,29 +17,29 @@
 						<#assign lon = response.toStringValueResponse />
 						<input type="hidden" name="${entry.idEntry}_y" id="${entry.idEntry}_y" value="${response.toStringValueResponse!}"/>
 					<#elseif response.field.title == "idAddress">
-						<input type="hidden" name="${entry.idEntry}_idAddress" id="${entry.idEntry}_idAddress" value="${response.toStringValueResponse!}"/>					
+						<input type="hidden" name="${entry.idEntry}_idAddress" id="${entry.idEntry}_idAddress" value="${response.toStringValueResponse!}"/>
 					<#else>
-						<input type="text" name="${entry.idEntry}_address" id="${entry.idEntry}_address" size="50" <#if response.entry.error??>class="error"<#else>class="${entry.CSSClass!}"</#if> value="${response.toStringValueResponse!}" />
+						<input type="text" class="form-control<#if response.entry.error??> is-invalid</#if>" name="${entry.idEntry}_address" id="${entry.idEntry}_address" size="50" value="${response.toStringValueResponse!}" <#if entry.mandatory>required</#if> />
 					</#if>
 				</#if>
 			</#if>
 		</#list>
 	<#else>
-		<input type="text" value="" name="${entry.idEntry}_address" id="${entry.idEntry}_address" size="50" />
+		<input type="text" class="form-control" value="" name="${entry.idEntry}_address" id="${entry.idEntry}_address" size="50" <#if entry.mandatory>required</#if> />
 		<input type="hidden" name="${entry.idEntry}_x" id="${entry.idEntry}_x" value=""/>
 		<input type="hidden" name="${entry.idEntry}_y" id="${entry.idEntry}_y" value=""/>
 		<input type="hidden" name="${entry.idEntry}_idAddress" id="${entry.idEntry}_idAddress" value=""/>
 	</#if>
-	<#if entry.helpMessage?exists&&entry.helpMessage!=''>
-		<p class="help-block">${entry.helpMessage}</p>
+	<#if entry.helpMessage?? && entry.helpMessage != ''>
+		<p class="form-text">${entry.helpMessage}</p>
 	</#if>
-	
+
 	<#if list_responses??>
 	<#assign show_error = 0>
 		<#list list_responses as response>
 			<#if response.entry.idEntry == entry.idEntry && response.entry.error?? && show_error == 0>
 			<#assign show_error = 1>
-				<div class="alert alert-error">
+				<div class="alert alert-danger">
 					<#assign error = response.entry.error>
 					<#if error.mandatoryError>
 						#i18n{announce.message.mandatory.entry}

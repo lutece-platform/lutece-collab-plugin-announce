@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002-2021, City of Paris
+ * Copyright (c) 2002-2026, City of Paris
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -91,13 +91,37 @@ public final class AnnounceCacheService extends AbstractCacheableService
     }
 
     /**
-     * Get the cache key of the list of published announces
-     * 
+     * Get the cache key of the list of published announces for a given sort
+     *
+     * @param strSortColumn
+     *            The sort column name
+     * @param bSortAsc
+     *            True if sort is ascending
      * @return The cache key of the list of published announces
      */
-    public static String getListIdPublishedAnnouncesCacheKey( )
+    public static String getListIdPublishedAnnouncesCacheKey( String strSortColumn, boolean bSortAsc )
+    {
+        return PUBLISHED_ANNOUNCES_ID_LIST_KEY_PREFIXE + "." + strSortColumn + "." + bSortAsc;
+    }
+
+    /**
+     * Get the cache key prefix for published announces lists
+     *
+     * @return The cache key prefix
+     */
+    public static String getListIdPublishedAnnouncesCacheKeyPrefix( )
     {
         return PUBLISHED_ANNOUNCES_ID_LIST_KEY_PREFIXE;
+    }
+
+    /**
+     * Get the cache key prefix for categories
+     *
+     * @return The cache key prefix
+     */
+    public static String getCategoryCacheKeyPrefix( )
+    {
+        return CATEGORY_KEY_PREFIXE;
     }
 
     /**

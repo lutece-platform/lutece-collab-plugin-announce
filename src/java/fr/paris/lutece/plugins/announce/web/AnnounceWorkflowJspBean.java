@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002-2021, City of Paris
+ * Copyright (c) 2002-2026, City of Paris
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -140,6 +140,11 @@ public class AnnounceWorkflowJspBean extends MVCAdminJspBean
             User user = getUser( );
 
             Announce announce = AnnounceHome.findByPrimaryKey( nIdAnnounce );
+
+            if ( announce == null )
+            {
+                return redirect( request, AnnounceJspBean.getURLManageAnnounces( request ) );
+            }
 
             if ( request.getParameter( PARAMETER_BACK ) == null )
             {

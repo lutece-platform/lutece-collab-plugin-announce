@@ -1,58 +1,58 @@
-<div class="form-group">
-	<label class="col-sm-2 control-label"  for="attribute${entry.idEntry}">${entry.title} <#if entry.mandatory>*</#if></label>
-	<div class="col-sm-10">	 
-		<select name="attribute${entry.idEntry}" id="attribute${entry.idEntry}"
-			<#if list_responses??>
-				<#list list_responses as response>
-					<#if response.entry.idEntry == entry.idEntry && response.entry.error??>
-						class="error"
-						<#break>
-					</#if>
-				</#list>
-				class="${entry.CSSClass!}"
-		</#if>	>
-		<option value="">#i18n{announce.message.noValue}</option>
-		<#list entry.fields as field>
-			<#if field.code == 'answer_choice'>
-				<option  value="${field.idField}" <#if field.comment?? && field.comment != ''>title="${field.comment}"</#if>
-					<#if list_responses??>
-						<#list list_responses as response>
-							<#if response.entry.idEntry == entry.idEntry && response.field??>
-								<#if response.field.idField == field.idField>
-									selected ="selected"
-									<#break>
+<div class="row mb-3">
+	<label class="col-sm-2 col-form-label" for="attribute${entry.idEntry}">${entry.title} <#if entry.mandatory>*</#if></label>
+	<div class="col-sm-10">
+		<#assign hasError = false>
+		<#if list_responses??>
+			<#list list_responses as response>
+				<#if response.entry.idEntry == entry.idEntry && response.entry.error??>
+					<#assign hasError = true>
+					<#break>
+				</#if>
+			</#list>
+		</#if>
+		<select name="attribute${entry.idEntry}" id="attribute${entry.idEntry}" class="form-select ${entry.CSSClass!}<#if hasError> is-invalid</#if>" <#if entry.mandatory>required</#if>>
+			<option value="">#i18n{announce.message.noValue}</option>
+			<#list entry.fields as field>
+				<#if field.code == 'answer_choice'>
+					<option value="${field.idField}" <#if field.comment?? && field.comment != ''>title="${field.comment}"</#if>
+						<#if list_responses??>
+							<#list list_responses as response>
+								<#if response.entry.idEntry == entry.idEntry && response.field??>
+									<#if response.field.idField == field.idField>
+										selected="selected"
+										<#break>
+									</#if>
 								</#if>
+							</#list>
+						<#else>
+							<#if field.defaultValue>
+								selected="selected"
 							</#if>
-						</#list>
-					<#else>
-						<#if field.defaultValue>
-							selected ="selected"
 						</#if>
-					</#if>
 					>
 						<#if !field.noDisplayTitle>
 							${field.title}
 						</#if>
-				</option>
-			</#if>
-		</#list>
-	</select>
-	<#if entry.helpMessage?exists&&entry.helpMessage!=''>
-	<p class="help-block">${entry.helpMessage}</p>
-	</#if>
-	<#if list_responses??>
-		<#list list_responses as response>
-			<#if response.entry.idEntry == entry.idEntry && response.entry.error??>
-				<div class="alert alert-error">
-					<#assign error = response.entry.error>
-					<#if error.mandatoryError>
-						#i18n{announce.message.mandatory.entry}
-					<#else>
-						${error.errorMessage}
-					</#if>
-				</div>	
+					</option>
 				</#if>
 			</#list>
-	</#if>
+		</select>
+		<#if entry.helpMessage?? && entry.helpMessage != ''>
+			<p class="form-text">${entry.helpMessage}</p>
+		</#if>
+		<#if hasError>
+			<#list list_responses as response>
+				<#if response.entry.idEntry == entry.idEntry && response.entry.error??>
+					<div class="alert alert-danger mt-2">
+						<#assign error = response.entry.error>
+						<#if error.mandatoryError>
+							#i18n{announce.message.mandatory.entry}
+						<#else>
+							${error.errorMessage}
+						</#if>
+					</div>
+				</#if>
+			</#list>
+		</#if>
 	</div>
 </div>

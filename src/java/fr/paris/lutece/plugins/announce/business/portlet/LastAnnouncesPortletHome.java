@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002-2021, City of Paris
+ * Copyright (c) 2002-2026, City of Paris
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -46,8 +46,8 @@ public class LastAnnouncesPortletHome extends PortletHome
     // Static variable pointed at the DAO instance
     private static ILastAnnouncesPortletDAO _dao = SpringContextService.getBean( "announce.lastAnnouncesPortletDAO" );
 
-    /* This class implements the Singleton design pattern. */
-    private static LastAnnouncesPortletHome _singleton;
+    // volatile ensures that all threads see a fully constructed instance (prevents instruction reordering)
+    private static volatile LastAnnouncesPortletHome _singleton;
 
     /**
      * Returns the identifier of the portlet type
@@ -62,11 +62,11 @@ public class LastAnnouncesPortletHome extends PortletHome
     }
 
     /**
-     * Returns the instance of AppointmentPortlet Portlet
-     * 
-     * @return the AppointmentPortlet Portlet instance
+     * Returns the instance of LastAnnouncesPortlet Portlet. synchronized prevents two threads from creating separate instances when _singleton is still null.
+     *
+     * @return the LastAnnouncesPortlet Portlet instance
      */
-    public static PortletHome getInstance( )
+    public static synchronized PortletHome getInstance( )
     {
         if ( _singleton == null )
         {

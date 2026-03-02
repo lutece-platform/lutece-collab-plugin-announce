@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002-2021, City of Paris
+ * Copyright (c) 2002-2026, City of Paris
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -36,11 +36,9 @@ package fr.paris.lutece.plugins.announce.web;
 import fr.paris.lutece.plugins.announce.business.Category;
 import fr.paris.lutece.plugins.announce.business.CategoryHome;
 import fr.paris.lutece.plugins.announce.service.EntryService;
-import fr.paris.lutece.plugins.announce.service.EntryTypeService;
 import fr.paris.lutece.plugins.genericattributes.business.Entry;
 import fr.paris.lutece.plugins.genericattributes.business.EntryFilter;
 import fr.paris.lutece.plugins.genericattributes.business.EntryHome;
-import fr.paris.lutece.plugins.genericattributes.business.EntryType;
 import fr.paris.lutece.plugins.genericattributes.business.EntryTypeHome;
 import fr.paris.lutece.plugins.genericattributes.business.Field;
 import fr.paris.lutece.plugins.genericattributes.business.FieldHome;
@@ -219,11 +217,9 @@ public class CategoryEntryJspBean extends MVCAdminJspBean
         if ( ( request.getParameter( PARAMETER_CANCEL ) == null ) && StringUtils.isNotEmpty( strIdType ) && StringUtils.isNumeric( strIdType ) )
         {
             int nIdType = Integer.parseInt( strIdType );
-            EntryType entryType = new EntryType( );
-            entryType.setIdType( nIdType );
 
             Entry entry = new Entry( );
-            entry.setEntryType( EntryTypeService.getInstance( ).getEntryType( nIdType ) );
+            entry.setEntryType( EntryTypeHome.findByPrimaryKey( nIdType ) );
 
             String strIdField = request.getParameter( PARAMETER_ID_FIELD );
             int nIdField = -1;
@@ -536,6 +532,12 @@ public class CategoryEntryJspBean extends MVCAdminJspBean
         {
             int nIdEntry = Integer.parseInt( strIdEntry );
             Entry entry = EntryHome.findByPrimaryKey( nIdEntry );
+
+            if ( ( entry == null ) || ( entry.getFieldDepend( ) == null ) )
+            {
+                return redirect( request, CategoryJspBean.getUrlManageCategories( request ) );
+            }
+
             int nNewPosition = bMoveUp ? ( entry.getPosition( ) - 1 ) : ( entry.getPosition( ) + 1 );
 
             if ( nNewPosition > 0 )
@@ -596,12 +598,19 @@ public class CategoryEntryJspBean extends MVCAdminJspBean
             // If the entry has a parent
             if ( entry.getParent( ) != null )
             {
-                // We reload the entry to get the copy and not he original entry
+                // We reload the entry to get the copy and not the original entry
                 // The id of the entry is the id of the copy. It has been set by the create method of EntryDAO
                 entry = EntryHome.findByPrimaryKey( entry.getIdEntry( ) );
 
-                Entry entryParent = EntryHome.findByPrimaryKey( entry.getParent( ).getIdEntry( ) );
-                _entryService.moveUpEntryOrder( entryParent.getPosition( ) + entryParent.getChildren( ).size( ), entry );
+                if ( ( entry != null ) && ( entry.getParent( ) != null ) )
+                {
+                    Entry entryParent = EntryHome.findByPrimaryKey( entry.getParent( ).getIdEntry( ) );
+
+                    if ( entryParent != null )
+                    {
+                        _entryService.moveUpEntryOrder( entryParent.getPosition( ) + entryParent.getChildren( ).size( ), entry );
+                    }
+                }
             }
 
             if ( entry.getFieldDepend( ) != null )

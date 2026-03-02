@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002-2021, City of Paris
+ * Copyright (c) 2002-2026, City of Paris
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -49,7 +49,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 
 /**
- * This class represents business objects AppointmentPortlet
+ * This class represents business objects LastAnnouncesPortlet
  */
 public class LastAnnouncesPortlet extends PortletHtmlContent
 {
@@ -65,7 +65,7 @@ public class LastAnnouncesPortlet extends PortletHtmlContent
      */
     public LastAnnouncesPortlet( )
     {
-        setPortletTypeId( MyAnnouncesPortletHome.getInstance( ).getPortletTypeId( ) );
+        setPortletTypeId( LastAnnouncesPortletHome.getInstance( ).getPortletTypeId( ) );
     }
 
     /**
@@ -130,5 +130,23 @@ public class LastAnnouncesPortlet extends PortletHtmlContent
     public void remove( )
     {
         LastAnnouncesPortletHome.getInstance( ).remove( this );
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean canBeCachedForAnonymousUsers( )
+    {
+        return false;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean canBeCachedForConnectedUsers( )
+    {
+        return false;
     }
 }

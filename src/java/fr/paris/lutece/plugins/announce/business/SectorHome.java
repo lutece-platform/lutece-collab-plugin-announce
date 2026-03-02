@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002-2021, City of Paris
+ * Copyright (c) 2002-2026, City of Paris
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -61,13 +61,11 @@ public final class SectorHome
      *
      * @param sector
      *            The instance of the sector which contains the informations to store
-     * @param plugin
-     *            The Plugin object
      * @return The instance of sector which has been created with its primary key.
      */
-    public static Sector create( Sector sector, Plugin plugin )
+    public static Sector create( Sector sector )
     {
-        _dao.insert( sector, plugin );
+        _dao.insert( sector, _plugin );
 
         return sector;
     }
@@ -77,13 +75,11 @@ public final class SectorHome
      *
      * @param sector
      *            The instance of the sector which contains the informations to store
-     * @param plugin
-     *            The Plugin object
      * @return The instance of the sector which has been updated
      */
-    public static Sector update( Sector sector, Plugin plugin )
+    public static Sector update( Sector sector )
     {
-        _dao.store( sector, plugin );
+        _dao.store( sector, _plugin );
 
         return sector;
     }
@@ -93,12 +89,10 @@ public final class SectorHome
      *
      * @param sector
      *            The Sector object to remove
-     * @param plugin
-     *            The Plugin object
      */
-    public static void remove( Sector sector, Plugin plugin )
+    public static void remove( Sector sector )
     {
-        _dao.delete( sector, plugin );
+        _dao.delete( sector, _plugin );
     }
 
     // /////////////////////////////////////////////////////////////////////////

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002-2021, City of Paris
+ * Copyright (c) 2002-2026, City of Paris
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -94,9 +94,9 @@ public final class AnnounceSearchService
     private static final int DEFAULT_WRITER_MAX_FIELD_LENGTH = 1000000;
 
     // Constants corresponding to the variables defined in the lutece.properties file
-    private static volatile AnnounceSearchService _singleton;
+    private static final AnnounceSearchService _singleton = new AnnounceSearchService( );
     private static String _strPriceFormat;
-    private volatile String _strIndex;
+    private String _strIndex;
     private Analyzer _analyzer;
     private IAnnounceSearchIndexer _indexer;
     private int _nWriterMergeFactor;
@@ -121,7 +121,7 @@ public final class AnnounceSearchService
 
         String strAnalyserClassName = AppPropertiesService.getProperty( PROPERTY_ANALYSER_CLASS_NAME );
 
-        if ( ( strAnalyserClassName == null ) || ( strAnalyserClassName.equals( "" ) ) )
+        if ( StringUtils.isEmpty( strAnalyserClassName ) )
         {
             throw new AppException( "Analyser class name not found in announce.properties", null );
         }
@@ -130,7 +130,7 @@ public final class AnnounceSearchService
 
         try
         {
-            _analyzer = ( Analyzer ) Class.forName( strAnalyserClassName ).newInstance( );
+            _analyzer = (Analyzer) Class.forName( strAnalyserClassName ).getDeclaredConstructor( ).newInstance( );
         }
         catch( Exception e )
         {
@@ -145,11 +145,6 @@ public final class AnnounceSearchService
      */
     public static AnnounceSearchService getInstance( )
     {
-        if ( _singleton == null )
-        {
-            _singleton = new AnnounceSearchService( );
-        }
-
         return _singleton;
     }
 
@@ -254,14 +249,10 @@ public final class AnnounceSearchService
             sbLogs.append( "\r\nIndexing all contents ...\r\n" );
 
             Directory dir = FSDirectory.open( Paths.get( getIndex( ) ) );
-            // check if index exists
+            // check if index exists — force create if index does not exist, otherwise respect caller's request
             if ( !DirectoryReader.indexExists( dir ) )
             {
                 bCreateIndex = true;
-            }
-            else
-            {
-                bCreateIndex = false;
             }
         }
         catch( java.io.IOException e )
@@ -273,7 +264,6 @@ public final class AnnounceSearchService
         try
         {
             sbLogs.append( "\r\nIndexing all contents ...\r\n" );
-
 
             writer = getIndexWriterInstance( bCreateIndex );
 
@@ -449,12 +439,12 @@ public final class AnnounceSearchService
     {
         if ( _indexWriterInstance == null )
         {
-            Directory dir = FSDirectory.open(Paths.get( getIndex( ) ) );
+            Directory dir = FSDirectory.open( Paths.get( getIndex( ) ) );
             IndexWriterConfig conf = new IndexWriterConfig( new LimitTokenCountAnalyzer( _analyzer, _nWriterMaxSectorLength ) );
             LogMergePolicy mergePolicy = new LogDocMergePolicy( );
             mergePolicy.setMergeFactor( _nWriterMergeFactor );
-            conf.setMergePolicy(mergePolicy);
-            if (bCreateIndex)
+            conf.setMergePolicy( mergePolicy );
+            if ( bCreateIndex )
             {
                 conf.setOpenMode( OpenMode.CREATE );
             }

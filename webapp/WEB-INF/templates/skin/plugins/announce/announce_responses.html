@@ -1,0 +1,60 @@
+<#assign imageIndex = 1>
+<#list list_responses as response>
+	<#if response.toStringValueResponse?has_content || response.file??>
+		<#if entrySave?? && entrySave.idEntry!=response.entry.idEntry>
+				</div>
+			</div>
+			<#if isImage?? && isImage>
+				</div>
+				<#assign isImage = false>
+			</#if>
+		</#if>
+		<#if response.field?? && response.field.title??>
+			<#if response.field.title == "X">
+				<#assign lat = response.toStringValueResponse>
+			<#elseif response.field.title == "Y">
+				<#assign lon = response.toStringValueResponse>
+			<#elseif response.field.title == "idAddress">
+			<#elseif response.field.title == "address">
+				<#assign addressAnnounce = response.toStringValueResponse>
+				<div class="row mb-3 align-items-center">
+					<label class="col-sm-2 fw-semibold" for="response">${response.entry.title?html}</label>
+					<div class="col-sm-10" id="response">
+						<#list list_entryTypeGeolocation as entry>
+							<#if entry.mapProvider?has_content && entry.idEntry == response.entry.idEntry >
+								${addressAnnounce?html}
+								<#include entry.mapProvider.htmlRecapCode />
+							</#if>
+						</#list>
+					</div>
+				</div>
+			</#if>
+		<#elseif !entrySave?? || entrySave.idEntry!=response.entry.idEntry>
+			<#assign entrySave=response.entry>
+			<div class="row mb-3 align-items-center">
+				<label class="col-sm-2 fw-semibold" for="response">${response.entry.title?html}</label>
+				<div class="col-sm-10" id="response">
+				<#if response.file?? && response.file.idFile &gt; 0>
+					<#assign isImage = true>
+					<div id="gallery">
+						<a title="#i18n{announce.view_announce.imagesCaption}" href="image?resource_type=announce_img&id=${response.idResponse}">
+							<img src="image?resource_type=announce_img&id=${response.idResponse}" title="${announce.title?html} - image ${imageIndex}" alt="#i18n{announce.view_announce.imagesCaption}" />
+						</a>
+				<#elseif response.entry.entryType.beanName?? && response.entry.entryType.beanName=="announce.entryTypeDate">
+					<#assign dateval = response.responseValue?number?number_to_date?iso_local>
+					${dateval}
+				<#else>
+					${response.toStringValueResponse?html}
+				</#if>
+		<#else>
+			<#if isImage?? && isImage>
+				<a title="#i18n{announce.view_announce.imagesCaption}" href="image?resource_type=announce_img&id=${response.idResponse}">
+					<img src="image?resource_type=announce_img&id=${response.idResponse}" title="${announce.title?html} - image ${imageIndex}" alt="#i18n{announce.view_announce.imagesCaption}" />
+				</a>
+			<#else>
+				<br />${response.toStringValueResponse?html}
+			</#if>
+		</#if>
+	</#if>
+	<#assign imageIndex=imageIndex+1>
+</#list>

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002-2021, City of Paris
+ * Copyright (c) 2002-2026, City of Paris
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -43,10 +43,14 @@ import java.util.List;
 /**
  * Home for announce search filters
  */
-public class AnnounceSearchFilterHome
+public final class AnnounceSearchFilterHome
 {
     private static IAnnounceSearchFilterDAO _dao = SpringContextService.getBean( "announce.announceSearchFilterDAO" );
     private static Plugin _plugin = PluginService.getPlugin( AnnouncePlugin.PLUGIN_NAME );
+
+    private AnnounceSearchFilterHome( )
+    {
+    }
 
     /**
      * Find a filter by primary key
@@ -109,7 +113,7 @@ public class AnnounceSearchFilterHome
      * 
      * @return the list of every filters
      */
-    public List<AnnounceSearchFilter> findAll( )
+    public static List<AnnounceSearchFilter> findAll( )
     {
         return _dao.findAll( _plugin );
     }
@@ -121,7 +125,7 @@ public class AnnounceSearchFilterHome
      *            The list of id of filters
      * @return the list of filters
      */
-    public List<AnnounceSearchFilter> findByListId( List<Integer> listIdFilters )
+    public static List<AnnounceSearchFilter> findByListId( List<Integer> listIdFilters )
     {
         return _dao.findByListId( listIdFilters, _plugin );
     }

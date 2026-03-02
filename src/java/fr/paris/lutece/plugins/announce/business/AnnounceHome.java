@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002-2021, City of Paris
+ * Copyright (c) 2002-2026, City of Paris
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -35,20 +35,14 @@ package fr.paris.lutece.plugins.announce.business;
 
 import fr.paris.lutece.plugins.announce.service.AnnounceCacheService;
 import fr.paris.lutece.plugins.announce.service.AnnouncePlugin;
-import fr.paris.lutece.plugins.announce.service.announcesearch.AnnounceSearchService;
 import fr.paris.lutece.plugins.genericattributes.business.Response;
-import fr.paris.lutece.plugins.genericattributes.business.ResponseHome;
-import fr.paris.lutece.portal.business.file.FileHome;
 import fr.paris.lutece.portal.service.plugin.Plugin;
 import fr.paris.lutece.portal.service.plugin.PluginService;
-import fr.paris.lutece.portal.service.resource.ExtendableResourceRemovalListenerService;
 import fr.paris.lutece.portal.service.security.LuteceUser;
 import fr.paris.lutece.portal.service.spring.SpringContextService;
-import fr.paris.lutece.portal.service.workflow.WorkflowService;
 
 import java.sql.Timestamp;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -76,15 +70,7 @@ public final class AnnounceHome
      */
     public static Announce create( Announce announce )
     {
-        announce.setDateModification( new Timestamp( System.currentTimeMillis( ) ) );
-        updateAnnouncePublicationTime( announce );
         _dao.insert( announce, _plugin );
-
-        if ( announce.getPublished( ) && !announce.getSuspended( ) && !announce.getSuspendedByUser( ) )
-        {
-            AnnounceSearchService.getInstance( ).addIndexerAction( announce.getId( ), IndexerAction.TASK_CREATE, _plugin );
-            AnnounceCacheService.getService( ).removeKey( AnnounceCacheService.getListIdPublishedAnnouncesCacheKey( ) );
-        }
 
         return announce;
     }
@@ -98,20 +84,7 @@ public final class AnnounceHome
      */
     public static Announce update( Announce announce )
     {
-        announce.setDateModification( new Timestamp( System.currentTimeMillis( ) ) );
         _dao.store( announce, _plugin );
-
-        if ( announce.getPublished( ) && !announce.getSuspended( ) && !announce.getSuspendedByUser( ) )
-        {
-            AnnounceSearchService.getInstance( ).addIndexerAction( announce.getId( ), IndexerAction.TASK_MODIFY, _plugin );
-        }
-        else
-        {
-            AnnounceSearchService.getInstance( ).addIndexerAction( announce.getId( ), IndexerAction.TASK_DELETE, _plugin );
-        }
-
-        AnnounceCacheService.getService( ).removeKey( AnnounceCacheService.getListIdPublishedAnnouncesCacheKey( ) );
-        AnnounceCacheService.getService( ).putInCache( AnnounceCacheService.getAnnounceCacheKey( announce.getId( ) ), announce );
 
         return announce;
     }
@@ -124,27 +97,7 @@ public final class AnnounceHome
      */
     public static void remove( int nAnnounceId )
     {
-        AnnounceSearchService.getInstance( ).addIndexerAction( nAnnounceId, IndexerAction.TASK_DELETE, _plugin );
-
-        List<Integer> listIdResponse = findListIdResponse( nAnnounceId );
-
-        for ( int nIdResponse : listIdResponse )
-        {
-            ResponseHome.remove( nIdResponse );
-        }
-
-        removeAnnounceResponse( nAnnounceId );
-
-        ExtendableResourceRemovalListenerService.doRemoveResourceExtentions( Announce.RESOURCE_TYPE, Integer.toString( nAnnounceId ) );
-
-        if ( WorkflowService.getInstance( ).isAvailable( ) )
-        {
-            WorkflowService.getInstance( ).doRemoveWorkFlowResource( nAnnounceId, Announce.RESOURCE_TYPE );
-        }
-
         _dao.delete( nAnnounceId, _plugin );
-        AnnounceCacheService.getService( ).removeKey( AnnounceCacheService.getListIdPublishedAnnouncesCacheKey( ) );
-        AnnounceCacheService.getService( ).removeKey( AnnounceCacheService.getAnnounceCacheKey( nAnnounceId ) );
     }
 
     // /////////////////////////////////////////////////////////////////////////
@@ -175,15 +128,12 @@ public final class AnnounceHome
     }
 
     /**
-     * Returns the announce id from its image response id
-     * 
-     * @param nIdResponse
-     *            the id of the response
-     * @return The announce id, or null if there no announce that has this response as an image
+     * @deprecated Use {@link AnnounceResponseHome#findIdByImageResponse(int)} instead
      */
+    @Deprecated
     public static Integer findIdByImageResponse( int nIdResponse )
     {
-        return _dao.findIdByImageResponse( nIdResponse, _plugin );
+        return AnnounceResponseHome.findIdByImageResponse( nIdResponse );
     }
 
     /**
@@ -207,15 +157,18 @@ public final class AnnounceHome
      */
     public static List<Integer> findAllPublishedId( AnnounceSort announceSort )
     {
-        List<Integer> listIds = (List<Integer>) AnnounceCacheService.getService( ).getFromCache( AnnounceCacheService.getListIdPublishedAnnouncesCacheKey( ) );
+        String strCacheKey = AnnounceCacheService.getListIdPublishedAnnouncesCacheKey( announceSort.getSortColumn( ), announceSort.getSortAsc( ) );
+
+        @SuppressWarnings( "unchecked" )
+        List<Integer> listIds = (List<Integer>) AnnounceCacheService.getService( ).getFromCache( strCacheKey );
 
         if ( listIds == null )
         {
             listIds = _dao.selectAllPublishedId( announceSort, _plugin );
-            AnnounceCacheService.getService( ).putInCache( AnnounceCacheService.getListIdPublishedAnnouncesCacheKey( ), listIds );
+            AnnounceCacheService.getService( ).putInCache( strCacheKey, listIds );
         }
 
-        return _dao.selectAllPublishedId( announceSort, _plugin );
+        return listIds;
     }
 
     /**
@@ -287,6 +240,18 @@ public final class AnnounceHome
     }
 
     /**
+     * Get the list of ids of all announces for a given category
+     *
+     * @param nIdCategory
+     *            The id of the category
+     * @return The list of announce ids
+     */
+    public static List<Integer> findAllIdByCategory( int nIdCategory )
+    {
+        return _dao.selectAllIdByCategory( nIdCategory, _plugin );
+    }
+
+    /**
      * publish or unpublish an announce
      * 
      * @param announce
@@ -294,27 +259,12 @@ public final class AnnounceHome
      */
     public static void setPublished( Announce announce )
     {
-        updateAnnouncePublicationTime( announce );
         _dao.setPublished( announce, _plugin );
-
-        if ( announce.getPublished( ) && !announce.getSuspended( ) && !announce.getSuspendedByUser( ) )
-        {
-            AnnounceSearchService.getInstance( ).addIndexerAction( announce.getId( ), IndexerAction.TASK_CREATE, _plugin );
-        }
-        else
-        {
-            AnnounceSearchService.getInstance( ).addIndexerAction( announce.getId( ), IndexerAction.TASK_DELETE, _plugin );
-        }
-
-        AnnounceCacheService.getService( ).removeKey( AnnounceCacheService.getListIdPublishedAnnouncesCacheKey( ) );
-        AnnounceCacheService.getService( ).removeKey( AnnounceCacheService.getAnnounceCacheKey( announce.getId( ) ) );
     }
 
-    public static void setHasNotifed( Announce announce )
+    public static void setHasNotified( Announce announce )
     {
-        _dao.setHasNotifed( announce, _plugin );
-
-        AnnounceCacheService.getService( ).removeKey( AnnounceCacheService.getAnnounceCacheKey( announce.getId( ) ) );
+        _dao.setHasNotified( announce, _plugin );
     }
 
     /**
@@ -325,20 +275,7 @@ public final class AnnounceHome
      */
     public static void setSuspended( Announce announce )
     {
-        updateAnnouncePublicationTime( announce );
         _dao.setSuspended( announce, _plugin );
-
-        if ( announce.getPublished( ) && !announce.getSuspended( ) && !announce.getSuspendedByUser( ) )
-        {
-            AnnounceSearchService.getInstance( ).addIndexerAction( announce.getId( ), IndexerAction.TASK_CREATE, _plugin );
-        }
-        else
-        {
-            AnnounceSearchService.getInstance( ).addIndexerAction( announce.getId( ), IndexerAction.TASK_DELETE, _plugin );
-        }
-
-        AnnounceCacheService.getService( ).removeKey( AnnounceCacheService.getListIdPublishedAnnouncesCacheKey( ) );
-        AnnounceCacheService.getService( ).removeKey( AnnounceCacheService.getAnnounceCacheKey( announce.getId( ) ) );
     }
 
     /**
@@ -349,20 +286,7 @@ public final class AnnounceHome
      */
     public static void setSuspendedByUser( Announce announce )
     {
-        updateAnnouncePublicationTime( announce );
         _dao.setSuspendedByUser( announce, _plugin );
-
-        if ( announce.getPublished( ) && !announce.getSuspended( ) && !announce.getSuspendedByUser( ) )
-        {
-            AnnounceSearchService.getInstance( ).addIndexerAction( announce.getId( ), IndexerAction.TASK_CREATE, _plugin );
-        }
-        else
-        {
-            AnnounceSearchService.getInstance( ).addIndexerAction( announce.getId( ), IndexerAction.TASK_DELETE, _plugin );
-        }
-
-        AnnounceCacheService.getService( ).removeKey( AnnounceCacheService.getListIdPublishedAnnouncesCacheKey( ) );
-        AnnounceCacheService.getService( ).removeKey( AnnounceCacheService.getAnnounceCacheKey( announce.getId( ) ) );
     }
 
     /**
@@ -378,6 +302,18 @@ public final class AnnounceHome
     }
 
     /**
+     * Get the list of ids of announces whose most recent activity (creation or modification) is before the given date
+     *
+     * @param timestamp
+     *            The timestamp
+     * @return The list of ids
+     */
+    public static List<Integer> findIdAnnouncesByLastActivity( Timestamp timestamp )
+    {
+        return _dao.findIdAnnouncesByLastActivity( timestamp, _plugin );
+    }
+
+    /**
      * Get the list of ids of announces that were created after a given time
      * 
      * @param lMinPublicationTime
@@ -390,103 +326,52 @@ public final class AnnounceHome
     }
 
     // -----------------------------------------------
-    // Announce response management
+    // Announce response management — deprecated, use AnnounceResponseHome
     // -----------------------------------------------
 
     /**
-     * Associates a response to an Announce
-     * 
-     * @param nIdAnnounce
-     *            The id of the announce
-     * @param nIdResponse
-     *            The id of the response
-     * @param bIsImage
-     *            True if the response is an image, false otherwise
+     * @deprecated Use {@link AnnounceResponseHome#insertAnnounceResponse(int, int, boolean)} instead
      */
+    @Deprecated
     public static void insertAnnounceResponse( int nIdAnnounce, int nIdResponse, boolean bIsImage )
     {
-        _dao.insertAnnounceResponse( nIdAnnounce, nIdResponse, bIsImage, _plugin );
+        AnnounceResponseHome.insertAnnounceResponse( nIdAnnounce, nIdResponse, bIsImage );
     }
 
     /**
-     * Get the list of id of responses associated with an announce
-     * 
-     * @param nIdAnnounce
-     *            the id of the announce
-     * @return the list of responses, or an empty list if no response was found
+     * @deprecated Use {@link AnnounceResponseHome#findListIdResponse(int)} instead
      */
+    @Deprecated
     public static List<Integer> findListIdResponse( int nIdAnnounce )
     {
-        return _dao.findListIdResponse( nIdAnnounce, _plugin );
+        return AnnounceResponseHome.findListIdResponse( nIdAnnounce );
     }
 
     /**
-     * Get the list of id of image responses associated with an announce
-     * 
-     * @param nIdAnnounce
-     *            the id of the announce
-     * @return the list of responses, or an empty list if no response was found
+     * @deprecated Use {@link AnnounceResponseHome#findListIdImageResponse(int)} instead
      */
+    @Deprecated
     public static List<Integer> findListIdImageResponse( int nIdAnnounce )
     {
-        return _dao.findListIdImageResponse( nIdAnnounce, _plugin );
+        return AnnounceResponseHome.findListIdImageResponse( nIdAnnounce );
     }
 
     /**
-     * Get the list of responses associated with an announce
-     * 
-     * @param nIdAnnounce
-     *            the id of the announce
-     * @param bLoadFiles
-     *            True to load files, false to ignore them. Note that physical files are never loaded by this method.
-     * @return the list of responses, or an empty list if no response was found
+     * @deprecated Use {@link AnnounceResponseHome#findListResponse(int, boolean)} instead
      */
+    @Deprecated
     public static List<Response> findListResponse( int nIdAnnounce, boolean bLoadFiles )
     {
-        List<Integer> listIdResponse = findListIdResponse( nIdAnnounce );
-        List<Response> listResponse = new ArrayList<>( listIdResponse.size( ) );
-
-        for ( Integer nIdResponse : listIdResponse )
-        {
-            Response response = ResponseHome.findByPrimaryKey( nIdResponse );
-            
-            if ( response != null )
-            {
-                if ( bLoadFiles && ( response.getFile( ) != null ) )
-                {
-                    response.setFile( FileHome.findByPrimaryKey( response.getFile( ).getIdFile( ) ) );
-                }
-
-                listResponse.add( response );
-            }
-        }
-
-        return listResponse;
+        return AnnounceResponseHome.findListResponse( nIdAnnounce, bLoadFiles );
     }
 
     /**
-     * Remove the association between an announce and responses
-     * 
-     * @param nIdAnnounce
-     *            The id of the announce
+     * @deprecated Use {@link AnnounceResponseHome#removeAnnounceResponse(int)} instead
      */
+    @Deprecated
     public static void removeAnnounceResponse( int nIdAnnounce )
     {
-        _dao.deleteAnnounceResponse( nIdAnnounce, _plugin );
+        AnnounceResponseHome.removeAnnounceResponse( nIdAnnounce );
     }
 
-    /**
-     * Update the publication time of an announce according to its published, its suspended and its suspended by user parameters.<br />
-     * Note that the announce is not flushed in the database
-     * 
-     * @param announce
-     *            the announce to update
-     */
-    private static void updateAnnouncePublicationTime( Announce announce )
-    {
-        if ( announce.getPublished( ) && !announce.getSuspended( ) && !announce.getSuspendedByUser( ) )
-        {
-            announce.setTimePublication( System.currentTimeMillis( ) );
-        }
-    }
 }

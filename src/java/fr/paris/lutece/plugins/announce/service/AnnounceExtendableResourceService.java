@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002-2021, City of Paris
+ * Copyright (c) 2002-2026, City of Paris
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -35,7 +35,8 @@ package fr.paris.lutece.plugins.announce.service;
 
 import fr.paris.lutece.plugins.announce.business.Announce;
 import fr.paris.lutece.plugins.announce.business.AnnounceHome;
-import fr.paris.lutece.plugins.announce.web.AnnounceApp;
+import fr.paris.lutece.plugins.announce.business.AnnounceResponseHome;
+import fr.paris.lutece.plugins.announce.web.AnnounceUrlService;
 import fr.paris.lutece.portal.service.i18n.I18nService;
 import fr.paris.lutece.portal.service.resource.IExtendableResource;
 import fr.paris.lutece.portal.service.resource.IExtendableResourceService;
@@ -73,7 +74,7 @@ public class AnnounceExtendableResourceService implements IExtendableResourceSer
 
             if ( announce != null )
             {
-                announce.setListIdImageResponse( AnnounceHome.findListIdImageResponse( nIdResource ) );
+                announce.setListIdImageResponse( AnnounceResponseHome.findListIdImageResponse( nIdResource ) );
 
                 return announce;
             }
@@ -110,7 +111,7 @@ public class AnnounceExtendableResourceService implements IExtendableResourceSer
         {
             int nIdAnnounce = Integer.parseInt( strIdResource );
 
-            return AnnounceApp.getRelativeUrlViewAnnounce( nIdAnnounce );
+            return AnnounceUrlService.getRelativeUrlViewAnnounce( nIdAnnounce );
         }
 
         return null;

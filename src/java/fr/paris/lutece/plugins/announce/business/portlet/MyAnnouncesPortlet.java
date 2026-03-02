@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002-2021, City of Paris
+ * Copyright (c) 2002-2026, City of Paris
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -36,6 +36,7 @@ package fr.paris.lutece.plugins.announce.business.portlet;
 import fr.paris.lutece.plugins.announce.web.AnnounceApp;
 import fr.paris.lutece.portal.business.portlet.PortletHtmlContent;
 import fr.paris.lutece.portal.service.message.SiteMessageException;
+import fr.paris.lutece.portal.service.security.UserNotSignedException;
 import fr.paris.lutece.portal.service.util.AppLogService;
 
 import org.apache.commons.lang3.StringUtils;
@@ -43,7 +44,7 @@ import org.apache.commons.lang3.StringUtils;
 import javax.servlet.http.HttpServletRequest;
 
 /**
- * This class represents business objects AppointmentPortlet
+ * This class represents business objects MyAnnouncesPortlet
  */
 public class MyAnnouncesPortlet extends PortletHtmlContent
 {
@@ -76,8 +77,12 @@ public class MyAnnouncesPortlet extends PortletHtmlContent
             }
             catch( SiteMessageException e )
             {
-                // We catch site messages since they tell the user to log in if he has not logged in
                 AppLogService.error( e.getMessage( ), e );
+            }
+            catch( UserNotSignedException e )
+            {
+                // User is not authenticated, portlet displays nothing
+                AppLogService.debug( "MyAnnouncesPortlet: user not signed in" );
             }
         }
 

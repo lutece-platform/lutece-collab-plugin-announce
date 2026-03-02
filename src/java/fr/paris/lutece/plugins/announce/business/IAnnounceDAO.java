@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002-2021, City of Paris
+ * Copyright (c) 2002-2026, City of Paris
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -148,6 +148,17 @@ public interface IAnnounceDAO
     List<Integer> selectAllPublishedForCategory( Category category, AnnounceSort announceSort, Plugin plugin );
 
     /**
+     * Get the list of ids of all announces for a given category
+     *
+     * @param nIdCategory
+     *            The id of the category
+     * @param plugin
+     *            The plugin
+     * @return The list of announce ids
+     */
+    List<Integer> selectAllIdByCategory( int nIdCategory, Plugin plugin );
+
+    /**
      * selects all announces for a given user
      * 
      * @param announceSort
@@ -170,7 +181,7 @@ public interface IAnnounceDAO
      */
     void setPublished( Announce announce, Plugin plugin );
 
-    void setHasNotifed( Announce announce, Plugin plugin );
+    void setHasNotified( Announce announce, Plugin plugin );
 
     /**
      * suspend or enable an announce
@@ -202,6 +213,17 @@ public interface IAnnounceDAO
      * @return The list of ids
      */
     List<Integer> findIdAnnouncesByDateCreation( Timestamp timestamp, Plugin plugin );
+
+    /**
+     * Get the list of ids of announces whose most recent activity (creation or modification) is before the given date
+     *
+     * @param timestamp
+     *            The timestamp
+     * @param plugin
+     *            The plugin
+     * @return The list of ids
+     */
+    List<Integer> findIdAnnouncesByLastActivity( Timestamp timestamp, Plugin plugin );
 
     // ----------------------------------------
     // Announce response management

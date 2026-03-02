@@ -1,10 +1,82 @@
-![](http://dev.lutece.paris.fr/jenkins/buildStatus/icon?job=collab-plugin-announce-deploy)
-# Plugin announce
+![](https://dev.lutece.paris.fr/jenkins/buildStatus/icon?job=collab-plugin-announce-deploy)
+[![Alerte](https://dev.lutece.paris.fr/sonar/api/project_badges/measure?project=fr.paris.lutece.plugins%3Aplugin-announce&metric=alert_status)](https://dev.lutece.paris.fr/sonar/dashboard?id=fr.paris.lutece.plugins%3Aplugin-announce)
+[![Line of code](https://dev.lutece.paris.fr/sonar/api/project_badges/measure?project=fr.paris.lutece.plugins%3Aplugin-announce&metric=ncloc)](https://dev.lutece.paris.fr/sonar/dashboard?id=fr.paris.lutece.plugins%3Aplugin-announce)
+[![Coverage](https://dev.lutece.paris.fr/sonar/api/project_badges/measure?project=fr.paris.lutece.plugins%3Aplugin-announce&metric=coverage)](https://dev.lutece.paris.fr/sonar/dashboard?id=fr.paris.lutece.plugins%3Aplugin-announce)
+
+# Plugin Announce
 
 ## Introduction
-Plugin announce is a ads manager.
 
-[Maven documentation and reports](http://dev.lutece.paris.fr/plugins/plugin-announce/)
+Plugin Announce is a classified ads management system for the Lutece platform. It allows users to create, publish and manage announcements organized by sectorsand categories, with built-in search, moderation, workflow integration and automatic expiration.
+
+## Features
+
+ **Front-office (XPage)** 
+
+ 
+* Browse announces by sector / category
+* Full-text search with filters (keywords, date range, price range)
+* Create, modify, suspend and delete own announces
+* Multi-step announce creation form with custom fields (generic attributes)
+* Image slideshow support
+* Subscription to categories or users (email notifications)
+
+ **Back-office (Admin)** 
+
+ 
+* Manage sectors and categories
+* Publish / unpublish / suspend announces
+* Moderate announces before publication (per category)
+* Workflow integration for advanced lifecycle management
+* RBAC permissions on sectors, categories and announces
+
+ **Daemons** 
+
+ 
+*  **Search Indexer** - Incremental Lucene indexing of announces (default: every 60s)
+*  **Expiration Daemon** - Notifies users of upcoming expiration and removes old announces (default: 120 days, configurable)
+
+ **Portlets** 
+
+ 
+*  *My Announces* - Displays the current user's announces
+*  *Last Announces* - Displays the most recent announces (configurable count)
+
+## Configuration
+
+Key properties in `announce.properties` :
+
+| Property| Default| Description|
+|-----------------|-----------------|-----------------|
+| announce.announce.qty.max| 10| Max announces per user|
+| announce.nbDaysBeforeAnnouncesRemoval| 120| Days before automatic removal|
+| announce.front.announce.defaultItemsPerPage| 10| Pagination size (front-office)|
+| announce.indexer.enable| true| Enable Lucene search indexing|
+| announce.lucene.minScore| 0.5| Minimum Lucene relevance score|
+
+## Database
+
+| Table| Purpose|
+|-----------------|-----------------|
+| announce_sector| Top-level grouping of categories|
+| announce_category| Announcement categories with moderation/workflow settings|
+| announce_announce| The announcements themselves|
+| announce_announce_response| Links announces to generic attribute responses|
+| announce_indexer_action| Lucene incremental indexing queue|
+| announce_search_filters| Saved user search criteria|
+| announce_portlet_last_announces| Portlet configuration|
+| announce_notify| Notification tracking|
+
+## RBAC Permissions
+
+| Resource| Permissions|
+|-----------------|-----------------|
+| Sector| Create, Modify, Delete|
+| Category| Create, Modify, Copy, Delete|
+| Announce| Publish/Unpublish, Suspend, Delete, Workflow action|
+
+
+[Maven documentation and reports](https://dev.lutece.paris.fr/plugins/plugin-announce/)
 
 
 

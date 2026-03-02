@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002-2021, City of Paris
+ * Copyright (c) 2002-2026, City of Paris
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -33,7 +33,9 @@
  */
 package fr.paris.lutece.plugins.announce.web;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -41,6 +43,8 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.StringUtils;
+
+import fr.paris.lutece.portal.web.constants.Parameters;
 
 import fr.paris.lutece.api.user.User;
 import fr.paris.lutece.plugins.announce.business.Sector;
@@ -80,13 +84,13 @@ public class SectorJspBean extends PluginAdminPageJspBean
     private static final String PARAMETER_FIELD_LABEL = "sector_label";
     private static final String PARAMETER_FIELD_DESCRIPTION = "sector_description";
     private static final String PARAMETER_FIELD_ANNOUNCES_VALIDATION = "sector_announces_validation";
-    private static final String CHECKBOX_ON = "on";
+    private static final String CHECKBOX_ON = "true";
     private static final String PARAMETER_FIELD_ORDER = "sector_order";
     private static final String PARAMETER_TAGS = "tags";
     private static final String UNAUTHORIZED = "Unauthorized";
 
     /* properties */
-    private static final String PROPERTY_PAGE_TITLE_MANAGE_FIELDS = "announce.manage_sector.pageTitle";
+    private static final String PROPERTY_PAGE_TITLE_MANAGE_FIELDS = "announce.manage_sectors.pageTitle";
     private static final String PROPERTY_PAGE_TITLE_CREATE_FIELD = "announce.create_sector.pageTitle";
     private static final String PROPERTY_PAGE_TITLE_MODIFY_FIELD = "announce.modify_sector.pageTitle";
     private static final String PROPERTY_DEFAULT_LIST_FIELD_PER_PAGE = "announce.sector.itemsPerPage";
@@ -114,6 +118,13 @@ public class SectorJspBean extends PluginAdminPageJspBean
 
     /* Misc */
     private static final String REGEX_ID = "^[\\d]+$";
+
+    /* Sort */
+    private static final String SORT_LABEL = "label_sector";
+    private static final String SORT_DESCRIPTION = "description_sector";
+    private static final String SORT_NUMBER_CATEGORIES = "number_categories";
+    private static final String SESSION_SORT_ATTRIBUTE = "announce.sessionSectorSortAttribute";
+    private static final String SESSION_SORT_ASC = "announce.sessionSectorSortAsc";
 
     /* Variables */
     private String _strCurrentPageIndex;
@@ -150,9 +161,35 @@ public class SectorJspBean extends PluginAdminPageJspBean
         int defaultItemsPerPage = AppPropertiesService.getPropertyInt( PROPERTY_DEFAULT_LIST_FIELD_PER_PAGE, 50 );
         _nItemsPerPage = AbstractPaginator.getItemsPerPage( request, AbstractPaginator.PARAMETER_ITEMS_PER_PAGE, _nItemsPerPage, defaultItemsPerPage );
 
-        Collection<Sector> listSectors = SectorHome.findAll( );
+        List<Sector> listSectors = new ArrayList<>( SectorHome.findAll( ) );
 
-        Paginator<Sector> paginator = new Paginator<>( (List<Sector>) listSectors, _nItemsPerPage, getUrlPage( ), PARAMETER_PAGE_INDEX, _strCurrentPageIndex );
+        // Sort
+        String strSort = request.getParameter( Parameters.SORTED_ATTRIBUTE_NAME );
+        String strSortAsc = request.getParameter( Parameters.SORTED_ASC );
+
+        if ( strSort != null )
+        {
+            request.getSession( ).setAttribute( SESSION_SORT_ATTRIBUTE, strSort );
+            request.getSession( ).setAttribute( SESSION_SORT_ASC, strSortAsc );
+        }
+        else
+        {
+            strSort = (String) request.getSession( ).getAttribute( SESSION_SORT_ATTRIBUTE );
+            strSortAsc = (String) request.getSession( ).getAttribute( SESSION_SORT_ASC );
+        }
+
+        if ( strSort != null )
+        {
+            boolean bAsc = Boolean.parseBoolean( strSortAsc );
+            Comparator<Sector> comparator = getSectorComparator( strSort, bAsc );
+
+            if ( comparator != null )
+            {
+                listSectors.sort( comparator );
+            }
+        }
+
+        Paginator<Sector> paginator = new Paginator<>( listSectors, _nItemsPerPage, getUrlPage( ), PARAMETER_PAGE_INDEX, _strCurrentPageIndex );
 
         Map<String, Object> model = new HashMap<>( );
 
@@ -229,11 +266,10 @@ public class SectorJspBean extends PluginAdminPageJspBean
         {
             sector.setAnnouncesValidation( false );
         }
-        else
-            if ( strAnnouncesValidation.equals( CHECKBOX_ON ) )
-            {
-                sector.setAnnouncesValidation( true );
-            }
+        else if ( strAnnouncesValidation.equals( CHECKBOX_ON ) )
+        {
+            sector.setAnnouncesValidation( true );
+        }
 
         // Mandatory sectors
         if ( ( strSectorLabel == null ) || ( strSectorDescription == null ) || strSectorDescription.equals( "" ) || strSectorLabel.equals( "" ) )
@@ -241,7 +277,7 @@ public class SectorJspBean extends PluginAdminPageJspBean
             return AdminMessageService.getMessageUrl( request, Messages.MANDATORY_FIELDS, AdminMessage.TYPE_STOP );
         }
 
-        SectorHome.create( sector, getPlugin( ) );
+        SectorHome.create( sector );
 
         // if the operation occurred well, redirects towards the list
         return JSP_REDIRECT_TO_MANAGE_FIELDS;
@@ -297,16 +333,15 @@ public class SectorJspBean extends PluginAdminPageJspBean
         {
             sector.setAnnouncesValidation( false );
         }
-        else
-            if ( strAnnouncesValidation.equals( CHECKBOX_ON ) )
-            {
-                sector.setAnnouncesValidation( true );
-            }
+        else if ( strAnnouncesValidation.equals( CHECKBOX_ON ) )
+        {
+            sector.setAnnouncesValidation( true );
+        }
 
         sector.setLabel( strSectorLabel );
         sector.setDescription( strSectorDescription );
         sector.setTags( strTags );
-        SectorHome.update( sector, getPlugin( ) );
+        SectorHome.update( sector );
 
         // if the operation occurred well, redirects towards the list
         return JSP_REDIRECT_TO_MANAGE_FIELDS;
@@ -354,7 +389,7 @@ public class SectorJspBean extends PluginAdminPageJspBean
         int nOrder = SectorHome.getOrderById( nIdSector );
         int nNewOrder = SectorHome.getMaxOrderSector( );
         modifySectorOrder( nOrder, nNewOrder, nIdSector );
-        SectorHome.remove( sector, getPlugin( ) );
+        SectorHome.remove( sector );
 
         // if the operation occurred well, redirects towards the list
         return JSP_REDIRECT_TO_MANAGE_FIELDS;
@@ -431,8 +466,42 @@ public class SectorJspBean extends PluginAdminPageJspBean
     }
 
     /**
+     * Get a comparator for sorting sectors
+     *
+     * @param strSort
+     *            The attribute name to sort by
+     * @param bAsc
+     *            True to sort ascending, false otherwise
+     * @return The comparator, or null if the attribute is not sortable
+     */
+    private Comparator<Sector> getSectorComparator( String strSort, boolean bAsc )
+    {
+        Comparator<Sector> comparator = null;
+
+        if ( SORT_LABEL.equals( strSort ) )
+        {
+            comparator = Comparator.comparing( Sector::getLabel, String.CASE_INSENSITIVE_ORDER );
+        }
+        else if ( SORT_DESCRIPTION.equals( strSort ) )
+        {
+            comparator = Comparator.comparing( Sector::getDescription, String.CASE_INSENSITIVE_ORDER );
+        }
+        else if ( SORT_NUMBER_CATEGORIES.equals( strSort ) )
+        {
+            comparator = Comparator.comparingInt( Sector::getNumberCategories );
+        }
+
+        if ( comparator != null && !bAsc )
+        {
+            comparator = comparator.reversed( );
+        }
+
+        return comparator;
+    }
+
+    /**
      * Return UrlPage Url
-     * 
+     *
      * @return url
      */
     private String getUrlPage( )

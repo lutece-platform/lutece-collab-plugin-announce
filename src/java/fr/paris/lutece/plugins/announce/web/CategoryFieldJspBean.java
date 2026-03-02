@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002-2021, City of Paris
+ * Copyright (c) 2002-2026, City of Paris
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -33,7 +33,7 @@
  */
 package fr.paris.lutece.plugins.announce.web;
 
-import fr.paris.lutece.plugins.announce.service.EntryTypeService;
+import fr.paris.lutece.plugins.announce.utils.AnnounceUtils;
 import fr.paris.lutece.plugins.genericattributes.business.Entry;
 import fr.paris.lutece.plugins.genericattributes.business.EntryHome;
 import fr.paris.lutece.plugins.genericattributes.business.Field;
@@ -180,6 +180,12 @@ public class CategoryFieldJspBean extends MVCAdminJspBean
 
         int nIdField = Integer.parseInt( request.getParameter( PARAMETER_ID_FIELD ) );
         Field field = FieldHome.findByPrimaryKey( nIdField );
+
+        if ( field == null )
+        {
+            return redirect( request, CategoryJspBean.getUrlManageCategories( request ) );
+        }
+
         Entry entry = EntryHome.findByPrimaryKey( field.getParentEntry( ).getIdEntry( ) );
 
         field.setParentEntry( entry );
@@ -191,7 +197,7 @@ public class CategoryFieldJspBean extends MVCAdminJspBean
 
         if ( bWithConditionalQuestion )
         {
-            model.put( MARK_ENTRY_TYPE_LIST, EntryTypeService.getInstance( ).getEntryTypeReferenceList( ) );
+            model.put( MARK_ENTRY_TYPE_LIST, AnnounceUtils.getEntryTypeReferenceList( ) );
             model.put( MARK_ENTRY_LIST, field.getConditionalQuestions( ) );
             strTemplateName = TEMPLATE_MODIFY_FIELD_WITH_CONDITIONAL_QUESTION;
         }
@@ -285,10 +291,14 @@ public class CategoryFieldJspBean extends MVCAdminJspBean
             return redirect( request, CategoryJspBean.getUrlManageCategories( request ) );
         }
 
-        Field field = null;
         int nIdField = Integer.parseInt( strIdField );
 
-        field = FieldHome.findByPrimaryKey( nIdField );
+        Field field = FieldHome.findByPrimaryKey( nIdField );
+
+        if ( field == null )
+        {
+            return redirect( request, CategoryJspBean.getUrlManageCategories( request ) );
+        }
 
         if ( request.getParameter( PARAMETER_CANCEL ) == null )
         {
@@ -415,19 +425,22 @@ public class CategoryFieldJspBean extends MVCAdminJspBean
 
         int nIdField = Integer.parseInt( strIdField );
 
-        List<Field> listField;
         Field field = FieldHome.findByPrimaryKey( nIdField );
 
-        listField = FieldHome.getFieldListByIdEntry( field.getParentEntry( ).getIdEntry( ) );
+        if ( field == null )
+        {
+            return redirect( request, CategoryJspBean.getUrlManageCategories( request ) );
+        }
+
+        List<Field> listField = FieldHome.getFieldListByIdEntry( field.getParentEntry( ).getIdEntry( ) );
 
         int nIndexField = getIndexFieldInFieldList( nIdField, listField );
+        int nSwapIndex = bMoveUp ? ( nIndexField - 1 ) : ( nIndexField + 1 );
 
-        if ( nIndexField != ( listField.size( ) ) )
+        if ( ( nIndexField != listField.size( ) ) && ( nSwapIndex >= 0 ) && ( nSwapIndex < listField.size( ) ) )
         {
-            int nNewPosition;
-            Field fieldToInversePosition;
-            fieldToInversePosition = listField.get( bMoveUp ? ( nIndexField - 1 ) : ( nIndexField + 1 ) );
-            nNewPosition = fieldToInversePosition.getPosition( );
+            Field fieldToInversePosition = listField.get( nSwapIndex );
+            int nNewPosition = fieldToInversePosition.getPosition( );
             fieldToInversePosition.setPosition( field.getPosition( ) );
             field.setPosition( nNewPosition );
             FieldHome.update( field );
@@ -436,7 +449,7 @@ public class CategoryFieldJspBean extends MVCAdminJspBean
             return redirect( request, CategoryEntryJspBean.getURLModifyEntry( request, field.getParentEntry( ).getIdEntry( ) ) );
         }
 
-        return redirect( request, CategoryJspBean.getUrlManageCategories( request ) );
+        return redirect( request, CategoryEntryJspBean.getURLModifyEntry( request, field.getParentEntry( ).getIdEntry( ) ) );
     }
 
     /**
@@ -463,16 +476,14 @@ public class CategoryFieldJspBean extends MVCAdminJspBean
         {
             strFieldError = FIELD_TITLE_FIELD;
         }
-        else
-            if ( StringUtils.isEmpty( strValue ) )
-            {
-                strFieldError = FIELD_VALUE_FIELD;
-            }
-            else
-                if ( !StringUtil.checkCodeKey( strValue ) )
-                {
-                    return AdminMessageService.getMessageUrl( request, MESSAGE_FIELD_VALUE_FIELD, AdminMessage.TYPE_STOP );
-                }
+        else if ( StringUtils.isEmpty( strValue ) )
+        {
+            strFieldError = FIELD_VALUE_FIELD;
+        }
+        else if ( !StringUtil.checkCodeKey( strValue ) )
+        {
+            return AdminMessageService.getMessageUrl( request, MESSAGE_FIELD_VALUE_FIELD, AdminMessage.TYPE_STOP );
+        }
 
         if ( strFieldError != null )
         {

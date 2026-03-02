@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002-2021, City of Paris
+ * Copyright (c) 2002-2026, City of Paris
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -48,23 +48,25 @@ import org.apache.commons.lang3.StringUtils;
 import fr.paris.lutece.api.user.User;
 import fr.paris.lutece.plugins.announce.business.Announce;
 import fr.paris.lutece.plugins.announce.business.AnnounceHome;
-import fr.paris.lutece.plugins.announce.business.AnnounceNotify;
-import fr.paris.lutece.plugins.announce.business.AnnounceNotifyHome;
+import fr.paris.lutece.plugins.announce.business.AnnounceResponseHome;
 import fr.paris.lutece.plugins.announce.business.AnnounceSort;
 import fr.paris.lutece.plugins.announce.business.Category;
 import fr.paris.lutece.plugins.announce.business.CategoryHome;
+import fr.paris.lutece.plugins.announce.service.AnnounceLifecycleService;
+import fr.paris.lutece.plugins.announce.service.AnnounceNotificationService;
 import fr.paris.lutece.plugins.announce.service.AnnounceResourceIdService;
+import fr.paris.lutece.plugins.announce.service.AnnounceService;
 import fr.paris.lutece.plugins.announce.utils.AnnounceUtils;
 import fr.paris.lutece.plugins.genericattributes.business.Entry;
-import fr.paris.lutece.plugins.genericattributes.business.EntryHome;
-import fr.paris.lutece.plugins.genericattributes.business.Field;
 import fr.paris.lutece.plugins.genericattributes.business.Response;
 import fr.paris.lutece.portal.business.rbac.RBAC;
 import fr.paris.lutece.portal.service.admin.AccessDeniedException;
 import fr.paris.lutece.portal.service.message.AdminMessage;
+import fr.paris.lutece.portal.service.security.SecurityTokenService;
 import fr.paris.lutece.portal.service.message.AdminMessageService;
 import fr.paris.lutece.portal.service.plugin.Plugin;
 import fr.paris.lutece.portal.service.rbac.RBACService;
+import fr.paris.lutece.portal.service.spring.SpringContextService;
 import fr.paris.lutece.portal.service.template.AppTemplateService;
 import fr.paris.lutece.portal.service.util.AppPathService;
 import fr.paris.lutece.portal.service.util.AppPropertiesService;
@@ -108,6 +110,10 @@ public class AnnounceJspBean extends PluginAdminPageJspBean
 
     /* Messages */
     private static final String MESSAGE_CONFIRM_REMOVE_ANNOUNCE = "announce.message.confirmRemoveAnnounce";
+    private static final String MESSAGE_ERROR_TOKEN = "Invalid security token";
+
+    /* Actions for CSRF tokens */
+    private static final String TOKEN_ACTION_ANNOUNCE = "doActionAnnounce";
 
     /* Markers */
     private static final String MARK_ANNOUNCE = "announce";
@@ -121,8 +127,11 @@ public class AnnounceJspBean extends PluginAdminPageJspBean
     private static final String MARK_RIGHT_SUSPEND = "right_suspend_announce";
     private static final String MARK_RIGHT_WORKFLOW_ACTION = "right_execute_workflow_action";
     private static final String MARK_ENTRY_LIST_GEOLOCATION = "admList_entryTypeGeolocation";
+    private static final String MARK_IS_SUBSCRIBE = "isSubscribe";
 
     /* Variables */
+    private AnnounceLifecycleService _announceLifecycleService = SpringContextService.getBean( AnnounceLifecycleService.BEAN_NAME );
+    private AnnounceNotificationService _announceNotificationService = SpringContextService.getBean( AnnounceNotificationService.BEAN_NAME );
     private int _nDefaultItemsPerPage;
     private String _strCurrentPageIndex;
     private int _nItemsPerPage;
@@ -216,6 +225,7 @@ public class AnnounceJspBean extends PluginAdminPageJspBean
         model.put( MARK_NB_ITEMS_PER_PAGE, Integer.toString( _nItemsPerPage ) );
         model.put( MARK_PAGINATOR, paginator );
         model.put( MARK_ANNOUNCE_LIST, paginator.getPageItems( ) );
+        model.put( MARK_IS_SUBSCRIBE, AnnounceService.isSubscribeModuleAvailable( ) );
 
         model.put( MARK_RIGHT_DELETE,
                 RBACService.isAuthorized( Announce.RESOURCE_TYPE, RBAC.WILDCARD_RESOURCES_ID, AnnounceResourceIdService.PERMISSION_DELETE, user ) );
@@ -224,6 +234,7 @@ public class AnnounceJspBean extends PluginAdminPageJspBean
         model.put( MARK_RIGHT_SUSPEND,
                 RBACService.isAuthorized( Announce.RESOURCE_TYPE, RBAC.WILDCARD_RESOURCES_ID, AnnounceResourceIdService.PERMISSION_SUSPEND, user ) );
         model.put( MARK_RIGHT_WORKFLOW_ACTION, bCanExecuteWorkflowAction );
+        model.put( SecurityTokenService.MARK_TOKEN, SecurityTokenService.getInstance( ).getToken( request, TOKEN_ACTION_ANNOUNCE ) );
 
         HtmlTemplate templateList = AppTemplateService.getTemplate( TEMPLATE_MANAGE_ANNOUNCES, getLocale( ), model );
 
@@ -243,45 +254,12 @@ public class AnnounceJspBean extends PluginAdminPageJspBean
 
         int nIdAnnounce = Integer.parseInt( request.getParameter( PARAMETER_ANNOUNCE_ID ) );
         Announce announce = AnnounceHome.findByPrimaryKey( nIdAnnounce );
-        Collection<Entry> listGeolocalisation = new ArrayList<>( );
         User user = getUser( );
 
-        Collection<Response> listResponses = AnnounceHome.findListResponse( announce.getId( ), false );
-        for ( Response response : listResponses )
-        {
-
-            if ( response.getEntry( ) != null && response.getEntry( ).getEntryType( ) != null
-                    && "announce.entryTypeGeolocation".equals( response.getEntry( ).getEntryType( ).getBeanName( ) ) )
-            {
-                Entry entry = EntryHome.findByPrimaryKey( response.getEntry( ).getIdEntry( ) );
-                for ( Field filed : entry.getFields( ) )
-                {
-
-                    if ( response.getField( ) != null && filed.getIdField( ) == response.getField( ).getIdField( ) )
-                    {
-                        response.setField( filed );
-                    }
-                }
-
-                boolean bool = true;
-
-                for ( Entry ent : listGeolocalisation )
-                {
-                    if ( ent.getIdEntry( ) == ( entry.getIdEntry( ) ) )
-                    {
-                        bool = false;
-                    }
-                }
-                if ( bool )
-                {
-                    listGeolocalisation.add( entry );
-                }
-            }
-
-        }
+        List<Response> listResponses = AnnounceResponseHome.findListResponse( announce.getId( ), false );
 
         HashMap<String, Object> model = new HashMap<>( );
-        model.put( MARK_ENTRY_LIST_GEOLOCATION, listGeolocalisation );
+        model.put( MARK_ENTRY_LIST_GEOLOCATION, AnnounceService.extractGeolocationEntries( listResponses ) );
         model.put( MARK_LIST_RESPONSES, listResponses );
         model.put( MARK_ANNOUNCE, announce );
 
@@ -293,6 +271,8 @@ public class AnnounceJspBean extends PluginAdminPageJspBean
             model.put( MARK_RESOURCE_HISTORY, WorkflowService.getInstance( ).getDisplayDocumentHistory( nIdAnnounce, Announce.RESOURCE_TYPE,
                     category.getIdWorkflow( ), request, getLocale( ), user ) );
         }
+
+        model.put( SecurityTokenService.MARK_TOKEN, SecurityTokenService.getInstance( ).getToken( request, TOKEN_ACTION_ANNOUNCE ) );
 
         HtmlTemplate template = AppTemplateService.getTemplate( TEMPLATE_PREVIEW_ANNOUNCE, getLocale( ), model );
 
@@ -349,7 +329,7 @@ public class AnnounceJspBean extends PluginAdminPageJspBean
 
         int nIdAnnounce = Integer.parseInt( strAnnounceId );
 
-        AnnounceHome.remove( nIdAnnounce );
+        _announceLifecycleService.remove( nIdAnnounce );
 
         // if the operation occurred well, redirects towards the list
         return JSP_REDIRECT_TO_MANAGE_ANNOUNCES;
@@ -368,6 +348,11 @@ public class AnnounceJspBean extends PluginAdminPageJspBean
      */
     public String doPublishAnnounce( HttpServletRequest request, boolean bPublished ) throws AccessDeniedException
     {
+        if ( !SecurityTokenService.getInstance( ).validate( request, TOKEN_ACTION_ANNOUNCE ) )
+        {
+            throw new AccessDeniedException( MESSAGE_ERROR_TOKEN );
+        }
+
         String strAnnounceId = request.getParameter( PARAMETER_ANNOUNCE_ID );
         User user = getUser( );
 
@@ -383,13 +368,10 @@ public class AnnounceJspBean extends PluginAdminPageJspBean
             Announce announce = AnnounceHome.findByPrimaryKey( nIdAnnounce );
             if ( announce.getDatePublication( ).getTime( ) == new Timestamp( 0 ).getTime( ) )
             {
-                AnnounceNotify announceNotify = new AnnounceNotify( );
-                announceNotify.setIdAnnounce( announce.getId( ) );
-                AnnounceNotifyHome.create( announceNotify );
+                _announceNotificationService.queueSubscriptionNotification( announce );
             }
-            announce.setDateCreation( new Timestamp( Calendar.getInstance( ).getTimeInMillis( ) ) );
             announce.setPublished( bPublished );
-            AnnounceHome.setPublished( announce );
+            _announceLifecycleService.publish( announce );
         }
         // if the operation occurred well, redirects towards the list
         return JSP_REDIRECT_TO_MANAGE_ANNOUNCES;
@@ -406,6 +388,11 @@ public class AnnounceJspBean extends PluginAdminPageJspBean
      */
     public String doEnableAnnounce( HttpServletRequest request ) throws AccessDeniedException
     {
+        if ( !SecurityTokenService.getInstance( ).validate( request, TOKEN_ACTION_ANNOUNCE ) )
+        {
+            throw new AccessDeniedException( MESSAGE_ERROR_TOKEN );
+        }
+
         String strAnnounceId = request.getParameter( PARAMETER_ANNOUNCE_ID );
         User user = getUser( );
 
@@ -418,7 +405,7 @@ public class AnnounceJspBean extends PluginAdminPageJspBean
         int nIdAnnounce = Integer.parseInt( strAnnounceId );
         Announce announce = AnnounceHome.findByPrimaryKey( nIdAnnounce );
         announce.setSuspended( false );
-        AnnounceHome.setSuspended( announce );
+        _announceLifecycleService.suspendByAdmin( announce );
 
         // if the operation occurred well, redirects towards the list
         return JSP_REDIRECT_TO_MANAGE_ANNOUNCES;
@@ -435,6 +422,11 @@ public class AnnounceJspBean extends PluginAdminPageJspBean
      */
     public String doSuspendAnnounce( HttpServletRequest request ) throws AccessDeniedException
     {
+        if ( !SecurityTokenService.getInstance( ).validate( request, TOKEN_ACTION_ANNOUNCE ) )
+        {
+            throw new AccessDeniedException( MESSAGE_ERROR_TOKEN );
+        }
+
         String strAnnounceId = request.getParameter( PARAMETER_ANNOUNCE_ID );
         User user = getUser( );
 
@@ -447,7 +439,7 @@ public class AnnounceJspBean extends PluginAdminPageJspBean
         int nIdAnnounce = Integer.parseInt( strAnnounceId );
         Announce announce = AnnounceHome.findByPrimaryKey( nIdAnnounce );
         announce.setSuspended( true );
-        AnnounceHome.setSuspended( announce );
+        _announceLifecycleService.suspendByAdmin( announce );
 
         // if the operation occurred well, redirects towards the list
         return JSP_REDIRECT_TO_MANAGE_ANNOUNCES;

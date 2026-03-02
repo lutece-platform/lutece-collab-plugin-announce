@@ -1,186 +1,154 @@
 <div class="row">
 	<div class="col-sm-3">
-		<#include "navigation_menu.html">
+		<#include "navigation_links.html">
+
+		<div class="card card-body mb-3">
+			<h6>#i18n{announce.search_form.title}</h6>
+			<form class="form_search" method="post" action="jsp/site/Portal.jsp">
+				<div class="mb-2">
+					<label class="form-label small mb-1">#i18n{announce.search_form.keyWordsLabel}</label>
+					<input type="text" class="form-control form-control-sm" value="${(filter.keywords)!}" name="keywords"/>
+				</div>
+				<div class="mb-2">
+					<select class="form-select form-select-sm" name="sector_id" id="idSector">
+						<option value="0">#i18n{announce.search_form.defaultSectorLabel}</option>
+						<#list list_sectors as sector>
+							<#if (filter.idSector)?? && filter.idSector == sector.id>
+								<option selected="selected" value="${sector.id}">${sector.label?html}</option>
+							<#else>
+								<option value="${sector.id}">${sector.label?html}</option>
+							</#if>
+						</#list>
+					</select>
+				</div>
+				<div class="mb-2">
+					<select class="form-select form-select-sm" name="category_id" id="idCategory" data-default-label="#i18n{announce.search_form.defaultCategoryLabel}">
+						<option value="0">#i18n{announce.search_form.defaultCategoryLabel}</option>
+						<#list list_sector_categories as category>
+							<#if (filter.idCategory)?? && filter.idCategory == category.id>
+								<option selected="selected" value="${category.id}">${category.label?html}</option>
+							<#else>
+								<option value="${category.id}">${category.label?html}</option>
+							</#if>
+						</#list>
+					</select>
+				</div>
+				<div class="mb-2">
+					<label class="form-label small mb-1">#i18n{announce.search_form.dateMinLabel}</label>
+					<input class="form-control form-control-sm" type="text" id="date_min" name="date_min" value="${filter_date_min!}">
+				</div>
+				<div class="mb-2">
+					<label class="form-label small mb-1">#i18n{announce.search_form.dateMaxLabel}</label>
+					<input class="form-control form-control-sm" type="text" id="date_max" name="date_max" value="${filter_date_max!}">
+				</div>
+				<div class="mb-2">
+					<label class="form-label small mb-1">#i18n{announce.search_form.priceMinLabel}</label>
+					<div class="input-group input-group-sm">
+						<input class="form-control" type="text" id="price_min" name="price_min" value="<#if (filter.priceMin)?? && filter.priceMin &gt; 0>${filter.priceMin}</#if>">
+						<span class="input-group-text">#i18n{announce.preview_announce.price.currency}</span>
+					</div>
+				</div>
+				<div class="mb-2">
+					<label class="form-label small mb-1">#i18n{announce.search_form.priceMaxLabel}</label>
+					<div class="input-group input-group-sm">
+						<input class="form-control" type="text" id="price_max" name="price_max" value="<#if (filter.priceMax)?? && filter.priceMax &gt; 0>${filter.priceMax}</#if>">
+						<span class="input-group-text">#i18n{announce.preview_announce.price.currency}</span>
+					</div>
+				</div>
+
+				<input type="hidden" name="action" value="search" />
+				<input type="hidden" name="page" value="announce" />
+				<input type="hidden" name="hasFilter" value="true" />
+
+				<div class="d-grid gap-2 mt-3">
+					<button class="btn btn-primary btn-sm" type="submit" name="search" value="#i18n{announce.search_form.search}">
+						<i class="ti ti-search"></i>&nbsp;#i18n{announce.search_form.search}
+					</button>
+					<a class="btn btn-secondary btn-sm" href="jsp/site/Portal.jsp?page=announce&action=search&hasFilter=true">
+						<i class="ti ti-circle-x"></i>&nbsp;#i18n{announce.search_form.reset}
+					</a>
+					<#if isSubscribe >
+						<#if user?? && filter?? && ( ( filter.keywords?? && filter.keywords != '' ) || filter.priceMin &gt; 0 || filter.priceMax &gt; 0 ) && filter.idFilter == 0 >
+							<a class="btn btn-outline-primary btn-sm" href="jsp/site/Portal.jsp?page=announce-subscribe&action=doCreateSubscriptionFilter" title="#i18n{announce.labelCreateFilterSubscriptionTitle}">
+								#i18n{announce.labelCreateFilterSubscription}
+							</a>
+						</#if>
+					</#if>
+				</div>
+			</form>
+		</div>
+
+		<#include "navigation_categories.html">
 	</div>
 	<div class="col-sm-9">
-			<div class="well">
-				<div class="well">
-			    <legend>#i18n{announce.search_form.title}</legend>
-			        <form class="form_search" method="post" action="jsp/site/Portal.jsp">
-			        	<div class="form-group">
-				            #i18n{announce.search_form.keyWordsLabel}
-				            <input type="text" value="${(filter.keywords)!}" name="keywords"/>
-				            <select name="sector_id" id="idSector">
-				            	<option value="0">#i18n{announce.search_form.defaultSectorLabel}</option>
-				            	<#list list_sectors as sector>
-				            		<#if (filter.idSector)?? && filter.idSector == sector.id>
-				                	<option selected="selected" value="${sector.id}">${sector.label}</option>
-				                	<#else>
-				                	<option  value="${sector.id}">${sector.label}</option>
-				                	</#if>
-				                </#list>
-				            </select>
-				            <select name="category_id" id="idCategory">
-				                <option value="0">#i18n{announce.search_form.defaultCategoryLabel}</option>
-				                    <#list list_sector_categories as category>
-				                        <#if (filter.idCategory)?? && filter.idCategory == category.id>
-				                            <option selected="selected" value="${category.id}">${category.label}</option>
-				                        <#else>
-				                            <option value="${category.id}">${category.label}</option>
-				                        </#if>
-				                    </#list>
-				                </select>
-				            <br/>
-			            </div>
-			            <div class="form-group">
-			            	#i18n{announce.search_form.dateMinLabel}  <input size="12" type="text" id="date_min" name="date_min" value="${filter_date_min!}"> 
-			            	#i18n{announce.search_form.dateMaxLabel}  <input size="12" type="text" id="date_max" name="date_max" value="${filter_date_max!}">
-			            </div>
-			            <div class="form-group">
-			           		#i18n{announce.search_form.priceMinLabel}
-			            	<input class="input-small" size="5" type="text" id="price_min" name="price_min" value="<#if (filter.priceMin)?? && filter.priceMin &gt; 0>${filter.priceMin}</#if>">
-				            <span class="add-on">&euro;</span>
-			           
-			          		#i18n{announce.search_form.priceMaxLabel}
-			            	<input class="input-small" size="5" type="text" id="price_max" name="price_max" value="<#if (filter.priceMax)?? && filter.priceMax &gt; 0>${filter.priceMax}</#if>">
-			            	<span class="add-on">&euro;</span>
-			            </div>
-			            
-			            <div class="form-actions">
-				            <div class="form-group">
-					            <button class="btn btn-primary" type="submit" name="search" value="#i18n{announce.search_form.search}">
-					            	<i class="icon-search icon-white">&nbsp;</i>&nbsp;#i18n{announce.search_form.search}
-					            </button>
-					            <a class="btn" href="jsp/site/Portal.jsp?page=announce&action=search&hasFilter=true" >
-					            	<i class="icon-remove-circle">&nbsp;</i>&nbsp;#i18n{announce.search_form.reset}
-					            </a> 
-					        </div>
-				            <input type="hidden" name="action" value="search" />
-				            <input type="hidden" name="page" value="announce" />
-				            <input type="hidden" name="hasFilter" value="true" />
-				            <div class="pull-right">
-				        		<#if user?? && filter?? && ( ( filter.keywords?? && filter.keywords != '' ) || filter.priceMin &gt; 0 || filter.priceMax &gt; 0 ) && filter.idFilter == 0 >
-						    		<a class="btn btn-primary" href="jsp/site/Portal.jsp?page=announce-subscribe&action=doCreateSubscriptionFilter" title="#i18n{announce.labelCreateFilterSubscriptionTitle}">
-						    			#i18n{announce.labelCreateFilterSubscription}
-						    		</a>
-						    	</#if>
-					    	</div>
-				   		</div>
-			        </form>
-			   </div>
-			</div>
-	
+
 		<@getDatePickerBootstrap idField="date_min" language=locale />
 		<@getDatePickerBootstrap idField="date_max" language=locale />
-		<div class="paginator">
-			<span style="padding-right: 60px;">#i18n{announce.number.item.result} : <strong>${nbItem}</strong></span>
+		<div class="d-flex align-items-center mb-3">
+			<span class="me-4">#i18n{announce.number.item.result} : <strong>${nbItem}</strong></span>
 			<#if (paginator.pagesCount > 1) >
 				<span>Pages: <@pagination paginator=paginator /></span>
 			</#if>
 		</div>
 		<input type="hidden" id="idPageIndex" value="${page_index}">
-		<div class="well">
-			<#if announces_list?has_content>
-			<div>
-	 		    <#assign listSortBy = {
-	 		    	"date_creation":"#i18n{announce.sort_announce.by_date_creation}",
-	            	"date_modification":"#i18n{announce.sort_announce.by_date_modification}",
-	            	"title_announce":"#i18n{announce.sort_announce.by_title_announce}",
-	            	"price_announce":"#i18n{announce.sort_announce.by_price_announce}",
-	            	"description_announce":"#i18n{announce.sort_announce.by_description_announce}"
-	             }>
-	             <#assign keys = listSortBy?keys> 
-			     <span>#i18n{announce.sort_announce.title} : </span> 
-			     
-				 <select id="idSort">
+		<#if announces_list?has_content>
+			<div class="d-flex align-items-center mb-3">
+				<#assign listSortBy = {
+					"date_creation":"#i18n{announce.sort_announce.by_date_creation}",
+					"date_modification":"#i18n{announce.sort_announce.by_date_modification}",
+					"title_announce":"#i18n{announce.sort_announce.by_title_announce}",
+					"price_announce":"#i18n{announce.sort_announce.by_price_announce}",
+					"description_announce":"#i18n{announce.sort_announce.by_description_announce}"
+				}>
+				<#assign keys = listSortBy?keys>
+				<span class="me-2">#i18n{announce.sort_announce.title} : </span>
+				<select class="form-select form-select-sm d-inline-block" style="max-width: 220px;" id="idSort">
 					<#list keys as key>
-						<option <#if (key=="${sortArg}")>selected="selected"</#if>id="id${key}" value="${key}"
-						
-						>${listSortBy[key]}</option>
+						<option <#if (key=="${sortArg}")>selected="selected"</#if> id="id${key}" value="${key}">${listSortBy[key]}</option>
 					</#list>
-				</select> 
+				</select>
 				<input type="hidden" name="sortBy">
 			</div>
-			<table class="table">
-			<#list announces_list as announce>
-						<tr>
-							<td>
-								<div class="announce-result clearfix">
-									<#if announce.hasPictures>
-										<#list announce.listIdImageResponse as idImageResponse>
-											<#if idImageResponse_index == 0>
-												<a href="jsp/site/Portal.jsp?page=announce&action=view_announce&announce_id=${announce.id}">
-													<img class="thumbnail" width="80" height="80" src="image?resource_type=announce_img&id=${idImageResponse}" />
-												</a>
-											</#if>
-										</#list>
-									<#else>
-										<a title="${announce.title}" href="jsp/site/Portal.jsp?page=announce&action=view_announce&announce_id=${announce.id}">
-											<img class="thumbnail" width="80" height="80" src="./images/local/skin/plugins/announce/no_picture.png" />
-										</a>
-									</#if>
-									<#if announce.category.displayPrice && announce.price?has_content>
-										<div class="price">
-											${announce.price}
-										</div>
-									</#if>
-									<div class="title">
-										<a href="jsp/site/Portal.jsp?page=announce&action=view_announce&announce_id=${announce.id}">
-											${announce.title} - <span class="category">${announce.category.label}</span>
-										</a>
-									</div>
-									<span class="info">${announce.datePublication}</span><br/>
-									${announce.description}<br />
-									<a href="jsp/site/Portal.jsp?page=announce&action=view_announces&username=${announce.userName}">
-										#i18n{announce.list_announces.otherAnnounces}
-									</a>
-								</div>
-							</td>
-						</tr>
-					</#list>
-				</table>
-			<#else>
+			<div class="row row-cols-1 row-cols-md-2 row-cols-xl-3 g-3">
+				<#list announces_list as announce>
+				<div class="col">
+					<div class="card h-100">
+						<div class="card-body">
+							<div class="mb-2">
+								<span class="badge bg-secondary">${announce.category.label?html}</span>
+								<#if announce.category.displayPrice && announce.price?has_content && (announce.price &gt; 0)>
+									<span class="badge bg-success">${announce.price} #i18n{announce.preview_announce.price.currency}</span>
+								</#if>
+							</div>
+							<h6 class="card-title">
+								<a class="text-decoration-none" href="jsp/site/Portal.jsp?page=announce&action=view_announce&announce_id=${announce.id}">
+									${announce.title?html}
+								</a>
+							</h6>
+							<p class="card-text small text-muted">${announce.description?html}</p>
+							<a class="small" href="jsp/site/Portal.jsp?page=announce&action=view_announce&announce_id=${announce.id}">
+								#i18n{announce.list_announces.viewAnnounce}
+							</a>
+						</div>
+						<div class="card-footer d-flex justify-content-between align-items-center">
+							<small class="text-muted">${announce.datePublication}</small>
+							<a class="small" href="jsp/site/Portal.jsp?page=announce&action=view_announces&username=${announce.userName?url('UTF-8')}">
+								#i18n{announce.list_announces.otherAnnounces}
+							</a>
+						</div>
+					</div>
+				</div>
+				</#list>
+			</div>
+		<#else>
+			<div class="alert alert-info">
 				#i18n{announce.list_announces.noAnnounces}
-			</#if>
-		</div>
-	
+			</div>
+		</#if>
+
 	</div>
 </div>
-<script>
-$('#idSort').on('change', function() {
-	var loc=""+location;
-	var n=loc.indexOf("jsp");
-	var urlbase=loc.substring(0,n);
-	//location = urlbase+"jsp/site/Portal.jsp?page=announce&action=search&sortBy="+this.value+"&page_index="+$("#idPageIndex").val();
-	location = urlbase+"jsp/site/Portal.jsp?page=announce&action=search&sortBy="+this.value+"&page_index="+$("#idPageIndex").val();
-	})
-	
-$('#idSector').on('change', function() {
-	var idSec=this.value;
-	$('#idCategory').empty();
-	var newOption0 = $('<option value="0">#i18n{announce.search_form.defaultCategoryLabel}</option>');
-	$('#idCategory').append(newOption0);
-	var listSecCat=[<#list list_sectors as sector>
-						["${sector.id}",<#list sector.listCategories as category>"${category.label}",</#list>],
-					</#list>];
-	var listIdSecCat=[<#list list_sectors as sector>
-	["${sector.id}",<#list sector.listCategories as category>"${category.id}",</#list>],
-</#list>];
-	for(var i=0;i<listSecCat.length;i++){
-		if(idSec==parseInt(listSecCat[i][0])){
-			for(var j=1;j<listSecCat[i].length;j++){
-				var newOption = $('<option value='+listIdSecCat[i][j]+'>'+listSecCat[i][j]+'</option>');
-				$('#idCategory').append(newOption);
-			}
-		}
-	}
-	if(idSec==0){
-		for(var i=0;i<listSecCat.length;i++){
-				for(var j=1;j<listSecCat[i].length;j++){
-					var newOption = $('<option value='+listIdSecCat[i][j]+'>'+listSecCat[i][j]+'</option>');
-					$('#idCategory').append(newOption);
-				}
-		}
-		}
-	})
+<script type="application/json" id="announce-sectors-data">
+[<#list list_sectors as sector>{"id":"${sector.id}","categories":[<#list sector.listCategories as category>{"id":"${category.id}","label":"${category.label?js_string}"}<#sep>,</#sep></#list>]}<#sep>,</#sep></#list>]
 </script>
+<script src="js/plugins/announce/announce-search.js"></script>

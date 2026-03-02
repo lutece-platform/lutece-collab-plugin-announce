@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002-2021, City of Paris
+ * Copyright (c) 2002-2026, City of Paris
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -46,7 +46,7 @@ public class EntryValueService
      * 
      * @return instance of service
      */
-    public EntryValueService getInstance( )
+    public static EntryValueService getInstance( )
     {
         return _singleton;
     }

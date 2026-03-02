@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002-2014, Mairie de Paris
+ * Copyright (c) 2002-2026, City of Paris
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -32,23 +32,25 @@
  * License 1.0
  */
 package fr.paris.lutece.plugins.announce.service.search;
+
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.core.LowerCaseFilter;
 import org.apache.lucene.analysis.ngram.NGramTokenizer;
 import org.apache.lucene.analysis.miscellaneous.ASCIIFoldingFilter;
-import fr.paris.lutece.portal.service.util.AppPropertiesService;
+
 /**
  * LuceneAnalyzer that uses NGramTokenizer, ASCIIFoldingFilter and LowerCaseFilter
  */
 public class LuceneAnalyzer extends Analyzer
 {
     @Override
-    protected TokenStreamComponents createComponents(String fieldName) {
-            NGramTokenizer tokenizer = new NGramTokenizer(3, 10);
-            TokenStream tokenStream = new ASCIIFoldingFilter(tokenizer);
-            tokenStream = new LowerCaseFilter(tokenStream);
-            return new TokenStreamComponents(tokenizer, tokenStream);
-        }
+    protected TokenStreamComponents createComponents( String fieldName )
+    {
+        NGramTokenizer tokenizer = new NGramTokenizer( 3, 10 );
+        TokenStream tokenStream = new ASCIIFoldingFilter( tokenizer );
+        tokenStream = new LowerCaseFilter( tokenStream );
+        return new TokenStreamComponents( tokenizer, tokenStream );
+    }
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002-2021, City of Paris
+ * Copyright (c) 2002-2026, City of Paris
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -44,15 +44,6 @@ import java.util.List;
  */
 public interface IIndexerActionDAO
 {
-    /**
-     * Generates a new primary key
-     *
-     * @param plugin
-     *            the plugin
-     * @return The new primary key
-     */
-    int newPrimaryKey( Plugin plugin );
-
     /**
      * Insert a new record in the table.
      *

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002-2021, City of Paris
+ * Copyright (c) 2002-2026, City of Paris
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -60,7 +60,12 @@ public final class AnnounceNotifyHome
         _dao.delete( nIdAnnounceNotify, _plugin );
     }
 
-    public static List<AnnounceNotify> slecteAll( )
+    public static void deleteByIdAnnounce( int nIdAnnounce )
+    {
+        _dao.deleteByIdAnnounce( nIdAnnounce, _plugin );
+    }
+
+    public static List<AnnounceNotify> selectAll( )
     {
         return _dao.load( _plugin );
     }

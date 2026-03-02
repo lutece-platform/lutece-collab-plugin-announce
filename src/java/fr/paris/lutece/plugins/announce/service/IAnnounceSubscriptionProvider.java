@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002-2021, City of Paris
+ * Copyright (c) 2002-2026, City of Paris
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -31,15 +31,35 @@
  *
  * License 1.0
  */
-package fr.paris.lutece.plugins.announce.business;
+package fr.paris.lutece.plugins.announce.service;
 
-import fr.paris.lutece.test.LuteceTestCase;
+import javax.servlet.http.HttpServletRequest;
 
-public class AnnounceBusinessTest extends LuteceTestCase
+import fr.paris.lutece.portal.service.security.LuteceUser;
+
+/**
+ * Interface for subscription provider services in the announce plugin. This interface allows the subscription feature to be optional: if the
+ * module-announce-subscribe module is present, it provides the implementation; otherwise, subscription features are simply not available.
+ */
+public interface IAnnounceSubscriptionProvider
 {
+    /**
+     * Check if a user has subscribed to another user
+     *
+     * @param user
+     *            The subscriber user
+     * @param strUserName
+     *            The name of the subscribed user
+     * @return True if the user has subscribed to the given user, false otherwise
+     */
+    boolean hasSubscribedToUser( LuteceUser user, String strUserName );
 
-    public void testCRUD( )
-    {
-
-    }
+    /**
+     * Get the HTML content displaying the list of subscriptions for the current user
+     *
+     * @param request
+     *            The HTTP request
+     * @return The HTML content of the subscription list
+     */
+    String getSubscriptionListHtml( HttpServletRequest request );
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002-2021, City of Paris
+ * Copyright (c) 2002-2026, City of Paris
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -38,7 +38,7 @@ import java.sql.Timestamp;
 import java.util.Collection;
 import java.util.List;
 
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
 
 import fr.paris.lutece.plugins.announce.service.AnnounceResponseImageResourceProvider;
 import fr.paris.lutece.plugins.genericattributes.business.Response;
@@ -68,13 +68,10 @@ public class Announce implements Serializable, IExtendableResource, RBACResource
     private boolean _bSuspended;
     private boolean _bSuspendedByUser;
     private String _strUserName;
-    private String _strUserLastName;
-    private String _strUserSecondName;
     private boolean _bHasPictures;
     private List<Integer> _listIdImageResponse;
     private Timestamp _dateCreation;
     private Timestamp _dateModification;
-    private Timestamp _datePublication;
     private long _lTimePublication;
     private Double _nPrice;
     private String _strTags;
@@ -251,51 +248,9 @@ public class Announce implements Serializable, IExtendableResource, RBACResource
     }
 
     /**
-     * gets the user name
+     * whether or not the announce has pictures in slideshow
      * 
-     * @return the username
-     */
-    public String getUserLastName( )
-    {
-        return _strUserLastName;
-    }
-
-    /**
-     * sets the announce user name
-     * 
-     * @param strUserName
-     *            the user name
-     */
-    public void setUserLastName( String strUserLastName )
-    {
-        _strUserLastName = strUserLastName;
-    }
-
-    /**
-     * gets the user name
-     * 
-     * @return the username
-     */
-    public String getUserSecondName( )
-    {
-        return _strUserSecondName;
-    }
-
-    /**
-     * sets the announce user name
-     * 
-     * @param strUserName
-     *            the user name
-     */
-    public void setUserSecondName( String strUserSecondName )
-    {
-        _strUserSecondName = strUserSecondName;
-    }
-
-    /**
-     * weather or not the announce has pictures in slideshow
-     * 
-     * @return weather or not the announce has pictures in slideshow
+     * @return whether or not the announce has pictures in slideshow
      */
     public boolean getHasPictures( )
     {
@@ -303,10 +258,10 @@ public class Announce implements Serializable, IExtendableResource, RBACResource
     }
 
     /**
-     * set weather or not the announce has pictures
+     * set whether or not the announce has pictures
      * 
      * @param bHasPictures
-     *            weather or not the announce has pictures
+     *            whether or not the announce has pictures
      */
     public void setHasPictures( boolean bHasPictures )
     {
@@ -523,9 +478,13 @@ public class Announce implements Serializable, IExtendableResource, RBACResource
     @Override
     public String getExtendableResourceImageUrl( )
     {
-        if ( getHasPictures( ) && CollectionUtils.isNotEmpty( getListIdImageResponse( ) ) )
+        if ( getHasPictures( ) )
         {
-            return AnnounceResponseImageResourceProvider.getUrlDownloadImageResponse( getListIdImageResponse( ).get( 0 ) );
+            List<Integer> listIds = getListIdImageResponse( );
+            if ( CollectionUtils.isNotEmpty( listIds ) )
+            {
+                return AnnounceResponseImageResourceProvider.getUrlDownloadImageResponse( listIds.get( 0 ) );
+            }
         }
 
         return null;
@@ -578,7 +537,35 @@ public class Announce implements Serializable, IExtendableResource, RBACResource
     {
         try
         {
-            return super.clone( );
+            Announce clone = (Announce) super.clone( ); // Copy primitives + references
+
+            // Copy mutable objects: each gets its own independent instance
+            if ( _category != null )
+            {
+                clone._category = (Category) _category.clone( );
+            }
+
+            if ( _dateCreation != null )
+            {
+                clone._dateCreation = new Timestamp( _dateCreation.getTime( ) );
+            }
+
+            if ( _dateModification != null )
+            {
+                clone._dateModification = new Timestamp( _dateModification.getTime( ) );
+            }
+
+            if ( _listResponse != null )
+            {
+                clone._listResponse = new java.util.ArrayList<>( _listResponse );
+            }
+
+            if ( _listIdImageResponse != null )
+            {
+                clone._listIdImageResponse = new java.util.ArrayList<>( _listIdImageResponse );
+            }
+
+            return clone;
         }
         catch( CloneNotSupportedException e )
         {
@@ -589,20 +576,13 @@ public class Announce implements Serializable, IExtendableResource, RBACResource
     }
 
     /**
-     * @return the _datePublication
+     * Get the publication date, computed from the publication timestamp
+     *
+     * @return the publication date
      */
     public Timestamp getDatePublication( )
     {
         return new Timestamp( this.getTimePublication( ) );
-    }
-
-    /**
-     * @param _datePublication
-     *            the _datePublication to set
-     */
-    public void setDatePublication( )
-    {
-        this._datePublication = new Timestamp( this.getTimePublication( ) );
     }
 
     /**

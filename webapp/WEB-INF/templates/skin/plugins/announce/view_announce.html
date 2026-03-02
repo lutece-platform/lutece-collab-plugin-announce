@@ -3,62 +3,61 @@
 		<#include "navigation_menu.html">
 	</div>
 	<div class="col-sm-9">
-		<div class="well">
+		<div class="card card-body">
 
 		<#if isExtendInstalled?? && isExtendInstalled && announce.published && !announce.suspended && !announce.suspendedByUser>
 			@ExtenderParameter[${announce.id},announce,opengraph]@
 		</#if>
 		<#if allow_access>
-			<div class="portlet-background append-bottom">
-				<legend>
-					${announce.title}
-				</legend>
-				<div class="">
+			<div class="mb-3">
+				<h4>
+					${announce.title?html}
+				</h4>
+				<div>
 					<#if user_is_author>
 						<!-- user controls on his announce -->
-						<div class="possible-actions">
-							#i18n{announce.view_announce.actions.title}:
-							<a href="jsp/site/Portal.jsp?page=announce&action=modify_announce&announce_id=${announce.id}">
-								<img src="images/local/skin/plugins/announce/actions/modify.png" alt="#i18n{announce.my_announces.actionTitleModify}" title="#i18n{announce.my_announces.actionTitleModify}"/>
+						<div class="d-flex align-items-center gap-2 mb-3">
+							<span class="text-muted">#i18n{announce.view_announce.actions.title} :</span>
+							<a class="btn btn-sm btn-primary" href="jsp/site/Portal.jsp?page=announce&action=modify_announce&announce_id=${announce.id}" title="#i18n{announce.my_announces.actionTitleModify}">
+								<i class="ti ti-edit"></i> #i18n{announce.my_announces.actionTitleModify}
 							</a>
-							<a href="jsp/site/Portal.jsp?page=announce&action=delete_announce&announce_id=${announce.id}">
-								<img src="images/local/skin/plugins/announce/actions/delete.png" alt="#i18n{announce.my_announces.actionTitleDelete}" title="#i18n{announce.my_announces.actionTitleDelete}"/>
+							<a class="btn btn-sm btn-danger" href="jsp/site/Portal.jsp?page=announce&action=delete_announce&announce_id=${announce.id}" title="#i18n{announce.my_announces.actionTitleDelete}">
+								<i class="ti ti-trash"></i> #i18n{announce.my_announces.actionTitleDelete}
 							</a>
-
 							<#if !announce.suspendedByUser>
-								<a href="jsp/site/Portal.jsp?page=announce&action=suspend_by_user&announce_id=${announce.id}">
-									<img src="images/local/skin/plugins/announce/actions/suspend_by_user.png" alt="#i18n{announce.my_announces.actionTitleSuspend}" title="#i18n{announce.my_announces.actionTitleSuspend}"/>
+								<a class="btn btn-sm btn-warning" href="jsp/site/Portal.jsp?page=announce&action=suspend_by_user&announce_id=${announce.id}" title="#i18n{announce.my_announces.actionTitleSuspend}">
+									<i class="ti ti-player-pause"></i> #i18n{announce.my_announces.actionTitleSuspend}
 								</a>
 							<#else>
-								<a href="jsp/site/Portal.jsp?page=announce&action=enable_by_user&announce_id=${announce.id}">
-									<img src="images/local/skin/plugins/announce/actions/enable_by_user.png" alt="#i18n{announce.my_announces.actionTitleEnable}" title="#i18n{announce.my_announces.actionTitleEnable}"/>
+								<a class="btn btn-sm btn-success" href="jsp/site/Portal.jsp?page=announce&action=enable_by_user&announce_id=${announce.id}" title="#i18n{announce.my_announces.actionTitleEnable}">
+									<i class="ti ti-player-play"></i> #i18n{announce.my_announces.actionTitleEnable}
 								</a>
 							</#if>
 						</div>
 					</#if>
 
-					<#if user?exists && user.name == announce.userName>
+					<#if user?? && user.name == announce.userName>
 						<!-- Eventual messages -->
 						<#if !announce.published && !announce.suspended>
-							<div >
-								<div class="notice">#i18n{announce.view_announce.message.notPublishedYet}</div>
+							<div>
+								<div class="alert alert-info">#i18n{announce.view_announce.message.notPublishedYet}</div>
 							</div>
 						<#else>
 							<#if announce.suspendedByUser>
-								<div class="portlet-background-content -lutece-border-radius-bottom">
-									<div class="notice">#i18n{announce.view_announce.message.suspendedByUser}</div>
+								<div>
+									<div class="alert alert-warning">#i18n{announce.view_announce.message.suspendedByUser}</div>
 								</div>
 							<#elseif announce.suspended>
-								<div class="portlet-background-content -lutece-border-radius-bottom">
-									<div class="error">#i18n{announce.view_announce.message.suspended}</div>
+								<div>
+									<div class="alert alert-danger">#i18n{announce.view_announce.message.suspended}</div>
 								</div>
 							</#if>
 						</#if>
 					</#if>
 					<#if isExtendInstalled?? && isExtendInstalled && announce.published && !announce.suspended && !announce.suspendedByUser>
-						<div class="row-fluid">
-							<div class="span3 offset9">
-								<div class="pull-right">
+						<div class="row">
+							<div class="col-3 offset-9">
+								<div class="float-end">
 									@Extender[${announce.id},announce,opengraph,{footer:false, header:false}]@
 									@Extender[${announce.id},announce,hit,{show:true}]@
 									@Extender[${announce.id},announce,rating,{show:"all"}]@
@@ -67,89 +66,28 @@
 						</div>
 					</#if>
 
-					<div class="form-horizontal well">
-					<#if announce.category.displayPrice>
-						<div class="form-group">
-							<label class="col-sm-2 control-label" for='price'>#i18n{announce.view_announce.price}</label>
+					<div class="mt-3">
+					<#if announce.category.displayPrice && announce.price?has_content && (announce.price &gt; 0)>
+						<div class="row mb-3 align-items-center">
+							<label class="col-sm-2 fw-semibold" for='price'>#i18n{announce.view_announce.price}</label>
 							<div class="col-sm-10" id="price">
-								${announce.price}
+								${announce.price} #i18n{announce.preview_announce.price.currency}
 							</div>
 						</div>
 					</#if>
-					<div class="form-group">
-						<label class="col-sm-2 control-label" for="contact">#i18n{announce.view_announce.contactInformation}</label>
+					<div class="row mb-3 align-items-center">
+						<label class="col-sm-2 fw-semibold" for="contact">#i18n{announce.view_announce.contactInformation}</label>
 						<div class="col-sm-10" id="contact">
-							${announce.contactInformation}
+							${announce.contactInformation?html}
 						</div>
 					</div>
-					<div class="form-group">
-						<label class="col-sm-2 control-label" for="description">#i18n{announce.view_announce.description.title}</label>
+					<div class="row mb-3">
+						<label class="col-sm-2 fw-semibold" for="description">#i18n{announce.view_announce.description.title}</label>
 						<div class="col-sm-10" id="description">
-							${announce.description}
+							${announce.description?html}
 						</div>
 					</div>
-					<#assign imageIndex = 1>
-					<#list list_responses as response>
-		      	<#if response.toStringValueResponse?has_content || response.file??>
-		         	<#if entrySave?exists && entrySave.idEntry!=response.entry.idEntry>
-		          	 		</div>
-		             	</div>
-		             	<#if isImage?? && isImage>
-										</div>
-		            		<#assign isImage = false>
-		             	</#if>
-		      			</#if>
-					<#if response.field?? && response.field.title??>
-							<#if response.field.title == "X">
-								<#assign lat = response.toStringValueResponse>
-							<#elseif response.field.title == "Y">
-								<#assign lon = response.toStringValueResponse>
-							<#elseif response.field.title == "idAddress">
-							<#elseif response.field.title == "address">
-								<#assign addressAnnounce = response.toStringValueResponse>
-								<div class="form-group">
-									<label class="col-sm-2 control-label" for="response">${response.entry.title}</label>
-									<div class="col-sm-10" id="response">
-										<#list list_entryTypeGeolocation as entry>
-											<#if entry.mapProvider?has_content && entry.idEntry == response.entry.idEntry >
-												${addressAnnounce}
-												<#include entry.mapProvider.htmlRecapCode />
-											</#if>
-
-										</#list>
-									</div>
-								</div>
-							</#if>
-		       			<#elseif !entrySave?exists || entrySave.idEntry!=response.entry.idEntry>
-		                  	<#assign entrySave=response.entry>
-		                		<div class="form-group">
-		                    	    <label class="col-sm-2 control-label" for="response">${response.entry.title}</label>
-		                            <div class="col-sm-10" id="response">
-		                            <#if response.file?? && response.file.idFile &gt; 0>
-		                            	<#assign isImage = true>
-																		<div id="gallery">
-																			<a title="#i18n{announce.view_announce.imagesCaption}" href="image?resource_type=announce_img&id=${response.idResponse}">
-																				<img src="image?resource_type=announce_img&id=${response.idResponse}" title="${announce.title} - image ${imageIndex}" alt="#i18n{announce.view_announce.imagesCaption}" />
-																			</a>
-									<#elseif response.entry.entryType.beanName?? && response.entry.entryType.beanName=="announce.entryTypeDate">
-										<#assign dateval = response.responseValue?number?number_to_date?iso_local>
-										${dateval}
-		                            <#else>
-
-		                            	${response.toStringValueResponse}
-		                            </#if>
-		                  	    <#else>
-			                    	<#if isImage?? && isImage>
-															<a title="#i18n{announce.view_announce.imagesCaption}" href="image?resource_type=announce_img&id=${response.idResponse}">
-																<img src="image?resource_type=announce_img&id=${response.idResponse}" title="${announce.title} - image ${imageIndex}" alt="#i18n{announce.view_announce.imagesCaption}" />
-															</a>
-			                    	<#else>
-			                    		<br />${response.toStringValueResponse}
-			                    	</#if>
-			                 	</#if>
-							</#if>
-							<#assign imageIndex=imageIndex+1>
-						</#list>
+					<#include "announce_responses.html">
 						</div>
 					</div>
 					<#if isExtendInstalled?? && isExtendInstalled && announce.published && !announce.suspended && !announce.suspendedByUser >
@@ -161,10 +99,10 @@
 			</div>
 		</div>
 		<#else>
-			<div class="well">
-				<legend>#i18n{announce.view_announce.unvailableTitle}</legend>
+			<div class="card card-body">
+				<h5>#i18n{announce.view_announce.unavailableTitle}</h5>
 				<div>
-					<div class="notice">#i18n{announce.view_announce.message.unvailable}</div>
+					<div class="alert alert-info">#i18n{announce.view_announce.message.unavailable}</div>
 				</div>
 			</div>
 		</#if>

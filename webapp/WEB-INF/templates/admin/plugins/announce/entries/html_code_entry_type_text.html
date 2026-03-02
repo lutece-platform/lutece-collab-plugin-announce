@@ -1,52 +1,45 @@
-<#assign field_width=getFieldValueByCode( entry, "width")>
-<#assign field_value=getFieldValueByCode( entry, "value")>
-<#assign field=getFieldByCode( entry, "text_config")>
-
-<div class="form-group">
-	<label class="control-label col-xs-12 col-sm-12 col-md-3" for="attribute${entry.idEntry}">${entry.title}<#if entry.mandatory> *</#if></label>
-	<div class="col-xs-12 col-sm-12 col-md-9">
-		<input type="text" name="attribute${entry.idEntry}" id="attribute${entry.idEntry}"
-			<#if list_responses??>
-				<#list list_responses as response>
-				<#if response.entry.idEntry == entry.idEntry>
-					<#if response.valueResponse??>
-						value="${response.valueResponse}"
-					</#if>
-					<#if response.entry.error??>
-						class="error"
-					</#if>
-					</#if>
-				</#list>
-			<#else>
-              <#if field.value?exists>
-					value="${field.value}"
-			 	<#else>
-					 value="" 
-				</#if>
-			</#if>
-			<#if field.maxSizeEnter?exists && field.maxSizeEnter!=-1>
-				maxlength="${field.maxSizeEnter}"
-			</#if>
-			class="${entry.CSSClass!} form-control">
-		<#if entry.helpMessage?exists&&entry.helpMessage!=''>
-			<p class="help-block">${entry.helpMessage}</p>
-		</#if>
-	</div>
-</div>
+<#assign field_width=getFieldValueByCode(entry, "width")>
+<#assign field_value=getFieldValueByCode(entry, "value")>
+<#assign field=getFieldByCode(entry, "text_config")>
+<#assign inputValue = field.value!>
+<#assign hasError = false>
+<#assign errorMessage = ''>
+<#assign inputClass = entry.CSSClass!>
 <#if list_responses??>
-	<#list list_responses as response>
-		<#if response.entry.idEntry == entry.idEntry && response.entry.error??>
-			<#assign error = response.entry.error>
-			<div class="alert alert-error"><#if error.mandatoryError>#i18n{announce.message.mandatory.entry}<#else>${error.errorMessage}</#if></div>
-		</#if>
-	</#list>
+    <#list list_responses as response>
+        <#if response.entry.idEntry == entry.idEntry>
+            <#if response.valueResponse??>
+                <#assign inputValue = response.valueResponse>
+            </#if>
+            <#if response.entry.error??>
+                <#assign hasError = true>
+                <#assign inputClass = inputClass + ' is-invalid'>
+                <#assign error = response.entry.error>
+                <#if error.mandatoryError>
+                    <#assign errorMessage = '#i18n{announce.message.mandatory.entry}'>
+                <#else>
+                    <#assign errorMessage = error.errorMessage!>
+                </#if>
+            </#if>
+        </#if>
+    </#list>
 </#if>
-<#if entry.confirmField?exists && entry.confirmField>
-<div class="form-group">
-	<label class="control-label col-xs-12 col-sm-12 col-md-3" for="attribute${entry.idEntry}_confirm_field">${entry.confirmFieldTitle}<#if entry.mandatory> *</#if></label>
-	<div class="col-xs-12 col-sm-12 col-md-9">
-		<input type="text" name="attribute${entry.idEntry}_confirm_field" id="attribute${entry.idEntry}_confirm_field" class="form-control" value=""
-		<#if field_maxSize!=-1>maxlength="${field_maxSize}"</#if>/>
-	</div>
-</div>
+<#assign maxLen = 0>
+<#if field.maxSizeEnter?? && field.maxSizeEnter != -1>
+    <#assign maxLen = field.maxSizeEnter>
+</#if>
+<@formGroup labelKey='${entry.title}' labelFor='attribute${entry.idEntry}' mandatory=entry.mandatory helpKey='${entry.helpMessage!}' rows=2>
+    <@input type='text' name='attribute${entry.idEntry}' id='attribute${entry.idEntry}' value='${inputValue}' class=inputClass maxlength=maxLen />
+</@formGroup>
+<#if hasError>
+    <@alert color='danger'>${errorMessage}</@alert>
+</#if>
+<#if entry.confirmField?? && entry.confirmField>
+    <#assign confirmMaxLen = 0>
+    <#if field_maxSize?? && field_maxSize != -1>
+        <#assign confirmMaxLen = field_maxSize>
+    </#if>
+    <@formGroup labelKey='${entry.confirmFieldTitle!}' labelFor='attribute${entry.idEntry}_confirm_field' mandatory=entry.mandatory rows=2>
+        <@input type='text' name='attribute${entry.idEntry}_confirm_field' id='attribute${entry.idEntry}_confirm_field' maxlength=confirmMaxLen />
+    </@formGroup>
 </#if>

@@ -1,22 +1,78 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <document>
 	<properties>
-		<title>Plugin announce</title>
+		<title>Plugin Announce</title>
 	</properties>
 	<body>
-		<section name="Plugin announce">
+		<section name="Plugin Announce">
 			<subsection name="Introduction">
-				<p>	
-					Le plugin Announce permet au webmestre de mettre en place et de maintenir un système 
-					de gestion de petites annonces. Le module gère à la fois la partie front-office, et 
-					la partie back-office.<br/>
-					En front office, l'utilisateur authentifié (via myLutece) peut soumettre des annonces 
-					et les gérer (modifier, supprimer).<br/>
-					En back-office, le webmestre peut valider les annonces soumises, les supprimer, et les organiser 
-					en domaines et catégories. 
-					Le webmestre peut gérer le format de saisie des annonces de chaque catégories. Ceci permet une 
-					ergonomie optimale pour l'utilisateur.
-				</p> 
+				<p>
+					Le plugin Announce est un systeme de gestion de petites annonces pour la plateforme Lutece.
+					Il permet aux utilisateurs de creer, publier et gerer des annonces organisees par secteurs
+					et categories, avec recherche integree, moderation, integration workflow et
+					expiration automatique.
+				</p>
+			</subsection>
+			<subsection name="Fonctionnalites">
+				<p><strong>Front-office (XPage)</strong></p>
+				<ul>
+					<li>Parcourir les annonces par secteur / categorie</li>
+					<li>Recherche plein texte avec filtres (mots-cles, plage de dates, plage de prix)</li>
+					<li>Creer, modifier, suspendre et supprimer ses propres annonces</li>
+					<li>Formulaire de creation en plusieurs etapes avec champs personnalises (generic attributes)</li>
+					<li>Support de diaporama d'images</li>
+					<li>Abonnement aux categories ou aux utilisateurs (notifications email)</li>
+				</ul>
+				<p><strong>Back-office (Admin)</strong></p>
+				<ul>
+					<li>Gestion des secteurs et categories</li>
+					<li>Publier / depublier / suspendre les annonces</li>
+					<li>Moderation des annonces avant publication (par categorie)</li>
+					<li>Integration workflow pour la gestion avancee du cycle de vie</li>
+					<li>Permissions RBAC sur les secteurs, categories et annonces</li>
+				</ul>
+				<p><strong>Daemons</strong></p>
+				<ul>
+					<li><strong>Indexeur de recherche</strong> - Indexation Lucene incrementale des annonces (defaut : toutes les 60s)</li>
+					<li><strong>Daemon d'expiration</strong> - Notifie les utilisateurs de l'expiration prochaine et supprime les anciennes annonces (defaut : 120 jours, configurable)</li>
+				</ul>
+				<p><strong>Portlets</strong></p>
+				<ul>
+					<li><em>Mes annonces</em> - Affiche les annonces de l'utilisateur connecte</li>
+					<li><em>Dernieres annonces</em> - Affiche les annonces les plus recentes (nombre configurable)</li>
+				</ul>
+			</subsection>
+			<subsection name="Configuration">
+				<p>Proprietes principales dans <code>announce.properties</code> :</p>
+				<table>
+					<tr><th>Propriete</th><th>Defaut</th><th>Description</th></tr>
+					<tr><td>announce.announce.qty.max</td><td>10</td><td>Nombre maximum d'annonces par utilisateur</td></tr>
+					<tr><td>announce.nbDaysBeforeAnnouncesRemoval</td><td>120</td><td>Jours avant suppression automatique</td></tr>
+					<tr><td>announce.front.announce.defaultItemsPerPage</td><td>10</td><td>Taille de pagination (front-office)</td></tr>
+					<tr><td>announce.indexer.enable</td><td>true</td><td>Activer l'indexation Lucene</td></tr>
+					<tr><td>announce.lucene.minScore</td><td>0.5</td><td>Score minimal de pertinence Lucene</td></tr>
+				</table>
+			</subsection>
+			<subsection name="Base de donnees">
+				<table>
+					<tr><th>Table</th><th>Description</th></tr>
+					<tr><td>announce_sector</td><td>Regroupement des categories par secteur</td></tr>
+					<tr><td>announce_category</td><td>Categories d'annonces avec parametres de moderation/workflow</td></tr>
+					<tr><td>announce_announce</td><td>Les annonces</td></tr>
+					<tr><td>announce_announce_response</td><td>Liaison annonces / reponses generic attributes</td></tr>
+					<tr><td>announce_indexer_action</td><td>File d'indexation Lucene incrementale</td></tr>
+					<tr><td>announce_search_filters</td><td>Criteres de recherche sauvegardes</td></tr>
+					<tr><td>announce_portlet_last_announces</td><td>Configuration du portlet</td></tr>
+					<tr><td>announce_notify</td><td>Suivi des notifications</td></tr>
+				</table>
+			</subsection>
+			<subsection name="Permissions RBAC">
+				<table>
+					<tr><th>Ressource</th><th>Permissions</th></tr>
+					<tr><td>Secteur</td><td>Creer, Modifier, Supprimer</td></tr>
+					<tr><td>Categorie</td><td>Creer, Modifier, Copier, Supprimer</td></tr>
+					<tr><td>Annonce</td><td>Publier/Depublier, Suspendre, Supprimer, Action workflow</td></tr>
+				</table>
 			</subsection>
 		</section>
 	</body>

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002-2021, City of Paris
+ * Copyright (c) 2002-2026, City of Paris
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -104,6 +104,7 @@ public final class LastAnnouncesPortletDAO implements ILastAnnouncesPortletDAO
         try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECT, AnnouncePlugin.getPlugin( ) ) )
         {
             daoUtil.setInt( 1, nIdPortlet );
+            daoUtil.executeQuery( );
             portlet.setId( nIdPortlet );
 
             if ( daoUtil.next( ) )

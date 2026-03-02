@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002-2021, City of Paris
+ * Copyright (c) 2002-2026, City of Paris
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -33,7 +33,7 @@
  */
 package fr.paris.lutece.plugins.announce.business;
 
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 
 /**
  * Announces sort
@@ -71,9 +71,24 @@ public class AnnounceSort
     public static final String SORT_DESCRIPTION = "description_announce";
 
     /**
+     * Sort by category label
+     */
+    public static final String SORT_CATEGORY = "label_category";
+
+    /**
+     * Sort by published status
+     */
+    public static final String SORT_PUBLISHED = "published";
+
+    /**
+     * Sort by suspended status
+     */
+    public static final String SORT_SUSPENDED = "suspended";
+
+    /**
      * Default sort to use
      */
-    public static final AnnounceSort DEFAULT_SORT = new AnnounceSort( SORT_DATE_MODIFICATION, false );
+    public static final AnnounceSort DEFAULT_SORT = new AnnounceSort( SORT_DATE_CREATION, false );
     private final String _strSortColumn;
     private final boolean _bSortAsc;
 
@@ -122,9 +137,10 @@ public class AnnounceSort
      */
     public static AnnounceSort getAnnounceSort( String strSort, boolean bSortAsc )
     {
-        if ( StringUtils.equals( SORT_DATE_CREATION, strSort ) || StringUtils.equals( SORT_DATE_PUBLICATION, strSort )
-                || StringUtils.equals( SORT_DATE_MODIFICATION, strSort ) || StringUtils.equals( SORT_TITLE, strSort )
-                || StringUtils.equals( SORT_DESCRIPTION, strSort ) || StringUtils.equals( SORT_PRICE, strSort ) )
+        if ( Strings.CS.equals( SORT_DATE_CREATION, strSort ) || Strings.CS.equals( SORT_DATE_PUBLICATION, strSort )
+                || Strings.CS.equals( SORT_DATE_MODIFICATION, strSort ) || Strings.CS.equals( SORT_TITLE, strSort )
+                || Strings.CS.equals( SORT_DESCRIPTION, strSort ) || Strings.CS.equals( SORT_PRICE, strSort ) || Strings.CS.equals( SORT_CATEGORY, strSort )
+                || Strings.CS.equals( SORT_PUBLISHED, strSort ) || Strings.CS.equals( SORT_SUSPENDED, strSort ) )
         {
             return new AnnounceSort( strSort, bSortAsc );
         }

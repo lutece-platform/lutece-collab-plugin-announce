@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002-2021, City of Paris
+ * Copyright (c) 2002-2026, City of Paris
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -34,6 +34,7 @@
 package fr.paris.lutece.plugins.announce.web;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -46,9 +47,9 @@ import fr.paris.lutece.api.user.User;
 import fr.paris.lutece.plugins.announce.business.Category;
 import fr.paris.lutece.plugins.announce.business.CategoryHome;
 import fr.paris.lutece.plugins.announce.business.SectorHome;
+import fr.paris.lutece.plugins.announce.service.AnnounceLifecycleService;
 import fr.paris.lutece.plugins.announce.service.AnnounceService;
 import fr.paris.lutece.plugins.announce.service.CategoryResourceIdService;
-import fr.paris.lutece.plugins.announce.service.EntryTypeService;
 import fr.paris.lutece.plugins.announce.utils.AnnounceUtils;
 import fr.paris.lutece.plugins.genericattributes.business.Entry;
 import fr.paris.lutece.plugins.genericattributes.business.EntryFilter;
@@ -70,6 +71,7 @@ import fr.paris.lutece.portal.service.util.AppPropertiesService;
 import fr.paris.lutece.portal.service.workflow.WorkflowService;
 import fr.paris.lutece.portal.web.admin.PluginAdminPageJspBean;
 import fr.paris.lutece.portal.web.constants.Messages;
+import fr.paris.lutece.portal.web.constants.Parameters;
 import fr.paris.lutece.util.ReferenceList;
 import fr.paris.lutece.util.html.AbstractPaginator;
 import fr.paris.lutece.util.html.HtmlTemplate;
@@ -132,7 +134,7 @@ public class CategoryJspBean extends PluginAdminPageJspBean
 
     /* Messages */
     private static final String MESSAGE_CONFIRM_REMOVE_CATEGORY = "announce.message.confirmRemoveCategory";
-    private static final String MESSAGE_PLEASE_REMOVE_ANNOUCES = "announce.message.pleaseRemoveAnnounces";
+    private static final String MESSAGE_CONFIRM_REMOVE_CATEGORY_WITH_ANNOUNCES = "announce.message.confirmRemoveCategoryWithAnnounces";
     private static final String MESSAGE_PLEASE_REMOVE_ENTRIES = "announce.message.pleaseRemoveEntries";
     private static final String MESSAGE_COPY_TITLE = "announce.message.copy_title";
 
@@ -154,10 +156,19 @@ public class CategoryJspBean extends PluginAdminPageJspBean
     private static final String MARK_IS_CAPTCHA_ENABLED = "isCaptchaEnabled";
     private static final CaptchaSecurityService _captchaSecurityService = new CaptchaSecurityService( );
 
+    /* Sort */
+    private static final String SORT_SECTOR = "label_sector";
+    private static final String SORT_LABEL = "label_category";
+    private static final String SORT_NUMBER_ANNOUNCES = "number_announces";
+    private static final String SESSION_SORT_ATTRIBUTE = "announce.sessionCategorySortAttribute";
+    private static final String SESSION_SORT_ASC = "announce.sessionCategorySortAsc";
+
     /* Variables */
     private AnnounceService _announceService = SpringContextService.getBean( AnnounceService.BEAN_NAME );
+    private AnnounceLifecycleService _announceLifecycleService = SpringContextService.getBean( AnnounceLifecycleService.BEAN_NAME );
     private String _strCurrentPageIndex;
     private int _nItemsPerPage;
+    private Category _category;
 
     /**
      * {@inheritDoc}
@@ -190,7 +201,33 @@ public class CategoryJspBean extends PluginAdminPageJspBean
         int defaultItemsPerPage = AppPropertiesService.getPropertyInt( PROPERTY_DEFAULT_LIST_CATEGORY_PER_PAGE, 50 );
         _nItemsPerPage = AbstractPaginator.getItemsPerPage( request, AbstractPaginator.PARAMETER_ITEMS_PER_PAGE, _nItemsPerPage, defaultItemsPerPage );
 
-        List<Category> listCategories = CategoryHome.findAll( );
+        List<Category> listCategories = new ArrayList<>( CategoryHome.findAll( ) );
+
+        // Sort handling
+        String strSortAttribute = request.getParameter( Parameters.SORTED_ATTRIBUTE_NAME );
+        String strAscSort = request.getParameter( Parameters.SORTED_ASC );
+
+        if ( strSortAttribute == null )
+        {
+            strSortAttribute = (String) request.getSession( ).getAttribute( SESSION_SORT_ATTRIBUTE );
+            strAscSort = (String) request.getSession( ).getAttribute( SESSION_SORT_ASC );
+        }
+        else
+        {
+            request.getSession( ).setAttribute( SESSION_SORT_ATTRIBUTE, strSortAttribute );
+            request.getSession( ).setAttribute( SESSION_SORT_ASC, strAscSort );
+        }
+
+        if ( strSortAttribute != null )
+        {
+            boolean bAsc = Boolean.parseBoolean( strAscSort );
+            Comparator<Category> comparator = getCategoryComparator( strSortAttribute, bAsc );
+
+            if ( comparator != null )
+            {
+                listCategories.sort( comparator );
+            }
+        }
 
         Paginator<Category> paginator = new Paginator<>( listCategories, _nItemsPerPage, getUrlPage( ), PARAMETER_PAGE_INDEX, _strCurrentPageIndex );
 
@@ -249,6 +286,8 @@ public class CategoryJspBean extends PluginAdminPageJspBean
         model.put( MARK_LIST_ANNOUNCES_VALIDATION, listAnnouncesValidation );
         model.put( MARK_LIST_WORKFLOWS, WorkflowService.getInstance( ).getWorkflowsEnabled( user, getLocale( ) ) );
         model.put( MARK_IS_CAPTCHA_ENABLED, _captchaSecurityService.isAvailable( ) );
+        model.put( MARK_CATEGORY, ( _category != null ) ? _category : new Category( ) );
+        _category = null;
 
         HtmlTemplate template = AppTemplateService.getTemplate( TEMPLATE_CREATE_CATEGORY, getLocale( ), model );
 
@@ -282,24 +321,25 @@ public class CategoryJspBean extends PluginAdminPageJspBean
         boolean bDisplayCaptcha = Boolean.parseBoolean( request.getParameter( PARAMETER_DISPLAY_CAPTCHA ) );
         boolean bPriceMandatory = Boolean.parseBoolean( request.getParameter( PARAMETER_PRICE_MANDATORY ) );
 
-        // Mandatory sectors
+        // Populate _category for form repopulation on error
+        _category = new Category( );
+        _category.setLabel( strCategoryLabel );
+        _category.setIdSector( nIdSector );
+        _category.setAnnouncesValidation( nAnnouncesValidation );
+        _category.setIdMailingList( nIdMailingList );
+        _category.setIdWorkflow( nIdWorkflow );
+        _category.setDisplayPrice( strDisplayPrice != null );
+        _category.setPriceMandatory( _category.getDisplayPrice( ) && bPriceMandatory );
+        _category.setDisplayCaptcha( bDisplayCaptcha );
+
+        // Mandatory fields
         if ( ( nIdSector == 0 ) || StringUtils.isEmpty( strCategoryLabel ) )
         {
             return AdminMessageService.getMessageUrl( request, Messages.MANDATORY_FIELDS, AdminMessage.TYPE_STOP );
         }
 
-        Category category = new Category( );
-        category.setLabel( strCategoryLabel );
-        category.setIdSector( nIdSector );
-        category.setIdMailingList( nIdMailingList );
-        category.setAnnouncesValidation( nAnnouncesValidation );
-        category.setIdWorkflow( nIdWorkflow );
-        category.setDisplayPrice( strDisplayPrice != null );
-
-        category.setPriceMandatory( category.getDisplayPrice( ) && bPriceMandatory );
-        category.setDisplayCaptcha( bDisplayCaptcha );
-
-        CategoryHome.create( category );
+        CategoryHome.create( _category );
+        _category = null;
 
         // if the operation occurred well, redirects towards the list
         return JSP_REDIRECT_TO_MANAGE_CATEGORIES;
@@ -368,7 +408,7 @@ public class CategoryJspBean extends PluginAdminPageJspBean
         User user = getUser( );
         Map<String, Object> model = new HashMap<>( );
         model.put( MARK_GROUP_ENTRY_LIST, getRefListGroups( category.getId( ) ) );
-        model.put( MARK_ENTRY_TYPE_LIST, EntryTypeService.getInstance( ).getEntryTypeReferenceList( ) );
+        model.put( MARK_ENTRY_TYPE_LIST, AnnounceUtils.getEntryTypeReferenceList( ) );
         model.put( MARK_ENTRY_LIST, listEntry );
         model.put( MARK_LIST_ORDER_FIRST_LEVEL, listOrderFirstLevel );
         model.put( MARK_LIST_WORKFLOWS, WorkflowService.getInstance( ).getWorkflowsEnabled( user, getLocale( ) ) );
@@ -446,25 +486,25 @@ public class CategoryJspBean extends PluginAdminPageJspBean
         int nIdCategory = Integer.parseInt( request.getParameter( PARAMETER_CATEGORY_ID ) );
         Category category = getAuthorizedCategory( request, CategoryResourceIdService.PERMISSION_DELETE );
 
-        if ( ( category.getNumberAnnounces( ) == 0 ) && ( CategoryHome.countEntriesForCategory( category ) == 0 ) )
-        {
-            UrlItem url = new UrlItem( JSP_DO_REMOVE_CATEGORY );
-            url.addParameter( PARAMETER_CATEGORY_ID, nIdCategory );
-
-            return AdminMessageService.getMessageUrl( request, MESSAGE_CONFIRM_REMOVE_CATEGORY, url.getUrl( ), AdminMessage.TYPE_CONFIRMATION );
-        }
-
-        if ( category.getNumberAnnounces( ) != 0 )
-        {
-            return AdminMessageService.getMessageUrl( request, MESSAGE_PLEASE_REMOVE_ANNOUCES, AdminMessage.TYPE_STOP );
-        }
-
         if ( CategoryHome.countEntriesForCategory( category ) != 0 )
         {
             return AdminMessageService.getMessageUrl( request, MESSAGE_PLEASE_REMOVE_ENTRIES, AdminMessage.TYPE_STOP );
         }
 
-        return null;
+        UrlItem url = new UrlItem( JSP_DO_REMOVE_CATEGORY );
+        url.addParameter( PARAMETER_CATEGORY_ID, nIdCategory );
+
+        if ( category.getNumberAnnounces( ) > 0 )
+        {
+            Object [ ] messageArgs = {
+                    category.getNumberAnnounces( )
+            };
+
+            return AdminMessageService.getMessageUrl( request, MESSAGE_CONFIRM_REMOVE_CATEGORY_WITH_ANNOUNCES, messageArgs, url.getUrl( ),
+                    AdminMessage.TYPE_CONFIRMATION );
+        }
+
+        return AdminMessageService.getMessageUrl( request, MESSAGE_CONFIRM_REMOVE_CATEGORY, url.getUrl( ), AdminMessage.TYPE_CONFIRMATION );
     }
 
     /**
@@ -479,9 +519,18 @@ public class CategoryJspBean extends PluginAdminPageJspBean
     public String doRemoveCategory( HttpServletRequest request ) throws AccessDeniedException
     {
         Category category = getAuthorizedCategory( request, CategoryResourceIdService.PERMISSION_DELETE );
-        CategoryHome.remove( category );
 
-        // TODO : remove entries, responses, fields, etc...
+        // Server-side check: entries must be removed first
+        if ( CategoryHome.countEntriesForCategory( category ) != 0 )
+        {
+            return AdminMessageService.getMessageUrl( request, MESSAGE_PLEASE_REMOVE_ENTRIES, AdminMessage.TYPE_STOP );
+        }
+
+        // Remove all announces belonging to this category (responses, workflow, notifications, index, cache)
+        _announceLifecycleService.removeAllByCategory( category.getId( ) );
+
+        // Remove the category itself
+        CategoryHome.remove( category );
 
         // if the operation occurred well, redirects towards the list
         return JSP_REDIRECT_TO_MANAGE_CATEGORIES;
@@ -514,6 +563,40 @@ public class CategoryJspBean extends PluginAdminPageJspBean
         UrlItem url = new UrlItem( JSP_MANAGE_CATEGORIES );
 
         return url.getUrl( );
+    }
+
+    /**
+     * Get the comparator for categories based on the sort attribute
+     *
+     * @param strSort
+     *            The sort attribute name
+     * @param bAsc
+     *            True for ascending sort, false for descending
+     * @return The comparator, or null if the attribute is not recognized
+     */
+    private Comparator<Category> getCategoryComparator( String strSort, boolean bAsc )
+    {
+        Comparator<Category> comparator = null;
+
+        if ( SORT_SECTOR.equals( strSort ) )
+        {
+            comparator = Comparator.comparing( Category::getLabelSector, String.CASE_INSENSITIVE_ORDER );
+        }
+        else if ( SORT_LABEL.equals( strSort ) )
+        {
+            comparator = Comparator.comparing( Category::getLabel, String.CASE_INSENSITIVE_ORDER );
+        }
+        else if ( SORT_NUMBER_ANNOUNCES.equals( strSort ) )
+        {
+            comparator = Comparator.comparingInt( Category::getNumberAnnounces );
+        }
+
+        if ( comparator != null && !bAsc )
+        {
+            comparator = comparator.reversed( );
+        }
+
+        return comparator;
     }
 
     /**
