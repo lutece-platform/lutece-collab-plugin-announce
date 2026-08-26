@@ -1,4 +1,6 @@
 -- liquibase formatted sql
+-- lutece runAfter:genericattributes
+-- LUT-33261 : formerly sql/plugins/genericattributes/upgrade/update_db_generic_attributes_forms_1.3.2-1.3.3.sql (copied from forms) ; first released in plugin-announce 2.1.0
 -- changeset announce:update_db_generic_attributes_forms_1.3.2-1.3.3.sql
 -- preconditions onFail:MARK_RAN onError:WARN
 UPDATE genatt_field f SET f.CODE = 'default_date_value'
@@ -69,7 +71,7 @@ UPDATE genatt_field f SET f.CODE = 'answer_choice'
 WHERE f.id_entry IN  (
 SELECT e.id_entry FROM genatt_entry e
 INNER JOIN genatt_entry_type t ON t.id_type = e.id_type
-WHERE t.class_name IN( 'forms.entryTypeSelect', 'forms.entryTypeRadioButton', 'forms.entryTypeCheckBox')
+WHERE t.class_name IN( 'announce.entryTypeSelect', 'announce.entryTypeRadioButton', 'announce.entryTypeCheckBox')
 AND e.id_entry = f.id_entry);
 
 UPDATE genatt_field f SET f.CODE = 'text_config'
@@ -85,14 +87,3 @@ SELECT e.id_entry FROM genatt_entry e
 INNER JOIN genatt_entry_type t ON t.id_type = e.id_type
 WHERE t.class_name IN( 'announce.entryTypeTextArea')
 AND e.id_entry = f.id_entry);
-
-UPDATE genatt_entry e SET e.is_only_display_back = '1'
-WHERE e.id_entry IN (
-SELECT f.id_entry FROM genatt_field f
-WHERE f.CODE = 'only_display_in_back'
-AND f.VALUE = '1');
-
-DELETE FROM genatt_field WHERE CODE = 'only_display_in_back';
-
-ALTER TABLE genatt_field MODIFY id_field INT AUTO_INCREMENT;
-ALTER TABLE genatt_entry DROP COLUMN is_shown_in_completeness;
